@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:lang="http://www.springframework.org/schema/lang" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:cache="http://www.springframework.org/schema/cache" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	         http://www.springframework.org/schema/beans/spring-beans.xsd
+	         http://www.springframework.org/schema/lang
+	         http://www.springframework.org/schema/lang/spring-lang.xsd      
+	         http://www.springframework.org/schema/tx   
+	         http://www.springframework.org/schema/tx/spring-tx.xsd    
+	         http://www.springframework.org/schema/aop     
+	         http://www.springframework.org/schema/aop/spring-aop.xsd    
+	         http://www.springframework.org/schema/mvc     
+	         http://www.springframework.org/schema/mvc/spring-mvc.xsd   
+	         http://www.springframework.org/schema/context     
+	         http://www.springframework.org/schema/context/spring-context.xsd
+	         http://www.springframework.org/schema/cache
+	         http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+
+
+	<!-- 加载配置属性文件 -->
+	<context:property-placeholder
+		ignore-unresolvable="true" location="classpath:nis.properties" />
+
+	<!-- 静态资源访问，交由default Servlet handler -->
+	<mvc:default-servlet-handler />
+	<!-- 静态资源映射 -->
+	<mvc:resources mapping="/static/**" location="/static/"
+		cache-period="31536000" />
+	<mvc:resources mapping="/upload/**" location="/upload/"
+		cache-period="31536000" />
+	<mvc:resources mapping="/swagger/**" location="/swagger/"
+		cache-period="31536000" />
+
+	<!-- 定义无Controller的path<->view直接映射 -->
+	<mvc:view-controller path="/" view-name="redirect:/nis/index" />
+
+	<!-- 启用spring mvc注解 -->
+	<context:annotation-config />
+
+	<!-- 默认注解映射支持 -->
+	<mvc:annotation-driven />
+
+	<bean class="com.nis.restful.SwaggerConfig" />
+	<!-- redis 工具类-->
+	<bean id="redisDao" class="com.nis.util.redis.RedisDao" />
+	<!-- elasticsearch 工具类 将查询转化为elasticsearch-sql支持的语法-->
+	<bean id="elasticsearchSqlDao" class="com.nis.util.elasticsearch.ElasticsearchSqlDao"/>
+	<!-- 定义httpclient连接池 -->  
+    <bean id="httpClientConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" destroy-method="close">  
+        <!-- 设置连接总数 -->  
+        <property name="maxTotal" value="${http.pool.maxTotal}"></property>  
+        <!-- 设置每个地址的并发数 -->  
+        <property name="defaultMaxPerRoute" value="${http.pool.defaultMaxPerRoute}"></property>  
+    </bean>  
+      
+    <!-- 定义 HttpClient工厂，这里使用HttpClientBuilder构建-->  
+    <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">  
+        <property name="connectionManager" ref="httpClientConnectionManager"></property>  
+    </bean>  
+      
+    <!-- 得到httpClient的实例 -->  
+    <bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build"/>  
+      
+    <!-- 定期清理无效的连接 -->  
+    <bean class="com.nis.util.httpclient.IdleConnectionEvictor" destroy-method="shutdown">  
+        <constructor-arg index="0" ref="httpClientConnectionManager" />  
+        <!-- 间隔一分钟清理一次 -->  
+        <constructor-arg index="1" value="60000" />  
+    </bean>  
+      
+    <!-- 定义requestConfig的工厂 -->  
+    <bean id="requestConfigBuilder" class="org.apache.http.client.config.RequestConfig.Builder">  
+        <!-- 从连接池中获取到连接的最长时间 -->  
+        <property name="connectionRequestTimeout" value="${http.request.connectionRequestTimeout}"/>  
+        <!-- 创建连接的最长时间 -->  
+        <property name="connectTimeout" value="${http.request.connectTimeout}"/>  
+        <!-- 数据传输的最长时间 -->  
+        <property name="socketTimeout" value="${http.request.socketTimeout}"/>  
+        <!-- 提交请求前测试连接是否可用 -->  
+        <property name="staleConnectionCheckEnabled" value="${http.request.staleConnectionCheckEnabled}"/>  
+    </bean>     
+      
+    <!-- 得到requestConfig实例 -->  
+    <bean id="requestConfig" factory-bean="requestConfigBuilder" factory-method="build" />  
+	<!--事务控制驱动注解,发现注解@Transactional 时，找transactionManager事务管理器 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+	<!-- autodetection of such annotated controllers -->
+	<context:component-scan base-package="com.nis.web"></context:component-scan>
+	<context:component-scan base-package="com.nis.restful"></context:component-scan>
+
+	<!-- 默认的注解映射的支持，org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping -->
+	<mvc:annotation-driven
+		content-negotiation-manager="contentNegotiationManager">
+		<mvc:message-converters register-defaults="true">
+			<!-- 将StringHttpMessageConverter的默认编码设为UTF-8 -->
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="UTF-8" />
+			</bean>
+			<!-- 将Jackson2HttpMessageConverter的默认格式化输出为false -->
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json;charset=UTF-8</value>
+					</list>
+				</property>
+				<property name="prettyPrint" value="false" />
+				<property name="objectMapper">
+					<bean class="com.nis.util.JsonMapper"></bean>
+				</property>
+			</bean>
+			<!-- 使用XML格式输出数据 -->
+			<bean
+				class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+				<constructor-arg>
+					<bean class="org.springframework.oxm.xstream.XStreamMarshaller">
+						<property name="streamDriver">
+							<bean class="com.thoughtworks.xstream.io.xml.StaxDriver" />
+						</property>
+						<property name="annotatedClasses">
+							<list>
+								<value>com.nis.domain.BaseEntity</value>
+								<value>com.nis.supcan.TreeList</value>
+								<value>com.nis.supcan.Col</value>
+								<value>com.nis.supcan.Group</value>
+							</list>
+						</property>
+					</bean>
+				</constructor-arg>
+				<property name="supportedMediaTypes" value="application/xml"></property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+	<!-- REST中根据URL后缀自动判定Content-Type及相应的View -->
+	<bean id="contentNegotiationManager"
+		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+		<property name="mediaTypes">
+			<map>
+				<entry key="xml" value="application/xml" />
+				<entry key="json" value="application/json" />
+			</map>
+		</property>
+		<property name="ignoreAcceptHeader" value="true" />
+		<property name="favorPathExtension" value="true" />
+	</bean>
+
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/nis/**" />
+			<mvc:exclude-mapping path="/nis/" />
+			<mvc:exclude-mapping path="/nis/login" />
+			<mvc:exclude-mapping path="/nis/sys/index" />
+			<mvc:exclude-mapping path="/nis/sys/menu/tree" />
+			<mvc:exclude-mapping path="/nis/sys/menu/treeData" />
+			<mvc:exclude-mapping path="/nis/sys/user/getToDoTaskNum" />
+			<mvc:exclude-mapping path="/nis/sys/user/toDoTask" />
+			<bean class="com.nis.interceptor.LogInterceptor" />
+		</mvc:interceptor>
+
+		<!-- 数据源拦截器，该拦截路径下使用数据源B -->
+		<mvc:interceptor>
+			<mvc:mapping path="/service/cfg/**" />
+			<bean class="com.nis.interceptor.DataSourceBInterceptor"></bean>
+		</mvc:interceptor>
+
+		<!-- 数据源拦截器，该拦截路径下使用数据源C -->
+		<mvc:interceptor>
+			<mvc:mapping path="/service/log/**" />
+			<bean class="com.nis.interceptor.DataSourceCInterceptor"></bean>
+		</mvc:interceptor>
+
+
+		<!-- 数据源拦截器，该拦截路径下使用数据源D,后期会删除 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/service/test/**" />
+			<bean class="com.nis.interceptor.DataSourceDInterceptor"></bean>
+		</mvc:interceptor>
+		
+		<!-- 数据源拦截器，该拦截路径下使用数据源E -->
+		<mvc:interceptor>
+			<mvc:mapping path="/service/jk/**" />
+			<bean class="com.nis.interceptor.DataSourceEInterceptor"></bean>
+		</mvc:interceptor>
+
+	</mvc:interceptors>
+
+	<!-- 视图文件解析 -->
+	<bean id="internalResourceViewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView"></property>
+		<property name="prefix" value="/WEB-INF/views/"></property>
+		<property name="suffix" value=".jsp"></property>
+		<property name="viewNames" value="jsp/*"></property>
+		<property name="order" value="1"></property>
+	</bean>
+
+	<bean id="urlBaseViewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView"></property>
+		<property name="prefix" value="/WEB-INF/views/"></property>
+		<property name="suffix" value=".jsp"></property>
+		<property name="order" value="2"></property>
+	</bean>
+
+	<!-- 支持Shiro对Controller的方法级AOP安全控制 begin -->
+	<bean
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean>
+
+	<bean id="annotationMethodHandlerExceptionResolver"
+		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+		<property name="order" value="0" />
+	</bean>
+
+	<bean id="RestServiceExceptionHandler" class="com.nis.restful.AppExceptionHandler">
+		<property name="order" value="1" />
+		<property name="errorResolver">
+			<bean class="com.nis.restful.DefaultRestErrorResolver">
+				<property name="exceptionMappingDefinitions">
+					<map>
+						<entry key="com.nis.restful.RestServiceException" value="404" />
+						<entry key="Throwable" value="500" />
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+
+
+	<bean
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.apache.shiro.authz.UnauthorizedException">error/403</prop>
+				<prop key="java.lang.Throwable">error/500</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- 支持Shiro对Controller的方法级AOP安全控制 end -->
+
+
+	<!-- 上传文件拦截，设置最大文件大小10m=10*1024*1024(B)=10485760 bytes -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="utf-8"></property>
+		<property name="maxUploadSize" value="10485760"></property>
+		<!--<property name="maxInMemorySize" value="1000"></property> -->
+	</bean>
+
+
+
+
+
+</beans>

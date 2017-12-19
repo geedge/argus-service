@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.DnsFakeIpDao" >
+	<resultMap type="dnsFakeIp" id="dnsFakeIpMap">
+		<id property="id" column="ID"/>
+		<result property="groupId" column="GROUP_ID"/>
+		<result property="addrType" column="ADDR_TYPE"/>
+		<result property="srcIp" column="SRC_IP"/>
+		<result property="maskSrcIp" column="MASK_SRC_IP"/>
+		<result property="srcPort" column="SRC_PORT"/>
+		<result property="maskSrcPort" column="MASK_SRC_PORT"/>
+		<result property="dstIp" column="DST_IP"/>
+		<result property="maskDstIp" column="MASK_DST_IP"/>
+		<result property="dstPort" column="DST_PORT"/>
+		<result property="maskDstPort" column="MASK_DST_PORT"/>
+		<result property="protocol" column="PROTOCOL"/>
+		<result property="direction" column="DIRECTION"/>
+		<result property="opTime" column="OP_TIME"/>
+		<result property="isValid" column="IS_VALID"/>
+		<result property="yl1" column="YL1"/>
+		<result property="yl2" column="YL2"/>
+		<result property="yl3" column="YL3"/>
+		<result property="yl4" column="YL4"/>
+		<result property="yl5" column="YL5"/>
+		<result property="lastUpdate" jdbcType="TIMESTAMP" column="LAST_UPDATE"/>
+	</resultMap>
+			
+	<sql id="dnsFakeIpColumns">
+    	id,
+		groupId,
+		addrType,
+		srcIp,
+		maskSrcIp,
+		srcPort,
+		maskSrcPort,
+		dstIp,
+		maskDstIp,
+		dstPort,
+		maskDstPort,
+		protocol,
+		direction,
+		opTime,
+		isValid,
+		yl1,
+		yl2,
+		yl3,
+		yl4,
+		yl5,
+		lastUpdate
+    </sql>
+    <!--  
+	<insert id="insert" parameterType="dnsFakeIp" >
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_DNS_FAKE_IP.Nextval as ID from DUAL  
+	   </selectKey>  
+		insert into DNS_FAKE_IP(ID,GROUP_ID,ADDR_TYPE,SRC_IP,MASK_SRC_IP,SRC_PORT,MASK_SRC_PORT,
+		DST_IP,MASK_DST_IP,DST_PORT,MASK_DST_PORT,PROTOCOL,DIRECTION,OP_TIME,IS_VALID,YL1,YL2,YL3,YL4,YL5)
+			values (#{id},#{groupId},#{addrType},#{srcIp},#{maskSrcIp},#{srcPort},#{maskSrcPort},#{dstIp}
+			,#{maskDstIp},#{dstPort},#{maskDstPort},#{protocol},#{direction},#{opTime},#{isValid}
+			,#{yl1},#{yl2},#{yl3},#{yl4},#{yl5})
+	</insert>
+	-->
+	<insert id="insert" parameterType="com.nis.domain.restful.DnsFakeIp">
+	<!-- 
+	<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_DNS_FAKE_IP.Nextval as ID from DUAL  
+	   </selectKey>
+	  -->
+    insert into DNS_FAKE_IP
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        ID,
+      <if test="groupId != null">
+        GROUP_ID,
+      </if>
+      <if test="addrType != null">
+        ADDR_TYPE,
+      </if>
+      <if test="srcIp != null">
+        SRC_IP,
+      </if>
+      <if test="maskSrcIp != null">
+        MASK_SRC_IP,
+      </if>
+      <if test="srcPort != null">
+        SRC_PORT,
+      </if>
+      <if test="maskSrcPort != null">
+        MASK_SRC_PORT,
+      </if>
+      <if test="dstIp != null">
+        DST_IP,
+      </if>
+      <if test="maskDstIp != null">
+        MASK_DST_IP,
+      </if>
+      <if test="dstPort != null">
+        DST_PORT,
+      </if>
+      <if test="maskDstPort != null">
+        MASK_DST_PORT,
+      </if>
+      <if test="protocol != null">
+        PROTOCOL,
+      </if>
+      <if test="direction != null">
+        DIRECTION,
+      </if>
+      <if test="isValid != null">
+        IS_VALID,
+      </if>
+      <if test="opTime != null">
+        OP_TIME,
+      </if>
+      <if test="yl1 != null">
+        YL1,
+      </if>
+      <if test="yl2 != null">
+        YL2,
+      </if>
+      <if test="yl3 != null">
+        YL3,
+      </if>
+      <if test="yl4 != null">
+        YL4,
+      </if>
+      <if test="yl5 != null">
+        YL5,
+      </if>
+      <if test="lastUpdate != null">
+        LAST_UPDATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        #{id,jdbcType=BIGINT},
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="addrType != null">
+        #{addrType,jdbcType=INTEGER},
+      </if>
+      <if test="srcIp != null">
+        #{srcIp,jdbcType=VARCHAR},
+      </if>
+      <if test="maskSrcIp != null">
+        #{maskSrcIp,jdbcType=VARCHAR},
+      </if>
+      <if test="srcPort != null">
+        #{srcPort,jdbcType=VARCHAR},
+      </if>
+      <if test="maskSrcPort != null">
+        #{maskSrcPort,jdbcType=VARCHAR},
+      </if>
+      <if test="dstIp != null">
+        #{dstIp,jdbcType=VARCHAR},
+      </if>
+      <if test="maskDstIp != null">
+        #{maskDstIp,jdbcType=VARCHAR},
+      </if>
+      <if test="dstPort != null">
+        #{dstPort,jdbcType=VARCHAR},
+      </if>
+      <if test="maskDstPort != null">
+        #{maskDstPort,jdbcType=VARCHAR},
+      </if>
+      <if test="protocol != null">
+        #{protocol,jdbcType=INTEGER},
+      </if>
+      <if test="direction != null">
+        #{direction,jdbcType=INTEGER},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="opTime != null">
+        #{opTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="yl1 != null">
+        #{yl1,jdbcType=INTEGER},
+      </if>
+      <if test="yl2 != null">
+        #{yl2,jdbcType=INTEGER},
+      </if>
+      <if test="yl3 != null">
+        #{yl3,jdbcType=VARCHAR},
+      </if>
+      <if test="yl4 != null">
+        #{yl4,jdbcType=VARCHAR},
+      </if>
+      <if test="yl5 != null">
+        #{yl5,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdate != null">
+        #{lastUpdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+	<update id="update" parameterType="dnsFakeIp">
+		UPDATE DNS_FAKE_IP
+		<set>
+			<if test="groupId != null">
+			GROUP_ID=#{groupId,jdbcType=INTEGER},
+			</if>
+			<if test="addrType != null">
+			ADDR_TYPE=#{addrType,jdbcType=INTEGER},
+			</if>
+			<if test="srcIp != null">
+			SRC_IP=#{srcIp,jdbcType=VARCHAR},
+			</if>
+			<if test="maskSrcIp != null">
+			MASK_SRC_IP=#{maskSrcIp,jdbcType=VARCHAR},
+			</if>
+			<if test="srcPort != null">
+			SRC_PORT=#{srcPort,jdbcType=VARCHAR},
+			</if>
+			<if test="maskSrcPort != null">
+			MASK_SRC_PORT=#{maskSrcPort,jdbcType=VARCHAR},
+			</if>
+			<if test="dstIp != null">
+			DST_IP=#{dstIp,jdbcType=VARCHAR},
+			</if>
+			<if test="maskDstIp != null">
+			MASK_DST_IP=#{maskDstIp,jdbcType=VARCHAR},
+			</if>
+			<if test="dstPort != null">
+			DST_PORT=#{dstPort,jdbcType=VARCHAR},
+			</if>
+			<if test="maskDstPort != null">
+			MASK_DST_PORT=#{maskDstPort,jdbcType=VARCHAR},
+			</if>
+			<if test="protocol != null">
+			PROTOCOL=#{protocol,jdbcType=INTEGER},
+			</if>
+			<if test="direction != null">
+			DIRECTION=#{direction,jdbcType=INTEGER},
+			</if>
+			<if test="opTime != null">
+			OP_TIME=#{opTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isValid != null">
+			IS_VALID=#{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="yl1 != null">
+			YL1=#{yl1,jdbcType=INTEGER},
+			</if>
+			<if test="yl2 != null">
+			YL2=#{yl2,jdbcType=INTEGER},
+			</if>
+			<if test="yl3 != null">
+			YL3=#{yl3,jdbcType=VARCHAR},
+			</if>
+			<if test="yl4 != null">
+			YL4=#{yl4,jdbcType=VARCHAR},
+			</if>
+			<if test="yl5 != null">
+			YL5=#{yl5,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdate != null">
+			LAST_UPDATE=#{lastUpdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where ID = #{id ,jdbcType=BIGINT }
+	</update>
+	<delete id="delete" parameterType="long">
+		DELETE FROM DNS_FAKE_IP
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</delete>
+	<select id="isValid" parameterType="long" resultType="java.lang.Integer">
+		select IS_VALID FROM DNS_FAKE_IP
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="isValidBatch" resultType="java.lang.Integer">
+		select count(ID) FROM DNS_FAKE_IP
+		WHERE ID in(
+		<foreach collection="idsList" item="ids" separator=",">
+		#{ids}
+		</foreach>
+		) and IS_VALID=#{isValid}
+	</select>
+	
+	
+	
+	
+
+</mapper>

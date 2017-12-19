@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.FakeIpConfigCompileDao">
+  <resultMap id="BaseResultMap" type="com.nis.domain.restful.FakeIpConfigCompile">
+    <id column="COMPILE_ID" jdbcType="BIGINT" property="compileId" />
+    <result column="SERVICE" jdbcType="INTEGER" property="service" />
+    <result column="ACTION" jdbcType="INTEGER" property="action" />
+    <result column="DO_BLACKLIST" jdbcType="INTEGER" property="doBlacklist" />
+    <result column="DO_LOG" jdbcType="INTEGER" property="doLog" />
+    <result column="EFFECTIVE_RANGE" jdbcType="VARCHAR" property="effectiveRange" />
+    <result column="USER_REGION" jdbcType="VARCHAR" property="userRegion" />
+    <result column="IS_VALID" jdbcType="INTEGER" property="isValid" />
+    <result column="OP_TIME" jdbcType="TIMESTAMP" property="opTime" />
+    <result column="GROUP_NUM" jdbcType="INTEGER" property="groupNum" />
+  	<result property="lastUpdate" jdbcType="TIMESTAMP" column="LAST_UPDATE"/>
+  	<result property="activeSys" jdbcType="INTEGER" column="ACTIVE_SYS"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    COMPILE_ID, SERVICE, ACTION, DO_BLACKLIST, DO_LOG, EFFECTIVE_RANGE, USER_REGION, 
+    IS_VALID, OP_TIME, GROUP_NUM,LAST_UPDATE,ACTIVE_SYS
+  </sql>
+  <!--  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from FAKE_IP_CONFIG_COMPILE
+    where COMPILE_ID = #{compileId,jdbcType=BIGINT}
+  </select>
+  -->
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from FAKE_IP_CONFIG_COMPILE
+    where COMPILE_ID = #{compileId,jdbcType=BIGINT}
+  </delete>
+  <select resultType="java.lang.Long"  id="getCompileId" flushCache="true" useCache="false">  
+	       select SEQ_FAKE_IP_CONFIG_COMPILE.Nextval as ID from DUAL
+ </select> 
+  <insert id="insert" parameterType="com.nis.domain.restful.FakeIpConfigCompile">
+    insert into FAKE_IP_CONFIG_COMPILE (COMPILE_ID, SERVICE, ACTION, 
+      DO_BLACKLIST, DO_LOG, EFFECTIVE_RANGE, 
+      USER_REGION, IS_VALID, OP_TIME, 
+      GROUP_NUM,LAST_UPDATE,ACTIVE_SYS)
+    values (#{compileId,jdbcType=BIGINT}, #{service,jdbcType=INTEGER}, #{action,jdbcType=INTEGER}, 
+      #{doBlacklist,jdbcType=INTEGER}, #{doLog,jdbcType=INTEGER}, #{effectiveRange,jdbcType=VARCHAR}, 
+      #{userRegion,jdbcType=VARCHAR}, #{isValid,jdbcType=INTEGER}, #{opTime,jdbcType=TIMESTAMP}, 
+      #{groupNum,jdbcType=INTEGER}, #{lastUpdate,jdbcType=TIMESTAMP},#{activeSys,jdbcType=INTEGER})
+  </insert>
+  <!-- 
+  <insert id="insertSelective" parameterType="com.nis.domain.restful.FakeIpConfigCompile">
+    insert into FAKE_IP_CONFIG_COMPILE
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="compileId != null">
+        COMPILE_ID,
+      </if>
+      <if test="service != null">
+        SERVICE,
+      </if>
+      <if test="action != null">
+        ACTION,
+      </if>
+      <if test="doBlacklist != null">
+        DO_BLACKLIST,
+      </if>
+      <if test="doLog != null">
+        DO_LOG,
+      </if>
+      <if test="effectiveRange != null">
+        EFFECTIVE_RANGE,
+      </if>
+      <if test="userRegion != null">
+        USER_REGION,
+      </if>
+      <if test="isValid != null">
+        IS_VALID,
+      </if>
+      <if test="opTime != null">
+        OP_TIME,
+      </if>
+      <if test="groupNum != null">
+        GROUP_NUM,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="compileId != null">
+        #{compileId,jdbcType=BIGINT},
+      </if>
+      <if test="service != null">
+        #{service,jdbcType=INTEGER},
+      </if>
+      <if test="action != null">
+        #{action,jdbcType=INTEGER},
+      </if>
+      <if test="doBlacklist != null">
+        #{doBlacklist,jdbcType=INTEGER},
+      </if>
+      <if test="doLog != null">
+        #{doLog,jdbcType=INTEGER},
+      </if>
+      <if test="effectiveRange != null">
+        #{effectiveRange,jdbcType=BIGINT},
+      </if>
+      <if test="userRegion != null">
+        #{userRegion,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="opTime != null">
+        #{opTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupNum != null">
+        #{groupNum,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+   -->
+  <update id="update" parameterType="com.nis.domain.restful.FakeIpConfigCompile">
+    update FAKE_IP_CONFIG_COMPILE
+    <set>
+      <if test="service != null">
+        SERVICE = #{service,jdbcType=INTEGER},
+      </if>
+      <if test="action != null">
+        ACTION = #{action,jdbcType=INTEGER},
+      </if>
+      <if test="doBlacklist != null">
+        DO_BLACKLIST = #{doBlacklist,jdbcType=INTEGER},
+      </if>
+      <if test="doLog != null">
+        DO_LOG = #{doLog,jdbcType=INTEGER},
+      </if>
+      <if test="effectiveRange != null">
+        EFFECTIVE_RANGE = #{effectiveRange,jdbcType=VARCHAR},
+      </if>
+      <if test="userRegion != null">
+        USER_REGION = #{userRegion,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null">
+        IS_VALID = #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="opTime != null">
+        OP_TIME = #{opTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="groupNum != null">
+        GROUP_NUM = #{groupNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastUpdate != null">
+        LAST_UPDATE = #{lastUpdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="activeSys != null">
+        ACTIVE_SYS = #{activeSys,jdbcType=INTEGER},
+      </if>
+    </set>
+    where COMPILE_ID = #{compileId,jdbcType=BIGINT}
+  </update>
+  <!-- 
+  <update id="updateByPrimaryKey" parameterType="com.nis.domain.restful.FakeIpConfigCompile">
+    update FAKE_IP_CONFIG_COMPILE
+    set SERVICE = #{service,jdbcType=DECIMAL},
+      ACTION = #{action,jdbcType=DECIMAL},
+      DO_BLACKLIST = #{doBlacklist,jdbcType=DECIMAL},
+      DO_LOG = #{doLog,jdbcType=DECIMAL},
+      EFFECTIVE_RANGE = #{effectiveRange,jdbcType=VARCHAR},
+      USER_REGION = #{userRegion,jdbcType=VARCHAR},
+      IS_VALID = #{isValid,jdbcType=DECIMAL},
+      OP_TIME = #{opTime,jdbcType=DATE},
+      GROUP_NUM = #{groupNum,jdbcType=DECIMAL}
+    where COMPILE_ID = #{compileId,jdbcType=DECIMAL}
+  </update>
+   -->
+</mapper>

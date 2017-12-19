@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.DnsResponseStrategyDao" >
+	<resultMap type="dnsResponseStrategy" id="dnsResponseStrategyMap">
+		<id property="id" column="ID"/>
+		<result property="reqStrateId" column="REQ_STRATE_ID"/>
+		<result property="strateName" column="STRATE_NAME"/>
+		<result property="resGroupOneId" column="RES_GROUP_1_ID"/>
+		<result property="resGroupOneNum" column="RES_GROUP_1_NUM"/>
+		<result property="resGroupTwoId" column="RES_GROUP_2_ID"/>
+		<result property="resGroupTwoNum" column="RES_GROUP_2_NUM"/>
+		<result property="resGroupThreeId" column="RES_GROUP_3_ID"/>
+		<result property="resGroupThreeNum" column="RES_GROUP_3_NUM"/>
+		<result property="resGroupFourId" column="RES_GROUP_4_ID"/>
+		<result property="resGroupFourNum" column="RES_GROUP_4_NUM"/>
+		<result property="resGroupFiveId" column="RES_GROUP_5_ID"/>
+		<result property="resGroupFiveNum" column="RES_GROUP_5_NUM"/>
+		<result property="authGroup" column="AUTH_GROUP"/>
+		<result property="addGroup" column="ADD_GROUP"/>
+		<result property="opTime" column="OP_TIME"/>
+		<result property="isValid" column="IS_VALID"/>
+		<result property="yl1" column="YL1"/>
+		<result property="yl2" column="YL2"/>
+		<result property="yl3" column="YL3"/>
+		<result property="yl4" column="YL4"/>
+		<result property="yl5" column="YL5"/>
+		<result property="lastUpdate" column="LAST_UPDATE"/>
+		<result property="minTtl" column="MIN_TTL"/>
+		<result property="maxTtl" column="MAX_TTL"/>
+	</resultMap>
+			
+	<sql id="dnsResponseStrategyColumns">
+    	id,
+		reqStrateId,
+		strateName,
+		resGroupOneId,
+		resGroupOneNum,
+		resGroupTwoId,
+		resGroupTwoNum,
+		resGroupThreeId,
+		resGroupThreeNum,
+		resGroupFourId,
+		resGroupFourNum,
+		resGroupFiveId,
+		resGroupFiveNum,
+		authGroup,
+		addGroup,
+		opTime,
+		isValid,
+		yl1,
+		yl2,
+		yl3,
+		yl4,
+		yl5,
+		lastUpdate,
+		minTtl,
+		maxTtl
+    </sql>
+    <!-- 
+    <select id="get" resultMap="dnsResponseStrategyMap">
+		select 
+		<include refid="dnsResponseStrategyColumns"/>	
+		from DNS_RESPONSE_STRATEGY
+		WHERE id=#{id} 
+	</select>
+	<select id="findList" resultMap="dnsResponseStrategyMap">
+		select 
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="dnsResponseStrategyColumns"/>	
+			</otherwise>
+		</choose>
+		from DNS_RESPONSE_STRATEGY
+		WHERE 1=1 
+		<if test="page !=null and page.where != null and page.where != ''">
+			AND ${page.where}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY id desc
+			</otherwise>
+		</choose>
+	</select>
+	 -->
+	 <!--  
+	<insert id="insert" parameterType="dnsResponseStrategy" >
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_DNS_RESPONSE_STRATEGY.Nextval as ID from DUAL  
+	   </selectKey>  
+		insert into DNS_RESPONSE_STRATEGY(ID,REQ_STRATE_ID,STRATE_NAME,RES_GROUP_1_ID,RES_GROUP_1_NUM
+		,RES_GROUP_2_ID,RES_GROUP_2_NUM,AUTH_GROUP,ADD_GROUP,OP_TIME,IS_VALID,YL1,YL2,YL3,YL4,YL5)
+			values (#{id},#{reqStrateId},#{strateName},#{resGroupOneId},#{resGroupOneNum},#{resGroupTwoId},#{resGroupTwoNum},
+			#{authGroup},#{addGroup},#{opTime},#{isValid},#{yl1},#{yl2},#{yl3},#{yl4},#{yl5})
+	</insert>
+	-->
+	<insert id="insert" parameterType="com.nis.domain.restful.DnsResponseStrategy">
+	<!-- 
+    	<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_DNS_RESPONSE_STRATEGY.Nextval as ID from DUAL  
+	   </selectKey>
+	  -->
+    insert into DNS_RESPONSE_STRATEGY
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        ID,
+      <if test="reqStrateId != null">
+        REQ_STRATE_ID,
+      </if>
+      <if test="strateName != null">
+        STRATE_NAME,
+      </if>
+      <if test="resGroupOneId != null">
+        RES_GROUP_1_ID,
+      </if>
+      <if test="resGroupOneNum != null">
+        RES_GROUP_1_NUM,
+      </if>
+      <if test="resGroupTwoId != null">
+        RES_GROUP_2_ID,
+      </if>
+      <if test="resGroupTwoNum != null">
+        RES_GROUP_2_NUM,
+      </if>
+      <if test="resGroupThreeId != null">
+        RES_GROUP_3_ID,
+      </if>
+      <if test="resGroupThreeNum != null">
+        RES_GROUP_3_NUM,
+      </if>
+      <if test="resGroupFourId != null">
+        RES_GROUP_4_ID,
+      </if>
+      <if test="resGroupFourNum != null">
+        RES_GROUP_4_NUM,
+      </if>
+      <if test="resGroupFiveId != null">
+        RES_GROUP_5_ID,
+      </if>
+      <if test="resGroupFiveNum != null">
+        RES_GROUP_5_NUM,
+      </if>
+      <if test="authGroup != null">
+        AUTH_GROUP,
+      </if>
+      <if test="addGroup != null">
+        ADD_GROUP,
+      </if>
+      <if test="opTime != null">
+        OP_TIME,
+      </if>
+      <if test="isValid != null">
+        IS_VALID,
+      </if>
+      <if test="yl1 != null">
+        YL1,
+      </if>
+      <if test="yl2 != null">
+        YL2,
+      </if>
+      <if test="yl3 != null">
+        YL3,
+      </if>
+      <if test="yl4 != null">
+        YL4,
+      </if>
+      <if test="yl5 != null">
+        YL5,
+      </if>
+      <if test="lastUpdate != null">
+        LAST_UPDATE,
+      </if>
+      <if test="minTtl != null">
+        MIN_TTL,
+      </if>
+      <if test="maxTtl != null">
+        MAX_TTL,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">   
+        #{id,jdbcType=BIGINT},
+      <if test="reqStrateId != null">
+        #{reqStrateId,jdbcType=INTEGER},
+      </if>
+      <if test="strateName != null">
+        #{strateName,jdbcType=VARCHAR},
+      </if>
+      <if test="resGroupOneId != null">
+        #{resGroupOneId,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupOneNum != null">
+        #{resGroupOneNum,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupTwoId != null">
+        #{resGroupTwoId,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupTwoNum != null">
+        #{resGroupTwoNum,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupThreeId != null">
+        #{resGroupThreeId,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupThreeNum != null">
+        #{resGroupThreeNum,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupFourId != null">
+        #{resGroupFourId,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupFourNum != null">
+        #{resGroupFourNum,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupFiveId != null">
+        #{resGroupFiveId,jdbcType=INTEGER},
+      </if>
+      <if test="resGroupFiveNum != null">
+        #{resGroupFiveNum,jdbcType=INTEGER},
+      </if>
+      <if test="authGroup != null">
+        #{authGroup,jdbcType=INTEGER},
+      </if>
+      <if test="addGroup != null">
+        #{addGroup,jdbcType=INTEGER},
+      </if>
+      <if test="opTime != null">
+        #{opTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="yl1 != null">
+        #{yl1,jdbcType=INTEGER},
+      </if>
+      <if test="yl2 != null">
+        #{yl2,jdbcType=INTEGER},
+      </if>
+      <if test="yl3 != null">
+        #{yl3,jdbcType=VARCHAR},
+      </if>
+      <if test="yl4 != null">
+        #{yl4,jdbcType=VARCHAR},
+      </if>
+      <if test="yl5 != null">
+        #{yl5,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdate != null">
+        #{lastUpdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="minTtl != null">
+      	#{minTtl,jdbcType=INTEGER},
+      </if>
+      <if test="maxTtl != null">
+        #{maxTtl,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+	<!--  
+	<insert id="saveBatch" parameterType="java.util.List">
+		insert into DNS_RESPONSE_STRATEGY(ID,REQ_STRATE_ID,STRATE_NAME,RES_GROUP_1_ID,RES_GROUP_1_NUM
+		,RES_GROUP_2_ID,RES_GROUP_2_NUM,AUTH_GROUP,ADD_GROUP,OP_TIME,IS_VALID,YL1,YL2,YL3,YL4,YL5)
+		<foreach collection="list" item="item" index="index" separator="union all">
+		(select SEQ_DNS_RESPONSE_STRATEGY.Nextval,#{item.reqStrateId,jdbcType=NUMBER },#{item.strateName,jdbcType=VARCHAR2},#{item.resGroupOneId,jdbcType=NUMBER},#{item.resGroupOneNum,jdbcType=NUMBER},#{item.resGroupTwoId,jdbcType=NUMBER},#{item.resGroupTwoNum,jdbcType=NUMBER},
+			#{item.authGroup,jdbcType=NUMBER},#{item.addGroup,jdbcType=NUMBER},#{item.opTime,jdbcType=DATE},#{item.isValid,jdbcType=NUMBER},#{item.yl1,jdbcType=NUMBER},#{item.yl2,jdbcType=NUMBER},#{item.yl3,jdbcType=VARCHAR2},#{item.yl4,jdbcType=VARCHAR2},#{item.yl5,jdbcType=VARCHAR2} from dual)
+		</foreach>
+	</insert>
+	-->
+	<update id="update" parameterType="dnsResponseStrategy">
+		UPDATE DNS_RESPONSE_STRATEGY
+		<set>
+			<if test="reqStrateId != null">
+			REQ_STRATE_ID=#{reqStrateId,jdbcType=INTEGER},
+			</if>
+			<if test="strateName != null">
+			STRATE_NAME=#{strateName,jdbcType=VARCHAR},
+			</if>
+			<if test="resGroupOneId != null">
+			RES_GROUP_1_ID=#{resGroupOneId,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupOneNum != null">
+			RES_GROUP_1_NUM=#{resGroupOneNum,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupTwoId != null">
+			RES_GROUP_2_ID=#{resGroupTwoId,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupTwoNum != null">
+			RES_GROUP_2_NUM=#{resGroupTwoNum,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupThreeId != null">
+			RES_GROUP_3_ID=#{resGroupThreeId,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupThreeNum != null">
+			RES_GROUP_3_NUM=#{resGroupThreeNum,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupFourId != null">
+			RES_GROUP_4_ID=#{resGroupFourId,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupFourNum != null">
+			RES_GROUP_4_NUM=#{resGroupFourNum,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupFiveId != null">
+			RES_GROUP_5_ID=#{resGroupFiveId,jdbcType=INTEGER},
+			</if>
+			<if test="resGroupFiveNum != null">
+			RES_GROUP_5_NUM=#{resGroupFiveNum,jdbcType=INTEGER},
+			</if>
+			<if test="authGroup != null">
+			AUTH_GROUP=#{authGroup,jdbcType=INTEGER},
+			</if>
+			<if test="addGroup != null">
+			ADD_GROUP=#{addGroup,jdbcType=INTEGER},
+			</if>
+			<if test="opTime != null">
+			OP_TIME=#{opTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isValid != null">
+			IS_VALID=#{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="yl1 != null">
+			YL1=#{yl1,jdbcType=INTEGER},
+			</if>
+			<if test="yl2 != null">
+			YL2=#{yl2,jdbcType=INTEGER},
+			</if>
+			<if test="yl3 != null">
+			YL3=#{yl3,jdbcType=VARCHAR},
+			</if>
+			<if test="yl4 != null">
+			YL4=#{yl4,jdbcType=VARCHAR},
+			</if>
+			<if test="yl5 != null">
+			YL5=#{yl5,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdate != null">
+			LAST_UPDATE=#{lastUpdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="minTtl != null">
+	      	MIN_TTL=#{minTtl,jdbcType=INTEGER},
+	      	</if>
+	      	<if test="maxTtl != null">
+        	MAX_TTL=#{maxTtl,jdbcType=INTEGER},
+	      	</if>
+		</set>
+		where ID = #{id ,jdbcType=BIGINT }
+	</update>
+	<delete id="delete" parameterType="long">
+		DELETE FROM DNS_RESPONSE_STRATEGY
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</delete>
+	<select id="isValid" parameterType="long" resultType="java.lang.Integer">
+		select IS_VALID FROM DNS_RESPONSE_STRATEGY
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="isReqStrateIdUnique" resultType="java.lang.Integer">
+		select COUNT(ID) FROM DNS_RESPONSE_STRATEGY
+		WHERE REQ_STRATE_ID in( 
+		<foreach collection="idsList" item="ids" separator=",">
+		#{ids,jdbcType=INTEGER}
+		</foreach>
+		)
+	</select>
+	<select id="isValidBatch" resultType="java.lang.Integer">
+		select count(ID) FROM DNS_RESPONSE_STRATEGY
+		WHERE ID in(
+		<foreach collection="idsList" item="ids" separator=",">
+		#{ids}
+		</foreach>
+		) and IS_VALID=#{isValid}
+	</select>
+	
+	
+	
+	
+
+</mapper>

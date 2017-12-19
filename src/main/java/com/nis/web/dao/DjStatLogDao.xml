@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DjStatLogDao">
+	<!--  配置报表的公共属性  -->
+	<sql id="commonPorperty">
+		CONFIG_ID,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	
+	 <resultMap id="DjStatLogDailyMap" type="com.nis.domain.restful.DjStatLogDaily">
+		<result column="config_id" jdbcType="BIGINT" property="configId" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_StatLog_Daily日志查询 -->
+	<select id="djStatLogDaily" parameterType="com.nis.domain.restful.DjStatLogDaily" resultMap="DjStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select config_id,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select config_id,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from DJ_STAT_LOG_DAILY 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchConfigId != null and searchConfigId !=''">
+							and config_id=#{searchConfigId}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by config_id,service,stat_time
+				     
+				  ) A 
+				  GROUP BY config_id,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	 <resultMap id="DjStatLogMonthMap" type="com.nis.domain.restful.DjStatLogMonth">
+		<result column="config_id" jdbcType="BIGINT" property="configId" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_Stat_Log_Month日志查询 -->
+	<select id="djStatLogMonth" parameterType="com.nis.domain.restful.DjStatLogMonth" resultMap="DjStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select config_id,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select config_id,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from DJ_STAT_LOG_MONTH 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchConfigId != null and searchConfigId !=''">
+							and config_id=#{searchConfigId}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by config_id,service,stat_time
+				     
+				  ) A 
+				  GROUP BY config_id,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!--  标签报表的公共属性  -->
+	<sql id="tagCommonPorperty">
+		TAG,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	 <resultMap id="DjTagStatLogDailyMap" type="com.nis.domain.restful.DjTagStatLogDaily">
+		<result column="tag" jdbcType="INTEGER" property="tag" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_TAG_Stat_Log_Daily日志查询 -->
+	<select id="djTagStatLogDaily" parameterType="com.nis.domain.restful.DjTagStatLogDaily" resultMap="DjTagStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="tagCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 SELECT tag,'7' as active_sys,stat_time, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+				  FROM (select tag, asum, bsum, absum, stat_time,service
+				          from (select tag,
+				                       stat_time,service,
+				                       asum,
+				                       bsum,
+				                       decode(asum, 0, bsum, asum) absum
+				                  from (SELECT SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) ASUM,
+				                               SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) BSUM,
+				                               
+				                               PZ.stat_time,
+				                               pz.config_id,
+				                               pz.tag,pz.service
+				                          FROM dj_cfg_tag_stat_log_daily PZ
+				                          <where>
+							
+											<if test="searchService != null and searchService !=''">
+												and service=#{searchService}
+											</if>
+											<if test="searchTag != null and searchTag !=''">
+												and tag=#{searchTag}
+											</if>
+											<if test="searchStatStartTime != null and searchStatStartTime !=''">
+												<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchStatEndTime != null and searchStatEndTime !=''">
+												<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+										</where> 
+				                         GROUP BY pz.config_id, pz.tag, PZ.stat_time,pz.service)) a)
+				 group by tag, stat_time,service
+				      
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	 <resultMap id="DjTagStatLogMonthMap" type="com.nis.domain.restful.DjTagStatLogMonth">
+		<result column="tag" jdbcType="INTEGER" property="tag" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_Tag_Stat_Log_Month日志查询 -->
+	<select id="djTagStatLogMonth" parameterType="com.nis.domain.restful.DjTagStatLogMonth" resultMap="DjTagStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="tagCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				  SELECT tag,'7' as active_sys,stat_time, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+				  FROM (select tag, asum, bsum, absum, stat_time,service
+				          from (select tag,
+				                       stat_time,service,
+				                       asum,
+				                       bsum,
+				                       decode(asum, 0, bsum, asum) absum
+				                  from (SELECT SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) ASUM,
+				                               SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) BSUM,
+				                               
+				                               PZ.stat_time,
+				                               pz.config_id,
+				                               pz.tag,pz.service
+				                          FROM dj_cfg_tag_stat_log_month PZ
+				                         <where>
+							
+											<if test="searchService != null and searchService !=''">
+												and service=#{searchService}
+											</if>
+											<if test="searchTag != null and searchTag !=''">
+												and tag=#{searchTag}
+											</if>
+											<if test="searchStatStartTime != null and searchStatStartTime !=''">
+												<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchStatEndTime != null and searchStatEndTime !=''">
+												<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+										</where> 
+				                         GROUP BY pz.config_id, pz.tag, PZ.stat_time,pz.service)) a)
+				 group by tag, stat_time,service 
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	<!--  性质报表的公共属性  -->
+	<sql id="attrCommonPorperty">
+		attr_type,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	 <resultMap id="DjAttrStatLogDailyMap" type="com.nis.domain.restful.DjAttrStatLogDaily">
+		<result column="attr_type" jdbcType="INTEGER" property="attrType" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_ATTR_Stat_Log_Daily日志查询 -->
+	<select id="djAttrStatLogDaily" parameterType="com.nis.domain.restful.DjAttrStatLogDaily" resultMap="DjAttrStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="attrCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 
+				SELECT attr_type,'7' as active_sys,stat_time, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+				  FROM (select attr_type, asum, bsum, absum, stat_time,service
+				          from (select attr_type,
+				                       stat_time,service,
+				                       asum,
+				                       bsum,
+				                       decode(asum, 0, bsum, asum) absum
+				                  from (SELECT SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) ASUM,
+				                               SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) BSUM,
+				                               
+				                               PZ.stat_time,
+				                               pz.config_id,
+				                               pz.attr_type,pz.service
+				                          FROM dj_cfg_attr_stat_log_daily PZ
+				                         <where>
+							
+											<if test="searchService != null and searchService !=''">
+												and service=#{searchService}
+											</if>
+											<if test="searchAttrType != null and searchAttrType !=''">
+												and attr_type=#{searchAttrType}
+											</if>
+											<if test="searchStatStartTime != null and searchStatStartTime !=''">
+												<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchStatEndTime != null and searchStatEndTime !=''">
+												<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+										</where>
+				                         GROUP BY pz.config_id, pz.attr_type, PZ.stat_time,pz.service)) a)
+				 group by attr_type, stat_time,service
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	 <resultMap id="DjAttrStatLogMonthMap" type="com.nis.domain.restful.DjAttrStatLogMonth">
+		<result column="attr_type" jdbcType="INTEGER" property="attrType" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_Attr_Stat_Log_Month日志查询 -->
+	<select id="djAttrStatLogMonth" parameterType="com.nis.domain.restful.DjAttrStatLogMonth" resultMap="DjAttrStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="attrCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 SELECT attr_type,'7' as active_sys,stat_time, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+				  FROM (select attr_type, asum, bsum, absum, stat_time,service
+				          from (select attr_type,
+				                       stat_time,service,
+				                       asum,
+				                       bsum,
+				                       decode(asum, 0, bsum, asum) absum
+				                  from (SELECT SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) ASUM,
+				                               SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) BSUM,
+				                               
+				                               PZ.stat_time,
+				                               pz.config_id,
+				                               pz.attr_type,pz.service
+				                          FROM dj_cfg_attr_stat_log_month PZ
+				                         <where>
+							
+											<if test="searchService != null and searchService !=''">
+												and service=#{searchService}
+											</if>
+											<if test="searchAttrType != null and searchAttrType !=''">
+												and attr_type=#{searchAttrType}
+											</if>
+											<if test="searchStatStartTime != null and searchStatStartTime !=''">
+												<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchStatEndTime != null and searchStatEndTime !=''">
+												<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+										</where> 
+				                         GROUP BY pz.config_id, pz.attr_type, PZ.stat_time,pz.service)) a)
+				 group by attr_type, stat_time,service 
+				      
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	<!--  局点报表的公共属性  -->
+	<sql id="entrCommonPorperty">
+		ENTRANCE_ID,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	 <resultMap id="DjEntrStatLogDailyMap" type="com.nis.domain.restful.DjEntrStatLogDaily">
+		<result column="ENTRANCE_ID" jdbcType="INTEGER" property="entranceId" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_ATTR_Stat_Log_Daily日志查询 -->
+	<select id="djEntrStatLogDaily" parameterType="com.nis.domain.restful.DjEntrStatLogDaily" resultMap="DjEntrStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="entrCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select ENTRANCE_ID,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select ENTRANCE_ID,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from DJ_entr_STAT_LOG_DAILY 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchEntranceId != null and searchEntranceId !=''">
+							and ENTRANCE_ID=#{searchEntranceId}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by ENTRANCE_ID,service,stat_time
+				     
+				  ) A 
+				  GROUP BY ENTRANCE_ID,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	 <resultMap id="DjEntrStatLogMonthMap" type="com.nis.domain.restful.DjEntrStatLogMonth">
+		<result column="ENTRANCE_ID" jdbcType="INTEGER" property="entranceId" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_Entr_Stat_Log_Month日志查询 -->
+	<select id="djEntrStatLogMonth" parameterType="com.nis.domain.restful.DjEntrStatLogMonth" resultMap="DjEntrStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="entrCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select ENTRANCE_ID,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select ENTRANCE_ID,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from DJ_entr_STAT_LOG_MONTH 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchEntranceId != null and searchEntranceId !=''">
+							and ENTRANCE_ID=#{searchEntranceId}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by ENTRANCE_ID,service,stat_time
+				     
+				  ) A 
+				  GROUP BY ENTRANCE_ID,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	<!--  来问函号报表的公共属性  -->
+	<sql id="lwhhCommonPorperty">
+		lwhh,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	 <resultMap id="DjLwhhStatLogDailyMap" type="com.nis.domain.restful.DjLwhhStatLogDaily">
+		<result column="lwhh" jdbcType="INTEGER" property="lwhh" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_ATTR_Stat_Log_Daily日志查询 -->
+	<select id="djLwhhStatLogDaily" parameterType="com.nis.domain.restful.DjLwhhStatLogDaily" resultMap="DjLwhhStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="lwhhCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select lwhh,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select lwhh,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from DJ_lwhh_STAT_LOG_DAILY 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchLwhh != null and searchLwhh !=''">
+							and lwhh=#{searchLwhh}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by lwhh,service,stat_time
+				     
+				  ) A 
+				  GROUP BY lwhh,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+		
+	</select>
+	 <resultMap id="DjLwhhStatLogMonthMap" type="com.nis.domain.restful.DjLwhhStatLogMonth">
+		<result column="lwhh" jdbcType="INTEGER" property="lwhh" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_Lwhh_Stat_Log_Month日志查询 -->
+	<select id="djLwhhStatLogMonth" parameterType="com.nis.domain.restful.DjLwhhStatLogMonth" resultMap="DjLwhhStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="lwhhCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select lwhh,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select lwhh,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from DJ_lwhh_STAT_LOG_MONTH 
+				      <where>
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchLwhh != null and searchLwhh !=''">
+							and lwhh=#{searchLwhh}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by lwhh,service,stat_time
+				     
+				  ) A 
+				  GROUP BY lwhh,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<!--  境内源ip报表的公共属性  -->
+	<sql id="srcIpCommonPorperty">
+		SRC_PROVINCE,SRC_CITY,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	 <resultMap id="DjSrcIpDomesticStatLogDailyMap" type="com.nis.domain.restful.DjSrcIpDomesticStatLogDaily">
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="srcCity" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_SrcIp_Stat_Log_Daily日志查询 -->
+	<select id="djSrcIpDomesticStatLogDaily" parameterType="com.nis.domain.restful.DjSrcIpDomesticStatLogDaily" resultMap="DjSrcIpDomesticStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="srcIpCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select SRC_PROVINCE,SRC_CITY,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select SRC_PROVINCE,SRC_CITY,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from dj_SRCIP_stat_log_daily 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by SRC_PROVINCE,SRC_CITY,service,stat_time
+				     
+				  ) A 
+				  GROUP BY SRC_PROVINCE,SRC_CITY,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+		
+	</select>
+	 <resultMap id="DjSrcIpDomesticStatLogMonthMap" type="com.nis.domain.restful.DjSrcIpDomesticStatLogMonth">
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="srcCity" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_SrcIpDomestic_Stat_Log_Month日志查询 -->
+	<select id="djSrcIpDomesticStatLogMonth" parameterType="com.nis.domain.restful.DjSrcIpDomesticStatLogMonth" resultMap="DjSrcIpDomesticStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="srcIpCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select SRC_PROVINCE,SRC_CITY,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select SRC_PROVINCE,SRC_CITY,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from dj_SRCIP_stat_log_month 
+				      <where>
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by SRC_PROVINCE,SRC_CITY,service,stat_time
+				     
+				  ) A 
+				  GROUP BY SRC_PROVINCE,SRC_CITY,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!--  国家目的ip报表的公共属性  -->
+	<sql id="destIpCommonPorperty">
+		DEST_COUNTRY,ACTIVE_SYS,SERVICE,ASUM,BSUM,ABSUM,STAT_TIME
+	</sql>
+	 <resultMap id="DjDestIpCounrtyStatLogDailyMap" type="com.nis.domain.restful.DjDestIpCounrtyStatLogDaily">
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="destCountry" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_DestIp_Stat_Log_Daily日志查询 -->
+	<select id="djDestIpCounrtyStatLogDaily" parameterType="com.nis.domain.restful.DjDestIpCounrtyStatLogDaily" resultMap="DjDestIpCounrtyStatLogDailyMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="destIpCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select DEST_COUNTRY,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select DEST_COUNTRY,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from dj_DESTIP_stat_log_daily 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by DEST_COUNTRY,service,stat_time
+				     
+				  ) A 
+				  GROUP BY DEST_COUNTRY,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+		
+	</select>
+	
+	 <resultMap id="DjDestIpCounrtyStatLogMonthMap" type="com.nis.domain.restful.DjDestIpCounrtyStatLogMonth">
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="destCountry" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="absum" jdbcType="BIGINT" property="absum" />
+		<result column="stat_time" jdbcType="DATE" property="statTime" />
+	</resultMap>
+	<!-- Dj_DestIp_Stat_Log_Month日志查询 -->
+	<select id="djDestIpCounrtyStatLogMonth" parameterType="com.nis.domain.restful.DjDestIpCounrtyStatLogMonth" resultMap="DjDestIpCounrtyStatLogMonthMap">
+		 SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="destIpCommonPorperty"/>	
+			</otherwise>
+		</choose>
+		FROM 	
+			(
+				 select DEST_COUNTRY,active_sys,service,stat_time,asum,bsum,decode(asum,0,bsum,asum) as absum
+				  from (select DEST_COUNTRY,'7' as active_sys,service,stat_time
+				      ,sum(case when active_sys=4 then sum else 0 end) asum
+				      ,sum(case when active_sys=2 then sum else 0 end) bsum
+				      from dj_DESTIP_stat_log_Month 
+				      <where>
+							
+						<if test="searchService != null and searchService !=''">
+							and service=#{searchService}
+						</if>
+						<if test="searchStatStartTime != null and searchStatStartTime !=''">
+							<![CDATA[AND stat_time >= to_date(#{searchStatStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+						<if test="searchStatEndTime != null and searchStatEndTime !=''">
+							<![CDATA[AND stat_time < to_date(#{searchStatEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+						</if>
+					</where>
+				      
+				     group by DEST_COUNTRY,service,stat_time
+				     
+				  ) A 
+				  GROUP BY DEST_COUNTRY,active_sys ,service,stat_time,asum,bsum
+			)
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+		
+	</select>
+	 
+</mapper>

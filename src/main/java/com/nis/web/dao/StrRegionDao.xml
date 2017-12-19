@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.StrRegionDao">
+	<resultMap id="BaseResultMap" type="com.nis.domain.restful.StrRegion">
+		<result column="REGION_ID" jdbcType="BIGINT" property="regionId" />
+		<result column="GROUP_ID" jdbcType="BIGINT" property="groupId" />
+		<result column="DISTRICT" jdbcType="VARCHAR" property="district" />
+		<result column="KEYWORDS" jdbcType="VARCHAR" property="keywords" />
+		<result column="EXPR_TYPE" jdbcType="INTEGER" property="exprType" />
+		<result column="MATCH_METHOD" jdbcType="INTEGER" property="matchMethod" />
+		<result column="IS_HEXBIN" jdbcType="INTEGER" property="isHexbin" />
+		<result column="IS_VALID" jdbcType="INTEGER" property="isValid" />
+		<result column="OP_TIME" jdbcType="TIMESTAMP" property="opTime" />
+		<result column="LAST_UPDATE" jdbcType="TIMESTAMP" property="lastUpdate" />
+		<result column="PROC_SEQ" jdbcType="BIGINT" property="procSeq" />
+	</resultMap>
+
+	<sql id="strRegionSql">
+		REGION_ID,
+		GROUP_ID,
+		KEYWORDS,
+		EXPR_TYPE,
+		MATCH_METHOD,
+		IS_HEXBIN,
+		IS_VALID,
+		OP_TIME,LAST_UPDATE,PROC_SEQ
+	</sql>
+	<sql id="strStrongRegionSql">
+		REGION_ID,
+		GROUP_ID,
+		DISTRICT,
+		KEYWORDS,
+		EXPR_TYPE,
+		MATCH_METHOD,
+		IS_HEXBIN,
+		IS_VALID,
+		OP_TIME,LAST_UPDATE,PROC_SEQ
+	</sql>
+
+	<select id="queryStrRegionById" parameterType="com.nis.domain.restful.StrRegion"
+		resultMap="BaseResultMap">
+		select
+		<include refid="strRegionSql" />
+		from ${tableName} where REGION_ID = #{regionId ,jdbcType=BIGINT }
+	</select>
+
+	<select id="queryStrStrongRegionByGroupId" resultMap="BaseResultMap">
+		select
+		<include refid="strStrongRegionSql" />
+		from ${tableName} where GROUP_ID in
+		<foreach item="item" index="index" collection="groupIdArr"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	<select id="queryStrRegionByGroupId" resultMap="BaseResultMap">
+		select
+		<include refid="strRegionSql" />
+		from ${tableName} where GROUP_ID in
+		<foreach item="item" index="index" collection="groupIdArr"
+			open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<insert id="saveStrRegionBatch">
+		insert into ${tableName}
+		(REGION_ID,
+		GROUP_ID,
+		KEYWORDS,
+		EXPR_TYPE,
+		MATCH_METHOD ,
+		IS_HEXBIN,
+		IS_VALID,
+		OP_TIME,LAST_UPDATE
+		<!-- ,PROC_SEQ -->
+		)
+		<foreach collection="strRegionList" item="item" index="index"
+			open="(" close=")" separator="union">
+			select
+			#{item.regionId,jdbcType=BIGINT},
+			#{item.groupId,jdbcType=BIGINT},
+			#{item.keywords,jdbcType=VARCHAR},
+			#{item.exprType,jdbcType=INTEGER},
+			#{item.matchMethod,jdbcType=INTEGER},
+			#{item.isHexbin,jdbcType=INTEGER},
+			#{item.isValid,jdbcType=INTEGER},
+			#{item.opTime,jdbcType=TIMESTAMP},
+			sysdate
+			<!-- ,#{item.procSeq,jdbcType=BIGINT} -->
+			from dual
+		</foreach>
+	</insert>
+
+
+	<insert id="saveStrStrongRegionBatch">
+		insert into ${tableName}
+		(REGION_ID,
+		GROUP_ID,
+		DISTRICT,
+		KEYWORDS,
+		EXPR_TYPE,
+		MATCH_METHOD ,
+		IS_HEXBIN,
+		IS_VALID,
+		OP_TIME,LAST_UPDATE
+		)
+		<foreach collection="strRegionList" item="item" index="index"
+			open="(" close=")" separator="union">
+			select
+			#{item.regionId,jdbcType=BIGINT},
+			#{item.groupId,jdbcType=BIGINT},
+			#{item.district,jdbcType=VARCHAR},
+			#{item.keywords,jdbcType=VARCHAR},
+			#{item.exprType,jdbcType=INTEGER},
+			#{item.matchMethod,jdbcType=INTEGER},
+			#{item.isHexbin,jdbcType=INTEGER},
+			#{item.isValid,jdbcType=INTEGER},
+			#{item.opTime,jdbcType=TIMESTAMP},
+<!-- 			#{item.lastUpdate,jdbcType=TIMESTAMP}, -->
+			sysdate
+			from dual
+		</foreach>
+	</insert>
+
+
+
+
+	<update id="updateStrRegion" parameterType="com.nis.domain.restful.StrRegion">
+		UPDATE ${tableName}
+		<set>
+			<if test="isValid != null">
+				IS_VALID=#{isValid , jdbcType=INTEGER },
+			</if>
+			<if test="opTime != null">
+				OP_TIME= #{ opTime , jdbcType=TIMESTAMP },
+			</if>
+			<if test="lastUpdate != null">
+				LAST_UPDATE=#{lastUpdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where REGION_ID=#{regionId}
+	</update>
+
+
+
+
+
+	<!-- <update id="updateStrRegion" parameterType="com.nis.domain.restful.StrRegion"> 
+		UPDATE ${tableName} <set> <if test="groupId != null"> GROUP_ID =#{ groupId 
+		, jdbcType=BIGINT }, </if> <if test="district != null and district !=''"> 
+		DISTRICT = #{ district , jdbcType=VARCHAR }, </if> <if test="keywords != 
+		null and keywords !=''"> KEYWORDS = #{ keywords , jdbcType=VARCHAR }, </if> 
+		<if test="exprType != null"> EXPR_TYPE = #{ exprType , jdbcType=INTEGER }, 
+		</if> <if test="matchMethod != null"> MATCH_METHOD = #{ matchMethod , jdbcType=INTEGER 
+		}, </if> <if test="isHexbin != null "> IS_HEXBIN = #{ isHexbin , jdbcType=INTEGER 
+		}, </if> <if test="isValid != null"> IS_VALID=#{isValid , jdbcType=INTEGER 
+		}, </if> <if test="opTime != null"> OP_TIME= #{ opTime , jdbcType=TIMESTAMP 
+		}, </if> </set> where REGION_ID=#{regionId} </update> -->
+</mapper>

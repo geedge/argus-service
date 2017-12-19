@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DjMultiDimensionalReportDao">
+	<!-- 所有实时统计report表的公共属性 -->
+	<sql id="commonPorperty">
+		ASUM,BSUM,REPORT_TIME,SERVICE
+	</sql>
+	<resultMap id="DjLwhhAttrReportMap" type="com.nis.domain.restful.DjLwhhAttrReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="LWHH" jdbcType="BIGINT" property="lwhh" />
+		<result column="ATTR_TYPE" jdbcType="BIGINT" property="attrType" />
+		<result column="SERVICE" jdbcType="BIGINT" property="service" />
+	</resultMap>
+	
+
+	<select id="findDjLwhhAttrReport" parameterType="com.nis.domain.restful.DjLwhhAttrReport"
+		resultMap="DjLwhhAttrReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />,LWHH,ATTR_TYPE
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE,
+		pz.LWHH,
+		pz.ATTR_TYPE
+		FROM DJ_LWHH_TYPE_REPORT PZ
+		GROUP BY PZ.LWHH,PZ.ATTR_TYPE, PZ.SERVICE, PZ.REPORT_TIME
+		) DJ_LWHH_TYPE_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchAttrType != null and searchAttrType !=''">
+				AND ATTR_TYPE =#{searchAttrType}
+			</if>
+			<if test="searchLwhh != null and searchLwhh !=''">
+				AND LWHH =#{searchLwhh}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	<resultMap id="DjLwhhTagReportMap" type="com.nis.domain.restful.DjLwhhTagReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="LWHH" jdbcType="BIGINT" property="lwhh" />
+		<result column="TAG" jdbcType="BIGINT" property="tag" />
+		<result column="SERVICE" jdbcType="BIGINT" property="service" />
+	</resultMap>
+	
+
+	<select id="findDjLwhhTagReportPage" parameterType="com.nis.domain.restful.DjLwhhTagReport"
+		resultMap="DjLwhhTagReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />,LWHH,TAG
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE,
+		pz.LWHH,
+		pz.TAG
+		FROM DJ_LWHH_TAG_REPORT PZ
+		GROUP BY PZ.LWHH,PZ.TAG, PZ.SERVICE, PZ.REPORT_TIME
+		) DJ_LWHH_TAG_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchTag != null and searchTag !=''">
+				AND TAG in (${searchTag})
+			</if>
+			<if test="searchLwhh != null and searchLwhh !=''">
+				AND LWHH =#{searchLwhh}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	<resultMap id="DjSrcIpTagReportMap" type="com.nis.domain.restful.DjSrcIpTagReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="TAG" jdbcType="BIGINT" property="tag" />
+		<result column="SERVICE" jdbcType="BIGINT" property="service" />
+	</resultMap>
+	
+
+	<select id="findDjSrcIpTagReportPage" parameterType="com.nis.domain.restful.DjSrcIpTagReport"
+		resultMap="DjSrcIpTagReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />,SRC_PROVINCE,TAG
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE,
+		pz.SRC_PROVINCE,
+		pz.TAG
+		FROM DJ_SRCIP_DOMESTIC_TAG_REPORT PZ
+		GROUP BY PZ.SRC_PROVINCE,PZ.TAG, PZ.SERVICE, PZ.REPORT_TIME
+		) DJ_SRCIP_DOMESTIC_TAG_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchTag != null and searchTag !=''">
+				AND TAG in (${searchTag})
+			</if>
+			<if test="searchSrcProvince != null and searchSrcProvince !=''">
+				AND SRC_PROVINCE =#{searchSrcProvince}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<resultMap id="DjSrcIpAttrReportMap" type="com.nis.domain.restful.DjSrcIpAttrReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="ATTR_TYPE" jdbcType="BIGINT" property="attrType" />
+		<result column="SERVICE" jdbcType="BIGINT" property="service" />
+	</resultMap>
+	
+
+	<select id="findDjSrcIpAttrReportPage" parameterType="com.nis.domain.restful.DjSrcIpAttrReport"
+		resultMap="DjSrcIpAttrReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />,SRC_PROVINCE,ATTR_TYPE
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE,
+		pz.SRC_PROVINCE,
+		pz.ATTR_TYPE
+		FROM DJ_SRCIP_DOMESTIC_TYPE_REPORT PZ
+		GROUP BY PZ.SRC_PROVINCE,PZ.ATTR_TYPE, PZ.SERVICE, PZ.REPORT_TIME
+		) DJ_SRCIP_DOMESTIC_TYPE_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchAttrType != null and searchAttrType !=''">
+				AND ATTR_TYPE =#{searchAttrType}
+			</if>
+			<if test="searchSrcProvince != null and searchSrcProvince !=''">
+				AND SRC_PROVINCE =#{searchSrcProvince}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+</mapper>

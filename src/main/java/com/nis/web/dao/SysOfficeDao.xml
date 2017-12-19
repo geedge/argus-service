@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.SysOfficeDao" >
+ 
+  <resultMap id="OfficeResultMap" type="com.nis.domain.SysOffice" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="parent_id" property="parent.id" jdbcType="INTEGER" />
+    <result column="parent_ids" property="parentIds" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sort" property="sort" jdbcType="INTEGER" />
+    <result column="area_id" property="area.id" jdbcType="INTEGER" />
+    <result column="code" property="code" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="grade" property="grade" jdbcType="INTEGER" />
+    <result column="job_type" property="jobType" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+    <result column="master" property="master" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="fax" property="fax" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="USEABLE" property="useable" jdbcType="INTEGER" />
+    <result column="PRIMARY_PERSON" property="primaryPerson.id" jdbcType="INTEGER" />
+    <result column="DEPUTY_PERSON" property="deputyPerson.id" jdbcType="INTEGER" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="del_flag" property="delFlag" jdbcType="INTEGER" />
+  </resultMap>
+  
+  
+   <sql id="Base_Column_List" >
+    id, parent_id, parent_ids, name, en_name, sort, area_id, code, type, grade, job_type, address, 
+    zip_code, master, phone, fax, email, USEABLE, PRIMARY_PERSON, DEPUTY_PERSON, remarks, 
+    del_flag, create_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="OfficeResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_office
+    where id = #{id,jdbcType=INTEGER} 
+  </select>
+  
+  
+   <select id="selectSysOffice" resultMap="OfficeResultMap" parameterType="com.nis.domain.SysOffice" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_office
+    where 1=1
+    
+      <if test="id != null" >
+      and  Id = #{id,jdbcType=INTEGER}
+      </if>
+      <if test="parent != null" >
+       and parent_id = #{parent.id,jdbcType=INTEGER}
+      </if>
+      <if test="parentIds != null" >
+       and parent_ids = #{parentIds,jdbcType=VARCHAR}
+      </if>
+      <if test="name != null" >
+       and name = #{name,jdbcType=VARCHAR}
+      </if>
+     
+    
+      <if test="area != null" >
+       and area_id = #{area.id,jdbcType=INTEGER}
+      </if>
+      <if test="code != null" >
+       and code = #{code,jdbcType=VARCHAR}
+      </if>
+ 
+      <if test="grade != null" >
+       and grade = #{grade,jdbcType=INTEGER}
+      </if>
+      <if test="address != null" >
+       and address = #{address,jdbcType=VARCHAR}
+      </if>
+      <if test="zipCode != null" >
+      and  zip_code = #{zipCode,jdbcType=VARCHAR}
+      </if>
+      <if test="master != null" >
+      and  master = #{master,jdbcType=VARCHAR}
+      </if>
+      <if test="phone != null" >
+      and  phone = #{phone,jdbcType=VARCHAR}
+      </if>
+      <if test="fax != null" >
+      and  fax = #{fax,jdbcType=VARCHAR}
+      </if>
+      <if test="email != null" >
+      and  email = #{email,jdbcType=VARCHAR}
+      </if>
+      <if test="useable != null" >
+      and  USEABLE = #{useable,jdbcType=INTEGER}
+      </if>
+      <if test="primaryPerson != null" >
+      and PRIMARY_PERSON = #{primaryPerson,jdbcType=INTEGER}
+      </if>
+      <if test="deputyPerson != null" >
+      and  DEPUTY_PERSON = #{deputyPerson,jdbcType=INTEGER}
+      </if>
+      <if test="remarks != null" >
+      and  remarks = #{remarks,jdbcType=VARCHAR}
+      </if>
+      <if test="delFlag != null" >
+      and  del_flag = #{delFlag,jdbcType=INTEGER}
+      </if>
+      <if test="createTime != null" >
+       and create_time = #{createTime,jdbcType=TIMESTAMP}
+      </if>
+      ORDER BY sort
+  </select>
+  
+  
+   <select id="selectOfficeForDeptment" resultMap="OfficeResultMap" parameterType="map" >
+		<if test="grade == 1">
+			   SELECT *
+			FROM sys_office t1
+			WHERE ((TYPE = 3  AND grade = 1 ) OR (TYPE = 1  AND grade = 2))  and del_flag = #{delFlag}
+			 ORDER BY  sort
+		</if>
+		<if test="grade == 2 or grade == 3">
+			  SELECT *
+			FROM sys_office 
+				WHERE  (
+			<if test="grandParentId != null  ">
+				(
+			</if>
+				 parent_id=#{parentId}
+			<if test="grandParentId != null  ">
+				or parent_id=#{grandParentId}  ) AND id !=#{parentId}
+			</if>
+				) and del_flag = #{delFlag}
+			 ORDER BY  sort
+		</if>
+		
+			
+   </select>
+    
+   <select id="selectLowerDeptement" resultMap="OfficeResultMap" parameterType="map" >
+			SELECT * FROM sys_office WHERE ( parent_id=#{parentId} OR id =#{parentId} ) and del_flag = #{delFlag}
+			ORDER BY  sort
+   </select>
+ 
+   
+   <select id="selectOfficeForLetter" resultMap="OfficeResultMap" parameterType="map" >
+		<if test="grade == 1">
+			   SELECT *
+			FROM sys_office 
+			WHERE  (TYPE = 2 OR  TYPE = 1) AND grade = 2 and del_flag = #{delFlag}
+			   
+			 ORDER BY  sort
+		</if>
+		 
+		<if test="grade == 2">
+			  SELECT *
+			FROM sys_office 
+			WHERE  parent_id=#{parentId}  and del_flag = #{delFlag}
+			 ORDER BY  sort
+		</if>
+
+	 
+   </select>
+
+  
+  
+  <sql id="officeColumns">
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids AS "parentIds",
+		a.area_id AS "area.id",
+		a.code,
+		a.name,
+		a.sort,
+		a.type,
+		a.grade,
+		a.job_type,
+		a.address, 
+		a.zip_code, 
+		a.master, 
+		a.phone, 
+		a.fax, 
+		a.email, 
+		a.remarks,
+		a.del_flag,
+		a.useable AS useable,
+		a.primary_person AS "primaryPerson.id",
+		a.deputy_person AS "deputyPerson.id",
+		p.name AS "parent.name",
+		ar.name AS "area.name",
+		ar.parent_ids AS "area.parentIds",
+		pp.name AS "primaryPerson.name",
+		dp.name AS "deputyPerson.name"
+	</sql>
+	
+	<sql id="officeJoins">
+		LEFT JOIN sys_office p ON p.id = a.parent_id
+		LEFT JOIN sys_area ar ON ar.id = a.area_id
+		LEFT JOIN SYS_USER pp ON pp.id = a.primary_person
+		LEFT JOIN SYS_USER dp ON dp.id = a.deputy_person
+    </sql>
+    
+    <select id="get" resultType="sysOffice">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+    
+    <select id="findList" resultType="sysOffice">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		OR a.id=#{currentUser.office.id}
+		ORDER BY a.code
+	</select>
+    
+   <select id="findAllList" resultType="sysOffice">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.code
+	</select>
+	
+	
+	<select id="findByParentIdsLike" resultType="sysOffice">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
+		ORDER BY a.code
+	</select>
+	
+	
+	<insert id="insert" parameterType="sysOffice" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO sys_office(
+			parent_id, 
+			parent_ids, 
+			area_id, 
+			code, 
+			name, 
+			sort, 
+			type, 
+			grade,
+			job_type, 
+			address, 
+			zip_code, 
+			master, 
+			phone, 
+			fax, 
+			email, 
+			remarks, 
+			del_flag,
+			useable,
+			primary_person,
+			deputy_person,
+			create_time
+		) VALUES (
+			#{parent.id}, 
+			#{parentIds}, 
+			#{area.id}, 
+			#{code}, 
+			#{name}, 
+			#{sort}, 
+			#{type}, 
+			#{grade}, 
+			#{jobType}, 
+			#{address}, 
+			#{zipCode}, 
+			#{master}, 
+			#{phone}, 
+			#{fax}, 
+			#{email}, 
+			#{remarks}, 
+			#{delFlag},
+			#{useable},
+			#{primaryPerson.id},
+			#{deputyPerson.id},
+			#{createTime}
+		)
+	</insert>
+	
+	<update id="updateParentIds">
+		UPDATE sys_office SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="update">
+		UPDATE sys_office SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}, 
+			area_id = #{area.id}, 
+			code = #{code}, 
+			name = #{name}, 
+			type = #{type}, 
+			grade = #{grade}, 
+			job_type = #{jobType}, 
+			address = #{address}, 
+			zip_code = #{zipCode}, 
+			master = #{master}, 
+			phone = #{phone}, 
+			fax = #{fax}, 
+			email = #{email}, 
+			remarks = #{remarks},
+			useable=#{useable},
+			primary_person=#{primaryPerson.id},
+			deputy_person=#{deputyPerson.id}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="delete">
+		UPDATE sys_office SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id} OR parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+					<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+	
+  
+</mapper>

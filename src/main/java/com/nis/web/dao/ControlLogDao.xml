@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.ControlLogDao" >
+	<select id="getLogInfo" resultType="controlLog">
+		SELECT 
+			l.*
+		FROM log_info l
+	</select>
+	
+	<resultMap type="controlLog" id="controlLogMap">
+		<id property="id" column="id"/>
+		<result property="domain" column="domain"/>
+		<result property="title" column="title"/>
+		<result property="srcIp" column="source_ip"/>
+		<result property="resIp" column="res_ip"/>
+		<result property="optTime" column="opt_time"/>
+		<result property="status" column="status"/>
+	</resultMap>
+	
+	
+	<sql id="controlLogColumns">
+    	id,
+		domain,
+		title,
+		source_ip,
+		res_ip,
+		status,
+		opt_time
+    </sql>
+    
+    <select id="get" resultMap="controlLogMap">
+	
+		select 
+		
+			<include refid="controlLogColumns"/>	
+					
+		from log_info
+			
+		WHERE id=#{id} 
+			
+		
+	</select>
+	
+	
+	<select id="findList" resultMap="controlLogMap">
+	
+		select 
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="controlLogColumns"/>	
+			</otherwise>
+		</choose>
+					
+		from log_info
+			
+		WHERE 1=1 
+		
+		<if test="page !=null and page.where != null and page.where != ''">
+			AND ${page.where}
+		</if>
+		
+		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY id desc
+			</otherwise>
+		</choose>
+			
+			
+		
+	</select>
+	
+	
+	<insert id="saveControlLog" parameterType="controlLog" >
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_LOG_INFO.Nextval as ID from DUAL  
+	   </selectKey>  
+		insert into LOG_INFO(ID,DOMAIN,TITLE,SOURCE_IP,RES_IP,STATUS,OPT_TIME)
+			values (#{id},#{domain},#{title},#{srcIp},#{resIp},#{status},#{optTime})
+	</insert>
+	
+	<update id="removeControlLog">
+		UPDATE LOG_INFO SET 
+			status = 0
+		WHERE id = #{id}
+	</update>
+	
+	
+	
+	
+	
+
+</mapper>

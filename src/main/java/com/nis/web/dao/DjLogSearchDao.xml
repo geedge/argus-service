@@ -1,0 +1,1105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DjLogSearchDao">
+	<!--  所有日志表的公共属性  -->
+	<sql id="commonPorperty">
+		ID,CFG_ID,FOUND_TIME,RECV_TIME,			
+		OVER_ID,PROTOCOL,SERVER_IP,CLIENT_IP,	
+		SERVER_PORT,CLIENT_PORT,NEST_PROTOCOL,NEST_SERVER_IP,NEST_CLIENT_IP,			
+		NEST_SERVER_PORT,NEST_CLIENT_PORT,SERVICE_TYPE,ENTRANCE_ID,		
+		CLJ_IP,SCENE_FILE,ACTION,SERVER_LOCATE,CLIENT_LOCATE		
+	</sql>
+	
+	<!--  DJ_IP_PORT_LOG  -->
+	<resultMap id="DjIpPortLogMap" type="com.nis.domain.restful.DjIpPortLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+	</resultMap>
+	<!-- DJ_IP_PORT_LOG日志查询 -->
+	<select id="findIpPortLogs" parameterType="com.nis.domain.restful.DjIpPortLog" resultMap="DjIpPortLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+			</otherwise>
+		</choose>	
+		FROM DJ_IP_PORT_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_HTTP_REQ_LOG -->
+	<sql id="httpReqProperty">
+		,C2S_ISN,HTTP_PROXY_FLAG,HTTP_SEQ,URL,REQ_LINE,REQ_HDR_FILE,REQ_BODY_FILE,COOKIE,REFERER,UA,USER_DEFINE_KEY,USER_DEFINE_VALUE				
+	</sql>
+	<resultMap id="DjHttpReqLogMap" type="com.nis.domain.restful.DjHttpReqLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="c2s_Isn" jdbcType="BIGINT" property="c2sIsn" />
+		<result column="http_Proxy_Flag" jdbcType="BIGINT" property="httpProxyFlag" />
+		<result column="http_Seq" jdbcType="BIGINT" property="httpSeq" />
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="req_Line" jdbcType="VARCHAR" property="reqLine" />
+		<result column="req_Hdr_File" jdbcType="VARCHAR" property="reqHdrFile" />
+		<result column="req_Body_File" jdbcType="VARCHAR" property="reqBodyFile" />
+		<result column="COOKIE" jdbcType="VARCHAR" property="cookie" />
+		<result column="REFERER" jdbcType="VARCHAR" property="referer" />
+		<result column="UA" jdbcType="VARCHAR" property="ua" />
+		<result column="USER_DEFINE_KEY" jdbcType="VARCHAR" property="reqUserDefineKey" />
+		<result column="USER_DEFINE_VALUE" jdbcType="VARCHAR" property="reqUserDefineValue" />
+	</resultMap>
+	<select id="findHttpReqLogs" parameterType="com.nis.domain.restful.DjHttpReqLog" resultMap="DjHttpReqLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="httpReqProperty"/>	
+			</otherwise>
+		</choose>
+		FROM DJ_HTTP_REQ_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchUrl != null and searchUrl !=''">
+				AND URL = #{searchUrl}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_HTTP_RES_LOG -->
+	<sql id="httpResProperty">
+		,C2S_ISN,HTTP_PROXY_FLAG,HTTP_SEQ,URL,REQ_LINE,REQ_HDR_FILE,
+		REQ_BODY_FILE,RES_LINE,RES_HDR_FILE,RES_BODY_FILE,SET_COOKIE,
+		CONTENT_LEN,CONTENT_TYPE,USER_DEFINE_KEY,USER_DEFINE_VALUE							
+	</sql>
+	<resultMap id="DjHttpResLogMap" type="com.nis.domain.restful.DjHttpResLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="C2S_ISN" jdbcType="BIGINT" property="c2sIsn" />
+		<result column="HTTP_PROXY_FLAG" jdbcType="BIGINT" property="httpProxyFlag" />
+		<result column="HTTP_SEQ" jdbcType="BIGINT" property="httpSeq" />
+		<result column="URL" jdbcType="VARCHAR" property="url" />
+		<result column="REQ_LINE" jdbcType="VARCHAR" property="reqLine" />
+		<result column="REQ_HDR_FILE" jdbcType="VARCHAR" property="reqHdrFile" />
+		<result column="REQ_BODY_FILE" jdbcType="VARCHAR" property="reqBodyFile" />
+		<result column="RES_LINE" jdbcType="VARCHAR" property="resLine" />
+		<result column="RES_HDR_FILE" jdbcType="VARCHAR" property="resHdrFile" />
+		<result column="RES_BODY_FILE" jdbcType="VARCHAR" property="resBodyFile" />
+		<result column="SET_COOKIE" jdbcType="VARCHAR" property="setCookie" />
+		<result column="CONTENT_LEN" jdbcType="VARCHAR" property="contentLen" />
+		<result column="CONTENT_TYPE" jdbcType="VARCHAR" property="contentType" />
+		<result column="USER_DEFINE_KEY" jdbcType="VARCHAR" property="resUserDefineKey" />
+		<result column="USER_DEFINE_VALUE" jdbcType="VARCHAR" property="resUserDefineValue" />
+	</resultMap>
+	<select id="findHttpResLogs" parameterType="com.nis.domain.restful.DjHttpResLog" resultMap="DjHttpResLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="httpResProperty"/>	
+			</otherwise>
+		</choose>	
+		FROM DJ_HTTP_RES_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchUrl != null and searchUrl !=''">
+				AND URL = #{searchUrl}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_HTTP_KEYWORD_LOG -->
+	<sql id="httpKeywordProperty">
+		,C2S_ISN,HTTP_PROXY_FLAG,HTTP_SEQ,URL,REQ_LINE,REQ_HDR_FILE,
+		REQ_BODY_FILE,RES_LINE,RES_HDR_FILE,RES_BODY_FILE							
+	</sql>
+	<resultMap id="DjHttpKeywordLogMap" type="com.nis.domain.restful.DjHttpKeywordLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="C2S_ISN" jdbcType="BIGINT" property="c2sIsn" />
+		<result column="HTTP_PROXY_FLAG" jdbcType="BIGINT" property="httpProxyFlag" />
+		<result column="HTTP_SEQ" jdbcType="BIGINT" property="httpSeq" />
+		<result column="URL" jdbcType="VARCHAR" property="url" />
+		<result column="REQ_LINE" jdbcType="VARCHAR" property="reqLine" />
+		<result column="REQ_HDR_FILE" jdbcType="VARCHAR" property="reqHdrFile" />
+		<result column="REQ_BODY_FILE" jdbcType="VARCHAR" property="reqBodyFile" />
+		<result column="RES_LINE" jdbcType="VARCHAR" property="resLine" />
+		<result column="RES_HDR_FILE" jdbcType="VARCHAR" property="resHdrFile" />
+		<result column="RES_BODY_FILE" jdbcType="VARCHAR" property="resBodyFile" />
+	</resultMap>
+	<select id="findHttpKeywordLogs" parameterType="com.nis.domain.restful.DjHttpKeywordLog" resultMap="DjHttpKeywordLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="httpKeywordProperty"/>	
+			</otherwise>
+		</choose>	
+		FROM DJ_HTTP_KEYWORD_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchUrl != null and searchUrl !=''">
+				AND URL = #{searchUrl}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_MAIL_LOG -->
+	<sql id="mailProperty">
+		,MAIL_PROTO,MAIL_FROM,MAIL_TO,SUBJECT,EML_FILE					
+	</sql>
+	<resultMap id="DjMailLogMap" type="com.nis.domain.restful.DjMailLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="MAIL_PROTO" jdbcType="VARCHAR" property="mailProto" />
+		<result column="MAIL_FROM" jdbcType="VARCHAR" property="mailFrom" />
+		<result column="MAIL_TO" jdbcType="VARCHAR" property="mailTo" />
+		<result column="SUBJECT" jdbcType="VARCHAR" property="subject" />
+		<result column="EML_FILE" jdbcType="VARCHAR" property="emlFile" />
+	</resultMap>
+	<select id="findMailLogs" parameterType="com.nis.domain.restful.DjMailLog" resultMap="DjMailLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="mailProperty"/>			
+			</otherwise>
+		</choose>
+		FROM DJ_MAIL_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchMailFrom != null and searchMailFrom !=''">
+				AND MAIL_FROM = #{searchFrom}
+			</if>
+			<if test="searchMailTo != null and searchMailTo !=''">
+				AND MAIL_TO = #{searchTo}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+		<!-- DJ_DNS_LOG -->
+	<sql id="dnsProperty">
+		,QR,RD,RA,RR,QTYPE,QCLASS,OPCODE,QNAME,DNS_SUB				
+	</sql>
+	<resultMap id="DjDnsLogMap" type="com.nis.domain.restful.DjDnsLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="qr" jdbcType="BIGINT" property="qr" />
+		<result column="rd" jdbcType="BIGINT" property="rd" />
+		<result column="ra" jdbcType="BIGINT" property="ra" />
+		<result column="rr" jdbcType="VARCHAR" property="rr" />
+		<result column="qtype" jdbcType="BIGINT" property="qtype" />
+		<result column="qclass" jdbcType="BIGINT" property="qclass" />
+		<result column="opcode" jdbcType="BIGINT" property="opcode" />
+		<result column="qname" jdbcType="VARCHAR" property="qname" />
+		<result column="dns_sub" jdbcType="BIGINT" property="dnsSub" />
+	</resultMap>
+	<select id="findDnsLogs" parameterType="com.nis.domain.restful.DjDnsLog" resultMap="DjDnsLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="dnsProperty"/>		
+			</otherwise>
+		</choose>
+		FROM DJ_DNS_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_FTP_LOG -->
+	<sql id="ftpProperty">
+		,FTP_URL				
+	</sql>
+	<resultMap id="DjFtpLogMap" type="com.nis.domain.restful.DjFtpLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="ftp_url" jdbcType="VARCHAR" property="ftpUrl" />
+	</resultMap>
+	<select id="findFtpLogs" parameterType="com.nis.domain.restful.DjFtpLog" resultMap="DjFtpLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="ftpProperty"/>		
+			</otherwise>
+		</choose>
+		FROM DJ_FTP_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_PPTP_LOG -->
+	<sql id="pptpProperty">
+		,TUNNEL_TYPE,ENCRYPT_MODE				
+	</sql>
+	<resultMap id="DjPptpLogMap" type="com.nis.domain.restful.DjPptpLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="TUNNEL_TYPE" jdbcType="INTEGER" property="tunnelType" />
+		<result column="ENCRYPT_MODE" jdbcType="INTEGER" property="encryptMode" />
+	</resultMap>
+	<select id="findPptpLogs" parameterType="com.nis.domain.restful.DjPptpLog" resultMap="DjPptpLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="pptpProperty"/>		
+			</otherwise>
+		</choose>
+		FROM DJ_PPTP_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchEncryptMode != null and searchEncryptMode !=''">
+				AND ENCRYPT_MODE = #{searchEncryptMode}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+		<!-- DJ_L2TP_LOG -->
+	<sql id="l2tpProperty">
+		,TUNNEL_TYPE,ENCRYPT_MODE				
+	</sql>
+	<resultMap id="DjL2tpLogMap" type="com.nis.domain.restful.DjL2tpLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="TUNNEL_TYPE" jdbcType="INTEGER" property="tunnelType" />
+		<result column="ENCRYPT_MODE" jdbcType="INTEGER" property="encryptMode" />		
+		<result column="chap_name" jdbcType="VARCHAR" property="chapName" />
+	</resultMap>
+	<select id="findL2tpLogs" parameterType="com.nis.domain.restful.DjL2tpLog" resultMap="DjL2tpLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="l2tpProperty"/>		
+			</otherwise>
+		</choose>	
+		FROM DJ_L2TP_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchEncryptMode != null  and searchEncryptMode !=''">
+				AND ENCRYPT_MODE = #{searchEncryptMode}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+		<!-- DJ_IPSEC_LOG -->
+	<sql id="ipsecProperty">
+		,EX_PROTOCOL,ISAKMP_MODE			
+	</sql>
+	<resultMap id="DjIpsecLogMap" type="com.nis.domain.restful.DjIpsecLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="ex_protocol" jdbcType="INTEGER" property="exProtocol" />
+		<result column="isakmp_mode" jdbcType="INTEGER" property="isakmpMode" />
+	</resultMap>
+	<select id="findIpsecLogs" parameterType="com.nis.domain.restful.DjIpsecLog" resultMap="DjIpsecLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="ipsecProperty"/>		
+			</otherwise>
+		</choose>	
+		FROM DJ_IPSEC_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchExProtocol != null and searchExProtocol !=''">
+				AND EX_PROTOCOL = #{searchExProtocol}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_OPENVPN_LOG -->
+	<sql id="openvpnProperty">
+		,VERSION,ENCRYPT_MODE,HMAC,TUNNEL_TYPE				
+	</sql>
+	<resultMap id="DjOpenvpnLogMap" type="com.nis.domain.restful.DjOpenvpnLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="VERSION" jdbcType="VARCHAR" property="version" />
+		<result column="ENCRYPT_MODE" jdbcType="VARCHAR" property="encryptMode" />
+		<result column="HMAC" jdbcType="INTEGER" property="hmac" />
+		<result column="TUNNEL_TYPE" jdbcType="INTEGER" property="tunnelType" />
+	</resultMap>
+	<select id="findOpenvpnLogs" parameterType="com.nis.domain.restful.DjOpenvpnLog" resultMap="DjOpenvpnLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="openvpnProperty"/>		
+			</otherwise>
+		</choose>
+		FROM DJ_OPENVPN_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchEncryptMode != null and searchEncryptMode !=''">
+				AND ENCRYPT_MODE = #{searchEncryptMode}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+		<!-- DJ_SSH_LOG -->
+	<sql id="sshProperty">
+		,VERSION,HOST_KEY,HOST_COOKIE,ENCRYPT_MODE,MAC,TUNNEL_TYPE			
+	</sql>
+	<resultMap id="DjSshLogMap" type="com.nis.domain.restful.DjSshLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="VERSION" jdbcType="VARCHAR" property="version" />
+		<result column="HOST_KEY" jdbcType="VARCHAR" property="hostKey" />
+		<result column="HOST_COOKIE" jdbcType="VARCHAR" property="hostCookie" />
+		<result column="ENCRYPT_MODE" jdbcType="VARCHAR" property="encryptMode" />
+		<result column="MAC" jdbcType="VARCHAR" property="mac" />
+		<result column="TUNNEL_TYPE" jdbcType="INTEGER" property="tunnelType" />
+	</resultMap>
+	<select id="findSshLogs" parameterType="com.nis.domain.restful.DjSshLog" resultMap="DjSshLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="sshProperty"/>		
+			</otherwise>
+		</choose>
+		FROM DJ_SSH_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchEncryptMode != null  and searchEncryptMode !=''">
+				AND ENCRYPT_MODE = #{searchEncryptMode}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<!-- DJ_SSL_LOG -->
+	<sql id="sslProperty">
+		,VERSION,SNI,INDIVIDUAL_CERT_FILE,MIDDLE_CERT_FILE,ROOT_CERT_FILE,CHAIN_CERT_FILE				
+	</sql>
+	<resultMap id="DjSslLogMap" type="com.nis.domain.restful.DjSslLog">
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="cfg_Id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="over_Id" jdbcType="VARCHAR" property="overId" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="server_Ip" jdbcType="VARCHAR" property="serverIp" />
+		<result column="client_Ip" jdbcType="VARCHAR" property="clientIp" />
+		<result column="server_Port" jdbcType="INTEGER" property="serverPort" />
+		<result column="client_Port" jdbcType="INTEGER" property="clientPort" />
+		<result column="nest_Protocol" jdbcType="VARCHAR" property="nestProtocol" />
+		<result column="nest_Server_Ip" jdbcType="VARCHAR" property="nestServerIp" />
+		<result column="nest_Client_Ip" jdbcType="VARCHAR" property="nestClientIp" />
+		<result column="nest_Server_Port" jdbcType="INTEGER" property="nestServerPort" />
+		<result column="nest_Client_Port" jdbcType="INTEGER" property="nestClientPort" />
+		<result column="service_Type" jdbcType="INTEGER" property="serviceType" />
+		<result column="entrance_Id" jdbcType="BIGINT" property="entranceId" />
+		<result column="clj_Ip" jdbcType="VARCHAR" property="cljIp" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="server_Locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_Locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="VERSION" jdbcType="VARCHAR" property="version" />
+		<result column="SNI" jdbcType="VARCHAR" property="sni" />
+		<result column="INDIVIDUAL_CERT_FILE" jdbcType="VARCHAR" property="individualCertFile" />
+		<result column="MIDDLE_CERT_FILE" jdbcType="VARCHAR" property="middleCertFile" />
+		<result column="ROOT_CERT_FILE" jdbcType="VARCHAR" property="rootCertFile" />
+		<result column="CHAIN_CERT_FILE" jdbcType="VARCHAR" property="chainCertFile" />
+	</resultMap>
+	<select id="findSslLogs" parameterType="com.nis.domain.restful.DjSslLog" resultMap="DjSslLogMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty"/>	
+				<include refid="sslProperty"/>	
+			</otherwise>
+		</choose>
+		FROM DJ_SSL_LOG
+		<where>
+			<if test="searchServiceType != null and searchServiceType !=''">
+				AND SERVICE_TYPE = #{searchServiceType}
+			</if>
+			<if test="searchProtocol != null and searchProtocol !=''">
+				AND PROTOCOL = #{searchProtocol}
+			</if>
+			<if test="searchServerIp != null and searchServerIp !=''">
+				AND SERVER_IP = #{searchServerIp}
+			</if>
+			<if test="searchClientIp != null and searchClientIp !=''">
+				AND CLIENT_IP = #{searchClientIp}
+			</if>
+			<if test="searchEntranceId != null and searchEntranceId !=''">
+				AND ENTRANCE_ID = #{searchEntranceId}
+			</if>
+			<if test="searchCljIp != null and searchCljIp !=''">
+				AND CLJ_IP = #{searchCljIp}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchFoundStartTime != null and searchFoundStartTime !=''">
+				<![CDATA[AND FOUND_TIME >= to_date(#{searchFoundStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchFoundEndTime != null and searchFoundEndTime !=''">
+				<![CDATA[AND FOUND_TIME < to_date(#{searchFoundEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+</mapper>

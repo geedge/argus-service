@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DnsFakeInfoDao">
+  <resultMap id="BaseResultMap" type="com.nis.domain.restful.DnsFakeInfo">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="GROUP_ID" jdbcType="INTEGER" property="groupId" />
+    <result column="INFO" jdbcType="VARCHAR" property="info" />
+    <result column="IS_VALID" jdbcType="INTEGER" property="isValid" />
+    <result column="OP_TIME" jdbcType="TIMESTAMP" property="opTime" />
+    <result column="YL1" jdbcType="INTEGER" property="yl1" />
+    <result column="YL2" jdbcType="INTEGER" property="yl2" />
+    <result column="YL3" jdbcType="VARCHAR" property="yl3" />
+    <result column="YL4" jdbcType="VARCHAR" property="yl4" />
+    <result column="YL5" jdbcType="VARCHAR" property="yl5" />
+    <result property="lastUpdate" jdbcType="TIMESTAMP" column="LAST_UPDATE"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, GROUP_ID, INFO, IS_VALID, OP_TIME, YL1, YL2, YL3, YL4, YL5,LAST_UPDATE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DNS_FAKE_INFO
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="delete" parameterType="java.lang.Long">
+    delete from DNS_FAKE_INFO
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.nis.domain.restful.DnsFakeInfo">
+  	<!-- 
+  	<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_DNS_FAKE_INFO.Nextval as ID from DUAL  
+	  </selectKey>
+	 -->
+    insert into DNS_FAKE_INFO (ID, GROUP_ID, INFO, 
+      IS_VALID, OP_TIME, YL1, 
+      YL2, YL3, YL4, YL5,LAST_UPDATE
+      )
+    values (#{id,jdbcType=BIGINT}, #{groupId,jdbcType=INTEGER}, #{info,jdbcType=VARCHAR}, 
+      #{isValid,jdbcType=INTEGER}, #{opTime,jdbcType=TIMESTAMP}, #{yl1,jdbcType=INTEGER}, 
+      #{yl2,jdbcType=INTEGER}, #{yl3,jdbcType=VARCHAR}, #{yl4,jdbcType=VARCHAR}, #{yl5,jdbcType=VARCHAR}
+      , #{lastUpdate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.nis.domain.restful.DnsFakeInfo">
+    insert into DNS_FAKE_INFO
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="groupId != null">
+        GROUP_ID,
+      </if>
+      <if test="info != null">
+        INFO,
+      </if>
+      <if test="isValid != null">
+        IS_VALID,
+      </if>
+      <if test="opTime != null">
+        OP_TIME,
+      </if>
+      <if test="yl1 != null">
+        YL1,
+      </if>
+      <if test="yl2 != null">
+        YL2,
+      </if>
+      <if test="yl3 != null">
+        YL3,
+      </if>
+      <if test="yl4 != null">
+        YL4,
+      </if>
+      <if test="yl5 != null">
+        YL5,
+      </if>
+      <if test="lastUpdate != null">
+        LAST_UPDATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="info != null">
+        #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null">
+        #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="opTime != null">
+        #{opTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="yl1 != null">
+        #{yl1,jdbcType=INTEGER},
+      </if>
+      <if test="yl2 != null">
+        #{yl2,jdbcType=INTEGER},
+      </if>
+      <if test="yl3 != null">
+        #{yl3,jdbcType=VARCHAR},
+      </if>
+      <if test="yl4 != null">
+        #{yl4,jdbcType=VARCHAR},
+      </if>
+      <if test="yl5 != null">
+        #{yl5,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdate != null">
+        #{lastUpdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="update" parameterType="com.nis.domain.restful.DnsFakeInfo">
+    update DNS_FAKE_INFO
+    <set>
+      <if test="groupId != null">
+        GROUP_ID = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="info != null">
+        INFO = #{info,jdbcType=VARCHAR},
+      </if>
+      <if test="isValid != null">
+        IS_VALID = #{isValid,jdbcType=INTEGER},
+      </if>
+      <if test="opTime != null">
+        OP_TIME = #{opTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="yl1 != null">
+        YL1 = #{yl1,jdbcType=INTEGER},
+      </if>
+      <if test="yl2 != null">
+        YL2 = #{yl2,jdbcType=INTEGER},
+      </if>
+      <if test="yl3 != null">
+        YL3 = #{yl3,jdbcType=VARCHAR},
+      </if>
+      <if test="yl4 != null">
+        YL4 = #{yl4,jdbcType=VARCHAR},
+      </if>
+      <if test="yl5 != null">
+        YL5 = #{yl5,jdbcType=VARCHAR},
+      </if>
+      <if test="lastUpdate != null">
+        LAST_UPDATE = #{lastUpdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="isValid" parameterType="long" resultType="java.lang.Integer">
+		select IS_VALID FROM DNS_FAKE_INFO
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="isValidBatch" resultType="java.lang.Integer">
+		select count(ID) FROM DNS_FAKE_INFO
+		WHERE ID in(
+		<foreach collection="idsList" item="ids" separator=",">
+		#{ids}
+		</foreach>
+		) and IS_VALID=#{isValid}
+	</select>
+  <!-- 
+  <update id="updateByPrimaryKey" parameterType="com.nis.domain.restful.DnsFakeInfo">
+    update DNS_FAKE_INFO
+    set GROUP_ID = #{groupId,jdbcType=DECIMAL},
+      INFO = #{info,jdbcType=VARCHAR},
+      IS_VALID = #{isValid,jdbcType=DECIMAL},
+      OP_TIME = #{opTime,jdbcType=TIMESTAMP},
+      YL1 = #{yl1,jdbcType=DECIMAL},
+      YL2 = #{yl2,jdbcType=DECIMAL},
+      YL3 = #{yl3,jdbcType=VARCHAR},
+      YL4 = #{yl4,jdbcType=VARCHAR},
+      YL5 = #{yl5,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=DECIMAL}
+  </update>
+   -->
+</mapper>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.ServicesRequestLogDao">
+	<resultMap id="ServicesRequestLogMap" type="com.nis.domain.ServicesRequestLog">
+		<id column="ID" jdbcType="BIGINT" property="id" />
+		<result column="OPERATOR" jdbcType="VARCHAR" property="operator" />
+		<result column="VERSION" jdbcType="VARCHAR" property="version" />
+		<result column="OPACTION" jdbcType="INTEGER" property="opAction" />
+		<result column="OPTIME" jdbcType="TIMESTAMP" property="opTime" />
+		<result column="REQUEST_CONTENT" jdbcType="CLOB" property="requestContent" />
+		<result column="REQUEST_TIME" jdbcType="TIMESTAMP" property="requestTime" />
+		<result column="CONSUMER_TIME" jdbcType="BIGINT" property="consumerTime" />
+		<result column="REQUEST_IP" jdbcType="VARCHAR" property="requestIp" />
+		<result column="BUSINESS_CODE" jdbcType="INTEGER" property="businessCode" />
+		<result column="EXCEPTION_INFO" jdbcType="VARCHAR" property="exceptionInfo" />
+		<result column="SERVER_IP" jdbcType="VARCHAR" property="serverIp" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		ID, OPERATOR, VERSION, OPACTION,OPTIME, REQUEST_CONTENT,
+		REQUEST_TIME,REQUEST_IP,
+		CONSUMER_TIME,BUSINESS_CODE,EXCEPTION_INFO,SERVER_IP
+	</sql>
+	<select id="getAllLog" parameterType="com.nis.domain.restful.ServicesRequestLogBean"
+		resultMap="ServicesRequestLogMap">
+		select
+		<include refid="Base_Column_List" />
+		from SERVICES_REQUEST_LOG
+		<where>
+			<if test="id != null">
+				AND ID = #{id}
+			</if>
+			<if test="operator != null and operator !=''">
+				AND operator = #{operator}
+			</if>
+			<if test="version != null and version !=''">
+				AND version = #{version}
+			</if>
+			<if test="opAction != null">
+				AND opAction = #{opAction}
+			</if>
+
+			<if test="opStartTime != null and opStartTime  !=''">
+				<![CDATA[AND opTime >= to_date(#{opStartTime },'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="opEndTime != null and opEndTime !=''">
+				<![CDATA[AND opTime < to_date(#{opEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="requestContent != null and requestContent !=''">
+				AND REQUEST_CONTENT like '%'||#{requestContent}||'%'
+			</if>
+			<if test="requestStartTime != null and requestStartTime !=''">
+				<![CDATA[AND REQUEST_TIME >= to_date(#{requestStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="requestEndTime != null and requestEndTime !=''">
+				<![CDATA[AND REQUEST_TIME < to_date(#{requestEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="consumerTime != null">
+				AND CONSUMER_TIME = #{consumerTime}
+			</if>
+			<if test="requestIp != null and requestIp !=''">
+				AND REQUEST_IP like '%'||#{requestIp}||'%'
+			</if>
+			<if test="businessCode != null">
+				AND BUSINESS_CODE =#{businessCode}
+			</if>
+			<if test="exceptionInfo != null and exceptionInfo !=''">
+				AND EXCEPTION_INFO like '%'||#{exceptionInfo}||'%'
+			</if>
+			<if test="serverIp != null and serverIp !=''">
+				AND SERVER_IP like '%'||#{serverIp}||'%'
+			</if>
+		</where>
+		order by request_time desc
+	</select>
+	<!-- <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap"> 
+		select <include refid="Base_Column_List" /> from SERVICES_REQUEST_LOG where 
+		ID = #{id,jdbcType=BIGINT} </select> -->
+	<delete id="deleteById" parameterType="java.lang.Long">
+		delete from
+		SERVICES_REQUEST_LOG
+		where ID = #{id,jdbcType=BIGINT}
+	</delete>
+
+	<delete id="deleteAll">
+		delete from
+		SERVICES_REQUEST_LOG
+	</delete>
+
+	<insert id="insert" parameterType="com.nis.domain.ServicesRequestLog">
+		insert into SERVICES_REQUEST_LOG
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			ID,
+			<if test="operator != null">
+				OPERATOR,
+			</if>
+			<if test="version != null">
+				VERSION,
+			</if>
+			<if test="opAction != null">
+				OPACTION,
+			</if>
+			<if test="opTime != null">
+				OPTIME,
+			</if>
+			<if test="requestContent != null">
+				REQUEST_CONTENT,
+			</if>
+			<if test="requestTime != null">
+				REQUEST_TIME,
+			</if>
+			<if test="consumerTime != null">
+				CONSUMER_TIME,
+			</if>
+			<if test="requestIp != null">
+				REQUEST_IP,
+			</if>
+			<if test="businessCode != null">
+				BUSINESS_CODE,
+			</if>
+			<if test="exceptionInfo != null">
+				EXCEPTION_INFO,
+			</if>
+			<if test="serverIp != null">
+				SERVER_IP,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			SEQ_SERVICES_REQUEST_LOG.Nextval,
+			<if test="operator != null">
+				#{operator,jdbcType=VARCHAR},
+			</if>
+			<if test="version != null">
+				#{version,jdbcType=VARCHAR},
+			</if>
+			<if test="opAction != null">
+				#{opAction,jdbcType=INTEGER},
+			</if>
+			<if test="opTime != null">
+				#{opTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="requestContent != null">
+				#{requestContent,jdbcType=CLOB},
+			</if>
+			<if test="requestTime != null">
+				#{requestTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="consumerTime != null">
+				#{consumerTime,jdbcType=BIGINT},
+			</if>
+			<if test="requestIp != null">
+				#{requestIp,jdbcType=VARCHAR},
+			</if>
+			<if test="businessCode != null">
+				#{businessCode,jdbcType=INTEGER},
+			</if>
+			<if test="exceptionInfo != null">
+				#{exceptionInfo,jdbcType=VARCHAR},
+			</if>
+			<if test="serverIp != null">
+				#{serverIp,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+</mapper>

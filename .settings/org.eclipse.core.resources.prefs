@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources/b.txt=UTF-8
+encoding//src/main/resources/jdbc.properties=UTF-8
+encoding//src/main/resources/log4j.properties=UTF-8
+encoding//src/main/resources/matt.properties=UTF-8
+encoding//src/main/resources/nis.properties=UTF-8
+encoding//src/main/resources/table.properties=UTF-8
+encoding//src/main/webapp/WEB-INF/include/header.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/tlds/fns.tld=UTF-8
+encoding//src/main/webapp/WEB-INF/views/letter/process/errorView.jsp=UTF-8
+encoding//src/main/webapp/static/common/jeesite.css=UTF-8
+encoding//src/test/java=UTF-8
+encoding/<project>=UTF-8

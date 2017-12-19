@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.IntervalTimeSearchDao">
+	
+	<!-- DJ_FLOWCONTROL_STOP -->
+	<sql id="flowControlStopProperty">
+		CFG_ID,SERVICE,ACTION,OP_TIME				
+	</sql>
+	<resultMap id="DjFlowControlStopMap" type="com.nis.domain.restful.DjFlowControlStop">
+		<result column="CFG_ID" jdbcType="BIGINT" property="cfgId" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="action" jdbcType="INTEGER" property="action" />
+		<result column="op_time" jdbcType="TIMESTAMP" property="opTime" />
+	</resultMap>
+	<select id="findFlowControlStopPage" parameterType="com.nis.domain.restful.DjFlowControlStop" resultMap="DjFlowControlStopMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="flowControlStopProperty"/>	
+			</otherwise>
+		</choose>
+		FROM DJ_FLOWCONTROL_STOP
+		<where>
+			<if test="optStartTime != null and optStartTime !=''">
+				<![CDATA[AND OP_TIME >= to_date(#{optStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="optEndTime != null and optEndTime !=''">
+				<![CDATA[AND OP_TIME < to_date(#{optEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<!-- <if test="searchCfgId != null and searchCfgId !=''">
+				AND cfg_id =${searchCfgId}
+			</if> -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+</mapper>

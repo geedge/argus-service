@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.SrcIpDao" >
+  <resultMap id="BaseResultMap" type="com.nis.domain.SrcIp" >
+    <id column="seq_id" property="seqId" jdbcType="INTEGER" />
+    <result column="ip_start_addr" property="ipStartAddr" jdbcType="INTEGER" />
+    <result column="ip_end_addr" property="ipEndAddr" jdbcType="INTEGER" />
+    <result column="ip_addr_range" property="ipAddrRange" jdbcType="INTEGER" />
+    <result column="ip_start_string" property="ipStartString" jdbcType="VARCHAR" />
+    <result column="ip_end_string" property="ipEndString" jdbcType="VARCHAR" />
+    <result column="port" property="port" jdbcType="INTEGER" />
+    <result column="isp_id" property="ispId" jdbcType="BIGINT" />
+    <result column="area_id" property="areaId" jdbcType="BIGINT" />
+    <result column="flag" property="flag" jdbcType="INTEGER" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="yl1" property="yl1" jdbcType="INTEGER" />
+    <result column="yl2" property="yl2" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    seq_id, ip_start_addr, ip_end_addr, ip_addr_range, ip_start_string, ip_end_string, 
+    port, isp_id, area_id, flag, description, yl1, yl2
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from src_ip
+    where seq_id = #{seqId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from src_ip
+    where seq_id = #{seqId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.nis.domain.SrcIp" >
+    insert into src_ip (seq_id, ip_start_addr, ip_end_addr, 
+      ip_addr_range, ip_start_string, ip_end_string, 
+      port, isp_id, area_id, 
+      flag, description, yl1, 
+      yl2)
+    values (#{seqId,jdbcType=INTEGER}, #{ipStartAddr,jdbcType=INTEGER}, #{ipEndAddr,jdbcType=INTEGER}, 
+      #{ipAddrRange,jdbcType=INTEGER}, #{ipStartString,jdbcType=VARCHAR}, #{ipEndString,jdbcType=VARCHAR}, 
+      #{port,jdbcType=INTEGER}, #{ispId,jdbcType=BIGINT}, #{areaId,jdbcType=BIGINT}, 
+      #{flag,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, #{yl1,jdbcType=INTEGER}, 
+      #{yl2,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.nis.domain.SrcIp" >
+    insert into src_ip
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="seqId != null" >
+        seq_id,
+      </if>
+      <if test="ipStartAddr != null" >
+        ip_start_addr,
+      </if>
+      <if test="ipEndAddr != null" >
+        ip_end_addr,
+      </if>
+      <if test="ipAddrRange != null" >
+        ip_addr_range,
+      </if>
+      <if test="ipStartString != null" >
+        ip_start_string,
+      </if>
+      <if test="ipEndString != null" >
+        ip_end_string,
+      </if>
+      <if test="port != null" >
+        port,
+      </if>
+      <if test="ispId != null" >
+        isp_id,
+      </if>
+      <if test="areaId != null" >
+        area_id,
+      </if>
+      <if test="flag != null" >
+        flag,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="yl1 != null" >
+        yl1,
+      </if>
+      <if test="yl2 != null" >
+        yl2,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="seqId != null" >
+        #{seqId,jdbcType=INTEGER},
+      </if>
+      <if test="ipStartAddr != null" >
+        #{ipStartAddr,jdbcType=INTEGER},
+      </if>
+      <if test="ipEndAddr != null" >
+        #{ipEndAddr,jdbcType=INTEGER},
+      </if>
+      <if test="ipAddrRange != null" >
+        #{ipAddrRange,jdbcType=INTEGER},
+      </if>
+      <if test="ipStartString != null" >
+        #{ipStartString,jdbcType=VARCHAR},
+      </if>
+      <if test="ipEndString != null" >
+        #{ipEndString,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null" >
+        #{port,jdbcType=INTEGER},
+      </if>
+      <if test="ispId != null" >
+        #{ispId,jdbcType=BIGINT},
+      </if>
+      <if test="areaId != null" >
+        #{areaId,jdbcType=BIGINT},
+      </if>
+      <if test="flag != null" >
+        #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="yl1 != null" >
+        #{yl1,jdbcType=INTEGER},
+      </if>
+      <if test="yl2 != null" >
+        #{yl2,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.nis.domain.SrcIp" >
+    update src_ip
+    <set >
+      <if test="ipStartAddr != null" >
+        ip_start_addr = #{ipStartAddr,jdbcType=INTEGER},
+      </if>
+      <if test="ipEndAddr != null" >
+        ip_end_addr = #{ipEndAddr,jdbcType=INTEGER},
+      </if>
+      <if test="ipAddrRange != null" >
+        ip_addr_range = #{ipAddrRange,jdbcType=INTEGER},
+      </if>
+      <if test="ipStartString != null" >
+        ip_start_string = #{ipStartString,jdbcType=VARCHAR},
+      </if>
+      <if test="ipEndString != null" >
+        ip_end_string = #{ipEndString,jdbcType=VARCHAR},
+      </if>
+      <if test="port != null" >
+        port = #{port,jdbcType=INTEGER},
+      </if>
+      <if test="ispId != null" >
+        isp_id = #{ispId,jdbcType=BIGINT},
+      </if>
+      <if test="areaId != null" >
+        area_id = #{areaId,jdbcType=BIGINT},
+      </if>
+      <if test="flag != null" >
+        flag = #{flag,jdbcType=INTEGER},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="yl1 != null" >
+        yl1 = #{yl1,jdbcType=INTEGER},
+      </if>
+      <if test="yl2 != null" >
+        yl2 = #{yl2,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where seq_id = #{seqId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.nis.domain.SrcIp" >
+    update src_ip
+    set ip_start_addr = #{ipStartAddr,jdbcType=INTEGER},
+      ip_end_addr = #{ipEndAddr,jdbcType=INTEGER},
+      ip_addr_range = #{ipAddrRange,jdbcType=INTEGER},
+      ip_start_string = #{ipStartString,jdbcType=VARCHAR},
+      ip_end_string = #{ipEndString,jdbcType=VARCHAR},
+      port = #{port,jdbcType=INTEGER},
+      isp_id = #{ispId,jdbcType=BIGINT},
+      area_id = #{areaId,jdbcType=BIGINT},
+      flag = #{flag,jdbcType=INTEGER},
+      description = #{description,jdbcType=VARCHAR},
+      yl1 = #{yl1,jdbcType=INTEGER},
+      yl2 = #{yl2,jdbcType=VARCHAR}
+    where seq_id = #{seqId,jdbcType=INTEGER}
+  </update>
+</mapper>

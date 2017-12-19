@@ -1,0 +1,824 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DfReportDao">
+	<!-- 所有实时统计report表的公共属性 -->
+	<sql id="commonPorperty">
+		ASUM,BSUM,REPORT_TIME
+	</sql>
+	<sql id="commonABPorperty">
+		ASUM,BSUM,ABSUM,REPORT_TIME
+	</sql>
+	<resultMap id="DfPzReportMap" type="com.nis.domain.restful.DfPzReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="ABSUM" jdbcType="BIGINT" property="absum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="CFG_ID" jdbcType="BIGINT" property="cfgId" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<resultMap id="DfPzReportStatMap" type="com.nis.domain.restful.DfPzReportStat">
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="CFG_ID" jdbcType="BIGINT" property="configId" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<resultMap id="DfAttrTypeReportMap" type="com.nis.domain.restful.DfAttrTypeReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="ABSUM" jdbcType="BIGINT" property="absum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="ATTR_TYPE" jdbcType="INTEGER" property="attrType" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<resultMap id="DfSrcIpDomeSticReportMap" type="com.nis.domain.restful.DfSrcIpDomeSticReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="srcCity" />
+	</resultMap>
+	<resultMap id="DfDestIpCountryReportMap" type="com.nis.domain.restful.DfDestIpCountryReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="destCountry" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<!-- DfPzReport日志查询 -->
+	<sql id="dfPzReportPorperty">
+		,CFG_ID,SERVICE
+	</sql>
+
+	<select id="findDfPzReport" parameterType="com.nis.domain.restful.DfPzReport"
+		resultMap="DfPzReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />
+				<include refid="dfPzReportPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.CFG_ID,
+		PZ.SERVICE
+		FROM DF_PZ_REPORT PZ
+		GROUP BY
+		PZ.CFG_ID,
+		PZ.SERVICE, PZ.REPORT_TIME
+		) DF_PZ_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CFG_ID =#{searchCfgId}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<select id="findAttrTypeReport" parameterType="com.nis.domain.restful.DfAttrTypeReport"
+		resultMap="DfAttrTypeReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ASUM,BSUM,absum,REPORT_TIME,ATTR_TYPE,SERVICE
+			</otherwise>
+		</choose>
+		FROM (
+			SELECT attr_type,REPORT_TIME, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+			  FROM (select attr_type, asum, bsum, absum, REPORT_TIME,service
+			          from (select attr_type,
+			                       REPORT_TIME,service,
+			                       asum,
+			                       bsum,
+			                       decode(asum, 0, bsum, asum) absum
+			                  from (SELECT SUM(CASE
+			                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+			                                      SUM
+			                                     ELSE
+			                                      0
+			                                   END) ASUM,
+			                               SUM(CASE
+			                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+			                                      SUM
+			                                     ELSE
+			                                      0
+			                                   END) BSUM,
+			                               
+			                               PZ.REPORT_TIME,
+			                               pz.cfg_id,
+			                               pz.attr_type,pz.service
+			                          FROM df_pz_attr_report PZ
+			                         <where>
+										<if test="searchReportStartTime != null and searchReportStartTime !=''">
+											<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+										</if>
+										<if test="searchReportEndTime != null and searchReportEndTime !=''">
+											<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+										</if>
+										<if test="searchAttrType != null and searchAttrType !=''">
+											AND ATTR_TYPE =#{searchAttrType}
+										</if>
+										<if test="searchService != null and searchService !=''">
+											AND SERVICE =#{searchService}
+										</if>
+									</where>
+			                         GROUP BY pz.cfg_id, pz.attr_type, PZ.REPORT_TIME,pz.service)) a)
+			 group by attr_type, REPORT_TIME,service
+		) df_pz_attr_report
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<select id="findSrcIpDomeSticReport" parameterType="com.nis.domain.restful.DfSrcIpDomeSticReport"
+		resultMap="DfSrcIpDomeSticReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ASUM,BSUM,REPORT_TIME,SERVICE,SRC_PROVINCE,SRC_CITY
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE,
+		pz.SRC_PROVINCE,pz.SRC_CITY
+		FROM
+		DF_SRCIP_DOMESTIC_REPORT PZ
+		GROUP BY PZ.SRC_PROVINCE,pz.SRC_CITY,
+		PZ.SERVICE, PZ.REPORT_TIME
+		) DF_SRCIP_DOMESTIC_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchSrcProvince != null and searchSrcProvince !=''">
+				AND SRC_PROVINCE =#{searchSrcProvince}
+			</if>
+			<if test="searchSrcCity != null and searchSrcCity !=''">
+				AND SRC_CITY =#{searchSrcCity}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<select id="findDestIpCountryReport" parameterType="com.nis.domain.restful.DfDestIpCountryReport"
+		resultMap="DfDestIpCountryReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ASUM,BSUM,REPORT_TIME,DEST_COUNTRY,SERVICE
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE,
+		pz.DEST_COUNTRY
+		FROM DF_DESTIP_COUNTRY_REPORT
+		PZ
+		GROUP BY PZ.DEST_COUNTRY, PZ.SERVICE, PZ.REPORT_TIME
+		)
+		DF_DESTIP_COUNTRY_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchDestCountry != null and searchDestCountry !=''">
+				AND DEST_COUNTRY =#{searchDestCountry}
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+
+
+	<select id="findDfPriTagReport" parameterType="com.nis.domain.restful.DfPzReport"
+		resultMap="DfPzReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ASUM,BSUM,ABSUM,SERVICE
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		SUM(CASE
+		WHEN PZ.ACTIVE_SYS = 4 OR PZ.CFG_ID IN (SELECT DISTINCT CFG_ID
+		FROM
+		DF_PZ_REPORT T WHERE T.ACTIVE_SYS = 2 AND T.CFG_ID NOT IN
+		(SELECT
+		CFG_ID FROM DF_PZ_REPORT B WHERE B.ACTIVE_SYS = 4)) THEN
+		SUM ELSE 0
+		END) ABSUM,
+		PZ.SERVICE
+		FROM DF_PZ_REPORT PZ
+		GROUP BY PZ.SERVICE
+		)
+		DF_PZ_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+
+
+
+
+
+
+
+
+	<select id="findDfPzReportStat" parameterType="com.nis.domain.restful.DfPzReportStat"
+		resultMap="DfPzReportStatMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				CFG_ID,SERVICE,SUM
+			</otherwise>
+		</choose>
+		FROM (
+		<choose>
+			<when test="searchStatActiveSys == 6 ">
+				SELECT CFG_ID,SERVICE, DECODE(ASUM,0,BSUM,ASUM) SUM FROM (
+				SELECT config_id CFG_ID, SERVICE,
+			      SUM(CASE WHEN ACTIVE_SYS=4 THEN SUM ELSE 0 END) ASUM,
+			      SUM(CASE WHEN ACTIVE_SYS=2 THEN SUM ELSE 0 END) BSUM
+			      FROM df_stat_log_hour
+			      <where>
+			      	<if test="searchReportStartTime != null and searchReportStartTime !=''">
+						<![CDATA[AND stat_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchReportEndTime != null and searchReportEndTime !=''">
+						<![CDATA[AND stat_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchService != null ">
+						AND SERVICE =#{searchService}
+					</if>
+			      </where>
+			       GROUP BY config_id,SERVICE
+			       ) REPORT
+			</when>
+			<otherwise>
+				SELECT 
+					config_id cfg_id,SERVICE,SUM(sum) SUM
+					FROM df_stat_log_hour 
+				<where>
+					<if test="searchReportStartTime != null and searchReportStartTime !=''">
+						<![CDATA[AND stat_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchReportEndTime != null and searchReportEndTime !=''">
+						<![CDATA[AND stat_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchService != null ">
+						AND SERVICE =#{searchService}
+					</if>
+		 				AND active_sys=#{searchStatActiveSys}
+				</where>
+		 		GROUP BY config_id,SERVICE
+			</otherwise>
+		</choose>
+		)
+		<choose>
+	       <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				 ORDER BY ${page.orderBy}
+			</when>
+	   </choose>
+	</select>
+	
+	
+	<select id="findDfPzReportStatMinutes" parameterType="com.nis.domain.restful.DfPzReportStat"
+		resultMap="DfPzReportStatMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				CFG_ID,SERVICE,SUM
+			</otherwise>
+		</choose>
+		FROM (
+		<choose>
+			<when test="searchStatActiveSys == 6 ">
+				SELECT CFG_ID,SERVICE, DECODE(ASUM,0,BSUM,ASUM) SUM FROM (
+				SELECT CFG_ID, SERVICE,
+			      SUM(CASE WHEN ACTIVE_SYS=4 THEN SUM ELSE 0 END) ASUM,
+			      SUM(CASE WHEN ACTIVE_SYS=2 THEN SUM ELSE 0 END) BSUM
+			      FROM DF_PZ_REPORT
+			      <where>
+			      	<if test="searchReportStartTime != null and searchReportStartTime !=''">
+						<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchReportEndTime != null and searchReportEndTime !=''">
+						<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchService != null ">
+						AND SERVICE =#{searchService}
+					</if>
+			      </where>
+			       GROUP BY CFG_ID,SERVICE
+			       ) REPORT
+			</when>
+			<otherwise>
+				SELECT 
+					CFG_ID,SERVICE,SUM(sum) SUM
+					FROM DF_PZ_REPORT 
+				<where>
+					<if test="searchReportStartTime != null and searchReportStartTime !=''">
+						<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchReportEndTime != null and searchReportEndTime !=''">
+						<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+					</if>
+					<if test="searchService != null ">
+						AND SERVICE =#{searchService}
+					</if>
+		 				AND active_sys=#{searchStatActiveSys}
+				</where>
+		 		GROUP BY CFG_ID,SERVICE
+			</otherwise>
+		</choose>
+		)
+		<choose>
+	       <when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				 ORDER BY ${page.orderBy}
+			</when>
+	   </choose>
+	</select>
+	<select id="findDfPzReportSum" parameterType="com.nis.domain.restful.DfPzReportStat"
+		resultType="java.lang.Long">
+		SELECT
+		SUM(sum) SUM
+		FROM DF_PZ_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchService != null ">
+				AND SERVICE =#{searchService}
+			</if>
+			AND active_sys=#{searchStatActiveSys}
+		</where>
+	</select>
+
+	<resultMap id="DfServiceReportMap" type="com.nis.domain.restful.DfServiceReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="CSUM" jdbcType="BIGINT" property="csum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SERVICE" jdbcType="INTEGER" property="serviceType" />
+	</resultMap>
+	<!-- DfServiceReport日志查询 -->
+	<sql id="dfServiceReportPorperty">
+		,service
+	</sql>
+	<select id="findDfServiceReport" parameterType="com.nis.domain.restful.DfServiceReport"
+		resultMap="DfServiceReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />
+				<include refid="dfServiceReportPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		SUM(CASE
+		WHEN PZ.ACTIVE_SYS = 1 THEN SUM ELSE 0 END) CSUM,
+		PZ.REPORT_TIME,
+		PZ.SERVICE
+		FROM DF_SERVICE_REPORT PZ
+		GROUP BY PZ.SERVICE, PZ.REPORT_TIME
+		) DF_SERVICE_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				and service=#{searchService}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<resultMap id="DfTagReportMap" type="com.nis.domain.restful.DfTagReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="ABSUM" jdbcType="BIGINT" property="absum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="TAG" jdbcType="INTEGER" property="tag" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<!-- DfTagReport日志查询 -->
+	<sql id="dfTagReportPorperty">
+		,tag
+	</sql>
+	<select id="findDfTagReportPage" parameterType="com.nis.domain.restful.DfTagReport"
+		resultMap="DfTagReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				tag,REPORT_TIME, asum, bsum,absum,service
+			</otherwise>
+		</choose>
+		FROM (
+				SELECT tag,REPORT_TIME, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+				  FROM (select tag, asum, bsum, absum, REPORT_TIME,service
+				          from (select tag,
+				                       REPORT_TIME,service,
+				                       asum,
+				                       bsum,
+				                       decode(asum, 0, bsum, asum) absum
+				                  from (SELECT SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) ASUM,
+				                               SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) BSUM,
+				                               
+				                               PZ.REPORT_TIME,
+				                               pz.cfg_id,
+				                               pz.tag,pz.service
+				                          FROM df_pz_tag_report PZ
+				                         <where>
+											<if test="searchReportStartTime != null and searchReportStartTime !=''">
+												<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchReportEndTime != null and searchReportEndTime !=''">
+												<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchTag != null and searchTag !=''">
+												AND tag in(${searchTag})
+											</if>
+											<if test="searchService != null and searchService !=''">
+												AND service=#{searchService}
+											</if>
+										</where>
+				                         GROUP BY pz.cfg_id, pz.tag, PZ.REPORT_TIME,pz.service)) a)
+				 group by tag, REPORT_TIME,service
+		)
+		DF_TAG_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<select id="findDfTagReport" parameterType="com.nis.domain.restful.DfTagReport"
+		resultMap="DfTagReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				tag,REPORT_TIME, asum, bsum,absum,service
+			</otherwise>
+		</choose>
+		FROM (
+				SELECT tag,REPORT_TIME, sum(asum) asum, sum(bsum) bsum, SUM(absum) absum,service
+				  FROM (select tag, asum, bsum, absum, REPORT_TIME,service
+				          from (select tag,
+				                       REPORT_TIME,service,
+				                       asum,
+				                       bsum,
+				                       decode(asum, 0, bsum, asum) absum
+				                  from (SELECT SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 4 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) ASUM,
+				                               SUM(CASE
+				                                     WHEN PZ.ACTIVE_SYS = 2 THEN
+				                                      SUM
+				                                     ELSE
+				                                      0
+				                                   END) BSUM,
+				                               
+				                               PZ.REPORT_TIME,
+				                               pz.cfg_id,
+				                               pz.tag,pz.service
+				                          FROM df_pz_tag_report PZ
+				                         <where>
+											<if test="searchReportStartTime != null and searchReportStartTime !=''">
+												<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchReportEndTime != null and searchReportEndTime !=''">
+												<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+											</if>
+											<if test="searchTag != null and searchTag !=''">
+												AND tag in(${searchTag})
+											</if>
+											<if test="searchService != null and searchService !=''">
+												AND service=#{searchService}
+											</if>
+										</where>
+				                         GROUP BY pz.cfg_id, pz.tag, PZ.REPORT_TIME,pz.service)) a)
+				 group by tag, REPORT_TIME,service
+		)
+		DF_TAG_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+	<resultMap id="DfLwhhReportMap" type="com.nis.domain.restful.DfLwhhReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="lwhh" jdbcType="INTEGER" property="lwhh" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<select id="findDfLwhhReport" parameterType="com.nis.domain.restful.DfLwhhReport"
+		resultMap="DfLwhhReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ASUM,BSUM,REPORT_TIME,SERVICE,LWHH
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.lwhh,pz.service
+		FROM DF_LWHH_REPORT PZ
+		GROUP BY
+		PZ.lwhh,pz.service, PZ.REPORT_TIME
+		)
+		DF_LWHH_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND service=#{searchService}
+			</if>
+			<if test="searchLwhh != null and searchLwhh !=''">
+				AND lwhh=#{searchLwhh}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<resultMap id="DfEntranceReportMap" type="com.nis.domain.restful.DfEntranceReport">
+		<result column="ASUM" jdbcType="BIGINT" property="asum" />
+		<result column="BSUM" jdbcType="BIGINT" property="bsum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="ENTRANCE_ID" jdbcType="INTEGER" property="entraceId" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<select id="findDfEntranceReport" parameterType="com.nis.domain.restful.DfEntranceReport"
+		resultMap="DfEntranceReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ASUM,BSUM,REPORT_TIME,SERVICE,ENTRANCE_ID
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN PZ.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		PZ.REPORT_TIME,
+		PZ.ENTRANCE_ID,pz.service
+		FROM DF_ENTRANCE_REPORT PZ
+		GROUP BY
+		PZ.ENTRANCE_ID,pz.service, PZ.REPORT_TIME
+		)
+		DF_LWHH_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				AND service=#{searchService}
+			</if>
+			<if test="searchEntraceId != null and searchEntraceId !=''">
+				AND ENTRANCE_ID=#{searchEntraceId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<!-- DF_SRCIP_DOMESTIC_REPORT -->
+	<sql id="dfSrcIpPorperty">
+		,SRC_PROVINCE,SRC_CITY
+	</sql>
+	<resultMap id="DfSrcIpReportMap" type="com.nis.domain.restful.DfSrcIpReport">
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="csum" jdbcType="BIGINT" property="csum" />
+		<result column="report_time" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="src_province" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="src_city" jdbcType="VARCHAR" property="srcCity" />
+	</resultMap>
+	<select id="findDfSrcIpReport" parameterType="com.nis.domain.restful.DfSrcIpReport"
+		resultMap="DfSrcIpReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />
+				<include refid="dfSrcIpPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN t.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN t.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		SUM(CASE WHEN
+		t.ACTIVE_SYS = 1 THEN SUM ELSE 0 END) CSUM,
+		t.SRC_PROVINCE,
+		t.SRC_CITY
+		,
+		t.REPORT_TIME
+		FROM DF_SRCIP_DOMESTIC_REPORT t
+		GROUP BY t.SRC_PROVINCE,
+		t.SRC_CITY, t.REPORT_TIME
+		) DF_SRCIP_DOMESTIC_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<!-- DF_DESTIP_COUNTRY_REPORT -->
+	<sql id="dfDestIpPorperty">
+		,DEST_COUNTRY
+	</sql>
+	<resultMap id="DfDestIpReportMap" type="com.nis.domain.restful.DfDestIpReport">
+		<result column="asum" jdbcType="BIGINT" property="asum" />
+		<result column="bsum" jdbcType="BIGINT" property="bsum" />
+		<result column="csum" jdbcType="BIGINT" property="csum" />
+		<result column="report_time" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="dest_country" jdbcType="VARCHAR" property="destCountry" />
+	</resultMap>
+	<select id="findDfDestIpReport" parameterType="com.nis.domain.restful.DfDestIpReport"
+		resultMap="DfDestIpReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />
+				<include refid="dfDestIpPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT
+		SUM(CASE WHEN t.ACTIVE_SYS = 4 THEN SUM ELSE 0 END) ASUM,
+		SUM(CASE WHEN t.ACTIVE_SYS = 2 THEN SUM ELSE 0 END) BSUM,
+		SUM(CASE WHEN
+		t.ACTIVE_SYS = 1 THEN SUM ELSE 0 END) CSUM,
+		t.DEST_COUNTRY
+		,
+		t.REPORT_TIME
+		FROM DF_DESTIP_COUNTRY_REPORT t
+		GROUP BY t.DEST_COUNTRY,
+		t.REPORT_TIME
+		) DF_DESTIP_COUNTRY_REPORT
+		<where>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+</mapper>

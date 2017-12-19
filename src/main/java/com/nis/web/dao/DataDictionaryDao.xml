@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DataDictionaryDao">
+	<resultMap id="DataDictionaryMap" type="com.nis.domain.restful.DataDictionaryName">
+		<id column="dictnameid" jdbcType="BIGINT" property="dictNameId" />
+		<result column="datadictname" jdbcType="BIGINT" property="dataDictName" />
+		<collection property="dictValueList"
+			ofType="com.nis.domain.restful.DataDictionaryValue">
+			<id column="dictvalueid" jdbcType="BIGINT" property="dictValueId" />
+			<result column="dataDictValue" jdbcType="BIGINT" property="dataDictValue" />
+		</collection>
+	</resultMap>
+
+
+
+
+
+	<resultMap id="DataDictValMap" type="com.nis.domain.restful.DataDictionaryValue">
+		<id column="dictvalueid" jdbcType="BIGINT" property="dictValueId" />
+		<result column="dictNameId" jdbcType="BIGINT" property="dictNameId" />
+		<result column="datadictname" jdbcType="BIGINT" property="dataDictName" />
+		<result column="dataDictValue" jdbcType="BIGINT" property="dataDictValue" />
+	</resultMap>
+
+
+	<sql id="dataDictSql">
+		n.id dictnameid,
+		n.datadictname datadictname,
+		v.id
+		dictvalueid,
+		v.datadictvalue datadictvalue
+	</sql>
+	<select id="getAllDictName" resultMap="DataDictValMap">
+		select
+		<include refid="dataDictSql" />
+		from datadictionaryname n left join datadictionaryvalue v on n.id =
+		v.datadictid
+
+		<where>
+			n.isvalid = 1 and v.isvalid=1
+			<if test="dictValueId != null">
+				and v.id = #{dictValueId}
+			</if>
+			<if test="dictNameId != null">
+				and n.id = #{dictNameId}
+			</if>
+			<if test="dataDictValue != null and dataDictValue!=''">
+				and v.dataDictValue = #{dataDictValue}
+			</if>
+			<if test="dataDictName != null and dataDictName!=''">
+				and n.datadictname= #{dataDictName}
+			</if>
+		</where>
+	</select>
+
+
+	<select id="selAllDictName" resultMap="DataDictionaryMap">
+		select n.id dictnameid,
+		n.datadictname datadictname from datadictionaryname n where
+		n.isvalid=1
+	</select>
+
+
+	<insert id="addDictName" parameterType="com.nis.domain.restful.DataDictionaryName">
+		<selectKey keyProperty="dictNameId" resultType="java.lang.Long"
+			order="BEFORE">
+			select seq_datadict.nextval from dual
+		</selectKey>
+		insert into datadictionaryname (id ,datadictname,isValid) values(
+		#{dictNameId,jdbcType=BIGINT},
+		#{dataDictName, jdbcType=VARCHAR},1)
+	</insert>
+
+
+
+
+	<insert id="addDictValue" parameterType="com.nis.domain.restful.DataDictionaryValue">
+		<selectKey keyProperty="dictValueId" resultType="java.lang.Long"
+			order="BEFORE">
+			select seq_datadict.nextval from dual
+		</selectKey>
+		insert into datadictionaryvalue (id ,datadictid,datadictvalue,isValid)
+		values(
+		#{dictValueId,jdbcType=BIGINT},#{dictNameId, jdbcType=BIGINT},
+		#{dataDictValue,jdbcType=VARCHAR},1)
+	</insert>
+
+	<update id="updateDictName" parameterType="com.nis.domain.restful.DataDictionaryName">
+		update datadictionaryname
+		<set>
+			<if test="isValid != null">
+				isValid = #{isValid,jdbcType=BIGINT},
+			</if>
+			<if test="dataDictName != null">
+				dataDictName = #{dataDictName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{dictNameId ,jdbcType=BIGINT }
+	</update>
+	<update id="updateDictValue" parameterType="com.nis.domain.restful.DataDictionaryValue">
+		update datadictionaryvalue
+		<set>
+			<if test="dataDictValue != null and dataDictValue!=''">
+				dataDictValue = #{dataDictValue,jdbcType=VARCHAR},
+			</if>
+			<if test="isValid != null">
+				isValid = #{isValid,jdbcType=BIGINT},
+			</if>
+		</set>
+		where id = #{dictValueId ,jdbcType=BIGINT }
+	</update>
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.SysRoleDao" >
+  
+  
+  <resultMap id="BaseResultMap" type="SysRole" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="NAME" property="name" jdbcType="VARCHAR" />
+     <result column="ROLE_TYPE" property="roleType" jdbcType="VARCHAR" />
+     <result column="DATA_SCOPE" property="dataScope" jdbcType="INTEGER" />
+    <result column="REMARK" property="remark" jdbcType="VARCHAR" />
+    <result column="STATUS" property="status" jdbcType="INTEGER" />
+    <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+    <collection property="menuList" ofType="sysMenu">
+		<id property="id" column="menuList.id" />
+	</collection>
+  </resultMap>
+  
+  
+  <sql id="Base_Column_List" >
+    r.ID, r.NAME, r.ROLE_TYPE, r.DATA_SCOPE, r.REMARK, r.STATUS, r.CREATE_TIME
+  </sql>
+  
+  <select id="get" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List"/>,
+			rm.privilege_access_value AS "menuList.id"
+		FROM sys_role r
+		LEFT JOIN sys_privilege rm ON rm.privilege_master_value = r.id and rm.privilege_master='ROLE' and rm.privilege_access='1000'
+		WHERE r.id = #{id}
+  </select>
+	
+  <select id="getByName" resultMap="BaseResultMap">
+	SELECT
+		<include refid="Base_Column_List"/>
+	FROM sys_role r
+	WHERE r.name = #{name} AND r.status = #{DEL_FLAG_NORMAL}
+  </select>
+  
+  
+  <select id="findAllList" resultMap="BaseResultMap">
+		SELECT
+			<include refid="Base_Column_List"/>
+		FROM sys_role r
+		WHERE r.status = #{DEL_FLAG_NORMAL}
+		ORDER BY r.id
+  </select>
+  
+  
+  
+  
+  <select id="findUserByRole" resultType="sysUser">
+		SELECT
+			
+			u.id, 
+			u.login_id, 
+			u.name, 
+			u.photo,
+			u.password, 
+			u.email, 
+			u.create_time, 
+			u.status, 
+			c.id AS "company.id", 
+			c.name AS "company.name",
+			e.id AS "entity.id", 
+			e.name AS "entity.name",
+			o.id AS "office.id", 
+			o.name AS "office.name"
+			
+		FROM sys_user u
+			JOIN sys_inter_user_role ir ON u.id=ir.user_id and ir.role_id=#{id}
+			LEFT JOIN sys_office c ON c.id=u.company_id AND c.useable=1
+			LEFT JOIN sys_office e ON e.id=u.entity_id AND e.useable=1
+			LEFT JOIN sys_office o ON o.id=u.office_id AND o.useable=1
+		WHERE u.status=1 
+	</select>
+  
+  
+  
+ 
+	<insert id="insert" parameterType="sysRole" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO sys_role(
+			name, 
+			role_type, 
+			data_scope, 
+			create_time, 
+			remark, 
+			status
+		) VALUES (
+			#{name}, 
+			#{roleType}, 
+			#{dataScope}, 
+			#{createTime}, 
+			#{remark}, 
+			#{status}
+		)
+	</insert>	
+	
+	<update id="update">
+		UPDATE sys_role SET 
+			name = #{name}, 
+			role_type = #{roleType}, 
+			data_scope = #{dataScope}, 
+			remark = #{remark}
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insertRoleMenu">
+		INSERT INTO sys_privilege(
+			privilege_master, 
+			privilege_master_value, 
+			privilege_access, 
+			privilege_access_value, 
+			privilege_operation)
+		<foreach collection="menuList" item="menu" separator=" union all ">
+			SELECT 'ROLE',#{id},'1000',#{menu.id},1
+			<if test="dbName != 'mssql'">
+			FROM dual
+			</if>
+		</foreach>
+	</insert>
+	
+	<delete id="deleteRoleMenu">
+		DELETE FROM sys_privilege WHERE privilege_master='ROLE' and  privilege_master_value = #{id}
+	</delete>
+	
+	<update id="delete">
+		UPDATE sys_role SET 
+			status = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+	
+	
+  
+ 
+ 
+</mapper>

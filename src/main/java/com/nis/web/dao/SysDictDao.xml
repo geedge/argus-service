@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.SysDictDao" >
+  
+  <resultMap id="dictResultMap" type="com.nis.domain.SysDataDictionaryName" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="module_name" property="moduleName" jdbcType="VARCHAR" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="revision" property="revision" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <collection property="dictItemList" ofType="SysDataDictionaryItem">
+		<id property="id" column="item_id"/>
+		<result property="itemCode" column="item_code"/>
+		<result property="itemValue" column="item_value"/>
+		<result property="itemDesc" column="item_desc"/>
+		<result property="itemSort" column="item_sort"/>
+		<result property="status" column="item_status"/>
+		<result property="type" column="type"/>
+	</collection>
+    
+  </resultMap>
+  
+  
+  
+  <sql id="Base_Column_List" >
+    id, module_name, mark, remark, revision, create_time, modify_time, status
+  </sql>
+  
+  <sql id="dictColumns">
+		n.id,
+		n.module_name,
+		n.mark,
+		n.remark,
+		n.revision,
+		n.create_time,
+		n.modify_time,
+		n.status,
+		t.id as item_id,
+		t.item_code,
+		t.item_value,
+		t.item_desc,
+		t.item_sort,
+		t.status as item_status,
+		t.type
+	</sql>
+	
+	<sql id="dictJoins">
+		LEFT JOIN sys_data_dictionary_item t ON t.dictionary_id = n.id and t.status= #{DEL_FLAG_NORMAL} 
+    </sql>
+	
+  	<select id="findAllList" resultMap="dictResultMap">
+		SELECT
+			<include refid="dictColumns"/>
+		FROM sys_data_dictionary_name n
+		<include refid="dictJoins"/>
+		WHERE n.status = #{DEL_FLAG_NORMAL}
+		ORDER BY n.id,t.item_sort
+	</select>
+  
+  <select id="findDicByName" resultMap="dictResultMap">
+  SELECT
+			<include refid="dictColumns"/>
+		FROM sys_data_dictionary_name n
+		<include refid="dictJoins"/>
+		WHERE n.status = #{DEL_FLAG_NORMAL} AND n.module_name = #{modualName}
+		ORDER BY n.id,t.item_sort
+  </select>
+  
+  <select id="getDictById" resultMap="dictResultMap">
+  SELECT
+			<include refid="dictColumns"/>
+		FROM sys_data_dictionary_name n
+		<include refid="dictJoins"/>
+		WHERE n.status = #{DEL_FLAG_NORMAL} AND n.id = #{id}
+  </select>
+  
+  
+  <select id="findDictList" resultMap="dictResultMap" parameterType="com.nis.domain.SysDataDictionaryName">
+	SELECT * FROM sys_data_dictionary_name WHERE status=1
+	
+	<if test="moduleName != null and moduleName != '' " >
+      AND module_name like '%${moduleName}%'
+    </if>
+    <if test="mark != null and mark != '' " >
+      AND mark like '%${mark}%'
+    </if>
+
+    <if test="beginDate !=null" >
+      AND create_time &gt;= #{beginDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate !=null" >
+       AND create_time &lt;= #{endDate,jdbcType=TIMESTAMP}
+    </if>
+    
+    <choose>
+		<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+			ORDER BY ${page.orderBy}
+		</when>
+		<otherwise>
+			ORDER BY create_time desc
+		</otherwise>
+	</choose>
+    
+  </select>
+  
+  <!-- 插入词典标识信息 -->
+   <insert id="insertDictName" parameterType="com.nis.domain.SysDataDictionaryName" useGeneratedKeys="true" keyProperty="id" >
+    insert into sys_data_dictionary_name (module_name, mark, 
+      remark, revision, create_time, 
+      modify_time, status)
+    values ( #{moduleName,jdbcType=VARCHAR}, #{mark,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{revision,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{modifyTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER})
+  </insert>
+  
+  <!-- 插入词典项信息 -->
+  <insert id="insertDictItem" parameterType="com.nis.domain.SysDataDictionaryItem" useGeneratedKeys="true" keyProperty="id" >
+    insert into sys_data_dictionary_item ( item_code, item_value, 
+      item_desc, item_sort, status, 
+      type, dictionary_id)
+    values (#{itemCode,jdbcType=VARCHAR}, #{itemValue,jdbcType=VARCHAR}, 
+      #{itemDesc,jdbcType=VARCHAR}, #{itemSort,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{type,jdbcType=INTEGER}, #{dictionaryId,jdbcType=INTEGER})
+  </insert>
+  
+  <!-- 删除词典标识信息 -->
+  <delete id="deleteDictName" >
+    delete from sys_data_dictionary_name
+    where id = #{dictId}
+  </delete>
+  
+   <!-- 删除词典项信息 -->
+  <delete id="deleteDictItem">
+    delete from sys_data_dictionary_item
+    where dictionary_id = #{dictId}
+  </delete>
+  
+   <!-- 编辑词典标识信息 -->
+  <update id="updateDictName" parameterType="com.nis.domain.SysDataDictionaryName" >
+    update sys_data_dictionary_name
+    set module_name = #{moduleName,jdbcType=VARCHAR},
+      mark = #{mark,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      revision = #{revision,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  
+</mapper>

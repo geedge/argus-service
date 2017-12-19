@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.DnsGroupTypeDao" >
+	<resultMap type="dnsGroupType" id="dnsGroupTypeMap">
+		<id property="id" column="ID"/>
+		<result property="groupId" column="GROUP_ID"/>
+		<result property="groupName" column="GROUP_NAME"/>
+		<result property="resTypeId" column="RES_TYPE_ID"/>
+		<result property="opTime" column="OP_TIME"/>
+		<result property="isValid" column="IS_VALID"/>
+		<result property="yl1" column="YL1"/>
+		<result property="yl2" column="YL2"/>
+		<result property="yl3" column="YL3"/>
+		<result property="yl4" column="YL4"/>
+		<result property="yl5" column="YL5"/>
+		<result property="lastUpdate" column="LAST_UPDATE"/>
+	</resultMap>
+			
+	<sql id="dnsGroupTypeColumns">
+    	id,
+		groupId,
+		groupName,
+		resTypeId,
+		opTime,
+		isValid,
+		yl1,
+		yl2,
+		yl3,
+		yl4,
+		yl5,
+		lastUpdate
+    </sql>
+    <!-- 
+    <select id="get" resultMap="dnsGroupTypeMap">
+		select 
+		<include refid="dnsGroupTypeColumns"/>	
+		from DNS_GROUP_TYPE
+		WHERE id=#{id} 
+	</select>
+	<select id="findList" resultMap="dnsGroupTypeMap">
+		select 
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				 ${page.fields}
+			</when>
+			<otherwise>
+				<include refid="dnsGroupTypeColumns"/>	
+			</otherwise>
+		</choose>
+		from DNS_GROUP_TYPE
+		WHERE 1=1 
+		<if test="page !=null and page.where != null and page.where != ''">
+			AND ${page.where}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY id desc
+			</otherwise>
+		</choose>
+	</select>
+	 -->
+	<insert id="insert" parameterType="dnsGroupType" >
+		<!-- 
+		<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_DNS_GROUP_TYPE.Nextval as ID from DUAL  
+	   </selectKey> 
+	 	--> 
+		insert into DNS_GROUP_TYPE(ID,GROUP_ID,GROUP_NAME,RES_TYPE_ID,OP_TIME,IS_VALID,YL1,YL2,YL3,YL4,YL5,LAST_UPDATE)
+			values (#{id},#{groupId},#{groupName},#{resTypeId},#{opTime},#{isValid},#{yl1},#{yl2},#{yl3},#{yl4},#{yl5},#{lastUpdate})
+	</insert>
+	<update id="update" parameterType="dnsGroupType">
+		UPDATE DNS_GROUP_TYPE
+		<set>
+			<if test="groupId != null">
+			GROUP_ID=#{groupId,jdbcType=INTEGER},
+			</if>
+			<if test="groupName != null">
+			GROUP_NAME=#{groupName,jdbcType=VARCHAR},
+			</if>
+			<if test="resTypeId != null">
+			RES_TYPE_ID=#{resTypeId,jdbcType=INTEGER},
+			</if>
+			<if test="opTime != null">
+			OP_TIME=#{opTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="isValid != null">
+			IS_VALID=#{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="yl1 != null">
+			YL1=#{yl1,jdbcType=INTEGER},
+			</if>
+			<if test="yl2 != null">
+			YL2=#{yl2,jdbcType=INTEGER},
+			</if>
+			<if test="yl3 != null">
+			YL3=#{yl3,jdbcType=VARCHAR},
+			</if>
+			<if test="yl4 != null">
+			YL4=#{yl4,jdbcType=VARCHAR},
+			</if>
+			<if test="yl5 != null">
+			YL5=#{yl5,jdbcType=VARCHAR},
+			</if>
+			<if test="lastUpdate != null">
+			LAST_UPDATE=#{lastUpdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where ID = #{id ,jdbcType=BIGINT }
+	</update>
+	<delete id="delete" parameterType="long">
+		DELETE FROM DNS_GROUP_TYPE
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</delete>
+	<select id="isValid" parameterType="long" resultType="java.lang.Integer">
+		select IS_VALID FROM DNS_GROUP_TYPE
+		WHERE ID = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="isValidBatch" resultType="java.lang.Integer">
+		select count(ID) FROM DNS_GROUP_TYPE
+		WHERE ID in(
+		<foreach collection="idsList" item="ids" separator=",">
+		#{ids}
+		</foreach>
+		) and IS_VALID=#{isValid}
+	</select>
+	<select id="isGroupIdUnique" resultType="java.lang.Integer">
+		select COUNT(ID) FROM DNS_GROUP_TYPE
+		WHERE GROUP_ID in( 
+		<foreach collection="idsList" item="ids" separator=",">
+		#{ids,jdbcType=INTEGER}
+		</foreach>
+		)
+	</select>
+	
+	
+	
+
+</mapper>

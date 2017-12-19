@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.IpLocationPublicDao">
+  <resultMap id="BaseResultMap" type="com.nis.domain.restful.IpLocationPublic">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="IP_START" jdbcType="VARCHAR" property="ipStart" />
+    <result column="IP_END" jdbcType="VARCHAR" property="ipEnd" />
+    <result column="IP_START_NUM" jdbcType="BIGINT" property="ipStartNum" />
+    <result column="IP_END_NUM" jdbcType="BIGINT" property="ipEndNum" />
+    <result column="CONTINENT" jdbcType="VARCHAR" property="continent" />
+    <result column="COUNTRY" jdbcType="VARCHAR" property="country" />
+    <result column="PROVINCE" jdbcType="VARCHAR" property="province" />
+    <result column="CITY" jdbcType="VARCHAR" property="city" />
+    <result column="DISTRICT" jdbcType="VARCHAR" property="district" />
+    <result column="DESCRIPTION" jdbcType="VARCHAR" property="description" />
+    <result column="ISP" jdbcType="VARCHAR" property="isp" />
+    <result column="AREA_CODE" jdbcType="VARCHAR" property="areaCode" />
+    <result column="COUNTRY_ENGLISH" jdbcType="VARCHAR" property="countryEnglish" />
+    <result column="COUNTRY_CODE" jdbcType="VARCHAR" property="countryCode" />
+    <result column="LONGITUDE" jdbcType="VARCHAR" property="longitude" />
+    <result column="LATITUDE" jdbcType="VARCHAR" property="latitude" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, IP_START, IP_END, IP_START_NUM, IP_END_NUM, CONTINENT, COUNTRY, PROVINCE, CITY, 
+    DISTRICT, DESCRIPTION, ISP, AREA_CODE, COUNTRY_ENGLISH, COUNTRY_CODE, LONGITUDE, 
+    LATITUDE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from IP_LOCATION_PUBLIC
+    where ID = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from IP_LOCATION_PUBLIC
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.nis.domain.restful.IpLocationPublic">
+  <selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="id">  
+	       SELECT SEQ_IP_LOCATION_PUBLIC.Nextval as ID from DUAL  
+	  </selectKey>
+    insert into IP_LOCATION_PUBLIC (ID, IP_START, IP_END, 
+      IP_START_NUM, IP_END_NUM, CONTINENT, 
+      COUNTRY, PROVINCE, CITY, 
+      DISTRICT, DESCRIPTION, ISP, 
+      AREA_CODE, COUNTRY_ENGLISH, COUNTRY_CODE, 
+      LONGITUDE, LATITUDE)
+    values (#{id,jdbcType=BIGINT}, #{ipStart,jdbcType=VARCHAR}, #{ipEnd,jdbcType=VARCHAR}, 
+      #{ipStartNum,jdbcType=BIGINT}, #{ipEndNum,jdbcType=BIGINT}, #{continent,jdbcType=VARCHAR}, 
+      #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, #{city,jdbcType=VARCHAR}, 
+      #{district,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, #{isp,jdbcType=VARCHAR}, 
+      #{areaCode,jdbcType=VARCHAR}, #{countryEnglish,jdbcType=VARCHAR}, #{countryCode,jdbcType=VARCHAR}, 
+      #{longitude,jdbcType=VARCHAR}, #{latitude,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.nis.domain.restful.IpLocationPublic">
+    insert into IP_LOCATION_PUBLIC
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="ipStart != null">
+        IP_START,
+      </if>
+      <if test="ipEnd != null">
+        IP_END,
+      </if>
+      <if test="ipStartNum != null">
+        IP_START_NUM,
+      </if>
+      <if test="ipEndNum != null">
+        IP_END_NUM,
+      </if>
+      <if test="continent != null">
+        CONTINENT,
+      </if>
+      <if test="country != null">
+        COUNTRY,
+      </if>
+      <if test="province != null">
+        PROVINCE,
+      </if>
+      <if test="city != null">
+        CITY,
+      </if>
+      <if test="district != null">
+        DISTRICT,
+      </if>
+      <if test="description != null">
+        DESCRIPTION,
+      </if>
+      <if test="isp != null">
+        ISP,
+      </if>
+      <if test="areaCode != null">
+        AREA_CODE,
+      </if>
+      <if test="countryEnglish != null">
+        COUNTRY_ENGLISH,
+      </if>
+      <if test="countryCode != null">
+        COUNTRY_CODE,
+      </if>
+      <if test="longitude != null">
+        LONGITUDE,
+      </if>
+      <if test="latitude != null">
+        LATITUDE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="ipStart != null">
+        #{ipStart,jdbcType=VARCHAR},
+      </if>
+      <if test="ipEnd != null">
+        #{ipEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="ipStartNum != null">
+        #{ipStartNum,jdbcType=BIGINT},
+      </if>
+      <if test="ipEndNum != null">
+        #{ipEndNum,jdbcType=BIGINT},
+      </if>
+      <if test="continent != null">
+        #{continent,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null">
+        #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null">
+        #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isp != null">
+        #{isp,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null">
+        #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="countryEnglish != null">
+        #{countryEnglish,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCode != null">
+        #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null">
+        #{latitude,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.nis.domain.restful.IpLocationPublic">
+    update IP_LOCATION_PUBLIC
+    <set>
+      <if test="ipStart != null">
+        IP_START = #{ipStart,jdbcType=VARCHAR},
+      </if>
+      <if test="ipEnd != null">
+        IP_END = #{ipEnd,jdbcType=VARCHAR},
+      </if>
+      <if test="ipStartNum != null">
+        IP_START_NUM = #{ipStartNum,jdbcType=BIGINT},
+      </if>
+      <if test="ipEndNum != null">
+        IP_END_NUM = #{ipEndNum,jdbcType=BIGINT},
+      </if>
+      <if test="continent != null">
+        CONTINENT = #{continent,jdbcType=VARCHAR},
+      </if>
+      <if test="country != null">
+        COUNTRY = #{country,jdbcType=VARCHAR},
+      </if>
+      <if test="province != null">
+        PROVINCE = #{province,jdbcType=VARCHAR},
+      </if>
+      <if test="city != null">
+        CITY = #{city,jdbcType=VARCHAR},
+      </if>
+      <if test="district != null">
+        DISTRICT = #{district,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        DESCRIPTION = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="isp != null">
+        ISP = #{isp,jdbcType=VARCHAR},
+      </if>
+      <if test="areaCode != null">
+        AREA_CODE = #{areaCode,jdbcType=VARCHAR},
+      </if>
+      <if test="countryEnglish != null">
+        COUNTRY_ENGLISH = #{countryEnglish,jdbcType=VARCHAR},
+      </if>
+      <if test="countryCode != null">
+        COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR},
+      </if>
+      <if test="longitude != null">
+        LONGITUDE = #{longitude,jdbcType=VARCHAR},
+      </if>
+      <if test="latitude != null">
+        LATITUDE = #{latitude,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.nis.domain.restful.IpLocationPublic">
+    update IP_LOCATION_PUBLIC
+    set IP_START = #{ipStart,jdbcType=VARCHAR},
+      IP_END = #{ipEnd,jdbcType=VARCHAR},
+      IP_START_NUM = #{ipStartNum,jdbcType=BIGINT},
+      IP_END_NUM = #{ipEndNum,jdbcType=BIGINT},
+      CONTINENT = #{continent,jdbcType=VARCHAR},
+      COUNTRY = #{country,jdbcType=VARCHAR},
+      PROVINCE = #{province,jdbcType=VARCHAR},
+      CITY = #{city,jdbcType=VARCHAR},
+      DISTRICT = #{district,jdbcType=VARCHAR},
+      DESCRIPTION = #{description,jdbcType=VARCHAR},
+      ISP = #{isp,jdbcType=VARCHAR},
+      AREA_CODE = #{areaCode,jdbcType=VARCHAR},
+      COUNTRY_ENGLISH = #{countryEnglish,jdbcType=VARCHAR},
+      COUNTRY_CODE = #{countryCode,jdbcType=VARCHAR},
+      LONGITUDE = #{longitude,jdbcType=VARCHAR},
+      LATITUDE = #{latitude,jdbcType=VARCHAR}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

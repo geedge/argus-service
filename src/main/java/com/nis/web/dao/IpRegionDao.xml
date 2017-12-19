@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.IpRegionDao">
+	<resultMap id="BaseResultMap" type="com.nis.domain.restful.IpRegion">
+		<result column="REGION_ID" jdbcType="BIGINT" property="regionId" />
+		<result column="GROUP_ID" jdbcType="BIGINT" property="groupId" />
+		<result column="ADDR_TYPE" jdbcType="INTEGER" property="addrType" />
+		<result column="SRC_IP" jdbcType="VARCHAR" property="srcIp" />
+		<result column="MASK_SRC_IP" jdbcType="VARCHAR" property="maskSrcIp" />
+		<result column="SRC_PORT" jdbcType="VARCHAR" property="srcPort" />
+		<result column="MASK_SRC_PORT" jdbcType="VARCHAR" property="maskSrcPort" />
+		<result column="DST_IP" jdbcType="VARCHAR" property="dstIp" />
+		<result column="MASK_DST_IP" jdbcType="VARCHAR" property="maskDstIp" />
+		<result column="DST_PORT" jdbcType="VARCHAR" property="dstPort" />
+		<result column="MASK_DST_PORT" jdbcType="VARCHAR" property="maskDstPort" />
+		<result column="PROTOCOL" jdbcType="INTEGER" property="protocol" />
+		<result column="DIRECTION" jdbcType="INTEGER" property="direction" />
+		<result column="IS_VALID" jdbcType="INTEGER" property="isValid" />
+		<result column="OP_TIME" jdbcType="TIMESTAMP" property="opTime" />
+		<result column="LAST_UPDATE" jdbcType="TIMESTAMP" property="lastUpdate" />
+		<result column="PROC_SEQ" jdbcType="BIGINT" property="procSeq" />
+	</resultMap>
+	<sql id="ipRegionSql">
+		REGION_ID,GROUP_ID,
+		ADDR_TYPE,SRC_IP,MASK_SRC_IP,SRC_PORT,MASK_SRC_PORT,DST_IP,
+		MASK_DST_IP,DST_PORT,MASK_DST_PORT,PROTOCOL,DIRECTION,IS_VALID,OP_TIME,LAST_UPDATE,PROC_SEQ
+	</sql>
+	<select id="queryIpRegionById" parameterType="com.nis.domain.restful.IpRegion"
+		resultMap="BaseResultMap">
+		select
+		<include refid="ipRegionSql" />
+		from ${tableName} where REGION_ID = #{regionId,jdbcType=BIGINT}
+	</select>
+
+
+	<select id="queryIpRegionByGroupId" resultMap="BaseResultMap">
+		select
+		<include refid="ipRegionSql" />
+		from ${tableName} where GROUP_ID in
+		<foreach item="item" index="index" collection="groupIdArr" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+
+
+	<insert id="saveIpRegionBatch">
+<!-- 		insert /*+append*/ into ${tableName} -->
+		insert  into ${tableName}
+		(REGION_ID,
+		GROUP_ID,
+		ADDR_TYPE,
+		SRC_IP,
+		MASK_SRC_IP,
+		SRC_PORT,
+		MASK_SRC_PORT,
+		DST_IP,
+		MASK_DST_IP,
+		DST_PORT,
+		MASK_DST_PORT,
+		PROTOCOL,
+		DIRECTION,
+		IS_VALID,
+		OP_TIME,LAST_UPDATE
+<!-- 		,PROC_SEQ -->
+		)
+		<foreach collection="ipRegionList" item="item" index="index" open="("
+			close=")" separator="union">
+			select
+			#{item.regionId,jdbcType=BIGINT},
+			#{item.groupId,jdbcType=BIGINT},
+			#{item.addrType,jdbcType=INTEGER},
+			#{item.srcIp,jdbcType=VARCHAR},
+			#{item.maskSrcIp,jdbcType=VARCHAR},
+			#{item.srcPort,jdbcType=VARCHAR},
+			#{item.maskSrcPort,jdbcType=VARCHAR},
+			#{item.dstIp,jdbcType=VARCHAR},
+			#{item.maskDstIp,jdbcType=VARCHAR},
+			#{item.dstPort,jdbcType=VARCHAR},
+			#{item.maskDstPort,jdbcType=VARCHAR},
+			#{item.protocol,jdbcType=INTEGER},
+			#{item.direction,jdbcType=INTEGER},
+			#{item.isValid,jdbcType=INTEGER},
+			#{item.opTime,jdbcType=TIMESTAMP},
+			sysdate
+<!-- 			#{item.procSeq,jdbcType=BIGINT} -->
+			from dual
+		</foreach>
+	</insert>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<insert id="saveIpRegion" parameterType="com.nis.domain.restful.IpRegion">
+		<!-- <selectKey keyProperty="regionId" resultType="java.lang.Long" -->
+		<!-- order="BEFORE"> 取消使用序列,界面会将id传过来 -->
+		<!-- select seq_regionId.nextval from dual -->
+		<!-- </selectKey> -->
+
+		insert into ${tableName}
+		(REGION_ID,
+		GROUP_ID,
+		ADDR_TYPE,
+		SRC_IP,
+		MASK_SRC_IP,
+		SRC_PORT,
+		MASK_SRC_PORT,
+		DST_IP,
+		MASK_DST_IP,
+		DST_PORT,
+		MASK_DST_PORT,
+		PROTOCOL,
+		DIRECTION,
+		IS_VALID,
+		<if test="lastUpdate != null">
+			LAST_UPDATE,
+		</if>
+		OP_TIME
+		)
+		values
+		(#{regionId,jdbcType=BIGINT},
+		#{groupId,jdbcType=BIGINT},
+		#{addrType,jdbcType=INTEGER},
+		#{srcIp,jdbcType=VARCHAR},
+		#{maskSrcIp,jdbcType=VARCHAR},
+		#{srcPort,jdbcType=VARCHAR},
+		#{maskSrcPort,jdbcType=VARCHAR},
+		#{dstIp,jdbcType=VARCHAR},
+		#{maskDstIp,jdbcType=VARCHAR},
+		#{dstPort,jdbcType=VARCHAR},
+		#{maskDstPort,jdbcType=VARCHAR},
+		#{protocol,jdbcType=INTEGER},
+		#{direction,jdbcType=INTEGER},
+		#{isValid,jdbcType=INTEGER},
+		<if test="lastUpdate != null">
+		#{lastUpdate,jdbcType=TIMESTAMP},
+		</if>
+		#{opTime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+
+	<update id="updateIpRegion" parameterType="com.nis.domain.restful.IpRegion">
+		UPDATE ${tableName}
+		<set>
+			<if test="isValid != null">
+				IS_VALID=#{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="opTime != null">
+				OP_TIME=#{opTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastUpdate != null">
+				LAST_UPDATE=#{lastUpdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where REGION_ID=#{regionId}
+	</update>
+
+
+	<!-- 
+	<update id="updateIpRegion" parameterType="com.nis.domain.restful.IpRegion">
+		UPDATE ${tableName}
+		<set>
+			<if test="groupId != null">
+				GROUP_ID=#{groupId,jdbcType=BIGINT},
+			</if>
+			<if test="addrType != null">
+				ADDR_TYPE=#{addrType,jdbcType=INTEGER},
+			</if>
+			<if test="srcIp != null and srcIp !=''">
+				SRC_IP=#{srcIp,jdbcType=VARCHAR},
+			</if>
+
+			<if test="maskSrcIp != null and maskSrcIp !=''">
+				MASK_SRC_IP=#{maskSrcIp,jdbcType=VARCHAR},
+			</if>
+			<if test="srcPort != null and srcPort !=''">
+				SRC_PORT=#{srcPort,jdbcType=VARCHAR},
+			</if>
+			<if test="maskSrcPort != null and maskSrcPort !=''">
+				MASK_SRC_PORT=#{maskSrcPort,jdbcType=VARCHAR},
+			</if>
+			<if test="dstIp != null and dstIp !=''">
+				DST_IP=#{dstIp,jdbcType=VARCHAR},
+			</if>
+			<if test="maskDstIp != null and maskDstIp !=''">
+				MASK_DST_IP=#{maskDstIp,jdbcType=VARCHAR},
+			</if>
+			<if test="dstPort != null and dstPort !=''">
+				DST_PORT=#{dstPort,jdbcType=VARCHAR},
+			</if>
+			<if test="maskDstPort != null and maskDstPort !=''">
+				MASK_DST_PORT=#{maskDstPort,jdbcType=VARCHAR},
+			</if>
+			<if test="protocol != null">
+				PROTOCOL=#{protocol,jdbcType=INTEGER},
+			</if>
+			<if test="direction != null">
+				DIRECTION=#{direction,jdbcType=INTEGER},
+			</if>
+			<if test="isValid != null">
+				IS_VALID=#{isValid,jdbcType=INTEGER},
+			</if>
+			<if test="opTime != null">
+				OP_TIME=#{opTime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where REGION_ID=#{regionId}
+	</update>
+	 -->
+	
+</mapper>

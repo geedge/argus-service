@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.SystemFunStatusDao">
+	
+	<resultMap id="BaseResultMap" type="com.nis.domain.restful.SystemFunStatus">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="proc_seq" jdbcType="BIGINT" property="procSeq" />
+		<result column="function" jdbcType="BIGINT" property="function" />
+		<result column="back_data" jdbcType="BIGINT" property="backData" />
+		<result column="effective_range" jdbcType="VARCHAR" property="effectiveRange" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="is_valid" jdbcType="INTEGER" property="isValid" />
+		<result column="op_time" jdbcType="TIMESTAMP" property="opTime" />
+	</resultMap>
+
+
+	<insert id="insert" parameterType="com.nis.domain.restful.SystemFunStatus">
+		insert into SYSTEM_FUN_STATUS
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			ID,
+			<if test="function != null">FUNCTION,</if>
+			<if test="backData != null">BACK_DATA,</if>
+			<if test="effectiveRange != null">EFFECTIVE_RANGE,</if>
+			<if test="activeSys != null">ACTIVE_SYS,</if>
+			<if test="isValid != null">IS_VALID,</if>
+			<if test="opTime != null">OP_TIME,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{id,jdbcType=BIGINT},
+			<if test="function != null">#{function,jdbcType=BIGINT},</if>
+			<if test="backData != null">#{backData,jdbcType=BIGINT},</if>
+			<if test="effectiveRange != null">#{effectiveRange,jdbcType=VARCHAR},</if>
+			<if test="activeSys != null">#{activeSys,jdbcType=INTEGER},</if>
+			<if test="isValid != null">#{isValid,jdbcType=INTEGER},</if>
+			<if test="opTime != null">#{opTime,jdbcType=TIMESTAMP},</if>
+		</trim>
+	</insert>
+
+
+	<update id="update" parameterType="com.nis.domain.restful.SystemFunStatus">
+		update SYSTEM_FUN_STATUS
+		<set>
+			<if test="function != null">FUNCTION = #{function,jdbcType=BIGINT},</if>
+			<if test="backData != null">BACK_DATA = #{backData,jdbcType=BIGINT},</if>
+			<if test="effectiveRange != null">EFFECTIVE_RANGE = #{effectiveRange,jdbcType=VARCHAR},</if>
+			<if test="activeSys != null">ACTIVE_SYS = #{activeSys,jdbcType=INTEGER},</if>
+			<if test="isValid != null">IS_VALID = #{isValid,jdbcType=INTEGER},</if>
+			<if test="opTime != null">OP_TIME = #{opTime,jdbcType=TIMESTAMP},</if>
+		</set>
+		where ID = #{id,jdbcType=BIGINT}
+	</update>
+
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.ConfigPzIdDao">
+	<select id="getConfigPzIdList" parameterType="com.nis.domain.restful.ConfigPzIdSource" resultType="java.lang.Long" useCache="false" flushCache="true">
+		SELECT 
+		
+		<if test="sourceName != null and sourceName =='CONFIG_COMPILE'">
+				SEQ_COMPILEID.nextval
+		</if>
+		<if test="sourceName != null and sourceName =='CONFIG_GROUP_ID'">
+				SEQ_CONFIG_GROUP.nextval
+		</if>
+		<if test="sourceName != null and sourceName =='CONFIG_GROUP'">
+				SEQ_GROUPID.nextval
+		</if>
+		<if test="sourceName != null and sourceName =='CONFIG_REGION'">
+				SEQ_REGIONID.nextval
+		</if>
+		FROM dual
+	</select>
+</mapper>

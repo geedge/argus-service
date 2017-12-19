@@ -1,0 +1,776 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.DjJitLogSearchDao">
+	<resultMap id="DjJitFlSrcReportMap" type="com.nis.domain.restful.DjJitFlSrcReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="FL" jdbcType="INTEGER" property="fl" />
+		<result column="XZ" jdbcType="INTEGER" property="xz" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<sql id="DjJitFlSrcReport_Column_List">
+		STAT_ID, FL, XZ, REPORT_TIME, SRC_COUNTRY, SRC_PROVINCE,
+		SRC_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitFlSrcReport" parameterType="com.nis.domain.restful.DjJitFlSrcReport"
+		resultMap="DjJitFlSrcReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitFlSrcReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_FL_SRC_REPORT
+		<where>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchFl != null and searchFl !=''">
+				AND FL = #{searchFl}
+			</if>
+			<if test="searchXz != null and searchXz !=''">
+				AND XZ = #{searchXz}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+	<resultMap id="DjJitFlDestReportMap" type="com.nis.domain.restful.DjJitFlDestReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="FL" jdbcType="INTEGER" property="fl" />
+		<result column="XZ" jdbcType="INTEGER" property="xz" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="DEST_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="DEST_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+	<sql id="DjJitFlDestReport_Column_List">
+		STAT_ID, FL, XZ, REPORT_TIME, DEST_COUNTRY, DEST_PROVINCE,
+		DEST_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitFlDestReport" parameterType="com.nis.domain.restful.DjJitFlDestReport"
+		resultMap="DjJitFlDestReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitFlDestReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_FL_Dest_REPORT
+		<where>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchFl != null and searchFl !=''">
+				AND FL = #{searchFl}
+			</if>
+			<if test="searchXz != null and searchXz !=''">
+				AND XZ = #{searchXz}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+
+
+	<resultMap id="DjJitAffairSrcReportMap" type="com.nis.domain.restful.DjJitAffairSrcReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="Affair" jdbcType="INTEGER" property="affair" />
+		<result column="topic" jdbcType="INTEGER" property="topic" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitAffairSrcReport_Column_List">
+		STAT_ID, Affair,topic, REPORT_TIME, SRC_COUNTRY,
+		SRC_PROVINCE,
+		SRC_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitAffairSrcReport" parameterType="com.nis.domain.restful.DjJitAffairSrcReport"
+		resultMap="DjJitAffairSrcReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitAffairSrcReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_AFFAIR_SRC_REPORT
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchAffair != null and searchAffair !=''">
+				AND Affair = #{searchAffair}
+			</if>
+			<if test="searchTopic != null and searchTopic !=''">
+				AND topic = #{searchTopic}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<resultMap id="DjJitAffairDestReportMap" type="com.nis.domain.restful.DjJitAffairDestReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="Affair" jdbcType="INTEGER" property="affair" />
+		<result column="topic" jdbcType="INTEGER" property="topic" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="DEST_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="DEST_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitAffairDestReport_Column_List">
+		STAT_ID, Affair,topic, REPORT_TIME, DEST_COUNTRY,
+		DEST_PROVINCE,
+		DEST_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitAffairDestReport" parameterType="com.nis.domain.restful.DjJitAffairDestReport"
+		resultMap="DjJitAffairDestReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitAffairDestReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_AFFAIR_DEST_REPORT
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchAffair != null and searchAffair !=''">
+				AND Affair = #{searchAffair}
+			</if>
+			<if test="searchTopic != null and searchTopic !=''">
+				AND topic = #{searchTopic}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<resultMap id="DjJitMissionSrcReportMap" type="com.nis.domain.restful.DjJitMissionSrcReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="mission" jdbcType="INTEGER" property="mission" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitMissionSrcReport_Column_List">
+		STAT_ID, mission, REPORT_TIME, SRC_COUNTRY, SRC_PROVINCE,
+		SRC_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitMissionSrcReport" parameterType="com.nis.domain.restful.DjJitMissionSrcReport"
+		resultMap="DjJitMissionSrcReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitMissionSrcReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_MISSION_SRC_REPORT
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchMission != null and searchMission !=''">
+				AND mission = #{searchMission}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<resultMap id="DjJitMissionDestReportMap" type="com.nis.domain.restful.DjJitMissionDestReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="mission" jdbcType="INTEGER" property="mission" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="DEST_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="DEST_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitMissionDestReport_Column_List">
+		STAT_ID, mission, REPORT_TIME, DEST_COUNTRY, DEST_PROVINCE,
+		DEST_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitMissionDestReport" parameterType="com.nis.domain.restful.DjJitMissionDestReport"
+		resultMap="DjJitMissionDestReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitMissionDestReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_MISSION_DEST_REPORT
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchMission != null and searchMission !=''">
+				AND mission = #{searchMission}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+	<resultMap id="DjJitGuaranteeSrcReportMap"
+		type="com.nis.domain.restful.DjJitGuaranteeSrcReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="guarantee" jdbcType="INTEGER" property="guarantee" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitGuaranteeSrcReport_Column_List">
+		STAT_ID, guarantee, REPORT_TIME, SRC_COUNTRY, SRC_PROVINCE,
+		SRC_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitGuaranteeSrcReport" parameterType="com.nis.domain.restful.DjJitGuaranteeSrcReport"
+		resultMap="DjJitGuaranteeSrcReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitGuaranteeSrcReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_GUARANTEE_SRC_REPORT
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchGuarantee != null and searchGuarantee !=''">
+				AND guarantee = #{searchGuarantee}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<resultMap id="DjJitGuaranteeDestReportMap"
+		type="com.nis.domain.restful.DjJitGuaranteeDestReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="guarantee" jdbcType="INTEGER" property="guarantee" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="DEST_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="DEST_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitGuaranteeDestReport_Column_List">
+		STAT_ID, guarantee, REPORT_TIME, DEST_COUNTRY,
+		DEST_PROVINCE,
+		DEST_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitGuaranteeDestReport" parameterType="com.nis.domain.restful.DjJitGuaranteeDestReport"
+		resultMap="DjJitGuaranteeDestReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitGuaranteeDestReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_GUARANTEE_DEST_REPORT
+		<where>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchGuarantee != null and searchGuarantee !=''">
+				AND guarantee = #{searchGuarantee}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<resultMap id="DjJitTagSrcReportMap" type="com.nis.domain.restful.DjJitTagSrcReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="tag" jdbcType="INTEGER" property="tag" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitTagSrcReport_Column_List">
+		STAT_ID, tag, REPORT_TIME, SRC_COUNTRY, SRC_PROVINCE,
+		SRC_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitTagSrcReport" parameterType="com.nis.domain.restful.DjJitTagSrcReport"
+		resultMap="DjJitTagSrcReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitTagSrcReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_TAG_SRC_REPORT
+		<where>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchTag != null and searchTag !=''">
+				AND tag in (${searchTag})
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<resultMap id="DjJitTagDestReportMap" type="com.nis.domain.restful.DjJitTagDestReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="tag" jdbcType="INTEGER" property="tag" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="DEST_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="DEST_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitTagDestReport_Column_List">
+		STAT_ID, tag, REPORT_TIME, DEST_COUNTRY,
+		DEST_PROVINCE,
+		DEST_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitTagDestReport" parameterType="com.nis.domain.restful.DjJitTagDestReport"
+		resultMap="DjJitTagDestReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitTagDestReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_TAG_DEST_REPORT
+		<where>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchTag != null and searchTag !=''">
+				AND tag in (${searchTag})
+				
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<resultMap id="DjJitIdSrcReportMap" type="com.nis.domain.restful.DjJitIdSrcReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="SRC_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitIdSrcReport_Column_List">
+		STAT_ID, id, REPORT_TIME, SRC_COUNTRY, SRC_PROVINCE,
+		SRC_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitIdSrcReport" parameterType="com.nis.domain.restful.DjJitIdSrcReport"
+		resultMap="DjJitIdSrcReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitIdSrcReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_ID_SRC_REPORT
+		<where>
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchId != null and searchId !=''">
+				AND id = #{searchId}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	<resultMap id="DjJitIdDestReportMap" type="com.nis.domain.restful.DjJitIdDestReport">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="id" jdbcType="BIGINT" property="id" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="nation" />
+		<result column="DEST_PROVINCE" jdbcType="VARCHAR" property="province" />
+		<result column="DEST_CITY" jdbcType="VARCHAR" property="city" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+	</resultMap>
+
+	<sql id="DjJitIdDestReport_Column_List">
+		STAT_ID, id, REPORT_TIME, DEST_COUNTRY,
+		DEST_PROVINCE,
+		DEST_CITY, SUM,
+		SERVICE
+	</sql>
+	<select id="findDjJitIdDestReport" parameterType="com.nis.domain.restful.DjJitIdDestReport"
+		resultMap="DjJitIdDestReportMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjJitIdDestReport_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_JIT_ID_DEST_REPORT
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchId != null and searchId !=''">
+				AND id = #{searchId}
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= to_date(#{searchReportStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < to_date(#{searchReportEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<resultMap id="DjCkStatLogMap" type="com.nis.domain.restful.DjCkStatLog">
+		<id column="STAT_ID" jdbcType="BIGINT" property="statId" />
+		<result column="CONFIG_ID" jdbcType="BIGINT" property="configId" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="GJ_CK_ID" jdbcType="BIGINT" property="gjCkId" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="active_sys" jdbcType="INTEGER" property="activeSys" />
+		<result column="CAP_TIME" jdbcType="TIMESTAMP" property="capTime" />
+	</resultMap>
+
+	<sql id="DjCkStatLog_Column_List">
+		STAT_ID, CONFIG_ID, SERVICE, GJ_CK_ID,SUM,CAP_TIME,active_sys
+	</sql>
+	<select id="findDjCkStatLog" parameterType="com.nis.domain.restful.DjCkStatLog"
+		resultMap="DjCkStatLogMap">
+		select
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="DjCkStatLog_Column_List" />
+			</otherwise>
+		</choose>
+		from DJ_CK_STAT_LOG
+		<where>
+			
+			<if test="searchService != null and searchService !=''">
+				AND SERVICE =#{searchService}
+			</if>
+			<if test="searchGjCkId != null and searchGjCkId !=''">
+				AND GJ_CK_ID = #{searchGjCkId}
+			</if>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				AND CONFIG_ID = #{searchCfgId}
+			</if>
+			<if test="searchActiveSys != null and searchActiveSys !=''">
+				AND active_sys = #{searchActiveSys}
+			</if>
+			<if test="searchCapStartTime != null and searchCapStartTime !=''">
+				<![CDATA[AND CAP_TIME >= to_date(#{searchCapStartTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+			<if test="searchCapEndTime != null and searchCapEndTime !=''">
+				<![CDATA[AND CAP_TIME < to_date(#{searchCapEndTime},'yyyy-MM-dd HH24:mi:ss')]]>
+			</if>
+
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

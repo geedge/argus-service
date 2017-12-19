@@ -1,0 +1,5 @@
+nignx_shouhu.sh为nignx的守护进程，半分钟检查一次nignx进程，不存在则启动；
+tomcat_shouhu.sh为tomcat的守护进程，5分钟检查一次tomcat进程，不存在则启动；
+tomcat_resart.sh为tomcat的重启守护进程，24小时检查一次tomcat进程，不存在则启动，存在则杀掉再启动；
+tomcat_shouhu.sh和tomcat_restart.sh配合使用，在当前负载均衡多tomcat节点的情况下对部分tomcat只启用tomcat_shouhu.sh；
+部分tomcat启用tomcat_shouhu.sh和tomcat_restart.sh,以保证整个负载集群的稳定可用性。

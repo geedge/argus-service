@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:tool="http://www.springframework.org/schema/tool"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd"
+	default-lazy-init="true">
+
+
+	<!-- 引入jdbc.properties,加密密码 ;<context:property-placeholder location="classpath:jdbc.properties" 
+		/> -->
+	<bean id="propertyConfigurer" class="com.nis.util.PropertyPlaceholderConfigurerCrypt">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:nis.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="parentDataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"></bean>
+
+	<!-- 数据源定义，采用BoneCP连接池 ,用户管理数据源 -->
+	<bean id="DevlopDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.devlop.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.devlop.url}"></property>
+		<property name="username" value="${jdbc.devlop.username}"></property>
+		<property name="password" value="${jdbc.devlop.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+
+	<!--数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="ProductDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.product.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.product.url}"></property>
+		<property name="username" value="${jdbc.product.username}"></property>
+		<property name="password" value="${jdbc.product.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+
+	<!--数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="LogDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.log.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.log.url}"></property>
+		<property name="username" value="${jdbc.log.username}"></property>
+		<property name="password" value="${jdbc.log.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+	<!--数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="LogCDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.logC.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.logC.url}"></property>
+		<property name="username" value="${jdbc.logC.username}"></property>
+		<property name="password" value="${jdbc.logC.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+	<!--数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="LogADataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.logA.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.logA.url}"></property>
+		<property name="username" value="${jdbc.logA.username}"></property>
+		<property name="password" value="${jdbc.logA.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+
+	<!--数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="JkDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.jk.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.jk.url}"></property>
+		<property name="username" value="${jdbc.jk.username}"></property>
+		<property name="password" value="${jdbc.jk.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+
+
+
+	<!--A版hive数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="HiveADataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.hiveA.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.hiveA.url}"></property>
+		<property name="username" value="${jdbc.hiveA.username}"></property>
+		<property name="password" value="${jdbc.hiveA.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes"
+			value="${bonecp.hive.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.hive.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.hive.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.hive.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.hive.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.hive.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.hive.statementsCacheSize}" />
+	</bean>
+
+	<!--B版hive数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
+	<bean id="HiveBDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.hiveB.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.hiveB.url}"></property>
+		<property name="username" value="${jdbc.hiveB.username}"></property>
+		<property name="password" value="${jdbc.hiveB.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes"
+			value="${bonecp.hive.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.hive.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.hive.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.hive.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.hive.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.hive.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.hive.statementsCacheSize}" />
+	</bean>
+
+	<!--数据源定义，采用BoneCP连接池 ,神通数据库 -->
+	<bean id="LogClusterDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.log.cluster.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.log.cluster.url}"></property>
+		<property name="username" value="${jdbc.log.cluster.username}"></property>
+		<property name="password" value="${jdbc.log.cluster.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.cluster.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.cluster.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.cluster.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.cluster.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.cluster.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.cluster.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.cluster.statementsCacheSize}" />
+	</bean>
+
+
+
+
+
+
+
+	<!--测试数据源,后期会删除 -->
+	<bean id="TestDataSource" parent="parentDataSource"
+		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbc.test.driver}"></property>
+		<property name="jdbcUrl" value="${jdbc.test.url}"></property>
+		<property name="username" value="${jdbc.test.username}"></property>
+		<property name="password" value="${jdbc.test.password}"></property>
+		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
+		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
+		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
+		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
+		<!-- 每个分区最大的连接数 -->
+		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
+		<!-- 每个分区最小的连接数 -->
+		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
+		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
+		<property name="partitionCount" value="${bonecp.partitionCount}" />
+		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
+		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
+		<!-- 缓存prepared statements的大小，默认值：0 -->
+		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
+	</bean>
+
+
+
+
+	<bean id="dynamicDataSource" class="com.nis.datasource.DynamicDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry value-ref="DevlopDataSource" key="dataSourceA"></entry>
+				<entry value-ref="ProductDataSource" key="dataSourceB"></entry>
+				<entry value-ref="LogDataSource" key="dataSourceC"></entry>
+				<!--测试数据源,后期会删除 -->
+				<entry value-ref="TestDataSource" key="dataSourceD"></entry>
+				<entry value-ref="JkDataSource" key="dataSourceE"></entry>
+
+				<entry value-ref="LogADataSource" key="dataSourceF"></entry>
+				<entry value-ref="LogCDataSource" key="dataSourceG"></entry>
+				
+				<entry value-ref="LogClusterDataSource" key="dataSourceH"></entry>
+
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="DevlopDataSource"></property>
+	</bean>
+
+	<!-- mybatis 配置，扫描相关mapper文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dynamicDataSource"></property>
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<!--<property name="mapperLocations" value="classpath*:dbmap/*Mapper.xml"></property> -->
+	</bean>
+
+	<!--创建数据映射器，数据映射器必须为接口 -->
+	<!-- 扫描basePackage下所有以@MyBatisDao注解的接口 -->
+	<bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+		<property name="basePackage" value="com.nis.web.dao" />
+		<property name="annotationClass" value="com.nis.web.dao.MyBatisDao" />
+	</bean>
+
+	<bean id="defaultLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler"
+		lazy-init="true"></bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dynamicDataSource"></property>
+	</bean>
+
+	<!-- 配置事务异常封装 -->
+	<bean id="persistenceExceptionTranslationPostProcessor"
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"></bean>
+
+
+
+	<!-- 定义transactionManager作事务管理,get*方法事务为readonly,其它方法按默认设置 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="get*" read-only="true" propagation="NOT_SUPPORTED"/>
+			<tx:method name="find*" read-only="true" propagation="NOT_SUPPORTED"/>
+			<tx:method name="query*" read-only="true" propagation="NOT_SUPPORTED"/>
+			<tx:method name="search*" read-only="true" propagation="NOT_SUPPORTED"/>
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- proxy-target-class="true" -->
+	<aop:config expose-proxy="true">
+		<aop:pointcut expression="execution(* com.nis.web.service..*Service.*(..))"
+			id="txPointcut" />
+		<aop:advisor pointcut-ref="txPointcut" advice-ref="txAdvice" />
+	</aop:config>
+
+
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dynamicDataSource"></property>
+	</bean>
+
+
+</beans>
