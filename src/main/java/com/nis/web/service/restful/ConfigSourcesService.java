@@ -1742,7 +1742,9 @@ public class ConfigSourcesService extends BaseService {
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
 				String msg = checkCompileOptForUpdate(config);
-				
+				if (config.getOpTime()==null) {
+					config.setOpTime(opTime);
+				}
 				if (!msg.equals("ok")) {
 					thread.setExceptionInfo(msg + sb.toString());
 					throw new RestServiceException(thread, System.currentTimeMillis() - start, msg + sb.toString(),

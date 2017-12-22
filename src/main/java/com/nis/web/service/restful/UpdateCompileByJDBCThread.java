@@ -192,6 +192,43 @@ public class UpdateCompileByJDBCThread implements Runnable {
 		}
 	}
 
+	/**
+	 * 
+	 * @Description: 根据compileId更新与之对应的group关系表的生效状态
+	 * @author (zdx)
+	 * @date 2017年8月16日 上午9:46:44
+	 * @param compileList
+	 * @param conn
+	 * @param opTime
+	 * @param msgList
+	 */
+	public static void updateGroupByCompileId(List<ConfigCompile> compileList, Connection conn, Date opTime,
+			List<Exception> msgList) {
+		if (null != compileList && compileList.size() > 0) {
+			try {
+				StringBuffer sb = new StringBuffer();
+				sb.append("update  CONFIG_GROUP set IS_VALID=?,op_time=?,LAST_UPDATE=sysdate where COMPILE_ID=? ");
+				conn.setAutoCommit(false);
+				PreparedStatement ps = conn.prepareStatement(sb.toString());
+				for (ConfigCompile compile : compileList) {
+					Object[] obj = new Object[] { compile.getIsValid(), opTime,compile.getCompileId() };
+					for (int x = 0; x < obj.length; x++) {
+						if (x == 1) {
+							ps.setTimestamp(x + 1, utileDate2TimeStamp(opTime));
+						} else {
+							ps.setObject(x + 1, obj[x]);
+						}
+					}
+					ps.addBatch();
+				}
+				ps.executeBatch();
+			} catch (Exception e) {
+				logger.error(e);
+				msgList.add(e);
+			}
+		}
+	}
+	
 	public static void updateGroup(List<ConfigGroupRelation> groupList, Connection conn, Date opTime,
 			List<Exception> msgList) {
 		if (null != groupList && groupList.size() > 0) {
@@ -450,6 +487,10 @@ public class UpdateCompileByJDBCThread implements Runnable {
 					updateStrRegion(tableName, strRegionList, conn, opTime, msgList);
 				} else if (null != numRegionList && numRegionList.size() > 0) {
 					updateNumRegion(tableName, numRegionList, conn, opTime, msgList);
+				}
+				
+				if((null !=compileList && compileList.size() > 0)&&(null != groupList && groupList.size()==0)){
+					updateGroupByCompileId(compileList, conn, opTime, msgList);
 				}
 				latch.countDown();
 				// System.out.println("latchCount=======================" +
