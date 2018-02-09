@@ -80,6 +80,13 @@ public class ConfigSourcesService extends BaseService {
 	public static Map<Integer, Map<String, String>> getTableRelation() {
 		Map<Integer, Map<String, String>> tableMap = new HashMap<Integer, Map<String, String>>();
 		Map<String, String> typeMap = new HashMap<String, String>();
+		typeMap.put("REUSE_IP", "ip");
+		typeMap.put("HID_CONTENT", "ip");
+		typeMap.put("GSB_PZ_IP", "ip");
+		typeMap.put("FAKE_REGION_EXTEND", "str");
+		tableMap.put(0, typeMap);
+		
+		typeMap = new HashMap<String, String>();
 		typeMap.put("DF_IP_PORT", "ip");
 		tableMap.put(1, typeMap);
 
