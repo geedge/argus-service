@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigGroupRelation;
 import com.nis.domain.restful.DataDictionaryValue;
+import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
@@ -303,22 +305,49 @@ public class CompileVal {
 				}
 			}
 		}
+		List<DigestRegion> digestRegionList = configCompile.getDigestRegionList();
 
-//		if (regionGroupIdList.size() > 0 && groupList.size() > 0 && groupList.size() != regionGroupIdList.size()) {
-//			for (Long groupId : groupList) {
-//				if (!regionGroupIdList.contains(groupId)) {
-//					return "配置id为" + configCompile.getCompileId() + "的配置中配置分组groupid为" + groupId + "的配置在域配置中未被使用";
-//				}
-//			}
-//
-//			for (Long groupId : regionGroupIdList) {
-//				if (!groupList.contains(groupId)) {
-//					return "配置id为" + configCompile.getCompileId() + "的配置中域配置中的groupid为" + groupId + "的域配置在配置分组关系中不存在";
-//				}
-//			}
-//
-//		}
+		//不判断是否为空
+		
+		//验证
+		if (digestRegionList != null && digestRegionList.size() > 0) {
+			for (DigestRegion digestRegion : digestRegionList) {
+				
+				//不验证表名和业务类型是否对应 
+				
+				
+				if (!isUpdate && digestRegion.getIsValid() != 1) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionid为"
+							+ digestRegion.getRegionId() + "的域配置在添加时不能为无效";
+				}
+				if (isUpdate && digestRegion.getIsValid() != 0) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionid为"
+							+ digestRegion.getRegionId() + "的域配置在修改时不能为有效";
+				}
 
+				if (groupList.size() > 0 && !groupList.contains(digestRegion.getGroupId())) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegion中的regionid为"
+							+ digestRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+				}
+				if (!regionGroupIdList.contains(digestRegion.getGroupId())) {
+					regionGroupIdList.add(digestRegion.getGroupId());
+				}
+
+				if (!isUpdate && Constants.BASE_VALIDATE) {
+					String valDigestRegion = valDigestRegion(digestRegion, compileId);
+					if (!valDigestRegion.equals("ok")) {
+						return valDigestRegion;
+					}
+				}
+
+				if (!isUpdate && Constants.SERVICE_VALIDATE) {
+					String serviceDigestRegionVal = serviceDigestRegionVal(digestRegion, compileId);
+					if (!serviceDigestRegionVal.equals("ok")) {
+						return serviceDigestRegionVal;
+					}
+				}
+			}
+		}
 		return CompileJudgeCode.CompileGroupSizeGtZero.getErrorReason();
 	}
 
@@ -549,6 +578,26 @@ public class CompileVal {
 		}
 		return "ok";
 	}
+	
+	public static String valDigestRegion(DigestRegion digestRegion, Long compileId) {
+		Long regionId = digestRegion.getRegionId();
+		if (null == regionId) {
+			return "id为" + compileId + "的编译配置中的摘要类域配置的regionId不能为空";
+		}
+		if (null == digestRegion.getGroupId()) {
+			return "id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置groupId不能为空";
+		}
+		if (null == digestRegion.getRawLen()) {
+			return "id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置rawLen不能为空";
+		}
+		if (null == digestRegion.getDigest() || digestRegion.getDigest().equals("")) {
+			return "id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置digest不能为空";
+		}
+		if (null == digestRegion.getCfdsLevel()) {
+			return "id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置cfdsLevel不能为空";
+		}
+		return "ok";
+	}
 
 	public static String serviceIpRegionVal(IpRegion ipRegion, Long compileId) {
 		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
@@ -685,6 +734,17 @@ public class CompileVal {
 
 	}
 
+	
+	public static String serviceDigestRegionVal(DigestRegion digestRegion, Long compileId) {
+
+		Integer cfdsLevel = digestRegion.getCfdsLevel();
+		if (!(cfdsLevel>=1&&cfdsLevel<=10)) {
+			return "编译配置id为" + compileId + "的配置中digestRegionList中regionId为" + digestRegion.getRegionId()
+					+ "的域配置cfdsLevel的值只能是1到10";
+		}
+		return "ok";
+
+	}
 	/**
 	 * 禁配词业务校验
 	 * 

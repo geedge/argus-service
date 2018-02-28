@@ -1,6 +1,5 @@
 package com.nis.web.service.restful;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,11 +11,11 @@ import org.apache.log4j.Logger;
 
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigGroupRelation;
+import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
 import com.nis.util.Configurations;
-import com.thoughtworks.xstream.core.util.Fields;
 
 /**
  * jdbc测试批量插入
@@ -36,7 +35,7 @@ public class SaveCompileByJDBCThread implements Runnable {
 	private List<IpRegion> ipRegionList;
 	private List<NumRegion> numRegionList;
 	private List<StrRegion> strRegionList;
-
+	private List<DigestRegion> digestRegionList;
 	
 	private Method method = null;
 	public SaveCompileByJDBCThread() {
@@ -146,6 +145,14 @@ public class SaveCompileByJDBCThread implements Runnable {
 
 	public void setStrRegionList(List<StrRegion> strRegionList) {
 		this.strRegionList = strRegionList;
+	}
+	
+	public List<DigestRegion> getDigestRegionList() {
+		return digestRegionList;
+	}
+
+	public void setDigestRegionList(List<DigestRegion> digestRegionList) {
+		this.digestRegionList = digestRegionList;
 	}
 
 	public static java.sql.Timestamp utileDate2TimeStamp(java.util.Date udate) {
@@ -524,6 +531,25 @@ public class SaveCompileByJDBCThread implements Runnable {
 //		}
 	}
 
+	public static void saveDigestRegion(String name, List<DigestRegion> digestRegionList, Connection conn,
+			List<Exception> msgList) {
+		if (null != digestRegionList && digestRegionList.size() > 0) {
+			try {
+				String fieldName = Configurations.getStringProperty("digestRegionFieldName", "REGION_ID");
+				conn.setAutoCommit(false);
+				PreparedStatement ps = conn.prepareStatement(getSqlStr(name, fieldName));
+				for (DigestRegion numRegion : digestRegionList) {
+					setPsParams(fieldName.split(","),ps,numRegion);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+			} catch (Exception e) {
+				logger.error(e);
+				msgList.add(e);
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 * @Description:根据表名和字段名称构建sql
@@ -625,6 +651,8 @@ public class SaveCompileByJDBCThread implements Runnable {
 					}
 				} else if (null != numRegionList && numRegionList.size() > 0) {
 					saveNumRegion(tableName, numRegionList, conn, msgList);
+				} else if (null != digestRegionList && digestRegionList.size() > 0) {
+					saveDigestRegion(tableName, digestRegionList, conn, msgList);
 				}
 				latch.countDown();
 				System.out.println("latchCount=======================" + latch.getCount());

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigGroupRelation;
+import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
@@ -33,6 +34,7 @@ public class UpdateCompileByJDBCThread implements Runnable {
 	private List<IpRegion> ipRegionList;
 	private List<NumRegion> numRegionList;
 	private List<StrRegion> strRegionList;
+	private List<DigestRegion> digestRegionList;
 	private Date opTime;
 
 	public UpdateCompileByJDBCThread() {
@@ -134,6 +136,14 @@ public class UpdateCompileByJDBCThread implements Runnable {
 
 	public void setStrRegionList(List<StrRegion> strRegionList) {
 		this.strRegionList = strRegionList;
+	}
+
+	public List<DigestRegion> getDigestRegionList() {
+		return digestRegionList;
+	}
+
+	public void setDigestRegionList(List<DigestRegion> digestRegionList) {
+		this.digestRegionList = digestRegionList;
 	}
 
 	public synchronized static java.sql.Timestamp utileDate2TimeStamp(java.util.Date udate) {
@@ -390,6 +400,55 @@ public class UpdateCompileByJDBCThread implements Runnable {
 			}
 		}
 	}
+	
+	public static void updateDigestRegion(String name, List<DigestRegion> digestRegionList, Connection conn, Date opTime,
+			List<Exception> msgList) {
+		if (null != digestRegionList && digestRegionList.size() > 0) {
+			try {
+				StringBuffer sb = new StringBuffer();
+				String fieldName = Configurations.getStringProperty("updateFields", "IS_VALID");
+				String condition = Configurations.getStringProperty("regionId", "REGION_ID");
+				sb.append("update ");
+				sb.append(name);
+				sb.append(" set ");
+				
+				String fieldNameObj [] =  fieldName.split(",");
+				//加上where条件的参数名称
+				String newParamsStr = fieldName+","+condition;
+				for (int i = 0; i < fieldNameObj.length; i++) {
+					sb.append(fieldNameObj[i]+"=?");
+					if (i+1<fieldNameObj.length) {
+						sb.append(",");
+					}
+				}
+						
+				//是否包含更新时间字段 值为数据库当前时间
+				if (Configurations.getBooleanProperty("hasLastUpdate", true)) {
+					sb.append(", LAST_UPDATE= sysdate");
+				}
+//						+ "where GROUP_ID=? and COMPILE_ID=? ");
+				sb.append(" where ");
+				String [] condObjs = condition.split(",");
+				for (int i = 0; i < condObjs.length; i++) {
+					sb.append(condObjs[i]+"=?");
+					if (i+1<condObjs.length) {
+						sb.append(" and ");
+					}
+				}
+				
+				conn.setAutoCommit(false);
+				PreparedStatement ps = conn.prepareStatement(sb.toString());
+				for (DigestRegion digestRegion : digestRegionList) {
+					setPsParams(newParamsStr.split(","), ps, digestRegion);
+					ps.addBatch();
+				}
+				ps.executeBatch();
+			} catch (Exception e) {
+				logger.error(e);
+				msgList.add(e);
+			}
+		}
+	}
 	/**
 	 * @Description: 向PreparedStatement设置参数
 	 * @author (zdx)
@@ -488,6 +547,8 @@ public class UpdateCompileByJDBCThread implements Runnable {
 					updateStrRegion(tableName, strRegionList, conn, opTime, msgList);
 				} else if (null != numRegionList && numRegionList.size() > 0) {
 					updateNumRegion(tableName, numRegionList, conn, opTime, msgList);
+				} else if (null != digestRegionList && digestRegionList.size() > 0) {
+					updateDigestRegion(tableName, digestRegionList, conn, opTime, msgList);
 				}
 				
 				if((null !=compileList && compileList.size() > 0)&&(null != groupList && groupList.size()==0)){

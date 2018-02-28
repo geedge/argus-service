@@ -93,6 +93,9 @@ public class ConfigCompile implements Serializable {
 	@ApiModelProperty(value = "数值域分组列表", required = true)
 	private List<NumRegion> numRegionList;
 	
+	@ApiModelProperty(value = "摘要域分组列表", required = true)
+	private List<DigestRegion> digestRegionList;
+	
 	@ApiModelProperty(value="版本序列号", required=true)
 	private Long procSeq;
 	
@@ -416,6 +419,14 @@ public class ConfigCompile implements Serializable {
 	 */
 	public void setNumRegionList(List<NumRegion> numRegionList) {
 		this.numRegionList = numRegionList;
+	}
+	
+	public List<DigestRegion> getDigestRegionList() {
+		return digestRegionList;
+	}
+
+	public void setDigestRegionList(List<DigestRegion> digestRegionList) {
+		this.digestRegionList = digestRegionList;
 	}
 
 	public Integer getTaskId() {

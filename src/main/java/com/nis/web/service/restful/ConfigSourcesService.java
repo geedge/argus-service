@@ -20,6 +20,7 @@ import com.nis.domain.Page;
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigCompileTest;
 import com.nis.domain.restful.ConfigGroupRelation;
+import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
@@ -84,15 +85,20 @@ public class ConfigSourcesService extends BaseService {
 		typeMap.put("HID_CONTENT", "ip");
 		typeMap.put("GSB_PZ_IP", "ip");
 		typeMap.put("FAKE_REGION_EXTEND", "str");
+		typeMap.put("CTRL_URL_REGION", "str");
+		typeMap.put("CTRL_VOIP_BLACKACCOUNT_REGION", "str");
+		typeMap.put("CTRL_MEDIA_FILE_FP", "digest");
 		tableMap.put(0, typeMap);
 		
 		typeMap = new HashMap<String, String>();
 		typeMap.put("DF_IP_PORT", "ip");
+		typeMap.put("GSB_PZ_IP", "ip");//IP复用
 		tableMap.put(1, typeMap);
 
 		typeMap = new HashMap<String, String>();
 		typeMap.put("FX_IP_PORT", "ip");
 		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
+		typeMap.put("GSB_PZ_IP", "ip");//网站伪造
 		tableMap.put(2, typeMap);
 
 		typeMap = new HashMap<String, String>();
@@ -100,12 +106,14 @@ public class ConfigSourcesService extends BaseService {
 		typeMap.put("UNIVERSAL_IP", "ip");
 		typeMap.put("DF_HTTP_REQ_HDR", "str");
 		typeMap.put("DF_HTTP_URL", "str");
+		typeMap.put("GSB_PZ_IP", "ip");//内容篡改
 		tableMap.put(3, typeMap);
 
 		typeMap = new HashMap<String, String>();
 		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
 		typeMap.put("UNIVERSAL_IP", "ip");
 		typeMap.put("DF_HTTP_RES_HDR", "str");
+		typeMap.put("GSB_PZ_IP", "ip");//随机丢包
 		tableMap.put(4, typeMap);
 
 		typeMap = new HashMap<String, String>();
@@ -1033,7 +1041,7 @@ public class ConfigSourcesService extends BaseService {
 		Map<String, List<StrRegion>> strStongRegionMap = new HashMap<String, List<StrRegion>>();
 		Map<String, List<IpRegion>> ipRegionMap = new HashMap<String, List<IpRegion>>();
 		Map<String, List<NumRegion>> numRegionMap = new HashMap<String, List<NumRegion>>();
-
+		Map<String, List<DigestRegion>> digestRegionMap = new HashMap<String, List<DigestRegion>>();
 		for (ConfigCompile configCompile : configCompileList) {
 			String msg = CompileVal.compileIsOk(configCompile, false, sb);
 			if (msg != CompileJudgeCode.CompileIsOk.getErrorReason()) {
@@ -1130,6 +1138,26 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			}
+			
+			if (null != configCompile.getDigestRegionList() && configCompile.getDigestRegionList().size() > 0) {
+				for (DigestRegion digestRegion : configCompile.getDigestRegionList()) {
+					if (digestRegion.getRegionId() == null) {
+						String errorMsg = "摘要类域配置id不能为空  ,表名---" + digestRegion.getTableName() + "" + sb.toString();
+						logger1.error(errorMsg);
+						thread.setExceptionInfo(errorMsg);
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+								RestBusinessCode.missing_args.getValue());
+					}
+
+					if (digestRegionMap.containsKey(digestRegion.getTableName())) {
+						digestRegionMap.get(digestRegion.getTableName()).add(digestRegion);
+					} else {
+						List<DigestRegion> digestRegionList = new ArrayList<DigestRegion>();
+						digestRegionList.add(digestRegion);
+						digestRegionMap.put(digestRegion.getTableName(), digestRegionList);
+					}
+				}
+			}
 		}
 
 		if (Configurations.getStringProperty("isCommit", "false").equals("true")) {
@@ -1151,6 +1179,10 @@ public class ConfigSourcesService extends BaseService {
 			}
 			if (null != numRegionMap && numRegionMap.size() > 0) {
 				count += numRegionMap.size();
+			}
+			
+			if (null != digestRegionMap && digestRegionMap.size() > 0) {
+				count += digestRegionMap.size();
 			}
 
 			SqlSessionFactory sqlSessionFactory = SpringContextHolder.getBean(SqlSessionFactory.class);
@@ -1208,6 +1240,16 @@ public class ConfigSourcesService extends BaseService {
 
 				}
 			}
+			if (digestRegionMap.size() > 0) {
+				for (String digest : digestRegionMap.keySet()) {
+					SaveCompileByJDBCThread digestRegion = new SaveCompileByJDBCThread(digest, conn, latch, start);
+					digestRegion.setDigestRegionList(digestRegionMap.get(digest));
+					Thread digestThread = new Thread(digestRegion);
+					digestThread.start();
+
+				}
+			}
+			
 			try {
 				latch.await();
 				if (msgList.size() > 0) {
@@ -1574,6 +1616,7 @@ public class ConfigSourcesService extends BaseService {
 		Map<String, List<StrRegion>> strRegionMap = new HashMap<String, List<StrRegion>>();
 		Map<String, List<IpRegion>> ipRegionMap = new HashMap<String, List<IpRegion>>();
 		Map<String, List<NumRegion>> numRegionMap = new HashMap<String, List<NumRegion>>();
+		Map<String, List<DigestRegion>> digestRegionMap = new HashMap<String, List<DigestRegion>>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
 				String msg = CompileVal.compileIsOk(config, true, sb);
@@ -1633,6 +1676,21 @@ public class ConfigSourcesService extends BaseService {
 									List<NumRegion> numList = new ArrayList<NumRegion>();
 									numList.add(numRegion);
 									numRegionMap.put(numRegion.getTableName(), numList);
+								}
+							}
+						}
+					}
+					
+					List<DigestRegion> digestRegionList = config.getDigestRegionList();// 获取编译下所有摘要类域配置(要修改的数据
+					if (null != digestRegionList && digestRegionList.size() > 0) {
+						for (DigestRegion digestRegion : digestRegionList) {
+							if (digestRegion.getIsValid() == 0) {
+								if (digestRegionMap.containsKey(digestRegion.getTableName())) {
+									digestRegionMap.get(digestRegion.getTableName()).add(digestRegion);
+								} else {
+									List<DigestRegion> digestList = new ArrayList<DigestRegion>();
+									digestList.add(digestRegion);
+									digestRegionMap.put(digestRegion.getTableName(), digestList);
 								}
 							}
 						}
@@ -1707,7 +1765,15 @@ public class ConfigSourcesService extends BaseService {
 					numThread.start();
 				}
 			}
-
+			if (null != digestRegionMap && digestRegionMap.size() > 0) {
+				for (String num : digestRegionMap.keySet()) {
+					UpdateCompileByJDBCThread digestRegion = new UpdateCompileByJDBCThread(num, conn, latch, start,
+							opTime);
+					digestRegion.setDigestRegionList(digestRegionMap.get(num));
+					Thread digestThread = new Thread(digestRegion);
+					digestThread.start();
+				}
+			}
 			try {
 				latch.await();
 				if (msgList.size() > 0) {
