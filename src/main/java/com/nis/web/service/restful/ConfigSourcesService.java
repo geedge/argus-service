@@ -85,6 +85,7 @@ public class ConfigSourcesService extends BaseService {
 		typeMap.put("HID_CONTENT", "ip");
 		typeMap.put("GSB_PZ_IP", "ip");
 		typeMap.put("FAKE_REGION_EXTEND", "str");
+		typeMap.put("KEYWORD_RANDOM_REGION", "str");
 		typeMap.put("CTRL_URL_REGION", "str");
 		typeMap.put("CTRL_VOIP_BLACKACCOUNT_REGION", "str");
 		typeMap.put("CTRL_MEDIA_FILE_FP", "digest");
@@ -93,6 +94,7 @@ public class ConfigSourcesService extends BaseService {
 		typeMap = new HashMap<String, String>();
 		typeMap.put("DF_IP_PORT", "ip");
 		typeMap.put("GSB_PZ_IP", "ip");//IP复用
+		typeMap.put("CTRL_MEDIA_FILE_FP", "digest");
 		tableMap.put(1, typeMap);
 
 		typeMap = new HashMap<String, String>();
@@ -101,6 +103,11 @@ public class ConfigSourcesService extends BaseService {
 		typeMap.put("GSB_PZ_IP", "ip");//网站伪造
 		tableMap.put(2, typeMap);
 
+		
+		typeMap = new HashMap<String, String>();
+		typeMap.put("CTRL_VOIP_BLACKACCOUNT_REGION", "str");
+		tableMap.put(118, typeMap);
+		
 		typeMap = new HashMap<String, String>();
 		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
 		typeMap.put("UNIVERSAL_IP", "ip");
@@ -114,6 +121,7 @@ public class ConfigSourcesService extends BaseService {
 		typeMap.put("UNIVERSAL_IP", "ip");
 		typeMap.put("DF_HTTP_RES_HDR", "str");
 		typeMap.put("GSB_PZ_IP", "ip");//随机丢包
+		typeMap.put("CTRL_URL_REGION", "str");
 		tableMap.put(4, typeMap);
 
 		typeMap = new HashMap<String, String>();
