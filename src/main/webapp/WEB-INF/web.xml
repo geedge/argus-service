@@ -197,11 +197,11 @@
   </error-page>
   
     <!-- 数据字典监听器 -->
-	<listener>
-		<listener-class>
-			com.nis.listener.SystemConfigListener
-		</listener-class>
-	</listener>
+<!-- 	<listener> -->
+<!-- 		<listener-class> -->
+<!-- 			com.nis.listener.SystemConfigListener -->
+<!-- 		</listener-class> -->
+<!-- 	</listener> -->
 		
   
   

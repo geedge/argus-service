@@ -22,7 +22,6 @@
 	         http://www.springframework.org/schema/cache/spring-cache.xsd">
 
 
-
 	<!-- 加载配置属性文件 -->
 	<context:property-placeholder
 		ignore-unresolvable="true" location="classpath:nis.properties" />
@@ -47,47 +46,53 @@
 	<mvc:annotation-driven />
 
 	<bean class="com.nis.restful.SwaggerConfig" />
-	<!-- redis 工具类-->
+	<!-- redis 工具类 -->
 	<bean id="redisDao" class="com.nis.util.redis.RedisDao" />
-	<!-- elasticsearch 工具类 将查询转化为elasticsearch-sql支持的语法-->
-	<bean id="elasticsearchSqlDao" class="com.nis.util.elasticsearch.ElasticsearchSqlDao"/>
-	<!-- 定义httpclient连接池 -->  
-    <bean id="httpClientConnectionManager" class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" destroy-method="close">  
-        <!-- 设置连接总数 -->  
-        <property name="maxTotal" value="${http.pool.maxTotal}"></property>  
-        <!-- 设置每个地址的并发数 -->  
-        <property name="defaultMaxPerRoute" value="${http.pool.defaultMaxPerRoute}"></property>  
-    </bean>  
-      
-    <!-- 定义 HttpClient工厂，这里使用HttpClientBuilder构建-->  
-    <bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder" factory-method="create">  
-        <property name="connectionManager" ref="httpClientConnectionManager"></property>  
-    </bean>  
-      
-    <!-- 得到httpClient的实例 -->  
-    <bean id="httpClient" factory-bean="httpClientBuilder" factory-method="build"/>  
-      
-    <!-- 定期清理无效的连接 -->  
-    <bean class="com.nis.util.httpclient.IdleConnectionEvictor" destroy-method="shutdown">  
-        <constructor-arg index="0" ref="httpClientConnectionManager" />  
-        <!-- 间隔一分钟清理一次 -->  
-        <constructor-arg index="1" value="60000" />  
-    </bean>  
-      
-    <!-- 定义requestConfig的工厂 -->  
-    <bean id="requestConfigBuilder" class="org.apache.http.client.config.RequestConfig.Builder">  
-        <!-- 从连接池中获取到连接的最长时间 -->  
-        <property name="connectionRequestTimeout" value="${http.request.connectionRequestTimeout}"/>  
-        <!-- 创建连接的最长时间 -->  
-        <property name="connectTimeout" value="${http.request.connectTimeout}"/>  
-        <!-- 数据传输的最长时间 -->  
-        <property name="socketTimeout" value="${http.request.socketTimeout}"/>  
-        <!-- 提交请求前测试连接是否可用 -->  
-        <property name="staleConnectionCheckEnabled" value="${http.request.staleConnectionCheckEnabled}"/>  
-    </bean>     
-      
-    <!-- 得到requestConfig实例 -->  
-    <bean id="requestConfig" factory-bean="requestConfigBuilder" factory-method="build" />  
+	<!-- elasticsearch 工具类 将查询转化为elasticsearch-sql支持的语法 -->
+	<bean id="elasticsearchSqlDao" class="com.nis.util.elasticsearch.ElasticsearchSqlDao" />
+	<!-- 定义httpclient连接池 -->
+	<bean id="httpClientConnectionManager"
+		class="org.apache.http.impl.conn.PoolingHttpClientConnectionManager"
+		destroy-method="close">
+		<!-- 设置连接总数 -->
+		<property name="maxTotal" value="${http.pool.maxTotal}"></property>
+		<!-- 设置每个地址的并发数 -->
+		<property name="defaultMaxPerRoute" value="${http.pool.defaultMaxPerRoute}"></property>
+	</bean>
+
+	<!-- 定义 HttpClient工厂，这里使用HttpClientBuilder构建 -->
+	<bean id="httpClientBuilder" class="org.apache.http.impl.client.HttpClientBuilder"
+		factory-method="create">
+		<property name="connectionManager" ref="httpClientConnectionManager"></property>
+	</bean>
+
+	<!-- 得到httpClient的实例 -->
+	<bean id="httpClient" factory-bean="httpClientBuilder"
+		factory-method="build" />
+
+	<!-- 定期清理无效的连接 -->
+	<bean class="com.nis.util.httpclient.IdleConnectionEvictor"
+		destroy-method="shutdown">
+		<constructor-arg index="0" ref="httpClientConnectionManager" />
+		<!-- 间隔一分钟清理一次 -->
+		<constructor-arg index="1" value="60000" />
+	</bean>
+
+	<!-- 定义requestConfig的工厂 -->
+	<bean id="requestConfigBuilder" class="org.apache.http.client.config.RequestConfig.Builder">
+		<!-- 从连接池中获取到连接的最长时间 -->
+		<property name="connectionRequestTimeout" value="${http.request.connectionRequestTimeout}" />
+		<!-- 创建连接的最长时间 -->
+		<property name="connectTimeout" value="${http.request.connectTimeout}" />
+		<!-- 数据传输的最长时间 -->
+		<property name="socketTimeout" value="${http.request.socketTimeout}" />
+		<!-- 提交请求前测试连接是否可用 -->
+		<property name="staleConnectionCheckEnabled" value="${http.request.staleConnectionCheckEnabled}" />
+	</bean>
+
+	<!-- 得到requestConfig实例 -->
+	<bean id="requestConfig" factory-bean="requestConfigBuilder"
+		factory-method="build" />
 	<!--事务控制驱动注解,发现注解@Transactional 时，找transactionManager事务管理器 -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
@@ -95,6 +100,7 @@
 	<!-- autodetection of such annotated controllers -->
 	<context:component-scan base-package="com.nis.web"></context:component-scan>
 	<context:component-scan base-package="com.nis.restful"></context:component-scan>
+	<context:component-scan base-package="com.nis.test"></context:component-scan>
 
 	<!-- 默认的注解映射的支持，org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping -->
 	<mvc:annotation-driven
@@ -166,6 +172,15 @@
 			<mvc:exclude-mapping path="/nis/sys/user/toDoTask" />
 			<bean class="com.nis.interceptor.LogInterceptor" />
 		</mvc:interceptor>
+		<!-- 添加restful服务的过滤 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/service/**" />
+<!-- 			<mvc:exclude-mapping path="/service/save" /> -->
+			<bean class="com.nis.interceptor.LogInterceptor" />
+		</mvc:interceptor>
+
+
+
 
 		<!-- 数据源拦截器，该拦截路径下使用数据源B -->
 		<mvc:interceptor>
@@ -185,7 +200,7 @@
 			<mvc:mapping path="/service/test/**" />
 			<bean class="com.nis.interceptor.DataSourceDInterceptor"></bean>
 		</mvc:interceptor>
-		
+
 		<!-- 数据源拦截器，该拦截路径下使用数据源E -->
 		<mvc:interceptor>
 			<mvc:mapping path="/service/jk/**" />
@@ -215,11 +230,11 @@
 	</bean>
 
 	<!-- 支持Shiro对Controller的方法级AOP安全控制 begin -->
-	<bean
-		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
-		depends-on="lifecycleBeanPostProcessor">
-		<property name="proxyTargetClass" value="true" />
-	</bean>
+	<!-- <bean -->
+	<!-- class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" -->
+	<!-- depends-on="lifecycleBeanPostProcessor"> -->
+	<!-- <property name="proxyTargetClass" value="true" /> -->
+	<!-- </bean> -->
 
 	<bean id="annotationMethodHandlerExceptionResolver"
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">

@@ -26,6 +26,7 @@ import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
+import com.nis.web.service.restful.TestRedisService;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -47,6 +48,22 @@ public class ConfigSourcesController extends BaseRestController {
 	protected ConfigSourcesService configSourcesService;
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
+
+	@Autowired
+	TestRedisService testRedisServiceimpl;
+
+	@RequestMapping(value = "/save", method = RequestMethod.GET)
+	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
+	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
+	public String testRedis() {
+		try {
+			testRedisServiceimpl.saveConfigCompile();
+			return "ok";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "false";
+	}
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.POST)
 	@ApiOperation(value = "业务配置存储", httpMethod = "POST", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
@@ -123,14 +140,16 @@ public class ConfigSourcesController extends BaseRestController {
 			checkOpAction(thread, System.currentTimeMillis() - start, opAction, 2);
 			String msg = "";
 			ConfigCompile compile = configSource.getConfigCompileList().get(0);
-			if(StringUtil.isEmpty(compile.getGroupRelationList())&&StringUtil.isEmpty(compile.getIpRegionList())&&StringUtil.isEmpty(compile.getStrRegionList())&&StringUtil.isEmpty(compile.getNumRegionList())){
+			if (StringUtil.isEmpty(compile.getGroupRelationList()) && StringUtil.isEmpty(compile.getIpRegionList())
+					&& StringUtil.isEmpty(compile.getStrRegionList())
+					&& StringUtil.isEmpty(compile.getNumRegionList())) {
 				msg = configSourcesService.updateByJDBCThread3(thread, start, configSource.getConfigCompileList(),
-					configSource.getOpTime(), sb);
-			}else{
+						configSource.getOpTime(), sb);
+			} else {
 				msg = configSourcesService.updateByJDBCThread12(thread, start, configSource.getConfigCompileList(),
-					configSource.getOpTime(), sb);
+						configSource.getOpTime(), sb);
 			}
-			
+
 			if (msg.equals("error")) {
 				String errorCode = "";
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
@@ -240,7 +259,8 @@ public class ConfigSourcesController extends BaseRestController {
 
 									}
 								}
-								Map<Integer, String> throwExceptionInfo = OracleErrorCodeUtil.throwExceptionInfo(errorCode);
+								Map<Integer, String> throwExceptionInfo = OracleErrorCodeUtil
+										.throwExceptionInfo(errorCode);
 								for (int errorNum : throwExceptionInfo.keySet()) {
 									if (errorNum == 998) {
 										thread.setExceptionInfo(e.toString());
