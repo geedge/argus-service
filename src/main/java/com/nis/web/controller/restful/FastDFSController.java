@@ -43,7 +43,7 @@ public class FastDFSController {
 		String groupName=filePath.substring(0,filePath.indexOf("/"));
 		filePath=filePath.substring(filePath.indexOf("/")+1);
 		Integer a = FileManager.delete_file(groupName, filePath);
-		System.out.println(a);
+		//System.out.println(a);
 	}
 
 	public String testAdd() {
@@ -56,7 +56,7 @@ public class FastDFSController {
 		meta_list[1] = new NameValuePair("fileLength", String.valueOf(file.length()));
 		meta_list[2] = new NameValuePair("fileExt", ext);
 		meta_list[3] = new NameValuePair("fileAuthor", "rkg");
-		String successFilePath = FileManager.upload(new FastDFSFile(getByte(file), ext), null);
+		String successFilePath = FileManager.upload(new FastDFSFile(getByte(file),fileName, ext), meta_list);
 		System.out.println("上传成功返回的路径是" + successFilePath);
 		return successFilePath;
 	}
@@ -80,7 +80,7 @@ public class FastDFSController {
 	public String add(MultipartFile attach, HttpServletRequest request) throws IOException, MyException {
 		// 获取文件后缀名
 		String ext = attach.getOriginalFilename().substring(attach.getOriginalFilename().lastIndexOf(".") + 1);
-		FastDFSFile file = new FastDFSFile(attach.getBytes(), ext);
+		FastDFSFile file = new FastDFSFile(attach.getBytes(),attach.getOriginalFilename(), ext);
 		NameValuePair[] meta_list = new NameValuePair[4];
 		meta_list[0] = new NameValuePair("fileName", attach.getOriginalFilename());
 		meta_list[1] = new NameValuePair("fileLength", String.valueOf(attach.getSize()));

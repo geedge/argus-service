@@ -15,12 +15,12 @@ public class FileManagerConfig implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final String FILE_DEFAULT_AUTHOR = "renkaige";
+	public static final String FILE_DEFAULT_AUTHOR = "iie-rkg";
 
 	public static final String PROTOCOL = "http://";
 
 	public static final String SEPARATOR = "/";
-
+	// fdfs-tracker-nginx服务器
 	public static final String TRACKER_NGNIX_ADDR = "10.0.6.192";
 
 	public static final String TRACKER_NGNIX_PORT = "";

@@ -15,7 +15,7 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd"
 	default-lazy-init="true">
-	<!-- 加载配置文件 -->
+	<!-- 加载配置文件,不知道为啥不能加载redis.properties的内容,先把redis.properties里面的内容放到jdbc.properties里面吧 -->
 	<context:property-placeholder
 		ignore-unresolvable="true" location="classpath:jdbc.properties" />
 
