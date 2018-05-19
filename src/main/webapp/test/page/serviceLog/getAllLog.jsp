@@ -51,7 +51,7 @@
 		$
 				.ajax({
 					type : 'post',
-					url : '/gk/service/log/v1/getAllLog',
+					url : '/galaxy/service/log/v1/getAllLog',
 					data : $("#form2").serialize(),
 					//dataType : 'json',
 					async : false,
@@ -254,7 +254,7 @@
 				alert("请先选择数据在删除");
 				return;
 			}
-			url = '/gk/service/log/v1/deleteById';
+			url = '/galaxy/service/log/v1/deleteById';
 			$.ajax({
 				type : 'get',
 				url : url,
@@ -272,7 +272,7 @@
 			});
 
 		} else if (obj == 'all') {
-			url = '/gk/service/log/v1/deleteAll';
+			url = '/galaxy/service/log/v1/deleteAll';
 			$.ajax({
 				type : 'get',
 				url : url,

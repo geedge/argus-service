@@ -21,6 +21,8 @@ public class RestConstants {
 	
 	public static final String REST_SERVICE_LOG_SOURCE = "logSource";
 	
+	public static final String TRACE_CODE = "traceCode";
+	
 	//暂时4个
 	
 	/**

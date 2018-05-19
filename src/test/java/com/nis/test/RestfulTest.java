@@ -25,7 +25,7 @@ import com.nis.util.StringUtil;
 * @version V1.0 
 */
 public class RestfulTest {
-	public static final String REST_SERVICE_URL = "http://127.0.0.1:8080/gk/service/v1/";
+	public static final String REST_SERVICE_URL = "http://127.0.0.1:8080/galaxy/service/v1/";
 	
 	/**
 	 * 

@@ -58,7 +58,7 @@ public class SwaggerConfig {
 	                "V1.0",
 	                "doufenghu@iie.ac.cn",
 	                "My Apps API Licence Type",
-	                "http://127.0.0.1:8080/gk/swagger/");
+	                "http://127.0.0.1:8080/galaxy/swagger/");
 	        return apiInfo;
 	    }
 }

@@ -36,7 +36,7 @@
 	function getAllDictName() {
 		$.ajax({
 			type : 'get',
-			url : '/gk/service/cfg/v1/getAllDictName',
+			url : '/galaxy/service/cfg/v1/getAllDictName',
 			async : false,
 			success : function(data, textStatus) {
 				if (data.data.length > 0) {
@@ -57,7 +57,7 @@
 		$
 				.ajax({
 					type : 'get',
-					url : '/gk/service/cfg/v1/getAllDictName',
+					url : '/galaxy/service/cfg/v1/getAllDictName',
 					async : false,
 					success : function(data, textStatus) {
 						if (data.data.length > 0) {
@@ -192,7 +192,7 @@
 	function delForAjax(id) {
 		$.ajax({
 			type : 'post',
-			url : '/gk/service/cfg/v1/delDictName',
+			url : '/galaxy/service/cfg/v1/delDictName',
 			data : {
 				"dictNameId" : id
 			},
@@ -234,7 +234,7 @@
 	function setDataDictEffective(){
 		$.ajax({
 			type : 'post',
-			url : '/gk/service/cfg/v1/setDataDictEffective',
+			url : '/galaxy/service/cfg/v1/setDataDictEffective',
 			dataType : 'json',
 			async : false,
 			success : function(data, textStatus) {

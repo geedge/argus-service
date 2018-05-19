@@ -118,7 +118,7 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"编译配置数据插入成功" + sb.toString(), configSource);
+				"编译配置数据插入成功" + sb.toString(), Constants.IS_DEBUG?configSource:null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.PUT)
@@ -183,7 +183,7 @@ public class ConfigSourcesController extends BaseRestController {
 					RestBusinessCode.missing_args.getValue());
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"编译配置修改成功" + sb.toString(), configSource);
+				"编译配置修改成功" + sb.toString(), Constants.IS_DEBUG?configSource:null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/configModifySources", method = RequestMethod.PUT)
@@ -303,7 +303,7 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"修改编译配置数据成功" + sb.toString(), configSource);
+				"修改编译配置数据成功" + sb.toString(), Constants.IS_DEBUG?configSource:null);
 	}
 
 	private void validateConfigSource(SaveRequestLogThread thread, long start, ConfigSource configSource) {

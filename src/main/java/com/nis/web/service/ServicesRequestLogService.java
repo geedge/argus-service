@@ -91,7 +91,7 @@ public class ServicesRequestLogService {
 	 */
 	public void saveRequestLog(String requestAddr, String requestURI, String queryString, String contextPath,
 			String operator, String version, int opAction, Date opTime, Object content, Date requestTime,
-			long consumerTime, int businessCode, String exceptionInfo) {
+			long consumerTime, int businessCode, String exceptionInfo,String traceCode) {
 		logger.info("开始记录日志---");
 		logger.info("请求IP---" + requestAddr);
 		logger.info("请求路径---" + requestURI);
@@ -107,6 +107,7 @@ public class ServicesRequestLogService {
 		log.setConsumerTime(consumerTime);
 		log.setBusinessCode(businessCode);
 		log.setExceptionInfo(exceptionInfo);
+		log.setTraceCode(traceCode);
 		try {
 			if(Constants.SERVCER_HOST!=null){
 				log.setServerIp(Constants.SERVCER_HOST);

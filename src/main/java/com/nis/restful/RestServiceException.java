@@ -12,6 +12,7 @@ public class RestServiceException extends RuntimeException{
 	
 	private String activeSys;
 	
+	private String traceCode;
 	/**
 	 * 
 	 */
@@ -29,6 +30,7 @@ public class RestServiceException extends RuntimeException{
 	public RestServiceException(SaveRequestLogThread thread,long time,String message) {  
 		super(message);
 		this.errorCode = 998; //未知错误
+		this.traceCode = thread.getTraceCode();
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(this.getErrorCode());
 		if(StringUtils.isEmpty(thread.getExceptionInfo()))
@@ -43,6 +45,7 @@ public class RestServiceException extends RuntimeException{
 	public RestServiceException(SaveRequestLogThread thread,long time,String message,int errorCode) {
 		super(message);
 		this.errorCode = errorCode;
+		this.traceCode = thread.getTraceCode();
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(this.getErrorCode());
 		if(StringUtils.isEmpty(thread.getExceptionInfo()))
@@ -71,6 +74,13 @@ public class RestServiceException extends RuntimeException{
 	public void setActiveSys(String activeSys) {
 		this.activeSys = activeSys;
 	}
-	
 
+	public String getTraceCode() {
+		return traceCode;
+	}
+
+	public void setTraceCode(String traceCode) {
+		this.traceCode = traceCode;
+	}
+	
 }

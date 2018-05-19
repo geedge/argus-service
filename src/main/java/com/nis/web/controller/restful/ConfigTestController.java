@@ -318,7 +318,7 @@ public class ConfigTestController extends BaseRestController {
 		System.out.println(id);
 		try {
 			// String url =
-			// "http://127.0.0.1:8888/gk/service/cfg/v1/configSources";
+			// "http://127.0.0.1:8888/galaxy/service/cfg/v1/configSources";
 			String url = Configurations.getStringProperty("httpUrl", "");
 			ConfigSourceTest configSource = new ConfigSourceTest();
 			configSource.setOpTime(new Date());
@@ -392,7 +392,7 @@ public class ConfigTestController extends BaseRestController {
 			JsonConfig jsonConfig = new JsonConfig();
 			jsonConfig.registerJsonValueProcessor(Date.class, new JsonDateValueProcessor());
 			// String url =
-			// "http://127.0.0.1:8888/gk/service/cfg/v1/configSources";
+			// "http://127.0.0.1:8888/galaxy/service/cfg/v1/configSources";
 			String url = Configurations.getStringProperty("httpUrl", "");
 			JSONArray jsonArray = JSONArray.fromObject(configSource, jsonConfig);
 			String jsonStr = jsonArray.getString(0);
@@ -533,7 +533,7 @@ public class ConfigTestController extends BaseRestController {
 		String result = "";
 		try {
 			String urlNameString = url + "?" + param;
-			urlNameString = "http://127.0.0.1:8888/gk/service/log/v1/dfStatLogDailySources?pageNo=1&pageSize=2";
+			urlNameString = "http://127.0.0.1:8888/galaxy/service/log/v1/dfStatLogDailySources?pageNo=1&pageSize=2";
 			URL realUrl = new URL(urlNameString);
 			// 打开和URL之间的连接
 			URLConnection conn = realUrl.openConnection();

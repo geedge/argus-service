@@ -41,6 +41,7 @@ public class SaveRequestLogThread implements Runnable {
 	private long consumerTime;
 	private int businessCode;
 	private String exceptionInfo;
+	private String traceCode;
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
@@ -52,7 +53,7 @@ public class SaveRequestLogThread implements Runnable {
 		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_C);//开启数据源C
 		// TODO Auto-generated method stub
 		if(service!=null){
-			service.saveRequestLog(remoteAddr,requestURI,queryString,contextPath, operator, version, opAction, opTime, content, requestTime, consumerTime,businessCode,exceptionInfo);
+			service.saveRequestLog(remoteAddr,requestURI,queryString,contextPath, operator, version, opAction, opTime, content, requestTime, consumerTime,businessCode,exceptionInfo,traceCode);
 		}else{
 			logger.error("service 为空！");
 		}
@@ -362,4 +363,11 @@ public class SaveRequestLogThread implements Runnable {
 	public void setExceptionInfo(String exceptionInfo) {
 		this.exceptionInfo = exceptionInfo;
 	}
+	public String getTraceCode() {
+		return traceCode;
+	}
+	public void setTraceCode(String traceCode) {
+		this.traceCode = traceCode;
+	}
+	
 }

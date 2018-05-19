@@ -67,7 +67,7 @@
 		$
 				.ajax({
 					type : 'post',
-					url : '/gk/service/cfg/v1/findCompile',
+					url : '/galaxy/service/cfg/v1/findCompile',
 					data : $("#form2").serialize(),
 					//dataType : 'json',
 					async : false,
@@ -230,7 +230,7 @@
 				alert("请先选择数据在插入");
 				return;
 			}
-			url = '/gk/service/cfg/v1/saveByQuery';
+			url = '/galaxy/service/cfg/v1/saveByQuery';
 			$.ajax({
 				type : 'post',
 				url : url,
@@ -239,7 +239,7 @@
 				async : true,
 				success : function(data, textStatus) {
 					if (data == 'ok') {
-						alert("插入成功,请去gk_pz数据库中查询相应数据");
+						alert("插入成功,请去galaxy_pz数据库中查询相应数据");
 					} else {
 						alert("插入失败");
 					}
@@ -248,7 +248,7 @@
 			});
 
 		} else if (obj == 'all') {
-			url = '/gk/service/cfg/v1/saveAllByQuery';
+			url = '/galaxy/service/cfg/v1/saveAllByQuery';
 			$.ajax({
 				type : 'post',
 				url : url,
@@ -257,7 +257,7 @@
 				async : true,
 				success : function(data, textStatus) {
 					if (data == 'ok') {
-						alert("插入成功,请去gk_pz数据库中查询相应数据");
+						alert("插入成功,请去galaxy_pz数据库中查询相应数据");
 					} else {
 						alert("插入失败");
 					}

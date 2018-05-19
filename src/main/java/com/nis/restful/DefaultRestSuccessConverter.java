@@ -36,8 +36,9 @@ public class DefaultRestSuccessConverter implements RestConverter<Map> {
 		successMap.put(RestConstants.REST_SERVICE_REASON, re.getBusinessCode()
 				.getErrorReason());
 		successMap.put(RestConstants.REST_SERVICE_MSG, re.getMsg());
+		successMap.put(RestConstants.TRACE_CODE, re.getTraceCode());
 		successMap.put(RestConstants.REST_SERVICE_URI, re.getFromUri());
-
+		
 		return successMap;
 	}
 

@@ -50,11 +50,16 @@ public class RestResult {
 	 */
 	private String logSource;
 	
+	/**
+	 * 追踪状态码
+	 */
+	private String traceCode;
+	
 	public RestResult(){
 		
 	}
 	
-	public RestResult(HttpStatus status, RestBusinessCode businessCode, String msg,String fromUri,String activeSys,String fromSign) {
+	public RestResult(HttpStatus status, RestBusinessCode businessCode, String msg,String fromUri,String activeSys,String fromSign,String traceCode) {
 		super();
 		this.status = status;
 		this.businessCode = businessCode;
@@ -62,6 +67,7 @@ public class RestResult {
 		this.fromUri = fromUri;
 		this.activeSys=activeSys;
 		this.logSource=logSource;
+		this.traceCode=traceCode;
 	}
 	
 	
@@ -150,6 +156,14 @@ public class RestResult {
 	*/
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	public String getTraceCode() {
+		return traceCode;
+	}
+
+	public void setTraceCode(String traceCode) {
+		this.traceCode = traceCode;
 	}
 
 	public String toString() {

@@ -14,11 +14,12 @@
 		<result column="BUSINESS_CODE" jdbcType="INTEGER" property="businessCode" />
 		<result column="EXCEPTION_INFO" jdbcType="VARCHAR" property="exceptionInfo" />
 		<result column="SERVER_IP" jdbcType="VARCHAR" property="serverIp" />
+		<result column="TRACE_CODE" jdbcType="VARCHAR" property="traceCode" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		ID, OPERATOR, VERSION, OPACTION,OPTIME, REQUEST_CONTENT,
 		REQUEST_TIME,REQUEST_IP,
-		CONSUMER_TIME,BUSINESS_CODE,EXCEPTION_INFO,SERVER_IP
+		CONSUMER_TIME,BUSINESS_CODE,EXCEPTION_INFO,SERVER_IP,TRACE_CODE
 	</sql>
 	<select id="getAllLog" parameterType="com.nis.domain.restful.ServicesRequestLogBean"
 		resultMap="ServicesRequestLogMap">
@@ -123,6 +124,9 @@
 			<if test="serverIp != null">
 				SERVER_IP,
 			</if>
+			<if test="traceCode != null">
+				TRACE_CODE,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			SEQ_SERVICES_REQUEST_LOG.Nextval,
@@ -158,6 +162,9 @@
 			</if>
 			<if test="serverIp != null">
 				#{serverIp,jdbcType=VARCHAR},
+			</if>
+			<if test="traceCode != null">
+				#{traceCode,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>

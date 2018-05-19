@@ -143,6 +143,11 @@ public final class Constants {
 	 * 是否开启业务校验
 	 */
 	public static final boolean SERVICE_VALIDATE = Configurations.getBooleanProperty("serviceValidate", true);
+	
+	/**
+	 * 是否开启Debug模式
+	 */
+	public static final boolean IS_DEBUG = Configurations.getBooleanProperty("isDebug", true);
 	/**
 	 * 日志本地存储时间
 	 */

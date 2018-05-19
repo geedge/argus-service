@@ -9,6 +9,7 @@
 package com.nis.web.controller;
 
 import java.beans.PropertyEditorSupport;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -42,7 +43,7 @@ import com.nis.web.service.ServicesRequestLogService;
  */
 public class BaseRestController {
 	protected final Logger logger = Logger.getLogger(this.getClass());
-
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHssSSS");
 	/**
 	 * 
 	 * @Title: serviceResponse
@@ -81,6 +82,7 @@ public class BaseRestController {
 		}
 		restResult.setFromUri(request.getRequestURI());
 		restResult.setMsg(msg);
+		restResult.setTraceCode(thread.getTraceCode());
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(restResult.getBusinessCode().getValue());
 		new Thread(thread).start();
@@ -127,6 +129,7 @@ public class BaseRestController {
 		restResult.setFromUri(request.getRequestURI());
 		restResult.setData(data);
 		restResult.setMsg(msg);
+		restResult.setTraceCode(thread.getTraceCode());
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(restResult.getBusinessCode().getValue());
 		new Thread(thread).start();
@@ -208,6 +211,7 @@ public class BaseRestController {
 		restResult.setFromUri(request.getRequestURI());
 		restResult.setData(data);
 		restResult.setMsg(msg);
+		restResult.setTraceCode(thread.getTraceCode());
 		thread.setConsumerTime(time);
 		thread.setExceptionInfo(msg);
 		thread.setBusinessCode(restResult.getBusinessCode().getValue());
@@ -238,6 +242,7 @@ public class BaseRestController {
 		restResult.setMsg(msg);
 		restResult.setActiveSys(activeSys);
 		restResult.setLogSource(logSource);
+		restResult.setTraceCode(thread.getTraceCode());
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(restResult.getBusinessCode().getValue());
 		new Thread(thread).start();
@@ -257,6 +262,7 @@ public class BaseRestController {
 		if (re.getLogSource() != null) {
 			successMap.put(RestConstants.REST_SERVICE_LOG_SOURCE, re.getLogSource());
 		}
+		successMap.put(RestConstants.TRACE_CODE, re.getTraceCode());
 		successMap.put(RestConstants.REST_SERVICE_DATA, re.getData());
 		logger.info("结果集处理结束----" + System.currentTimeMillis());
 		return successMap;
@@ -352,6 +358,7 @@ public class BaseRestController {
 		SaveRequestLogThread thread = SaveRequestLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
 		thread.setOpAction(opAction);
+		thread.setTraceCode(sdf.format(new Date())+(Math.round((Math.random()*9+1)*10000)+""));
 		if (data != null && ConfigCommonSource.class.isAssignableFrom(data.getClass())) {
 			ConfigCommonSource source = (ConfigCommonSource) data;
 			thread.setOperator(source.getOperator());

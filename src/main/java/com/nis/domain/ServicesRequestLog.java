@@ -41,6 +41,7 @@ public class ServicesRequestLog implements Serializable {
 	private Integer businessCode;
 	private String exceptionInfo;
 	private String serverIp;
+	private String traceCode;
 	
 	/**
 	 * serverIp
@@ -215,6 +216,12 @@ public class ServicesRequestLog implements Serializable {
 	 */
 	public void setExceptionInfo(String exceptionInfo) {
 		this.exceptionInfo = exceptionInfo;
+	}
+	public String getTraceCode() {
+		return traceCode;
+	}
+	public void setTraceCode(String traceCode) {
+		this.traceCode = traceCode;
 	}
 	
 }

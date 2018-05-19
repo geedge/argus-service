@@ -23,7 +23,7 @@
 	function setLogInfo() {
 		$.ajax({
 			type : 'post',
-			url : '/gk/service/log/v1/getAllLog',
+			url : '/galaxy/service/log/v1/getAllLog',
 			data : "id="+<%=id%>,
 			async : false,
 			success : function(data, textStatus) {
@@ -92,7 +92,7 @@
 				</div>
 				<div class="portlet-body form">
 					<!-- BEGIN FORM-->
-					<form action="/gk/service/cfg/v1/addDictName"
+					<form action="/galaxy/service/cfg/v1/addDictName"
 						class="form-horizontal" method="post" name="taskMainForm"
 						enctype="multipart/form-data">
 						<input type="hidden" value="add" id="addOrUpdate"> <input

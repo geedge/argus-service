@@ -30,7 +30,7 @@
 	function setDict() {
 		$.ajax({
 					type : 'post',
-					url : '/gk/service/cfg/v1/getDict',
+					url : '/galaxy/service/cfg/v1/getDict',
 					data : "dictValId=" +<%=dictValId%>	,
 					async : false,
 					success : function(data, textStatus) {
@@ -48,7 +48,7 @@
 	function setDictName() {
 		$.ajax({
 			type : 'get',
-			url : '/gk/service/cfg/v1/getAllDictName',
+			url : '/galaxy/service/cfg/v1/getAllDictName',
 			async : false,
 			success : function(data, textStatus) {
 				var option = "<option value=''>请选择</option>";
@@ -96,9 +96,9 @@
 		var dataDictId = $("#dataDictId").val();
 		var addOrUpdate=$("#addOrUpdate").val();
 		var data = "";
-		var url = '/gk/service/cfg/v1/addDictName';
+		var url = '/galaxy/service/cfg/v1/addDictName';
 		if (addOrUpdate == "update") {
-			url = '/gk/service/cfg/v1/updateDictName';
+			url = '/galaxy/service/cfg/v1/updateDictName';
 			data = "dictId=" + $("#dictId").val() + "&dictVal=" + dictVal;
 		} else {
 			data = "dataDictId=" + dataDictId + "&addDictName=" + addDictName
@@ -130,7 +130,7 @@
 	function setDataDictEffective(){
 		$.ajax({
 			type : 'post',
-			url : '/gk/service/cfg/v1/setDataDictEffective',
+			url : '/galaxy/service/cfg/v1/setDataDictEffective',
 			dataType : 'json',
 			async : false,
 			success : function(data, textStatus) {
@@ -159,7 +159,7 @@
 				</div>
 				<div class="portlet-body form">
 					<!-- BEGIN FORM-->
-					<form action="/gk/service/cfg/v1/addDictName"
+					<form action="/galaxy/service/cfg/v1/addDictName"
 						class="form-horizontal" method="post" name="taskMainForm"
 						enctype="multipart/form-data">
 						<input type="hidden" value="add" id="addOrUpdate"> <input

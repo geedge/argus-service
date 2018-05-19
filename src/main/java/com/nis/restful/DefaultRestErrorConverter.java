@@ -24,6 +24,7 @@ public class DefaultRestErrorConverter implements RestConverter<Map> {
 		errorMap.put(RestConstants.REST_SERVICE_REASON, re.getBusinessCode()
 				.getErrorReason());
 		errorMap.put(RestConstants.REST_SERVICE_MSG, re.getMsg());
+		errorMap.put(RestConstants.TRACE_CODE, re.getTraceCode());
 		errorMap.put(RestConstants.REST_SERVICE_URI, re.getFromUri());
 		
 		if(re.getActiveSys() != null){
@@ -32,7 +33,7 @@ public class DefaultRestErrorConverter implements RestConverter<Map> {
 		if(re.getLogSource() != null){
 			errorMap.put(RestConstants.REST_SERVICE_LOG_SOURCE, re.getLogSource());
 		}
-
+		
 		return errorMap;
 	}
 

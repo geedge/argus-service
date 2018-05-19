@@ -63,6 +63,7 @@ public class DefaultRestErrorResolver implements RestErrorResolver,InitializingB
 		}else {
 			error.setFromUri("unknow url");
 		}
+		error.setTraceCode(((RestServiceException) ex).getTraceCode());
 		return error;
 	}
 	

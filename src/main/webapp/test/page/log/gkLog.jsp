@@ -722,7 +722,7 @@
 
 		var objVal = $(obj).val();
 		if (objVal == '1') {
-			$("#urlAddr").val("/gk/service/log/v1/dfIpPortLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfIpPortLogs");
 
 			var cl1 = '<label class="col-md-5 control-label">配置ID&nbsp;&nbsp;&nbsp;</label> <input type="text" class="form-control input-small"	name="searchFl" id="searchFl" placeholder="分类" maxlength="64">';
 			$("#cl1").html(cl1);
@@ -742,7 +742,7 @@
 			//$("#ipCity").text("源IP所属市");
 
 		} else if (objVal == '2') {
-			$("#urlAddr").val("/gk/service/log/v1/dfHttpReqLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfHttpReqLogs");
 			var cl1 = '<label class="col-md-5 control-label">分类</label> <input type="text" class="form-control input-small"	name="searchFl" id="searchFl" placeholder="分类" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -761,7 +761,7 @@
 			$("#ipCity").text("目的IP所属市");
 		} else if (objVal == '3') {
 
-			$("#urlAddr").val("/gk/service/log/v1/dfHttpResLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfHttpResLogs");
 			var cl1 = '<label class="col-md-5 control-label">事件</label> <input type="text" class="form-control input-small"	name="searchAffair" id="searchAffair" placeholder="事件" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -780,7 +780,7 @@
 			$("#ipCity").text("源IP所属市");
 
 		} else if (objVal == '4') {
-			$("#urlAddr").val("/gk/service/log/v1/dfHttpKeywordLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfHttpKeywordLogs");
 			var cl1 = '<label class="col-md-5 control-label">事件</label> <input type="text" class="form-control input-small"	name="searchAffair" id="searchAffair" placeholder="事件" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -799,7 +799,7 @@
 			$("#ipCity").text("目的IP所属市");
 
 		} else if (objVal == '5') {
-			$("#urlAddr").val("/gk/service/log/v1/dfMailLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfMailLogs");
 			var cl1 = '<label class="col-md-5 control-label">任务</label> <input type="text" class="form-control input-small"	name="searchMission" id="searchMission" placeholder="任务" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -817,7 +817,7 @@
 			$("#ipCity").text("源IP所属市");
 
 		} else if (objVal == '6') {
-			$("#urlAddr").val("/gk/service/log/v1/dfDnsLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfDnsLogs");
 			var cl1 = '<label class="col-md-5 control-label">任务</label> <input type="text" class="form-control input-small"	name="searchMission" id="searchMission" placeholder="任务" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -834,7 +834,7 @@
 			$("#ipProvince").text("目的IP所属省");
 			$("#ipCity").text("目的IP所属市");
 		} else if (objVal == '7') {
-			$("#urlAddr").val("/gk/service/log/v1/dfFtpLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfFtpLogs");
 			var cl1 = '<label class="col-md-5 control-label">保障期</label> <input type="text" class="form-control input-small"	name="searchGuarantee" id="searchGuarantee" placeholder="保障期" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -852,7 +852,7 @@
 			$("#ipCity").text("源IP所属市");
 
 		} else if (objVal == '8') {
-			$("#urlAddr").val("/gk/service/log/v1/dfPPTPLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfPPTPLogs");
 			var cl1 = '<label class="col-md-5 control-label">保障期</label> <input type="text" class="form-control input-small"	name="searchGuarantee" id="searchGuarantee" placeholder="保障期" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -870,7 +870,7 @@
 			$("#ipCity").text("目的IP所属市");
 
 		} else if (objVal == '9') {
-			$("#urlAddr").val("/gk/service/log/v1/dfL2tpLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfL2tpLogs");
 			var cl1 = '<label class="col-md-5 control-label">标签</label> <input type="text" class="form-control input-small"	name="searchTag" id="searchTag" placeholder="标签" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -887,7 +887,7 @@
 			$("#ipProvince").text("源IP所属省");
 			$("#ipCity").text("源IP所属市");
 		} else if (objVal == '10') {
-			$("#urlAddr").val("/gk/service/log/v1/dfIpsecLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfIpsecLogs");
 			var cl1 = '<label class="col-md-5 control-label">标签</label> <input type="text" class="form-control input-small"	name="searchTag" id="searchTag" placeholder="标签" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -905,7 +905,7 @@
 			$("#ipCity").text("目的IP所属市");
 
 		} else if (objVal == '11') {
-			$("#urlAddr").val("/gk/service/log/v1/dfOpenVpnLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfOpenVpnLogs");
 			var cl1 = '<label class="col-md-5 control-label">配置ID</label> <input type="text" class="form-control input-small"	name="searchId" id="searchId" placeholder="配置ID" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -923,7 +923,7 @@
 			$("#ipCity").text("源IP所属市");
 
 		} else if (objVal == '12') {
-			$("#urlAddr").val("/gk/service/log/v1/dfSSHLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfSSHLogs");
 			var cl1 = '<label class="col-md-5 control-label">配置ID</label> <input type="text" class="form-control input-small"	name="searchId" id="searchId" placeholder="配置ID" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -941,7 +941,7 @@
 			$("#ipCity").text("目的IP所属市");
 
 		} else if (objVal == '13') {
-			$("#urlAddr").val("/gk/service/log/v1/dfSSLLogs");
+			$("#urlAddr").val("/galaxy/service/log/v1/dfSSLLogs");
 			var cl1 = '<label class="col-md-5 control-label">配置ID</label> <input type="text" class="form-control input-small"	name="searchId" id="searchId" placeholder="配置ID" maxlength="64">';
 			$("#cl1").html(cl1);
 
@@ -1041,7 +1041,7 @@
 
 			<form name="form2" id="form2">
 				<input type="hidden" id="urlAddr" name="urlAddr"
-					value="/gk/service/log/v1/dfJitFlSrcReportSources"> <input
+					value="/galaxy/service/log/v1/dfJitFlSrcReportSources"> <input
 					type="hidden" id="pageNo" name="pageNo" value="1"> <input
 					type="hidden" id="pageSize" name="pageSize" value="30"> <input
 					type="hidden" id="totalCount" name="totalCount">
