@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<p:maat xmlns:p="http://www.w3school.com.cn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+<p:maat xmlns:p="http://www.w3school.com.cn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.w3school.com.cn maat.xsd">
 
 
-	<p:maatType  service="96,97,98,99,100,101,160,161,162,163,164,165">
+	<p:maatType service="96;97;98;99;100;101;160;161;162;163;164;165">
 		<p:expressions>
-			<p:keyExpression>file_index_info,[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id],\t,[is_valid],\t,[dst_file],\t,[dst_file_md5],\t,[time_stamp],$nbsp,[level],\t,[file_id]\n</p:valueExpression>
+			<p:keyExpression>file_index_info;,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[time_stamp];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression>
+			<p:redisDB>2</p:redisDB>
 		</p:expressions>
 	</p:maatType>
 

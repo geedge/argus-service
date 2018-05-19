@@ -12,13 +12,6 @@
 						</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:attribute name="service" type="xs:string" use="required">
-							<xs:annotation>
-										<xs:documentation><![CDATA[业务类型,多个业务类型用逗号分隔]]>
-										</xs:documentation>
-									</xs:annotation>
-						
-						</xs:attribute>
 						<xs:sequence>
 							<xs:element name="sequences">
 								<xs:annotation>
@@ -77,7 +70,7 @@
 												<xs:documentation>
 												<![CDATA[rediskey规则,以[]包围的代表可变项,
 												需要从map中获取的值,直接写的代表是固定值,直接拼接即可,
-												每个属性间用逗号分隔,空格用&amp;nbsp表示]]>
+												每个属性间用分号分隔,空格用&amp;nbsp表示]]>
 												</xs:documentation>
 											</xs:annotation>
 										</xs:element>
@@ -86,7 +79,7 @@
 												<xs:documentation>
 												<![CDATA[redisvalue规则,以[]包围的代表可变项,
 												需要从map中获取的值,直接写的代表是固定值,直接拼接即可,
-												每个属性间用逗号分隔,空格用&amp;nbsp表示]]>
+												每个属性间用分号分隔,空格用&amp;nbsp表示]]>
 												</xs:documentation>
 											</xs:annotation>
 										</xs:element>
@@ -107,6 +100,15 @@
 							</xs:element>
 
 						</xs:sequence>
+
+
+						<xs:attribute name="service" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation><![CDATA[业务类型,多个业务类型用分号分隔]]>
+								</xs:documentation>
+							</xs:annotation>
+
+						</xs:attribute>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>

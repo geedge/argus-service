@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.nis.web.service.restful.TestRedisService;
+import com.nis.web.service.restful.ConfigRedisService;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -21,11 +21,11 @@ import com.nis.web.service.restful.TestRedisService;
 public class RedisTest {
 
 	@Autowired
-	TestRedisService configService;
+	ConfigRedisService configService;
 
 	@Test
 	public void testTrans() {
-		configService.saveConfigCompile();
+		//configService.saveConfigCompile();
 	}
 
 }

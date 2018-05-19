@@ -2,6 +2,7 @@ package com.nis.web.controller.restful;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
-import com.nis.web.service.restful.TestRedisService;
+import com.nis.web.service.restful.ConfigRedisService;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -50,14 +51,22 @@ public class ConfigSourcesController extends BaseRestController {
 	protected ServicesRequestLogService servicesRequestLogService;
 
 	@Autowired
-	TestRedisService testRedisServiceimpl;
+	ConfigRedisService configRedisServiceimpl;
 
 	@RequestMapping(value = "/save", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String testRedis() {
+	public String testRedis(String id) {
 		try {
-			testRedisServiceimpl.saveConfigCompile();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("cfg_id", id);
+			map.put("is_valid", "1");
+			map.put("dst_file", "/home/1234/");
+			map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
+			map.put("time_stamp", new Date().getTime() + "");
+			map.put("level", "20");
+			map.put("file_id",id);
+			configRedisServiceimpl.saveConfigYSPDemoCompile(96,map);
 			return "ok";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -118,7 +127,7 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"编译配置数据插入成功" + sb.toString(), Constants.IS_DEBUG?configSource:null);
+				"编译配置数据插入成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.PUT)
@@ -183,7 +192,7 @@ public class ConfigSourcesController extends BaseRestController {
 					RestBusinessCode.missing_args.getValue());
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"编译配置修改成功" + sb.toString(), Constants.IS_DEBUG?configSource:null);
+				"编译配置修改成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/configModifySources", method = RequestMethod.PUT)
@@ -303,7 +312,7 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"修改编译配置数据成功" + sb.toString(), Constants.IS_DEBUG?configSource:null);
+				"修改编译配置数据成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
 	private void validateConfigSource(SaveRequestLogThread thread, long start, ConfigSource configSource) {
