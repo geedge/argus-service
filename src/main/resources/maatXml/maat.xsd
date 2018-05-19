@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3school.com.cn"
+	targetNamespace="http://www.w3school.com.cn" elementFormDefault="qualified">
+
+
+	<xs:element name="maat">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="maatType">
+					<xs:annotation>
+						<xs:documentation>定义某个业务类型的maat规则
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="service" type="xs:string" use="required">
+							<xs:annotation>
+										<xs:documentation><![CDATA[业务类型,多个业务类型用逗号分隔]]>
+										</xs:documentation>
+									</xs:annotation>
+						
+						</xs:attribute>
+						<xs:sequence>
+							<xs:element name="sequences">
+								<xs:annotation>
+									<xs:documentation><![CDATA[定义该业务是否有对序列的操作,可选属性]]>
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="sequenceKey" type="xs:string">
+											<xs:annotation>
+												<xs:documentation><![CDATA[序列名称]]>
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+
+										<xs:element name="operation">
+											<xs:annotation>
+												<xs:documentation><![CDATA[定义对序列的操作,0:获取序列值,1:序列值自增]]>
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+													<xs:pattern value="[0-1]" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="redisDB">
+											<xs:annotation>
+												<xs:documentation><![CDATA[使用哪个redis数据库,redis默认只有0-15,共16个数据库]]>
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+													<xs:minInclusive value="0" />
+													<xs:maxInclusive value="16" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+
+
+
+							</xs:element>
+
+
+							<xs:element name="expressions">
+								<xs:annotation>
+									<xs:documentation><![CDATA[定义具体maatredis,key-value规则]]>
+									</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="keyExpression" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>
+												<![CDATA[rediskey规则,以[]包围的代表可变项,
+												需要从map中获取的值,直接写的代表是固定值,直接拼接即可,
+												每个属性间用逗号分隔,空格用&amp;nbsp表示]]>
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="valueExpression" type="xs:string">
+											<xs:annotation>
+												<xs:documentation>
+												<![CDATA[redisvalue规则,以[]包围的代表可变项,
+												需要从map中获取的值,直接写的代表是固定值,直接拼接即可,
+												每个属性间用逗号分隔,空格用&amp;nbsp表示]]>
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="redisDB">
+											<xs:annotation>
+												<xs:documentation><![CDATA[使用哪个redis数据库,redis默认只有0-15,共16个数据库]]>
+												</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+													<xs:minInclusive value="0" />
+													<xs:maxInclusive value="16" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
