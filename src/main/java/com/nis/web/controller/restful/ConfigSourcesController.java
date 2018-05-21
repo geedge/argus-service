@@ -51,24 +51,36 @@ public class ConfigSourcesController extends BaseRestController {
 	protected ServicesRequestLogService servicesRequestLogService;
 
 	@Autowired
-	ConfigRedisService configRedisServiceimpl;
+	ConfigRedisService configRedisService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String testRedis() {
+	public String testRedis(Integer type) {
 		try {
-			Map<String, String> map = new HashMap<String, String>();
-			
-			long id=configRedisServiceimpl.getIncrId("seq_compileid");
-			map.put("cfg_id", id+"");
-			map.put("is_valid", "1");
-			map.put("dst_file", "/home/1234/");
-			map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
-			map.put("time_stamp", new Date().getTime() + "");
-			map.put("level", "20");
-			map.put("file_id",id+"");
-			configRedisServiceimpl.saveConfigYSPDemoCompile(96,map);
+			if(type==1) {
+				Map<String, String> map = new HashMap<String, String>();
+				long id=configRedisService.getIncrId("seq_compileid");
+				//int id=2;
+				map.put("cfg_id", id+"");
+				map.put("is_valid", "1");
+				map.put("dst_file", "home");
+				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
+				map.put("time_stamp", new Date().getTime() + "");
+				map.put("level", "20");
+				map.put("file_id",id+"");
+				configRedisService.saveConfigYSPDemoCompile(96,map);
+			}else {
+				Map<String, String> map = new HashMap<String, String>();
+				long id=configRedisService.getIncrId("seq_compileid");
+				//int id=2;
+				map.put("cfg_id", id+"");
+				map.put("is_valid", "1");
+				map.put("service", "100");
+				map.put("description", "123"+id);
+				map.put("level", "20");
+				configRedisService.saveConfigYSPDemoCompile(100,map);
+			}
 			return "ok";
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -12,7 +12,19 @@ import java.util.Map;
  *
  */
 public interface ConfigRedisService {
+	/**
+	 * 保存ysp样例配置接口
+	 * @param service 业务类型
+	 * @param map 
+	 */
 	public void saveConfigYSPDemoCompile(int service, Map<String, String> map);
+
+	/**
+	 * 保存ysp配置接口
+	 * @param service
+	 * @param map
+	 */
+	public void saveConfigYSPCompile(int service, Map<String, String> map);
 
 	/**
 	 * 获取指定key的自增长值
