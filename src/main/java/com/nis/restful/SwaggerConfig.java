@@ -53,11 +53,11 @@ public class SwaggerConfig {
 	    private ApiInfo apiInfo()
 	    {
 	    	ApiInfo apiInfo = new ApiInfo(
-	                "文本综合业务 API",
-	                "API Document 管理",
+	                "Galaxy Service API",
+	                "API Document Management",
 	                "V1.0",
 	                "doufenghu@iie.ac.cn",
-	                "My Apps API Licence Type",
+	                "Galaxy Service API Licence Type",
 	                "http://127.0.0.1:8080/galaxy/swagger/");
 	        return apiInfo;
 	    }
