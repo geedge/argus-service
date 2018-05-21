@@ -13,4 +13,11 @@ import java.util.Map;
  */
 public interface ConfigRedisService {
 	public void saveConfigYSPDemoCompile(int service, Map<String, String> map);
+
+	/**
+	 * 获取指定key的自增长值
+	 * @param key 需要自增的key
+	 * @return
+	 */
+	public Long getIncrId(String key);
 }

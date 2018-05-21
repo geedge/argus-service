@@ -56,16 +56,18 @@ public class ConfigSourcesController extends BaseRestController {
 	@RequestMapping(value = "/save", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String testRedis(String id) {
+	public String testRedis() {
 		try {
 			Map<String, String> map = new HashMap<String, String>();
-			map.put("cfg_id", id);
+			
+			long id=configRedisServiceimpl.getIncrId("seq_compileid");
+			map.put("cfg_id", id+"");
 			map.put("is_valid", "1");
 			map.put("dst_file", "/home/1234/");
 			map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
 			map.put("time_stamp", new Date().getTime() + "");
 			map.put("level", "20");
-			map.put("file_id",id);
+			map.put("file_id",id+"");
 			configRedisServiceimpl.saveConfigYSPDemoCompile(96,map);
 			return "ok";
 		} catch (Exception e) {

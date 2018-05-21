@@ -2,7 +2,9 @@ package com.nis.web.service.restful;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -34,7 +36,6 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 						}
 					}
 					StringBuffer valBF = new StringBuffer();
-					//valBF.append("\"");
 					String[] valSplit = maatXmlExpr.getValueExpression().split(";");
 					for (String valStr : valSplit) {
 						if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
@@ -46,13 +47,15 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 							valBF.append(valStr.trim());
 						}
 					}
-					//valBF.append("\"");
-					DynamicJedisDataBase.setRedisDataBase(maatXmlExpr.getRedisDB(), redisTemplate);
-					// redisTemplate.boundValueOps(keyBF.toString()).append(valBF.toString());
-					System.out.println(keyBF.toString());
-					System.out.println(valBF.toString());
-					redisTemplate.opsForValue().set(keyBF.toString(), valBF.toString());
-					//redisTemplate.boundValueOps(keyBF.toString()).set(valBF.toString());
+
+					// DynamicJedisDataBase.setRedisDataBase(maatXmlExpr.getRedisDB(),
+					// redisTemplate);
+					// System.out.println(keyBF.toString());
+					// System.out.println(valBF.toString());
+					//redisTemplate.boundValueOps(keyBF.toString()).
+
+							redisTemplate.opsForValue().set(keyBF.toString(), valBF.toString());
+					// redisTemplate.boundValueOps(keyBF.toString()).set(valBF.toString());
 
 				}
 				List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
@@ -67,12 +70,10 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println("\\t");
 	}
-	
-	
 
 	public void test() {
 
@@ -98,6 +99,21 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 				int a = 1 / 0;
 			}
 		}
+	}
+
+	@Override
+	public Long getIncrId(String key) {
+		 DynamicJedisDataBase.setRedisDataBase(2, redisTemplate);
+		// RedisAtomicLong atomicLong = new RedisAtomicLong(key,
+		// redisTemplate.getConnectionFactory());
+		//
+		// Long id = atomicLong.getAndIncrement() + 1;
+		// if ((id == null || id.longValue() == 0) && liveTime > 0) {
+		// atomicLong.expire(liveTime, TimeUnit.SECONDS);
+		// }
+		// return id;
+
+		return redisTemplate.boundValueOps(key).increment(1l);
 	}
 
 }
