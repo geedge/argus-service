@@ -66,7 +66,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  * @version V1.0
  */
 @RestController
-@RequestMapping("${servicePath}/log/v1")
+//@RequestMapping("${servicePath}/log/v1")
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DjLogSearchController extends BaseRestController {
 	protected final Logger logger1 = Logger.getLogger(this.getClass());

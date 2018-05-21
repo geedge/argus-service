@@ -42,7 +42,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
  * @version V1.0
  */
 @RestController
-@RequestMapping("${servicePath}/cfg/v1")
+//@RequestMapping("${servicePath}/cfg/v1")
 public class DnsGroupTypeController extends BaseRestController {
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	@Autowired

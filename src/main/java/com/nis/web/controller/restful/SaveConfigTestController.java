@@ -42,7 +42,7 @@ import net.sf.json.JSONArray;
 import net.sf.json.JsonConfig;
 
 @RestController
-@RequestMapping("${servicePath}")
+@RequestMapping("${servicePath}/cfg/v1/test")
 @Api(value = "SaveConfigTestController", description = "配置存储服务，包括管控、监测、白名单的控制类")
 public class SaveConfigTestController extends BaseRestController {
 	private long allCount = 0l;
@@ -54,7 +54,7 @@ public class SaveConfigTestController extends BaseRestController {
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
 
-	@RequestMapping(value = "/cfg/v1/testSaveByJDBCThread", method = RequestMethod.GET)
+	@RequestMapping(value = "/testSaveByJDBCThread", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量业务配置存储", httpMethod = "GET", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
 	public Map testSaveByJDBCThread(@RequestParam(value = "configCount", required = false) Long configCount,
 			@RequestParam(value = "startNum", required = false) Long startNum,
@@ -154,7 +154,7 @@ public class SaveConfigTestController extends BaseRestController {
 		return null;
 	}
 
-	@RequestMapping(value = "/cfg/v1/testSaveByMybatis", method = RequestMethod.GET)
+	@RequestMapping(value = "/testSaveByMybatis", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量业务配置存储", httpMethod = "GET", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
 	public Map testSaveByMybatis(@RequestParam(value = "configCount", required = false) Long configCount,
 			@RequestParam(value = "batchSize", required = false) Integer batchSize,
@@ -475,7 +475,7 @@ public class SaveConfigTestController extends BaseRestController {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	@RequestMapping(value = "/cfg/v1/testUpdateByJDBCThread", method = RequestMethod.GET)
+	@RequestMapping(value = "/testUpdateByJDBCThread", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量业务配置修改", httpMethod = "GET", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
 	public Map testUpdateByJDBCThread(@RequestParam(value = "compileId", required = false) Long compileId,
 			HttpServletRequest request, HttpServletResponse response) {
@@ -533,7 +533,7 @@ public class SaveConfigTestController extends BaseRestController {
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	@RequestMapping(value = "/cfg/v1/updateConfigSource", method = RequestMethod.GET)
+	@RequestMapping(value = "/updateConfigSource", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量业务配置修改", httpMethod = "GET", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
 	public Map updateConfigSource(@RequestParam(value = "compileId", required = false) Long compileId,
 			HttpServletRequest request, HttpServletResponse response) {
@@ -683,7 +683,7 @@ public class SaveConfigTestController extends BaseRestController {
 		return configCompileTest;
 	}
 
-	@RequestMapping(value = "/cfg/v1/findCompile", method = RequestMethod.POST)
+	@RequestMapping(value = "/findCompile", method = RequestMethod.POST)
 	public Map findCompile(ConfigCompileTest configCompileTest, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();

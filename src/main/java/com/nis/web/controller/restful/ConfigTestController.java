@@ -63,7 +63,7 @@ import net.sf.json.JsonConfig;
  * @version V1.0
  */
 @RestController
-@RequestMapping("${servicePath}")
+//@RequestMapping("${servicePath}")
 @Api(value = "ConfigTestController", description = "配置存储服务，包括管控、监测、白名单的控制类")
 public class ConfigTestController extends BaseRestController {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

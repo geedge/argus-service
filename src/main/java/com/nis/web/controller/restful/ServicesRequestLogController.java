@@ -21,7 +21,7 @@ import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 
 @RestController
-@RequestMapping("${servicePath}")
+//@RequestMapping("${servicePath}")
 public class ServicesRequestLogController extends BaseRestController {
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;

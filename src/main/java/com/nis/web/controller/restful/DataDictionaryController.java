@@ -24,7 +24,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DataDictionaryService;
 
 @RestController
-@RequestMapping("${servicePath}")
+//@RequestMapping("${servicePath}")
 public class DataDictionaryController extends BaseRestController {
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	@Autowired
