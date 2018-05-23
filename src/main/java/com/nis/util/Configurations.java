@@ -15,6 +15,7 @@ public final class Configurations {
 			prop.load(Configurations.class.getResourceAsStream("/nis.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/table.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/matt.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/serviceTable.properties"));
 			
 		} catch (Exception e) {
 			prop = null;

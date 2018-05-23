@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigSource;
+import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
@@ -28,6 +29,7 @@ import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigRedisService;
+import com.nis.web.service.restful.ConfigRedisServiceimpl;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -58,34 +60,110 @@ public class ConfigSourcesController extends BaseRestController {
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
 	public String testRedis(Integer type) {
 		try {
-			if(type==1) {
+			List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
+			if (type == 1) {
 				Map<String, String> map = new HashMap<String, String>();
-				long id=configRedisService.getIncrId("seq_compileid");
-				//int id=2;
-				map.put("cfg_id", id+"");
+				Integer service = 98;
+				long id = configRedisService.getIncrId("seq_compileid", service);
+				// int id=2;
+				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
 				map.put("dst_file", "home");
 				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
 				map.put("time_stamp", new Date().getTime() + "");
 				map.put("level", "20");
-				map.put("file_id",id+"");
-				configRedisService.saveConfigYSPDemoCompile(96,map);
-			}else {
+				map.put("file_id", id + "");
+				map.put("service", service + "");
+				listMap.add(map);
+				configRedisService.saveUnMaatConfig(listMap,service);
+			} else {
+				Integer service = 100;
+
 				Map<String, String> map = new HashMap<String, String>();
-				long id=configRedisService.getIncrId("seq_compileid");
-				//int id=2;
-				map.put("cfg_id", id+"");
+				long id = configRedisService.getIncrId("seq_compileid", service);
+				// int id=2;
+				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
 				map.put("service", "100");
-				map.put("description", "123"+id);
+				map.put("description", "123" + id);
 				map.put("level", "20");
-				configRedisService.saveConfigYSPDemoCompile(100,map);
+				listMap.add(map);
+				map.put("service", service + "");
+				configRedisService.saveUnMaatConfig(listMap,service);
 			}
 			return "ok";
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "false";
+	}
+
+	@RequestMapping(value = "/saveMaat", method = RequestMethod.GET)
+	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
+	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
+	public String saveMaat(Integer service) {
+		try {
+			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
+			listMap.add(getMaatConfig(service));
+			listMap.add(getMaatConfig(service));
+			configRedisService.saveMaatConfig(listMap,service);
+			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
+			return "ok";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return "false";
+	}
+
+	public MaatConfig getMaatConfig(Integer service) {
+		String time = new Date().getTime() + "";
+		Map<String, String> configMap = new HashMap<String, String>();
+		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID", service);
+		long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID", service);
+		long seq_regionid = configRedisService.getIncrId("SEQ_REGIONID", service);
+		// int id=2;
+		configMap.put("cfg_id", seq_compileid + "");
+		configMap.put("service", service + "");
+		configMap.put("action", "0");
+		configMap.put("do_blacklist", "1");
+		configMap.put("do_log", "1");
+		configMap.put("effective_range", "0");
+		configMap.put("user_region", "0");
+		configMap.put("is_valid", "1");
+		configMap.put("group_num", "1");
+		configMap.put("father_cfg_id", "0");
+		configMap.put("op_time", time);
+		Map<String, String> groupMap = new HashMap<String, String>();
+		groupMap.put("group_id", seq_groupid + "");
+		groupMap.put("cfg_id", seq_compileid + "");
+		groupMap.put("is_valid", "1");
+		groupMap.put("op_time", time);
+		groupMap.put("service", service + "");
+		Map<String, String> strMap = new HashMap<String, String>();
+
+		strMap.put("group_id", seq_groupid + "");
+		strMap.put("region_id", seq_regionid + "");
+		strMap.put("addr_type", "4");
+		strMap.put("src_ip", "0.0.0.0");
+		strMap.put("mask_src_ip", "255.255.255.255");
+		strMap.put("src_port", "0");
+		strMap.put("mask_src_port", "0");
+		strMap.put("dst_ip", "0.0.0.0");
+		strMap.put("mask_dst_ip", "255.255.255.255");
+		strMap.put("dst_port", "0");
+		strMap.put("mask_dst_port", "0");
+		strMap.put("protocol", "0");
+		strMap.put("direction", "0");
+		strMap.put("is_valid", "1");
+		strMap.put("op_time", time);
+		strMap.put("service", service + "");
+
+		MaatConfig maatConfig = new MaatConfig();
+		maatConfig.setCompileMap(configMap);
+		maatConfig.setGroupMap(groupMap);
+		maatConfig.setService(service);
+		maatConfig.setIpRegionMap(strMap);
+		return maatConfig;
 	}
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.POST)

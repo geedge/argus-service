@@ -28,7 +28,7 @@
 	<bean id="connectionFactory"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
 		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="0" />
+		p:database="0" scope="prototype"/>
 	<!-- p:password=""  scope="prototype"-->
 
 

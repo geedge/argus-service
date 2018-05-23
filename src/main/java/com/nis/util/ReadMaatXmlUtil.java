@@ -114,6 +114,21 @@ public class ReadMaatXmlUtil {
 									for (Element ele : eleList) {
 										if (ele.getName().toLowerCase().equals("keyexpression")) {
 											maatXmlExpr.setKeyExpression(ele.getTextTrim());
+											if (ele.getTextTrim().contains("compile_table_name")) {
+												maatXmlExpr.setType(10);
+											} else if (ele.getTextTrim().contains("group_table_name")) {
+												maatXmlExpr.setType(11);
+											} else if (ele.getTextTrim().contains("ip_region_table_name")) {
+												maatXmlExpr.setType(12);
+											} else if (ele.getTextTrim().contains("num_region_table_name")) {
+												maatXmlExpr.setType(13);
+											} else if (ele.getTextTrim().contains("str_region_table_name")) {
+												maatXmlExpr.setType(14);
+											} else if (ele.getTextTrim().contains("str_str_region_table_name")) {
+												maatXmlExpr.setType(15);
+											} else {
+												maatXmlExpr.setType(16);
+											}
 										}
 										if (ele.getName().toLowerCase().equals("valueexpression")) {
 											maatXmlExpr.setValueExpression(ele.getTextTrim());
@@ -121,6 +136,7 @@ public class ReadMaatXmlUtil {
 										if (ele.getName().toLowerCase().equals("redisdb")) {
 											maatXmlExpr.setRedisDB(Integer.parseInt(ele.getTextTrim()));
 										}
+
 									}
 									exprList.add(maatXmlExpr);
 								}

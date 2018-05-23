@@ -13,6 +13,19 @@
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
+							<xs:element name="redisDB">
+								<xs:annotation>
+									<xs:documentation><![CDATA[使用哪个redis数据库,redis默认只有0-15,共16个数据库]]>
+									</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:minInclusive value="0" />
+										<xs:maxInclusive value="16" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+
 							<xs:element name="sequences">
 								<xs:annotation>
 									<xs:documentation><![CDATA[定义该业务是否有对序列的操作,可选属性]]>
@@ -35,18 +48,6 @@
 											<xs:simpleType>
 												<xs:restriction base="xs:integer">
 													<xs:pattern value="[0-1]" />
-												</xs:restriction>
-											</xs:simpleType>
-										</xs:element>
-										<xs:element name="redisDB">
-											<xs:annotation>
-												<xs:documentation><![CDATA[使用哪个redis数据库,redis默认只有0-15,共16个数据库]]>
-												</xs:documentation>
-											</xs:annotation>
-											<xs:simpleType>
-												<xs:restriction base="xs:integer">
-													<xs:minInclusive value="0" />
-													<xs:maxInclusive value="16" />
 												</xs:restriction>
 											</xs:simpleType>
 										</xs:element>
@@ -82,18 +83,6 @@
 												每个属性间用分号分隔,空格用&amp;nbsp表示]]>
 												</xs:documentation>
 											</xs:annotation>
-										</xs:element>
-										<xs:element name="redisDB">
-											<xs:annotation>
-												<xs:documentation><![CDATA[使用哪个redis数据库,redis默认只有0-15,共16个数据库]]>
-												</xs:documentation>
-											</xs:annotation>
-											<xs:simpleType>
-												<xs:restriction base="xs:integer">
-													<xs:minInclusive value="0" />
-													<xs:maxInclusive value="16" />
-												</xs:restriction>
-											</xs:simpleType>
 										</xs:element>
 									</xs:sequence>
 								</xs:complexType>
