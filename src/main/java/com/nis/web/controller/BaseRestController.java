@@ -43,7 +43,7 @@ import com.nis.web.service.ServicesRequestLogService;
  */
 public class BaseRestController {
 	protected final Logger logger = Logger.getLogger(this.getClass());
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHssSSS");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 	/**
 	 * 
 	 * @Title: serviceResponse

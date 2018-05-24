@@ -2,12 +2,20 @@ package com.nis.web.service.restful;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.sf.json.JSONObject;
 
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
@@ -16,7 +24,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.nis.domain.Page;
+import com.nis.domain.restful.CommonSourceFieldCfg;
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigCompileTest;
 import com.nis.domain.restful.ConfigGroupRelation;
@@ -27,9 +39,11 @@ import com.nis.domain.restful.StrRegion;
 import com.nis.restful.CompileJudgeCode;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.util.BasicProvingUtil;
 import com.nis.util.CompileVal;
 import com.nis.util.Configurations;
 import com.nis.util.OracleErrorCodeUtil;
+import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.dao.ConfigCompileDao;
@@ -78,6 +92,11 @@ public class ConfigSourcesService extends BaseService {
 	@Autowired
 	private StrRegionDao strRegionDao;
 
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	
+	@Autowired
+	ConfigRedisService configRedisService;
+	
 	public static Map<Integer, Map<String, String>> getTableRelation() {
 		Map<Integer, Map<String, String>> tableMap = new HashMap<Integer, Map<String, String>>();
 		Map<String, String> typeMap = new HashMap<String, String>();
@@ -2076,7 +2095,136 @@ public class ConfigSourcesService extends BaseService {
 		}
 		return "ok";
 	}
-
+	
+	public String savaCommonSources(SaveRequestLogThread thread, long start,String jsonString,
+			StringBuffer sb) {
+		JsonArray jsonObjectList = new JsonParser().parse(jsonString).getAsJsonArray();
+		Map<Integer,List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String,String>>>();
+		for (int i = 0; i < jsonObjectList.size(); i++) {
+			JsonObject jsonObj=(JsonObject) jsonObjectList.get(i);
+			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject.fromObject((jsonObj.toString())));
+			if(srcMap.containsKey("service")){
+				Map<String,String> dstMap = new HashMap<String, String>();
+				List<CommonSourceFieldCfg> commonSourceFieldCfgList = ReadCommSourceXmlUtil.getCommonSourceCfgByService(srcMap.get("service").toString().trim());
+				if (StringUtil.isEmpty(commonSourceFieldCfgList)) {
+					logger.error("service请检查service配置是否正确");
+					thread.setExceptionInfo("请检查service配置是否正确");
+					throw new RestServiceException(thread, System.currentTimeMillis() - start,"请检查service配置是否正确",
+						RestBusinessCode.wrong_range.getValue());
+				}
+				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
+					//是否必填
+					if(commonSourceFieldCfg.getIsRequired()&&!srcMap.containsKey(commonSourceFieldCfg.getSrcName())){
+						logger.error(commonSourceFieldCfg.getSrcName()+"参数不能为空");
+						thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不能为空");
+						throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能为空",
+							RestBusinessCode.missing_args.getValue());
+					}
+					//字段类型 String Number Date Ip Port
+					String dstStr = StringUtil.isEmpty(srcMap.get(commonSourceFieldCfg.getSrcName()))?commonSourceFieldCfg.getDefaultVal():srcMap.get(commonSourceFieldCfg.getSrcName()).toString();
+					if (!StringUtil.isEmpty(dstStr)&&dstStr.startsWith("[")&&dstStr.endsWith("]")) {
+						dstStr = srcMap.get(dstStr.substring(1, dstStr.length()-1)).toString();
+					}
+					switch (commonSourceFieldCfg.getFieldType()) {
+						case "Number":
+							if(!StringUtil.isNumeric(dstStr)){
+								logger.error(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
+								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
+								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确",
+									RestBusinessCode.missing_args.getValue());
+							}
+							break;
+						case "Date":
+							try {
+								sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+								Date date = sdf.parse(dstStr);
+								dstStr = date.getTime()+"000";
+							} catch (ParseException e) {
+								// TODO Auto-generated catch block
+								logger.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，必须是日期型");
+								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，必须是日期型");
+								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，必须是日期型",
+									RestBusinessCode.missing_args.getValue());
+							}
+							break;
+						case "Ip":
+							if (!isIp(dstStr)) {
+								logger.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
+								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
+								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，不是合法的IP地址",
+									RestBusinessCode.missing_args.getValue());
+							}
+							break;
+						case "Port":
+							if (!BasicProvingUtil.isPortOrPortMask(dstStr)) {
+								logger.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的Port");
+								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的Port");
+								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，不是合法的Port",
+									RestBusinessCode.missing_args.getValue());
+							}
+							break;
+	
+					}
+					//range取值范围验证
+					if(!StringUtil.isEmpty(commonSourceFieldCfg.getRange())){
+						String [] range= commonSourceFieldCfg.getRange().split("-");
+						if(!(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr))<=0&&Long.valueOf(range[1]).compareTo(Long.valueOf(dstStr))>=0)){
+							logger.error(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
+							thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
+							throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数不在有效范围",
+									RestBusinessCode.wrong_range.getValue());
+							
+						}
+					}
+					//regexp 特殊格式正则验证
+					Boolean valFlag = true;
+					if(!StringUtil.isEmpty(commonSourceFieldCfg.getRegexp())){
+						Pattern pattern = Pattern.compile(commonSourceFieldCfg.getRegexp());
+						Matcher matcher = pattern.matcher(dstStr);
+						valFlag = valFlag&matcher.matches();
+					}
+					if (valFlag) {
+						dstMap.put(commonSourceFieldCfg.getDstName(),dstStr);
+					}else{
+						logger.error(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
+						thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数格式不正确或数据不在有效范围",
+								RestBusinessCode.param_formate_error.getValue());
+					}
+				}
+				if (StringUtil.isEmpty(dstMaps.get(Integer.valueOf(srcMap.get("service").toString())))) {
+					List<Map<String, String>> list = new ArrayList<Map<String,String>>();
+					list.add(dstMap);
+					dstMaps.put(Integer.valueOf(srcMap.get("service").toString()), list);
+				}else{
+					List<Map<String, String>> list = dstMaps.get(Integer.valueOf(srcMap.get("service").toString()));
+					list.add(dstMap);
+					
+				}
+			}else{
+				thread.setExceptionInfo("service参数不能为空");
+				throw new RestServiceException(thread, System.currentTimeMillis() - start, "service参数不能为空",
+						RestBusinessCode.missing_args.getValue());
+			}
+		}
+		Iterator iterator =dstMaps.keySet().iterator();
+		while (iterator.hasNext()) {
+			Integer key =  Integer.valueOf(iterator.next().toString());
+			configRedisService.saveUnMaatConfig(dstMaps.get(key),key);
+		//	configRedisService.saveConfigYSPDemoCompile(key,);
+		}
+		
+		
+		return "ok";
+	}
+	private boolean isIp(String ipStr){
+		if (!(BasicProvingUtil.isIpOrIpMask(ipStr,4)||BasicProvingUtil.isIpOrIpMask(ipStr,6))) {
+			return false;
+		}
+		return true;
+		
+	}
+	
 	public String setCompileInvalid(ConfigCompile configCompile) throws Exception {
 		configCompileDao.setCompileInvalid(configCompile.getCompileId(), 0);
 		return "ok";

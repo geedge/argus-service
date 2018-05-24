@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3school.com.cn"
+	targetNamespace="http://www.w3school.com.cn" elementFormDefault="qualified">
+	<xs:element name="commonSources">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="commonSource">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="field" >
+								<xs:complexType>
+									<xs:attribute name="srcName" type="xs:string" use="required">
+										<xs:annotation>
+											<xs:documentation><![CDATA[源字段名]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="dstName" type="xs:string" use="required">
+										<xs:annotation>
+											<xs:documentation><![CDATA[目的字段名]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="fieldType" use="required">
+										<xs:annotation>
+											<xs:documentation><![CDATA[字段类型]]>
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:enumeration value="String"></xs:enumeration>
+												<xs:enumeration value="Date"></xs:enumeration>
+												<xs:enumeration value="Number"></xs:enumeration>
+												<xs:enumeration value="IP"></xs:enumeration>
+												<xs:enumeration value="Port"></xs:enumeration>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="range" type="xs:string">
+										<xs:annotation>
+											<xs:documentation><![CDATA[取值范围]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>	
+									<xs:attribute name="isRequired" type="xs:boolean">
+										<xs:annotation>
+											<xs:documentation><![CDATA[是否必填项]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="defaultVal" type="xs:string">
+										<xs:annotation>
+											<xs:documentation><![CDATA[默认值]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>	
+									<xs:attribute name="regexp">
+										<xs:annotation>
+											<xs:documentation><![CDATA[其他类型字段格式验证，正则表达式]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="serviceIds" type="xs:string" use="required">
+							<xs:annotation>
+								<xs:documentation><![CDATA[业务Id列表，多个之间用","分隔]]>
+								</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
