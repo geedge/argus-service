@@ -34,5 +34,5 @@ public interface ConfigRedisService {
 	 * @param key 需要自增的key
 	 * @return
 	 */
-	public Long getIncrId(String key, int service);
+	public Long getIncrId(String key);
 }

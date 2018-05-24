@@ -64,7 +64,7 @@ public class ConfigSourcesController extends BaseRestController {
 			if (type == 1) {
 				Map<String, String> map = new HashMap<String, String>();
 				Integer service = 98;
-				long id = configRedisService.getIncrId("seq_compileid", service);
+				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
 				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
@@ -75,12 +75,12 @@ public class ConfigSourcesController extends BaseRestController {
 				map.put("file_id", id + "");
 				map.put("service", service + "");
 				listMap.add(map);
-				configRedisService.saveUnMaatConfig(listMap,service);
+				configRedisService.saveUnMaatConfig(listMap, service);
 			} else {
 				Integer service = 100;
 
 				Map<String, String> map = new HashMap<String, String>();
-				long id = configRedisService.getIncrId("seq_compileid", service);
+				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
 				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
@@ -89,7 +89,7 @@ public class ConfigSourcesController extends BaseRestController {
 				map.put("level", "20");
 				listMap.add(map);
 				map.put("service", service + "");
-				configRedisService.saveUnMaatConfig(listMap,service);
+				configRedisService.saveUnMaatConfig(listMap, service);
 			}
 			return "ok";
 		} catch (Exception e) {
@@ -106,7 +106,7 @@ public class ConfigSourcesController extends BaseRestController {
 			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
 			listMap.add(getMaatConfig(service));
 			listMap.add(getMaatConfig(service));
-			configRedisService.saveMaatConfig(listMap,service);
+			configRedisService.saveMaatConfig(listMap, service);
 			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
 			return "ok";
 		} catch (Exception e) {
@@ -118,9 +118,9 @@ public class ConfigSourcesController extends BaseRestController {
 	public MaatConfig getMaatConfig(Integer service) {
 		String time = new Date().getTime() + "";
 		Map<String, String> configMap = new HashMap<String, String>();
-		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID", service);
-		long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID", service);
-		long seq_regionid = configRedisService.getIncrId("SEQ_REGIONID", service);
+		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
+		long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
+		long seq_regionid = configRedisService.getIncrId("SEQ_REGIONID");
 		// int id=2;
 		configMap.put("cfg_id", seq_compileid + "");
 		configMap.put("service", service + "");

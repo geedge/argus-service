@@ -289,8 +289,8 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 		}
 	}
 
-	public Long getIncrId(String key, int service) {
-		DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
+	public Long getIncrId(String key) {
+		//DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
 		// RedisAtomicLong atomicLong = new RedisAtomicLong(key,
 		// redisTemplate.getConnectionFactory());
 		//
