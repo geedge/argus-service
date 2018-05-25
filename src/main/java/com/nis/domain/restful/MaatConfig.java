@@ -1,6 +1,7 @@
 package com.nis.domain.restful;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,23 +23,31 @@ public class MaatConfig implements Serializable {
 	/**
 	 * 分组配置
 	 */
-	private Map<String, String> groupMap;
+	private List<Map<String, String>> groupMapList;
 	/**
 	 * ip域配置
 	 */
-	private Map<String, String> ipRegionMap;
+	private List<Map<String, String>> ipRegionMapList;
 	/**
 	 * 数值域配置
 	 */
-	private Map<String, String> numRegionMap;
+	private List<Map<String, String>> numRegionMapList;
 	/**
 	 * 字符串域配置
 	 */
-	private Map<String, String> strRegionMap;
+	private List<Map<String, String>> strRegionMapList;
 	/**
 	 * 增强字符串域配置
 	 */
-	private Map<String, String> strStrRegionMap;
+	private List<Map<String, String>> strStrRegionMapList;
+	/**
+	 * 文件摘要类域配置
+	 */
+	private List<Map<String, String>> fileDigestRegionMapList;
+	/**
+	 * 文本相似性域配置
+	 */
+	private List<Map<String, String>> fileLikeRegionMapList;
 
 	/**
 	 * 业务类型
@@ -53,44 +62,60 @@ public class MaatConfig implements Serializable {
 		this.compileMap = compileMap;
 	}
 
-	public Map<String, String> getGroupMap() {
-		return groupMap;
+	public List<Map<String, String>> getGroupMapList() {
+		return groupMapList;
 	}
 
-	public void setGroupMap(Map<String, String> groupMap) {
-		this.groupMap = groupMap;
+	public void setGroupMapList(List<Map<String, String>> groupMapList) {
+		this.groupMapList = groupMapList;
 	}
 
-	public Map<String, String> getIpRegionMap() {
-		return ipRegionMap;
+	public List<Map<String, String>> getIpRegionMapList() {
+		return ipRegionMapList;
 	}
 
-	public void setIpRegionMap(Map<String, String> ipRegionMap) {
-		this.ipRegionMap = ipRegionMap;
+	public void setIpRegionMapList(List<Map<String, String>> ipRegionMapList) {
+		this.ipRegionMapList = ipRegionMapList;
 	}
 
-	public Map<String, String> getNumRegionMap() {
-		return numRegionMap;
+	public List<Map<String, String>> getNumRegionMapList() {
+		return numRegionMapList;
 	}
 
-	public void setNumRegionMap(Map<String, String> numRegionMap) {
-		this.numRegionMap = numRegionMap;
+	public void setNumRegionMapList(List<Map<String, String>> numRegionMapList) {
+		this.numRegionMapList = numRegionMapList;
 	}
 
-	public Map<String, String> getStrRegionMap() {
-		return strRegionMap;
+	public List<Map<String, String>> getStrRegionMapList() {
+		return strRegionMapList;
 	}
 
-	public void setStrRegionMap(Map<String, String> strRegionMap) {
-		this.strRegionMap = strRegionMap;
+	public void setStrRegionMapList(List<Map<String, String>> strRegionMapList) {
+		this.strRegionMapList = strRegionMapList;
 	}
 
-	public Map<String, String> getStrStrRegionMap() {
-		return strStrRegionMap;
+	public List<Map<String, String>> getStrStrRegionMapList() {
+		return strStrRegionMapList;
 	}
 
-	public void setStrStrRegionMap(Map<String, String> strStrRegionMap) {
-		this.strStrRegionMap = strStrRegionMap;
+	public void setStrStrRegionMapList(List<Map<String, String>> strStrRegionMapList) {
+		this.strStrRegionMapList = strStrRegionMapList;
+	}
+
+	public List<Map<String, String>> getFileDigestRegionMapList() {
+		return fileDigestRegionMapList;
+	}
+
+	public void setFileDigestRegionMapList(List<Map<String, String>> fileDigestRegionMapList) {
+		this.fileDigestRegionMapList = fileDigestRegionMapList;
+	}
+
+	public List<Map<String, String>> getFileLikeRegionMapList() {
+		return fileLikeRegionMapList;
+	}
+
+	public void setFileLikeRegionMapList(List<Map<String, String>> fileLikeRegionMapList) {
+		this.fileLikeRegionMapList = fileLikeRegionMapList;
 	}
 
 	public Integer getService() {

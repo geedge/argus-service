@@ -29,7 +29,6 @@ import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigRedisService;
-import com.nis.web.service.restful.ConfigRedisServiceimpl;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -120,7 +119,8 @@ public class ConfigSourcesController extends BaseRestController {
 		Map<String, String> configMap = new HashMap<String, String>();
 		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
 		long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
-		long seq_regionid = configRedisService.getIncrId("SEQ_REGIONID");
+		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
+		long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
 		// int id=2;
 		configMap.put("cfg_id", seq_compileid + "");
 		configMap.put("service", service + "");
@@ -133,16 +133,22 @@ public class ConfigSourcesController extends BaseRestController {
 		configMap.put("group_num", "1");
 		configMap.put("father_cfg_id", "0");
 		configMap.put("op_time", time);
+
+		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
 		Map<String, String> groupMap = new HashMap<String, String>();
 		groupMap.put("group_id", seq_groupid + "");
 		groupMap.put("cfg_id", seq_compileid + "");
 		groupMap.put("is_valid", "1");
 		groupMap.put("op_time", time);
 		groupMap.put("service", service + "");
-		Map<String, String> strMap = new HashMap<String, String>();
 
+		groupMapList.add(groupMap);
+
+		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
+
+		Map<String, String> strMap = new HashMap<String, String>();
 		strMap.put("group_id", seq_groupid + "");
-		strMap.put("region_id", seq_regionid + "");
+		strMap.put("region_id", seq_regionid1 + "");
 		strMap.put("addr_type", "4");
 		strMap.put("src_ip", "0.0.0.0");
 		strMap.put("mask_src_ip", "255.255.255.255");
@@ -158,11 +164,32 @@ public class ConfigSourcesController extends BaseRestController {
 		strMap.put("op_time", time);
 		strMap.put("service", service + "");
 
+		ipRegionMapList.add(strMap);
+
+		strMap = new HashMap<String, String>();
+		strMap.put("group_id", seq_groupid + "");
+		strMap.put("region_id", seq_regionid2 + "");
+		strMap.put("addr_type", "4");
+		strMap.put("src_ip", "0.0.0.0");
+		strMap.put("mask_src_ip", "255.255.255.255");
+		strMap.put("src_port", "0");
+		strMap.put("mask_src_port", "0");
+		strMap.put("dst_ip", "0.0.0.0");
+		strMap.put("mask_dst_ip", "255.255.255.255");
+		strMap.put("dst_port", "0");
+		strMap.put("mask_dst_port", "0");
+		strMap.put("protocol", "0");
+		strMap.put("direction", "0");
+		strMap.put("is_valid", "1");
+		strMap.put("op_time", time);
+		strMap.put("service", service + "");
+		ipRegionMapList.add(strMap);
+
 		MaatConfig maatConfig = new MaatConfig();
 		maatConfig.setCompileMap(configMap);
-		maatConfig.setGroupMap(groupMap);
+		maatConfig.setGroupMapList(groupMapList);
 		maatConfig.setService(service);
-		maatConfig.setIpRegionMap(strMap);
+		maatConfig.setIpRegionMapList(ipRegionMapList);
 		return maatConfig;
 	}
 

@@ -8,14 +8,10 @@
 			<p:keyExpression>EFFECTIVE_RULE;:;FILE_INDEX_INFO;,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[time_stamp];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression>
 		</p:expressions>
-		<p:redisDB>2</p:redisDB>
 		<p:sequences>
 			<p:operation>1</p:operation>
 			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
 		</p:sequences>
-
-
-
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
 		</p:expressions>
@@ -29,7 +25,6 @@
 	</p:maatType>
 
 	<p:maatType service="100;101;164;165">
-		<p:redisDB>2</p:redisDB>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;mark_sample;,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;[service];\t;[level];\t;[description];\t;[is_valid]</p:valueExpression>
@@ -49,8 +44,8 @@
 			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
 		</p:expressions>
 	</p:maatType>
-	<p:maatType service="80;81;82;83;84;85;144;145;146;147;148;149">
-		<p:redisDB>3</p:redisDB>
+
+	<p:maatType service="80;82;84;144;146;148">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
@@ -64,12 +59,85 @@
 			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{num_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
+			<!-- <p:valueExpression>add;{tableName};,;{id}</p:valueExpression> -->
 		</p:expressions>
+
+		<p:expressions>
+			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
+			<!-- <p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression> -->
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
+			<!-- <p:valueExpression>{region_id};{maatVersion}</p:valueExpression> -->
+		</p:expressions>
+
+		<p:sequences>
+			<p:operation>1</p:operation>
+			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
+		</p:sequences>
+	</p:maatType>
+
+
+
+
+
+
+
+	<p:maatType service="81;145">
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{group_table_name};,;[group_id]</p:keyExpression>
+			<p:valueExpression>[group_id];\t;[cfg_id];\t;[is_valid];\t;[op_time]</p:valueExpression>
+		</p:expressions>
+
+
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{str_region_table_name};,;[region_id]</p:keyExpression>
 			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
+			<!-- <p:valueExpression>add;{tableName};,;{id}</p:valueExpression> -->
+		</p:expressions>
+
+		<p:expressions>
+			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
+			<!-- <p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression> -->
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
+			<!-- <p:valueExpression>{region_id};{maatVersion}</p:valueExpression> -->
+		</p:expressions>
+
+		<p:sequences>
+			<p:operation>1</p:operation>
+			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
+		</p:sequences>
+	</p:maatType>
+
+
+
+
+
+
+
+
+	<p:maatType service="83;85;147;149">
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{group_table_name};,;[group_id]</p:keyExpression>
+			<p:valueExpression>[group_id];\t;[cfg_id];\t;[is_valid];\t;[op_time]</p:valueExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{num_region_table_name};,;[region_id]</p:keyExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>

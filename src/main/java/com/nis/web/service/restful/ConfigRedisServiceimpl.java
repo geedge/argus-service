@@ -68,14 +68,13 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 	@Transactional
 	public void saveUnMaatConfig(List<Map<String, String>> listMap, int service) {
 		if (listMap != null && listMap.size() > 0) {
+			DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
 			String maatVersionStr = operRedisService.getMaatVersion(getRedisDBByService(service));
 			if (maatVersionStr != null) {
 				Long maatVersion = Long.valueOf(maatVersionStr) + 1;
-
 				for (Map<String, String> map : listMap) {
 					// String serviceStr = map.get("service");
 					// int service = Integer.parseInt(serviceStr);
-					DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
 					MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
 					if (maatXmlConfig != null) {
 						List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
@@ -170,7 +169,7 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 		for (int i = 20; i < 30; i++) {
 			redisTemplate.boundZSetOps("1").add("a" + i, i);
 			if (i == 25) {
-				int a = 1 / 0;
+			//	int a = 1 / 0;
 			}
 		}
 	}
@@ -197,16 +196,48 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 	public void setConfig(MaatConfig maatConfig, MaatXmlConfig maatXmlConfig, Long maatVersion, int service) {
 		Map<String, String> compileMap = maatConfig.getCompileMap();
 		setCommonConfig(maatXmlConfig, compileMap, 10, maatVersion.doubleValue(), service);// 10代表是编译配置
-		Map<String, String> groupMap = maatConfig.getGroupMap();
-		setCommonConfig(maatXmlConfig, groupMap, 11, maatVersion.doubleValue(), service);// 11代表是分组配置
-		Map<String, String> ipRegionMap = maatConfig.getIpRegionMap();
-		setCommonConfig(maatXmlConfig, ipRegionMap, 12, maatVersion.doubleValue(), service);// 12代表是ip类域配置
-		Map<String, String> numRegionMap = maatConfig.getNumRegionMap();
-		setCommonConfig(maatXmlConfig, numRegionMap, 13, maatVersion.doubleValue(), service);// 13代表是数值类配置
-		Map<String, String> strRegionMap = maatConfig.getStrRegionMap();
-		setCommonConfig(maatXmlConfig, strRegionMap, 14, maatVersion.doubleValue(), service);// 14代表是字符串类域配置
-		Map<String, String> strStrRegionMap = maatConfig.getStrStrRegionMap();
-		setCommonConfig(maatXmlConfig, strStrRegionMap, 15, maatVersion.doubleValue(), service);// 15代表是增强字符串类域配置
+		List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
+		if (groupMapList != null && groupMapList.size() > 0) {
+			for (Map<String, String> map : groupMapList) {
+				setCommonConfig(maatXmlConfig, map, 11, maatVersion.doubleValue(), service);// 11代表是分组配置
+			}
+		}
+		List<Map<String, String>> ipRegionMapList = maatConfig.getIpRegionMapList();
+		if (ipRegionMapList != null && ipRegionMapList.size() > 0) {
+			for (Map<String, String> map : ipRegionMapList) {
+				setCommonConfig(maatXmlConfig, map, 12, maatVersion.doubleValue(), service);// 12代表是ip类域配置
+			}
+		}
+		List<Map<String, String>> numRegionMapList = maatConfig.getNumRegionMapList();
+		if (numRegionMapList != null && numRegionMapList.size() > 0) {
+			for (Map<String, String> map : numRegionMapList) {
+				setCommonConfig(maatXmlConfig, map, 13, maatVersion.doubleValue(), service);// 13代表是数值类配置
+			}
+		}
+		List<Map<String, String>> strRegionMapList = maatConfig.getStrRegionMapList();
+		if (strRegionMapList != null && strRegionMapList.size() > 0) {
+			for (Map<String, String> map : strRegionMapList) {
+				setCommonConfig(maatXmlConfig, map, 14, maatVersion.doubleValue(), service);// 14代表是字符串类域配置
+			}
+		}
+		List<Map<String, String>> strStrRegionMapList = maatConfig.getStrStrRegionMapList();
+		if (strStrRegionMapList != null && strStrRegionMapList.size() > 0) {
+			for (Map<String, String> map : strStrRegionMapList) {
+				setCommonConfig(maatXmlConfig, map, 15, maatVersion.doubleValue(), service);// 15代表是增强字符串类域配置
+			}
+		}
+		List<Map<String, String>> fileDigestRegionMapList = maatConfig.getFileDigestRegionMapList();
+		if (fileDigestRegionMapList != null && fileDigestRegionMapList.size() > 0) {
+			for (Map<String, String> map : fileDigestRegionMapList) {
+				setCommonConfig(maatXmlConfig, map, 16, maatVersion.doubleValue(), service);// 16代表是文件摘要类域配置
+			}
+		}
+		List<Map<String, String>> fileLikeRegionMapList = maatConfig.getFileLikeRegionMapList();
+		if (fileLikeRegionMapList != null && fileLikeRegionMapList.size() > 0) {
+			for (Map<String, String> map : fileLikeRegionMapList) {
+				setCommonConfig(maatXmlConfig, map, 17, maatVersion.doubleValue(), service);// 17代表是文本相似性域配置
+			}
+		}
 		updateCommonKey(maatXmlConfig);
 	}
 
@@ -290,7 +321,7 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 	}
 
 	public Long getIncrId(String key) {
-		//DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
+		DynamicJedisDataBase.setRedisDataBase(2, redisTemplate);
 		// RedisAtomicLong atomicLong = new RedisAtomicLong(key,
 		// redisTemplate.getConnectionFactory());
 		//

@@ -8,7 +8,7 @@ public class MaatXmlExpr implements Serializable {
 	private String keyExpression;
 	private String valueExpression;
 	private Integer type;
-	private Integer redisDB;
+	//private Integer redisDB;
 
 	public String getKeyExpression() {
 		return keyExpression;
@@ -26,9 +26,6 @@ public class MaatXmlExpr implements Serializable {
 		this.valueExpression = valueExpression;
 	}
 
-	public Integer getRedisDB() {
-		return redisDB;
-	}
 
 	public Integer getType() {
 		return type;
@@ -38,8 +35,5 @@ public class MaatXmlExpr implements Serializable {
 		this.type = type;
 	}
 
-	public void setRedisDB(Integer redisDB) {
-		this.redisDB = redisDB;
-	}
 
 }

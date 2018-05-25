@@ -8,7 +8,7 @@ public class MaatXmlSeq implements Serializable {
 
 	private String sequenceKey;
 	private Integer operation;
-	private Integer redisDB;
+//	private Integer redisDB;
 
 	public String getSequenceKey() {
 		return sequenceKey;
@@ -24,14 +24,6 @@ public class MaatXmlSeq implements Serializable {
 
 	public void setOperation(Integer operation) {
 		this.operation = operation;
-	}
-
-	public Integer getRedisDB() {
-		return redisDB;
-	}
-
-	public void setRedisDB(Integer redisDB) {
-		this.redisDB = redisDB;
 	}
 
 }
