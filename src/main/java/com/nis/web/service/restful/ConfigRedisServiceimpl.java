@@ -279,8 +279,8 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 						}
 					}
 					maatKey = keyBF.toString();
-					// System.out.println(keyBF.toString());
-					// System.out.println(valBF.toString());
+					System.out.println(keyBF.toString());
+					System.out.println(valBF.toString());
 					redisTemplate.opsForValue().set(maatKey.toUpperCase(), valBF.toString());
 					// redisTemplate.boundValueOps(keyBF.toString()).set(valBF.toString());
 					break;

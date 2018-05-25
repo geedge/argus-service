@@ -219,30 +219,7 @@ public class ConfigSourcesController extends BaseRestController {
 			// 验证配置编译数据
 			validateConfigSource(thread, start, configSource);
 			Long benginTime = System.currentTimeMillis();
-			String msg = configSourcesService.saveByJDBCThread(thread, start, configSource.getConfigCompileList(), sb);
-			if (msg.equals("error")) {
-				String errorCode = "";
-				Exception exception = ConfigSourcesService.getMsgList().get(0);
-				String str = exception.getMessage();
-				if (null != str && str.length() > 0) {
-					int index = str.toUpperCase().indexOf("ORA-");
-					if (index != -1) {
-						errorCode = str.substring(index + 4, index + 9);
-					}
-				}
-				Map<Integer, String> throwExceptionInfo = OracleErrorCodeUtil.throwExceptionInfo(errorCode);
-				for (int errorNum : throwExceptionInfo.keySet()) {
-					if (errorNum == 998) {
-						thread.setExceptionInfo(exception.toString());
-					} else {
-						thread.setExceptionInfo(throwExceptionInfo.get(errorNum));
-					}
-					throw new RestServiceException(thread, System.currentTimeMillis() - start,
-							throwExceptionInfo.get(errorNum), errorNum);
-				}
-			}
-			// configSourcesService.insertConfigSourceData(thread, start,
-			// configSource.getConfigCompileList(), sb);
+			configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
 
 			Long endSaveTime = System.currentTimeMillis();
 			Long time = (endSaveTime - benginTime) / 1000;

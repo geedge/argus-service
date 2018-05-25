@@ -447,8 +447,8 @@ public class CompileJudge {
 		if (null == configCompile.getAction()) {
 			return "id为" + compileId + "的编译配置中action不能为空";
 		}
-		if (null == configCompile.getDoBlackList()) {
-			return "id为" + compileId + "的编译配置中doBlackList不能为空";
+		if (null == configCompile.getDoBlacklist()) {
+			return "id为" + compileId + "的编译配置中doBlacklist不能为空";
 		}
 		if (null == configCompile.getDoLog()) {
 			return "id为" + compileId + "的编译配置中doLog不能为空";

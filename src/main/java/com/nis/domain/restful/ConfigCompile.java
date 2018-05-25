@@ -47,11 +47,11 @@ public class ConfigCompile implements Serializable {
 	@ApiModelProperty(value = "保障期", required = false)
 	private Integer guaranteeId;
 	@ApiModelProperty(value = "事件", required = false)
-	private Integer affAirId;
+	private Integer affairId;
 	@ApiModelProperty(value = "子话题", required = false)
-	private Integer topIcId;
+	private Integer topicId;
 	@ApiModelProperty(value = "是否黑名单", required = true)
-	private Long doBlackList;
+	private Long doBlacklist;
 	@ApiModelProperty(value = "是否生成日志", required = true)
 	private Integer doLog;
 	@ApiModelProperty(value = "生效范围", required = true)
@@ -180,16 +180,16 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return doBlackList
 	 */
-	public Long getDoBlackList() {
-		return doBlackList;
+	public Long getDoBlacklist() {
+		return doBlacklist;
 	}
 
 	/**
 	 * @param doBlackList
 	 *            要设置的 doBlackList
 	 */
-	public void setDoBlackList(Long doBlackList) {
-		this.doBlackList = doBlackList;
+	public void setDoBlacklist(Long doBlacklist) {
+		this.doBlacklist = doBlacklist;
 	}
 
 	/**
@@ -445,20 +445,20 @@ public class ConfigCompile implements Serializable {
 		this.guaranteeId = guaranteeId;
 	}
 
-	public Integer getAffAirId() {
-		return affAirId;
+	public Integer getAffairId() {
+		return affairId;
 	}
 
-	public void setAffAirId(Integer affAirId) {
-		this.affAirId = affAirId;
+	public void setAffairId(Integer affairId) {
+		this.affairId = affairId;
 	}
 
-	public Integer getTopIcId() {
-		return topIcId;
+	public Integer getTopicId() {
+		return topicId;
 	}
 
-	public void setTopIcId(Integer topIcId) {
-		this.topIcId = topIcId;
+	public void setTopicId(Integer topicId) {
+		this.topicId = topicId;
 	}
 
 	@JsonIgnore
