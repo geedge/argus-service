@@ -1,5 +1,6 @@
 package com.nis.web.controller.restful;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,15 +10,20 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigSource;
+import com.nis.domain.restful.FileDesc;
 import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -28,6 +34,8 @@ import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
+import com.nis.web.service.fdfs.FastDFSFile;
+import com.nis.web.service.fdfs.FileManager;
 import com.nis.web.service.restful.ConfigRedisService;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
@@ -460,7 +468,66 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 	}
+	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.POST, produces=org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "回调配置存储", httpMethod = "POST", response = Map.class, notes = "回调配置存储服务")
+	//@ApiParam(value = "回调配置数据源", name = "JSONObject", requirerue)
+	public Map createCommonConfigSource(@RequestBody String jsonString , HttpServletRequest request,
+			HttpServletResponse response) {
+		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
+		long start = System.currentTimeMillis();
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,null);
+		StringBuffer sb = new StringBuffer();
+		
+		configSourcesService.savaCommonSources(thread, start, jsonString, sb);
 
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"配置数据插入成功" , Constants.IS_DEBUG ? jsonString  : null);
+	}
+	
+	@RequestMapping(value = "/cfg/v1/fileUploadSources", method = RequestMethod.POST)
+	@ApiOperation(value = "样例文件上传服务", httpMethod = "POST", response = Map.class, notes = "样例文件上传服务")
+	@ApiParam(value = "样例文件上传服务", name = "MultipartFile", required = true)
+	public Map fileUploadSource(@RequestBody MultipartFile file, HttpServletRequest request,
+			HttpServletResponse response) {
+		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
+		long start = System.currentTimeMillis();
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,null);
+		String filePath ="";
+		try {
+			FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),FileDesc.class);
+			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
+				//验证Md5
+				String md5 = DigestUtils.md5Hex(file.getBytes());
+				System.out.println("----------------------------MD5:'"+md5+"'==='"+fileDesc.getChecksum()+"'");
+				if (!md5.equals(fileDesc.getChecksum())) {
+					thread.setExceptionInfo("checksum与文件MD5值不一致");
+					throw new RestServiceException(thread, System.currentTimeMillis() - start, "checksum与文件MD5值不一致",
+							RestBusinessCode.config_integrity_error.getValue());
+				}
+				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(),file.getOriginalFilename(), ext);
+//				NameValuePair[] meta_list = new NameValuePair[5];
+//				meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
+//				meta_list[1] = new NameValuePair("fileLength", String.valueOf(file.getSize()));
+//				meta_list[2] = new NameValuePair("fileExt", ext);
+//				meta_list[3] = new NameValuePair("fileAuthor", "rkg");
+//				meta_list[4] = new NameValuePair("fileMd5", md5);
+				filePath = FileManager.upload(fdsfile, null);
+			}else{
+				thread.setExceptionInfo("请求头信息中缺少checksum参数");
+				throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求头信息中缺少checksum参数",
+						RestBusinessCode.missing_args.getValue());
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"文件上传成功" ,jsonObj);
+	}
+	
 	private boolean isBlank(Date datetime) {
 		if (null != datetime) {
 			return true;
