@@ -160,4 +160,16 @@
       <taglib-location>/WEB-INF/tlds/fmt.tld</taglib-location>
     </taglib>
   </jsp-config>
+  
+  
+   
+<!--     项目启动时加载编译id,组id,域id之间的关系 -->
+<!-- 	<listener> -->
+<!-- 		<listener-class> -->
+<!-- 			com.nis.listener.SystemConfigListener -->
+<!-- 		</listener-class> -->
+<!-- 	</listener> -->
+		
+  
+  
 </web-app>

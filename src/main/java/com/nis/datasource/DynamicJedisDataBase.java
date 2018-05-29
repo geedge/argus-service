@@ -20,8 +20,8 @@ public class DynamicJedisDataBase {
 	 * @param index
 	 * @param redisTemplate
 	 */
-	public static void setRedisDataBase(int index, RedisTemplate redisTemplate) {
-		JedisConnectionFactory connectionFactory = SpringContextHolder.getBean("connectionFactory");
+	public static void setRedisDataBase1(int index, RedisTemplate redisTemplate) {
+		JedisConnectionFactory connectionFactory = SpringContextHolder.getBean("connectionFactory"+index);
 		connectionFactory.setDatabase(index);
 		redisTemplate.setConnectionFactory(connectionFactory);
 	}

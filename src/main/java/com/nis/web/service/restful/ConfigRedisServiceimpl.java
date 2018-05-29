@@ -4,23 +4,28 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.nis.datasource.DynamicJedisDataBase;
 import com.nis.domain.MaatXmlConfig;
 import com.nis.domain.MaatXmlExpr;
 import com.nis.domain.MaatXmlSeq;
 import com.nis.domain.restful.MaatConfig;
+import com.nis.domain.restful.MaatRelation;
+import com.nis.listener.CompileGroupRegionRela;
 import com.nis.util.Configurations;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.web.dao.impl.BaseRedisDao;
 
 @Service()
 public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> implements ConfigRedisService {
+	private static Logger logger = LoggerFactory.getLogger(ConfigRedisServiceimpl.class);
+
 	/**
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
 	 */
@@ -62,14 +67,26 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 		}
 	}
 
-	@Autowired
-	private OperRedisService operRedisService;
+	public void saveUnMaatConfig2(List<Map<String, String>> listMap, int service) {
+		System.out.println(redisTemplate.getConnectionFactory());
+		setRedisDataBase(2, redisTemplate);
+		System.out.println(redisTemplate.getConnectionFactory());
+		String maatVersion = redisTemplate.opsForValue().get("MAAT_VERSION");
+		System.out.println("maatVersion:" + maatVersion);
+		redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+
+	}
 
 	@Transactional
 	public void saveUnMaatConfig(List<Map<String, String>> listMap, int service) {
 		if (listMap != null && listMap.size() > 0) {
-			DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
-			String maatVersionStr = operRedisService.getMaatVersion(getRedisDBByService(service));
+			setRedisDataBase(getRedisDBByService(service), redisTemplate);
+			// String maatVersionStr =
+			// operRedisService.getMaatVersion(getRedisDBByService(service));
+			String maatVersionStr = redisTemplate.opsForValue().get("MAAT_VERSION");
+			if (maatVersionStr == null) {
+				maatVersionStr = "0";
+			}
 			if (maatVersionStr != null) {
 				Long maatVersion = Long.valueOf(maatVersionStr) + 1;
 				for (Map<String, String> map : listMap) {
@@ -80,7 +97,7 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 						List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
 						String maatKey = "";
 						for (MaatXmlExpr maatXmlExpr : expressionList) {
-							if (16 == maatXmlExpr.getType().intValue()) {
+							if (0 == maatXmlExpr.getType().intValue()) {
 								StringBuffer keyBF = new StringBuffer();
 								String[] keySplit = maatXmlExpr.getKeyExpression().split(";");
 								for (String keyStr : keySplit) {
@@ -130,7 +147,7 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 						}
 						List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
 						for (MaatXmlSeq maatXmlSeq : seqList) {
-							// DynamicJedisDataBase.setRedisDataBase(maatXmlSeq.getRedisDB(),
+							// setRedisDataBase(maatXmlSeq.getRedisDB(),
 							// redisTemplate);
 							String seqKey = maatXmlSeq.getSequenceKey();
 							if (!seqKey.toUpperCase().equals("MAAT_VERSION")) {
@@ -143,14 +160,15 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 						}
 					}
 				}
-				redisTemplate.boundValueOps("MAAT_VERSION").set(maatVersion + "");
+
 			}
+			redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 		}
 	}
 
 	public void test() {
 
-		DynamicJedisDataBase.setRedisDataBase(2, redisTemplate);
+		setRedisDataBase(2, redisTemplate);
 		for (int i = 0; i < 10; i++) {
 			redisTemplate.boundZSetOps("1").add("a" + i, i);
 			if (i == 5) {
@@ -158,18 +176,18 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 			}
 		}
 		// 切换redis数据库
-		DynamicJedisDataBase.setRedisDataBase(3, redisTemplate);
+		setRedisDataBase(3, redisTemplate);
 		for (int i = 10; i < 20; i++) {
 			redisTemplate.boundZSetOps("1").add("a" + i, i);
 			if (i == 5) {
 				// int a = 1 / 0;
 			}
 		}
-		DynamicJedisDataBase.setRedisDataBase(4, redisTemplate);
+		setRedisDataBase(4, redisTemplate);
 		for (int i = 20; i < 30; i++) {
 			redisTemplate.boundZSetOps("1").add("a" + i, i);
 			if (i == 25) {
-			//	int a = 1 / 0;
+				// int a = 1 / 0;
 			}
 		}
 	}
@@ -177,28 +195,36 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 	@Transactional
 	public void saveMaatConfig(List<MaatConfig> maatConfigList, int service) {
 		if (maatConfigList != null && maatConfigList.size() > 0) {
-			String maatVersionStr = operRedisService.getMaatVersion(getRedisDBByService(service));
+			Integer redisDBIndex = getRedisDBByService(service);
+			setRedisDataBase(redisDBIndex, redisTemplate);
+			String maatVersionStr = redisTemplate.opsForValue().get("MAAT_VERSION");
+			if (maatVersionStr == null) {
+				maatVersionStr = "0";
+			}
+			
+			MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
 			if (maatVersionStr != null) {
 				Long maatVersion = Long.valueOf(maatVersionStr) + 1;
 				for (MaatConfig maatConfig : maatConfigList) {
-					// Integer service = maatConfig.getService();
-					// if (service != null) {
-					DynamicJedisDataBase.setRedisDataBase(getRedisDBByService(service), redisTemplate);
 					MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
-					setConfig(maatConfig, maatXmlConfig, maatVersion, service);
-					// }
+					setConfig(maatConfig, maatXmlConfig, maatVersion, service,maatRelation);
 				}
-				redisTemplate.boundValueOps("MAAT_VERSION").set(maatVersion + "");
+				redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 			}
 		}
 	}
 
-	public void setConfig(MaatConfig maatConfig, MaatXmlConfig maatXmlConfig, Long maatVersion, int service) {
+	public void setConfig(MaatConfig maatConfig, MaatXmlConfig maatXmlConfig, Long maatVersion, int service,	MaatRelation maatRelation ) {
 		Map<String, String> compileMap = maatConfig.getCompileMap();
 		setCommonConfig(maatXmlConfig, compileMap, 10, maatVersion.doubleValue(), service);// 10代表是编译配置
 		List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
 		if (groupMapList != null && groupMapList.size() > 0) {
 			for (Map<String, String> map : groupMapList) {
+				map.get("");
+				Map<Long, Set<Long>> groupAndCompileMap = maatRelation.getGroupAndCompileMap();
+				
+				
+				
 				setCommonConfig(maatXmlConfig, map, 11, maatVersion.doubleValue(), service);// 11代表是分组配置
 			}
 		}
@@ -238,7 +264,7 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 				setCommonConfig(maatXmlConfig, map, 17, maatVersion.doubleValue(), service);// 17代表是文本相似性域配置
 			}
 		}
-		updateCommonKey(maatXmlConfig);
+		// updateCommonKey(maatXmlConfig);
 	}
 
 	public void setCommonConfig(MaatXmlConfig maatXmlConfig, Map<String, String> map, int type, Double maatVersion,
@@ -308,8 +334,6 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 	public void updateCommonKey(MaatXmlConfig maatXmlConfig) {
 		List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
 		for (MaatXmlSeq maatXmlSeq : seqList) {
-			// DynamicJedisDataBase.setRedisDataBase(maatXmlSeq.getRedisDB(),
-			// redisTemplate);
 			String seqKey = maatXmlSeq.getSequenceKey();
 			if (!seqKey.toUpperCase().equals("MAAT_VERSION")) {
 				Integer operation = maatXmlSeq.getOperation();
@@ -321,7 +345,10 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 	}
 
 	public Long getIncrId(String key) {
-		DynamicJedisDataBase.setRedisDataBase(2, redisTemplate);
+		//
+		// connectionFactory.setDatabase(0);
+		// redisTemplate.setConnectionFactory(connectionFactory);
+
 		// RedisAtomicLong atomicLong = new RedisAtomicLong(key,
 		// redisTemplate.getConnectionFactory());
 		//
@@ -330,6 +357,8 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 		// atomicLong.expire(liveTime, TimeUnit.SECONDS);
 		// }
 		// return id;
+		setRedisDataBase(0, redisTemplate);
+		// System.out.println(redisTemplate.getConnectionFactory());
 		return redisTemplate.boundValueOps(key.toUpperCase()).increment(1l);
 		// return redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 	}
@@ -367,4 +396,116 @@ public class ConfigRedisServiceimpl extends BaseRedisDao<String, String> impleme
 		getRedisDBByService(80);
 
 	}
+
+	@Override
+	public void delUnMaatConfig(List<Long> compileIdList, int service) {
+		if (compileIdList != null && compileIdList.size() > 0) {
+			Integer redisDBIndex = getRedisDBByService(service);
+			setRedisDataBase(redisDBIndex, redisTemplate);
+			String maatVersionStr = redisTemplate.opsForValue().get("MAAT_VERSION");
+			if (maatVersionStr == null) {
+				maatVersionStr = "0";
+			}
+			if (maatVersionStr != null) {
+				Long maatVersion = Long.valueOf(maatVersionStr) + 1;
+				for (Long id : compileIdList) {
+					MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
+					if (maatXmlConfig != null) {
+						List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
+						String maatKey = "";
+						for (MaatXmlExpr maatXmlExpr : expressionList) {
+							if (0 == maatXmlExpr.getType().intValue()) {
+								StringBuffer keyBF = new StringBuffer();
+								String[] keySplit = maatXmlExpr.getKeyExpression().split(";");
+								for (String keyStr : keySplit) {
+									if (!StringUtils.isEmpty(keyStr) && keyStr.toUpperCase().equals("EFFECTIVE_RULE")) {
+										keyStr = "OBSOLETE_RULE";
+										keyBF.append(keyStr.trim());
+									} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("[")) {
+										// keyStr = keyStr.trim().replace("[", "").replace("]", "");
+										keyBF.append(id);
+									} else {
+										keyBF.append(keyStr.trim());
+									}
+								}
+								maatKey = keyBF.toString();
+								String oldKey = maatKey.replace("OBSOLETE_RULE", "EFFECTIVE_RULE");
+								redisTemplate.rename(oldKey.toString().toUpperCase(), keyBF.toString().toUpperCase());
+								break;
+							}
+							// redisTemplate.boundValueOps(keyBF.toString().toUpperCase()).set(valBF.toString());
+
+						}
+						for (MaatXmlExpr maatXmlExpr : expressionList) {
+							if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_UPDATE_STATUS")) {
+								String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
+								redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+							} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_RULE_TIMER")) {
+								Double score = 0d;// 界面下发的配置没有超时时间所以这里设置为0
+								redisTemplate.boundZSetOps("MAAT_RULE_TIMER").add(maatKey, score);
+							} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_VERSION_TIMER")) {
+								Long nowTime = new Date().getTime();
+								nowTime = nowTime / 1000l;
+								Double score = nowTime.doubleValue();// 使用redis自带的time,得到当前时间的秒
+								redisTemplate.boundZSetOps("MAAT_VERSION_TIMER").add(maatVersion + "", score);
+							}
+						}
+						List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
+						for (MaatXmlSeq maatXmlSeq : seqList) {
+							// setRedisDataBase(maatXmlSeq.getRedisDB(),
+							// redisTemplate);
+							String seqKey = maatXmlSeq.getSequenceKey();
+							if (!seqKey.toUpperCase().equals("MAAT_VERSION")) {
+								Integer operation = maatXmlSeq.getOperation();
+								if (operation == 1) {
+									redisTemplate.boundValueOps(seqKey.toUpperCase()).increment(1l);
+								}
+							}
+
+						}
+					}
+				}
+				// redisTemplate.boundValueOps("MAAT_VERSION").set(maatVersion + "");
+				redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+			}
+		}
+
+	}
+
+	// @Override
+	public void delMaatConfig(List<Long> compileIdList, int service) {
+		if (compileIdList != null && compileIdList.size() > 0) {
+			Integer redisDBIndex = getRedisDBByService(service);
+			setRedisDataBase(redisDBIndex, redisTemplate);
+			MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+
+			Map<Long, Set<Long>> compileAndGroupMap = maatRelation.getCompileAndGroupMap();
+			Map<Long, Set<Long>> groupAndCompileMap = maatRelation.getGroupAndCompileMap();
+			Map<Long, Set<Long>> groupAndRegionMap = maatRelation.getGroupAndRegionMap();
+
+		}
+
+		//
+		// if (maatConfigList != null && maatConfigList.size() > 0) {
+		// String maatVersionStr =
+		// operRedisService.getMaatVersion(getRedisDBByService(service));
+		// if (maatVersionStr != null) {
+		// Long maatVersion = Long.valueOf(maatVersionStr) + 1;
+		// for (MaatConfig maatConfig : maatConfigList) {
+		// // Integer service = maatConfig.getService();
+		// // if (service != null) {
+		// setRedisDataBase(getRedisDBByService(service),
+		// redisTemplate);
+		// MaatXmlConfig maatXmlConfig =
+		// ReadMaatXmlUtil.getMaatConfigByService(service);
+		// setConfig(maatConfig, maatXmlConfig, maatVersion, service);
+		// // }
+		// }
+		// redisTemplate.boundValueOps("MAAT_VERSION").set(maatVersion + "");
+		// }
+		// }
+		//
+
+	}
+
 }

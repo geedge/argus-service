@@ -8,8 +8,8 @@ import com.nis.web.dao.impl.BaseRedisDao;
 @Service()
 public class OperRedisService extends BaseRedisDao<String, String> {
 
-	public String getMaatVersion(int redisIndex) {
-		DynamicJedisDataBase.setRedisDataBase(redisIndex, redisTemplate);
+	public String getMaatVersion1(int redisIndex) {
+		//DynamicJedisDataBase.setRedisDataBase(redisIndex, redisTemplate);
 		// RedisAtomicLong atomicLong = new RedisAtomicLong(key,
 		// redisTemplate.getConnectionFactory());
 		//

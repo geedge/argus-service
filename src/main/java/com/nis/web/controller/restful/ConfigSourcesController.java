@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,12 +16,14 @@ import net.sf.json.JSONObject;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.nis.datasource.DynamicJedisDataBase;
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigSource;
 import com.nis.domain.restful.FileDesc;
@@ -37,6 +40,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.fdfs.FastDFSFile;
 import com.nis.web.service.fdfs.FileManager;
 import com.nis.web.service.restful.ConfigRedisService;
+import com.nis.web.service.restful.ConfigRedisServiceimpl;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -49,6 +53,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @date 2016年9月5日 下午6:20:33
  * @version V1.0
  */
+//@Scope("prototype")
 @RestController
 @RequestMapping("${servicePath}")
 @Api(value = "ConfigSourcesController", description = "配置存储服务，包括管控、监测、白名单的控制类")
@@ -62,7 +67,7 @@ public class ConfigSourcesController extends BaseRestController {
 	@Autowired
 	ConfigRedisService configRedisService;
 
-	@RequestMapping(value = "/save", method = RequestMethod.GET)
+	@RequestMapping(value = "/cfg/v1/save", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
 	public String testRedis(Integer type) {
@@ -85,7 +90,6 @@ public class ConfigSourcesController extends BaseRestController {
 				configRedisService.saveUnMaatConfig(listMap, service);
 			} else {
 				Integer service = 100;
-
 				Map<String, String> map = new HashMap<String, String>();
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
@@ -105,7 +109,7 @@ public class ConfigSourcesController extends BaseRestController {
 		return "false";
 	}
 
-	@RequestMapping(value = "/saveMaat", method = RequestMethod.GET)
+	@RequestMapping(value = "/cfg/v1/saveMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
 	public String saveMaat(Integer service) {
@@ -200,7 +204,6 @@ public class ConfigSourcesController extends BaseRestController {
 		maatConfig.setIpRegionMapList(ipRegionMapList);
 		return maatConfig;
 	}
-
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.POST)
 	@ApiOperation(value = "业务配置存储", httpMethod = "POST", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
 	@ApiParam(value = "业务配置数据源", name = "configSource", required = true)
@@ -219,30 +222,7 @@ public class ConfigSourcesController extends BaseRestController {
 			// 验证配置编译数据
 			validateConfigSource(thread, start, configSource);
 			Long benginTime = System.currentTimeMillis();
-			String msg = configSourcesService.saveByJDBCThread(thread, start, configSource.getConfigCompileList(), sb);
-			if (msg.equals("error")) {
-				String errorCode = "";
-				Exception exception = ConfigSourcesService.getMsgList().get(0);
-				String str = exception.getMessage();
-				if (null != str && str.length() > 0) {
-					int index = str.toUpperCase().indexOf("ORA-");
-					if (index != -1) {
-						errorCode = str.substring(index + 4, index + 9);
-					}
-				}
-				Map<Integer, String> throwExceptionInfo = OracleErrorCodeUtil.throwExceptionInfo(errorCode);
-				for (int errorNum : throwExceptionInfo.keySet()) {
-					if (errorNum == 998) {
-						thread.setExceptionInfo(exception.toString());
-					} else {
-						thread.setExceptionInfo(throwExceptionInfo.get(errorNum));
-					}
-					throw new RestServiceException(thread, System.currentTimeMillis() - start,
-							throwExceptionInfo.get(errorNum), errorNum);
-				}
-			}
-			// configSourcesService.insertConfigSourceData(thread, start,
-			// configSource.getConfigCompileList(), sb);
+			configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
 
 			Long endSaveTime = System.currentTimeMillis();
 			Long time = (endSaveTime - benginTime) / 1000;

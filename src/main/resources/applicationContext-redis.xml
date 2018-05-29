@@ -25,17 +25,38 @@
 		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
 	</bean>
 	<!-- 默认使用数据库0,设置connectionFactory为非单例模式,方便选择redis数据库 -->
-	<bean id="connectionFactory"
+	<bean id="connectionFactory0"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
 		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="0" scope="prototype"/>
-	<!-- p:password=""  scope="prototype"-->
+		p:database="0" />
 
+	<!-- p:password="" scope="prototype" -->
+	<bean id="connectionFactory1"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
+		p:database="1" />
+
+	<bean id="connectionFactory2"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
+		p:database="2" />
+
+	<!-- p:password="" scope="prototype" -->
+	<bean id="connectionFactory3"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
+		p:database="3" />
+
+	<bean id="connectionFactory4"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
+		p:database="4" />
 
 	<bean id="stringRedisSerializer"
 		class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+
 	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="connectionFactory" ref="connectionFactory0" />
 		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
 		<property name="keySerializer" ref="stringRedisSerializer" />
 		<property name="valueSerializer" ref="stringRedisSerializer" />

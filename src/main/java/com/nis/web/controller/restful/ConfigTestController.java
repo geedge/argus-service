@@ -584,9 +584,9 @@ public class ConfigTestController extends BaseRestController {
 		configCompile.setContLabel("0");
 		configCompile.setTaskId(0);
 		configCompile.setGuaranteeId(0);
-		configCompile.setAffAirId(0);
-		configCompile.setTopIcId(0);
-		configCompile.setDoBlackList(0l);
+		configCompile.setAffairId(0);
+		configCompile.setTopicId(0);
+		configCompile.setDoBlacklist(0l);
 		configCompile.setDoLog(0);
 		configCompile.setEffectiveRange("0");
 		configCompile.setConfigPercent(100l);
