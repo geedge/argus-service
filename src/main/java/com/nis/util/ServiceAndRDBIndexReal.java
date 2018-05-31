@@ -81,13 +81,4 @@ public class ServiceAndRDBIndexReal {
 		}
 
 	}
-
-	public static void main(String[] args) {
-		String str = "80:2";
-		String[] serviceDBIndex = str.split(":");
-		String[] redisDbArr = serviceDBIndex[1].split(",");
-		for (String redisDBIndex : redisDbArr) {
-			System.out.println(redisDBIndex);
-		}
-	}
 }

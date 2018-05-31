@@ -74,7 +74,7 @@ public class ConfigSourcesController extends BaseRestController {
 				Integer service = 98;
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
-				map.put("compile_id", id + "");
+				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
 				map.put("dst_file", "home");
 				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
@@ -92,7 +92,7 @@ public class ConfigSourcesController extends BaseRestController {
 				Map<String, String> map = new HashMap<String, String>();
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
-				map.put("compile_id", id + "");
+				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
 				map.put("service", "100");
 				map.put("description", "123" + id);
@@ -141,7 +141,7 @@ public class ConfigSourcesController extends BaseRestController {
 		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
 		long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
 		// int id=2;
-		configMap.put("compile_id", seq_compileid + "");
+		configMap.put("cfg_id", seq_compileid + "");
 		configMap.put("service", service + "");
 		configMap.put("action", "0");
 		configMap.put("do_blacklist", "1");
@@ -150,13 +150,13 @@ public class ConfigSourcesController extends BaseRestController {
 		configMap.put("user_region", "0");
 		configMap.put("is_valid", "1");
 		configMap.put("group_num", "1");
-		configMap.put("father_compile_id", "0");
+		configMap.put("father_cfg_id", "0");
 		configMap.put("op_time", time);
 
 		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
 		Map<String, String> groupMap = new HashMap<String, String>();
 		groupMap.put("group_id", seq_groupid + "");
-		groupMap.put("compile_id", seq_compileid + "");
+		groupMap.put("cfg_id", seq_compileid + "");
 		groupMap.put("is_valid", "1");
 		groupMap.put("op_time", time);
 		groupMap.put("service", service + "");
