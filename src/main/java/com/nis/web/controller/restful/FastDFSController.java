@@ -34,7 +34,7 @@ public class FastDFSController {
 	public static void main(String[] args) {
 		String path = new FastDFSController().testAdd();
 		//String path = "M00/00/01/CgAGwFr786aAegOQAADz3NN2rlY283.jpg";
-		new FastDFSController().testDelete(path);
+		//new FastDFSController().testDelete(path);
 
 	}
 

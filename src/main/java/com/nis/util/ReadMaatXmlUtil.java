@@ -45,9 +45,6 @@ public class ReadMaatXmlUtil {
 	static {
 		readXml();
 	}
-
-	private static List<MaatXmlConfig> maatXmlConfigList = new ArrayList<MaatXmlConfig>();
-
 	public static void main(String[] args) {
 		try {
 			// validateXmlByXSD();

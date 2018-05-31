@@ -423,8 +423,8 @@ public class CompileVal {
 		if (null == configCompile.getAction()) {
 			return "id为" + compileId + "的编译配置中action不能为空";
 		}
-		if (null == configCompile.getDoBlackList()) {
-			return "id为" + compileId + "的编译配置中doBlackList不能为空";
+		if (null == configCompile.getDoBlacklist()) {
+			return "id为" + compileId + "的编译配置中doBlacklist不能为空";
 		}
 		if (null == configCompile.getDoLog()) {
 			return "id为" + compileId + "的编译配置中doLog不能为空";
@@ -686,8 +686,8 @@ public class CompileVal {
 				&& configCompile.getAction() != 6 && configCompile.getAction() != 7) {
 			return "编译配置id为" + compileId + "的配置中action的值只能是1(阻断),2(监测),5(封堵白名单),6(监测白名单),7(封堵监测都白名单)";
 		}
-		if (configCompile.getDoBlackList() != 1) {
-			return "编译配置id为" + compileId + "的配置中doBlackList的值只能是1";
+		if (configCompile.getDoBlacklist() != 1) {
+			return "编译配置id为" + compileId + "的配置中doBlacklist的值只能是1";
 		}
 
 		if (configCompile.getDoLog() != 0 && configCompile.getDoLog() != 1 && configCompile.getDoLog() != 2) {

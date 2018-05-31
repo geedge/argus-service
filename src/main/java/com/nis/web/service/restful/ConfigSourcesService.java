@@ -1,5 +1,11 @@
 package com.nis.web.service.restful;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -34,12 +40,14 @@ import com.nis.domain.restful.ConfigCompileTest;
 import com.nis.domain.restful.ConfigGroupRelation;
 import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.IpRegion;
+import com.nis.domain.restful.MaatConfig;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
 import com.nis.restful.CompileJudgeCode;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.BasicProvingUtil;
+import com.nis.util.CamelUnderlineUtil;
 import com.nis.util.CompileVal;
 import com.nis.util.Configurations;
 import com.nis.util.OracleErrorCodeUtil;
@@ -100,6 +108,36 @@ public class ConfigSourcesService extends BaseService {
 	public static Map<Integer, Map<String, String>> getTableRelation() {
 		Map<Integer, Map<String, String>> tableMap = new HashMap<Integer, Map<String, String>>();
 		Map<String, String> typeMap = new HashMap<String, String>();
+		typeMap.put("AV_CONT_IP_PORT", "ip");
+		tableMap.put(80, typeMap);
+		tableMap.put(144, typeMap);
+		
+		typeMap = new HashMap<String, String>();
+		typeMap.put("AV_CONT_URL", "str");
+		tableMap.put(81, typeMap);
+		tableMap.put(145, typeMap);
+		
+		typeMap = new HashMap<String, String>();
+		typeMap.put("AV_PIC_IP_PORT", "ip");
+		tableMap.put(82, typeMap);
+		tableMap.put(146, typeMap);
+		
+		typeMap = new HashMap<String, String>();
+		typeMap.put("AV_PIC_URL", "str");
+		tableMap.put(83, typeMap);
+		tableMap.put(147, typeMap);
+		
+		typeMap = new HashMap<String, String>();
+		typeMap.put("AV_VoIP_IP_PORT", "ip");
+		tableMap.put(84, typeMap);
+		tableMap.put(148, typeMap);
+		
+		typeMap = new HashMap<String, String>();
+		typeMap.put("AV_VoIP_ACCOUNT", "str");
+		tableMap.put(85, typeMap);
+		tableMap.put(149, typeMap);
+		
+		typeMap = new HashMap<String, String>();
 		typeMap.put("REUSE_IP", "ip");
 		typeMap.put("HID_CONTENT", "ip");
 		typeMap.put("GSB_PZ_IP", "ip");
@@ -1056,11 +1094,220 @@ public class ConfigSourcesService extends BaseService {
 		this.map = map;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * jdbc方式添加和修改
+	 * 
+	 * @Description:
+	 * @author (zdx)
+	 * @date 2018年5月25日 下午3:49:46
+	 * @param thread
+	 * @param start
+	 * @param configCompileList
+	 * @param sb
+	 * @return
 	 */
-	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public String saveMaatConfig(SaveRequestLogThread thread, long start, List<ConfigCompile> configCompileList,
+			StringBuffer sb) {
+		List<MaatConfig> maatConfigList = new ArrayList<MaatConfig>();
+		List<Integer> serviceList = new ArrayList<Integer>();
+		
+		for (ConfigCompile configCompile : configCompileList) {
+			serviceList.add(Integer.valueOf(configCompile.getService().toString()));
+			MaatConfig maatConfig = new MaatConfig();
+			List<ConfigGroupRelation> groupRelationList = new ArrayList<ConfigGroupRelation>();
+			List<StrRegion> strRegionList = new ArrayList<StrRegion>();
+			List<StrRegion> strStrongRegionList = new ArrayList<StrRegion>();
+			List<IpRegion> ipRegionList =new ArrayList<IpRegion>();
+			List<NumRegion> numRegionList = new ArrayList<NumRegion>();
+			List<DigestRegion> digestRegionList = new ArrayList<DigestRegion>();
+			String msg = CompileVal.compileIsOk(configCompile, false, sb);
+			if (msg != CompileJudgeCode.CompileIsOk.getErrorReason()) {
+				logger1.error(msg);
+				thread.setExceptionInfo(msg + sb.toString());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start, msg + sb.toString(),
+						RestBusinessCode.config_integrity_error.getValue());
+			}
+			
+			
+			if (null != configCompile.getGroupRelationList() && configCompile.getGroupRelationList().size() > 0) {
+				groupRelationList.addAll(configCompile.getGroupRelationList());
+			} else {
+				logger1.error("配置分组数量不能为空" + sb.toString());
+				thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start, "配置分组数量不能为空" + sb.toString(),
+						RestBusinessCode.missing_args.getValue());
+			}
+			if (null != configCompile.getStrRegionList() && configCompile.getStrRegionList().size() > 0) {
+				for (StrRegion strRegion : configCompile.getStrRegionList()) {
+					if (!isStrStrongRegion(strRegion.getTableName())) {
+						if (strRegion.getRegionId() == null) {
+							String errorMsg = "字符类域配置id不能为空 ,表名---" + strRegion.getTableName() + "" + sb.toString();
+							logger1.error(errorMsg);
+							thread.setExceptionInfo(errorMsg);
+							throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+									RestBusinessCode.missing_args.getValue());
+						}
+							strRegionList.add(strRegion);
+					} else {
+						if (strRegion.getRegionId() == null) {
+							String errorMsg = "增强字符类域配置id不能为空 ,表名---" + strRegion.getTableName() + "" + sb.toString();
+							logger1.error(errorMsg);
+							thread.setExceptionInfo(errorMsg);
+							throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+									RestBusinessCode.missing_args.getValue());
+						}
+						strStrongRegionList.add(strRegion);
+					}
+				}
+			}
+
+			if (null != configCompile.getIpRegionList() && configCompile.getIpRegionList().size() > 0) {
+				for (IpRegion ipRegion : configCompile.getIpRegionList()) {
+					if (!ipRegion.getTableName().toUpperCase().equals("DJ_IP_PORT")) {
+						ipRegion.setProtocol(0);
+					}
+
+					if (ipRegion.getRegionId() == null) {
+						String errorMsg = "ip类域配置id不能为空 ,表名---" + ipRegion.getTableName() + "" + sb.toString();
+						logger1.error(errorMsg);
+						thread.setExceptionInfo(errorMsg);
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+								RestBusinessCode.missing_args.getValue());
+					}
+
+					ipRegionList.add(ipRegion);
+				}
+			}
+
+			if (null != configCompile.getNumRegionList() && configCompile.getNumRegionList().size() > 0) {
+				for (NumRegion numRegion : configCompile.getNumRegionList()) {
+					if (numRegion.getRegionId() == null) {
+						String errorMsg = "数值类域配置id不能为空  ,表名---" + numRegion.getTableName() + "" + sb.toString();
+						logger1.error(errorMsg);
+						thread.setExceptionInfo(errorMsg);
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+								RestBusinessCode.missing_args.getValue());
+					}
+					numRegionList.add(numRegion);
+				}
+			}
+			if (null != configCompile.getDigestRegionList() && configCompile.getDigestRegionList().size() > 0) {
+				for (DigestRegion digestRegion : configCompile.getDigestRegionList()) {
+					if (digestRegion.getRegionId() == null) {
+						String errorMsg = "摘要类域配置id不能为空  ,表名---" + digestRegion.getTableName() + "" + sb.toString();
+						logger1.error(errorMsg);
+						thread.setExceptionInfo(errorMsg);
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+								RestBusinessCode.missing_args.getValue());
+					}
+
+					digestRegionList.add(digestRegion);
+				}
+			}
+			
+			maatConfig.setService(Integer.valueOf(configCompile.getService().toString()));
+			//编译
+			maatConfig.setCompileMap(convertObjectToMap(configCompile, ConfigCompile.class));
+			//分组
+			List<Map<String, String>> dstMaplList = null;
+			if (!StringUtil.isEmpty(groupRelationList)) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (ConfigGroupRelation group : groupRelationList) {
+					dstMaplList.add(convertObjectToMap(group, ConfigGroupRelation.class));
+				}
+			}
+			maatConfig.setGroupMapList(dstMaplList);
+			//字符串域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(strRegionList)) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (StrRegion region : strRegionList) {
+					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
+				}
+			}	
+			maatConfig.setStrRegionMapList(dstMaplList);
+			//增强字符串域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(strStrongRegionList)) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (StrRegion region : strStrongRegionList) {
+					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
+				}
+			}	
+			maatConfig.setStrStrRegionMapList((dstMaplList));
+			//数值域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(numRegionList)) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (NumRegion region : numRegionList) {
+					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
+				}
+			}	
+			maatConfig.setNumRegionMapList(dstMaplList);
+			
+			//Ip域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(ipRegionList)) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (IpRegion region : ipRegionList) {
+					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
+				}
+			}	
+			maatConfig.setIpRegionMapList(dstMaplList);
+			
+			//摘要类域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(digestRegionList)) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (DigestRegion region : digestRegionList) {
+					dstMaplList.add(convertObjectToMap(region, DigestRegion.class));
+				}
+			}
+			
+			maatConfig.setFileDigestRegionMapList(dstMaplList);
+			dstMaplList = null;
+			//文本相似性域
+			maatConfig.setFileLikeRegionMapList(dstMaplList);
+			maatConfigList.add(maatConfig);
+		}
+		if (!StringUtil.isEmpty(serviceList)&&serviceList.size()!=1) {
+			String errorMsg = "只能添加单一service配置信息列表";
+			logger1.error(errorMsg);
+			thread.setExceptionInfo(errorMsg);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+					RestBusinessCode.op_action_error.getValue());
+		}
+		
+		//调用接口入redis
+		configRedisService.saveMaatConfig(maatConfigList, serviceList.get(0));
+		
+		return "ok";
+	}
+	private Map<String, String> convertObjectToMap(Object obj,Class clazz){
+		Map<String,String> dstMap = new HashMap<String, String>();
+		try {
+			Field[] fields= obj.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				if("serialVersionUID".equals(field.getName()))
+					continue;
+				String dstName = CamelUnderlineUtil.camelToUnderline(field.getName());
+				PropertyDescriptor pd;
+				pd = new PropertyDescriptor(field.getName(), clazz);
+				Method method = pd.getReadMethod();
+				Object dstObject = method.invoke(obj);
+				if (dstObject instanceof Date) {
+					dstObject = convertToTimeStamp16((Date)dstObject);
+				}if(dstObject instanceof ArrayList){
+					dstObject = "";
+				}
+				dstMap.put(dstName, StringUtil.isEmpty(dstObject)?"":dstObject.toString());
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger1.error(e.getMessage());
+		}
+		return dstMap;
+	}
 	public String saveByJDBCThread(SaveRequestLogThread thread, long start, List<ConfigCompile> configCompileList,
 			StringBuffer sb) {
 		List<ConfigGroupRelation> groupRelationList = new ArrayList<ConfigGroupRelation>();
@@ -1186,7 +1433,7 @@ public class ConfigSourcesService extends BaseService {
 				}
 			}
 		}
-
+		
 		if (Configurations.getStringProperty("isCommit", "false").equals("true")) {
 			int count = 0;
 			if (null != configCompileList && configCompileList.size() > 0) {
@@ -1298,6 +1545,12 @@ public class ConfigSourcesService extends BaseService {
 		}
 		return "ok";
 	}
+	
+	private String convertToTimeStamp16(Date date){
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return date.getTime()+"000";
+	}
+	
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**

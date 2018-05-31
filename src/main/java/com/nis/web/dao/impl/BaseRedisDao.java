@@ -11,8 +11,8 @@ import com.nis.web.service.SpringContextHolder;
 @Repository
 public abstract class BaseRedisDao<K, V> {
 
-	@Autowired
-	protected RedisTemplate<K, V> redisTemplate;
+	//@Autowired
+	protected RedisTemplate<K, V> redisTemplate1;
 
 	// public void setRedisTemplate(RedisTemplate<K, V> redisTemplate) {
 	// StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();

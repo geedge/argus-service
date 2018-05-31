@@ -31,7 +31,7 @@ public class SpringJDBCTest {
 		for (ConfigCompile compile : compileList) {
 			bsu.update(new Object[] { compile.getCompileId(), compile.getService(), compile.getAction(),
 					compile.getContType(), compile.getAttrType(), compile.getContLabel(), compile.getTaskId(),
-					compile.getGuaranteeId(), compile.getAffAirId(), compile.getTopIcId(), compile.getDoBlackList(),
+					compile.getGuaranteeId(), compile.getAffairId(), compile.getTopicId(), compile.getDoBlacklist(),
 					compile.getDoLog(), compile.getEffectiveRange(), compile.getActiveSys(), compile.getConfigPercent(),
 					compile.getConfigOption(), compile.getStartTime(), compile.getEndTime(), compile.getUserRegion(),
 					compile.getIsValid(), compile.getGroupNum(), compile.getFatherCfgId(), compile.getOpTime() });

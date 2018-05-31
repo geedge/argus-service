@@ -15,19 +15,18 @@ import com.nis.domain.restful.MaatConfig;
  *
  */
 public interface ConfigRedisService {
-	/**
-	 *  保存非maat配置接口,例如ysp文件样例,ysp标志样例
-	 * @param listMap 配置集合,一个map是一个集合
-	 * @param service 业务类型
-	 */
-	public void saveUnMaatConfig(List<Map<String, String>> listMap, int service);
 
 	/**
-	 * 保存maat配置接口,例如ysp配置,文本类配置
-	 * @param maatConfigList
-	 * @param service 业务类型
+	 * 下发非maat配置接口,key是redisDBIndex,value是配置集合
+	 * @param configMap
 	 */
-	public void saveMaatConfig(List<MaatConfig> maatConfigList, int service);
+	public void saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap);
+
+	/**
+	 * 保存 maat配置接口,key是redisDBIndex,value是配置集合
+	 * @param configMap
+	 */
+	public void saveMaatConfig(Map<Integer, List<MaatConfig>> configMap);
 
 	/**
 	 * 获取指定key的自增长值
@@ -37,16 +36,31 @@ public interface ConfigRedisService {
 	public Long getIncrId(String key);
 
 	/**
-	 * 删除非maat类配置
-	 * @param compileIdList 配置id集合 
-	 * @param service 配置id所属的业务类型
+	 * 删除非maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
+	 * @param idMap
 	 */
-	public void delUnMaatConfig(List<Long> compileIdList, int service);
+	public void delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
 
 	/**
-	 * 删除maat类配置
-	 * @param compileIdList 配置id集合 
-	 * @param service 配置id所属的业务类型
+	 * 删除maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
+	 * @param idMap
 	 */
-	public void delMaatConfig(List<Long> compileIdList, int service);
+	public void delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
+
+
+
+	/**
+	 * 下发配置成功后,需要更新编译,组,域等配置id的对应关系
+	 * @param maatConfigList
+	 * @param service 业务类型
+	 */
+	public void addMaatRelation(List<MaatConfig> maatConfigList, int service);
+
+	/**
+	 * 删除配置成功后,需要更新编译,组,域等配置id的对应关系
+	 * @param maatConfigLis
+	 * @param service 业务类型
+	 */
+	public void delMaatRelation(List<Long> compileIdList, int service);
+
 }

@@ -6,24 +6,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.nis.datasource.DynamicJedisDataBase;
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigSource;
 import com.nis.domain.restful.FileDesc;
@@ -40,11 +35,12 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.fdfs.FastDFSFile;
 import com.nis.web.service.fdfs.FileManager;
 import com.nis.web.service.restful.ConfigRedisService;
-import com.nis.web.service.restful.ConfigRedisServiceimpl;
 import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+
+import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ConfigSourcesController
@@ -53,7 +49,7 @@ import com.wordnik.swagger.annotations.ApiParam;
  * @date 2016年9月5日 下午6:20:33
  * @version V1.0
  */
-//@Scope("prototype")
+// @Scope("prototype")
 @RestController
 @RequestMapping("${servicePath}")
 @Api(value = "ConfigSourcesController", description = "配置存储服务，包括管控、监测、白名单的控制类")
@@ -78,7 +74,7 @@ public class ConfigSourcesController extends BaseRestController {
 				Integer service = 98;
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
-				map.put("cfg_id", id + "");
+				map.put("compile_id", id + "");
 				map.put("is_valid", "1");
 				map.put("dst_file", "home");
 				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
@@ -87,20 +83,26 @@ public class ConfigSourcesController extends BaseRestController {
 				map.put("file_id", id + "");
 				map.put("service", service + "");
 				listMap.add(map);
-				configRedisService.saveUnMaatConfig(listMap, service);
+
+				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
+				configMap.put(1, listMap);
+				configRedisService.saveUnMaatConfig(configMap);
 			} else {
 				Integer service = 100;
 				Map<String, String> map = new HashMap<String, String>();
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
-				map.put("cfg_id", id + "");
+				map.put("compile_id", id + "");
 				map.put("is_valid", "1");
 				map.put("service", "100");
 				map.put("description", "123" + id);
 				map.put("level", "20");
 				listMap.add(map);
 				map.put("service", service + "");
-				configRedisService.saveUnMaatConfig(listMap, service);
+				
+				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
+				configMap.put(1, listMap);
+				configRedisService.saveUnMaatConfig(configMap);
 			}
 			return "ok";
 		} catch (Exception e) {
@@ -116,8 +118,13 @@ public class ConfigSourcesController extends BaseRestController {
 		try {
 			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
 			listMap.add(getMaatConfig(service));
+			Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
+			configMap.put(1, listMap);
+			listMap = new ArrayList<MaatConfig>();
 			listMap.add(getMaatConfig(service));
-			configRedisService.saveMaatConfig(listMap, service);
+			configMap.put(2, listMap);
+			configRedisService.saveMaatConfig(configMap);
+			// configRedisService.saveMaatConfig(listMap, service);
 			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
 			return "ok";
 		} catch (Exception e) {
@@ -134,7 +141,7 @@ public class ConfigSourcesController extends BaseRestController {
 		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
 		long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
 		// int id=2;
-		configMap.put("cfg_id", seq_compileid + "");
+		configMap.put("compile_id", seq_compileid + "");
 		configMap.put("service", service + "");
 		configMap.put("action", "0");
 		configMap.put("do_blacklist", "1");
@@ -143,13 +150,13 @@ public class ConfigSourcesController extends BaseRestController {
 		configMap.put("user_region", "0");
 		configMap.put("is_valid", "1");
 		configMap.put("group_num", "1");
-		configMap.put("father_cfg_id", "0");
+		configMap.put("father_compile_id", "0");
 		configMap.put("op_time", time);
 
 		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
 		Map<String, String> groupMap = new HashMap<String, String>();
 		groupMap.put("group_id", seq_groupid + "");
-		groupMap.put("cfg_id", seq_compileid + "");
+		groupMap.put("compile_id", seq_compileid + "");
 		groupMap.put("is_valid", "1");
 		groupMap.put("op_time", time);
 		groupMap.put("service", service + "");
@@ -204,6 +211,7 @@ public class ConfigSourcesController extends BaseRestController {
 		maatConfig.setIpRegionMapList(ipRegionMapList);
 		return maatConfig;
 	}
+
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.POST)
 	@ApiOperation(value = "业务配置存储", httpMethod = "POST", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
 	@ApiParam(value = "业务配置数据源", name = "configSource", required = true)
@@ -448,22 +456,24 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 	}
-	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.POST, produces=org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+
+	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.POST, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "回调配置存储", httpMethod = "POST", response = Map.class, notes = "回调配置存储服务")
-	//@ApiParam(value = "回调配置数据源", name = "JSONObject", requirerue)
-	public Map createCommonConfigSource(@RequestBody String jsonString , HttpServletRequest request,
+	// @ApiParam(value = "回调配置数据源", name = "JSONObject", requirerue)
+	public Map createCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,null);
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				null);
 		StringBuffer sb = new StringBuffer();
-		
+
 		configSourcesService.savaCommonSources(thread, start, jsonString, sb);
 
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"配置数据插入成功" , Constants.IS_DEBUG ? jsonString  : null);
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置数据插入成功",
+				Constants.IS_DEBUG ? jsonString : null);
 	}
-	
+
 	@RequestMapping(value = "/cfg/v1/fileUploadSources", method = RequestMethod.POST)
 	@ApiOperation(value = "样例文件上传服务", httpMethod = "POST", response = Map.class, notes = "样例文件上传服务")
 	@ApiParam(value = "样例文件上传服务", name = "MultipartFile", required = true)
@@ -471,29 +481,32 @@ public class ConfigSourcesController extends BaseRestController {
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,null);
-		String filePath ="";
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				null);
+		String filePath = "";
 		try {
-			FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),FileDesc.class);
+			FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),
+					FileDesc.class);
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
-				//验证Md5
+				// 验证Md5
 				String md5 = DigestUtils.md5Hex(file.getBytes());
-				System.out.println("----------------------------MD5:'"+md5+"'==='"+fileDesc.getChecksum()+"'");
+				System.out.println("----------------------------MD5:'" + md5 + "'==='" + fileDesc.getChecksum() + "'");
 				if (!md5.equals(fileDesc.getChecksum())) {
 					thread.setExceptionInfo("checksum与文件MD5值不一致");
 					throw new RestServiceException(thread, System.currentTimeMillis() - start, "checksum与文件MD5值不一致",
 							RestBusinessCode.config_integrity_error.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(),file.getOriginalFilename(), ext);
-//				NameValuePair[] meta_list = new NameValuePair[5];
-//				meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
-//				meta_list[1] = new NameValuePair("fileLength", String.valueOf(file.getSize()));
-//				meta_list[2] = new NameValuePair("fileExt", ext);
-//				meta_list[3] = new NameValuePair("fileAuthor", "rkg");
-//				meta_list[4] = new NameValuePair("fileMd5", md5);
+				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
+				// NameValuePair[] meta_list = new NameValuePair[5];
+				// meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
+				// meta_list[1] = new NameValuePair("fileLength",
+				// String.valueOf(file.getSize()));
+				// meta_list[2] = new NameValuePair("fileExt", ext);
+				// meta_list[3] = new NameValuePair("fileAuthor", "rkg");
+				// meta_list[4] = new NameValuePair("fileMd5", md5);
 				filePath = FileManager.upload(fdsfile, null);
-			}else{
+			} else {
 				thread.setExceptionInfo("请求头信息中缺少checksum参数");
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求头信息中缺少checksum参数",
 						RestBusinessCode.missing_args.getValue());
@@ -504,10 +517,9 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"文件上传成功" ,jsonObj);
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "文件上传成功", jsonObj);
 	}
-	
+
 	private boolean isBlank(Date datetime) {
 		if (null != datetime) {
 			return true;
