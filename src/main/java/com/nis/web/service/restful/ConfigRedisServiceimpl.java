@@ -239,6 +239,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	}
 
 	@Override
+	@Transactional
 	public void saveMaatConfig(Map<Integer, List<MaatConfig>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
 			for (Integer redisDBIndex : configMap.keySet()) {
