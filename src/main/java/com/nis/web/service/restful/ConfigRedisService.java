@@ -51,16 +51,15 @@ public interface ConfigRedisService {
 
 	/**
 	 * 下发配置成功后,需要更新编译,组,域等配置id的对应关系
-	 * @param maatConfigList
-	 * @param service 业务类型
+	 * @param configMap
 	 */
-	public void addMaatRelation(List<MaatConfig> maatConfigList, int service);
+	public void addMaatRelation(Map<Integer, List<MaatConfig>> configMap);
 
 	/**
 	 * 删除配置成功后,需要更新编译,组,域等配置id的对应关系
 	 * @param maatConfigLis
 	 * @param service 业务类型
 	 */
-	public void delMaatRelation(List<Long> compileIdList, int service);
+	public void delMaatRelation(Map<Integer, Map<Integer, List<Long>>> idMap);
 
 }

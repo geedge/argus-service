@@ -1,6 +1,9 @@
 package com.nis.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,7 +24,7 @@ public class ServiceAndRDBIndexReal {
 	/**
 	 * key是业务类型,value是业务类型对应的redisdbIndex
 	 */
-	private static Map<Integer, Integer> serviceDBIndexmap = new HashMap<Integer, Integer>();
+	private static Map<Integer, List<Integer>> serviceDBIndexmap = new HashMap<Integer, List<Integer>>();
 
 	static {
 		String service = Configurations.getStringProperty("service", "");
@@ -49,21 +52,26 @@ public class ServiceAndRDBIndexReal {
 			String[] serviceDBIndexArr = serviceDBIndexs.split(";");
 			for (String serviceDBIndexStr : serviceDBIndexArr) {
 				String[] serviceDBIndex = serviceDBIndexStr.split(":");
-
+				List<Integer> redisDbList = new ArrayList<Integer>();
 				String[] redisDbArr = serviceDBIndex[1].split(",");
-				for (String redisDBIndex : redisDbArr) {
-					serviceDBIndexmap.put(Integer.parseInt(serviceDBIndex[0]), Integer.parseInt(redisDBIndex));
+				for (String redisDbStr : redisDbArr) {
+					redisDbList.add(Integer.valueOf(redisDbStr));
 				}
+				serviceDBIndexmap.put(Integer.parseInt(serviceDBIndex[0]), redisDbList);
 			}
 		}
 	}
-
-	public static Integer getRedisDBByService(Integer service) {
-		Integer redisIndex = serviceDBIndexmap.get(service);
-		if (redisIndex == null) {
-			return 0;
+/**
+ * 根据业务类型获取这个
+ * @param service
+ * @return
+ */
+	public static List<Integer> getRedisDBByService(Integer service) {
+		List<Integer> redisIndexList = serviceDBIndexmap.get(service);
+		if (redisIndexList == null) {
+			return null;
 		}
-		return redisIndex;
+		return redisIndexList;
 	}
 
 	/**

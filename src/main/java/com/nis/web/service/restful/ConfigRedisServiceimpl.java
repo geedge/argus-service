@@ -1,5 +1,6 @@
 package com.nis.web.service.restful;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.axis2.databinding.types.soapencoding.Array;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -139,74 +141,81 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	}
 
 	@Override
-	public void addMaatRelation(List<MaatConfig> maatConfigList, int service) {
-		Integer redisDBIndex = ServiceAndRDBIndexReal.getRedisDBByService(service);
-		MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+	public void addMaatRelation(Map<Integer, List<MaatConfig>> configMap) {
+		if (configMap != null && configMap.size() > 0) {
+			for (Integer redisDBIndex : configMap.keySet()) {
+				if (redisDBIndex >= 0 && redisDBIndex <= 15) {
+					MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+					List<MaatConfig> maatConfigList = configMap.get(redisDBIndex);
+					if (maatConfigList != null && maatConfigList.size() > 0) {
+						for (MaatConfig maatConfig : maatConfigList) {
+							// MaatXmlConfig maatXmlConfig =
+							// ReadMaatXmlUtil.getMaatConfigByService(service);
+							List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
+							if (groupMapList != null && groupMapList.size() > 0) {
+								for (Map<String, String> map : groupMapList) {
+									String compileIdStr = map.get("cfg_id");
+									String groupIdStr = map.get("group_id");
+									if (compileIdStr != null && !compileIdStr.equals("") && groupIdStr != null
+											&& !groupIdStr.equals("")) {
+										Long groupId = Long.valueOf(groupIdStr);
+										Long compileId = Long.valueOf(compileIdStr);
+										Map<Long, Set<Long>> groupAndCompileMap = maatRelation.getGroupAndCompileMap();
+										if (groupAndCompileMap != null) {
+											if (groupAndCompileMap.containsKey(groupId)) {
+												groupAndCompileMap.get(groupId).add(compileId);
+											} else {
+												Set<Long> set = new HashSet<Long>();
+												set.add(compileId);
+												groupAndCompileMap.put(groupId, set);
+											}
+										} else {
+											Map<Long, Set<Long>> groupAndCompileMap1 = new ConcurrentHashMap<Long, Set<Long>>();
+											Set<Long> set = new HashSet<Long>();
+											set.add(compileId);
+											groupAndCompileMap1.put(groupId, set);
+											maatRelation.setGroupAndCompileMap(groupAndCompileMap1);
+										}
 
-		for (MaatConfig maatConfig : maatConfigList) {
-			// MaatXmlConfig maatXmlConfig =
-			// ReadMaatXmlUtil.getMaatConfigByService(service);
-
-			List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
-			if (groupMapList != null && groupMapList.size() > 0) {
-				for (Map<String, String> map : groupMapList) {
-					String compileIdStr = map.get("compile_id");
-					String groupIdStr = map.get("group_id");
-					if (compileIdStr != null && !compileIdStr.equals("") && groupIdStr != null
-							&& !groupIdStr.equals("")) {
-						Long groupId = Long.valueOf(groupIdStr);
-						Long compileId = Long.valueOf(compileIdStr);
-						Map<Long, Set<Long>> groupAndCompileMap = maatRelation.getGroupAndCompileMap();
-						if (groupAndCompileMap != null) {
-							if (groupAndCompileMap.containsKey(groupId)) {
-								groupAndCompileMap.get(groupId).add(compileId);
-							} else {
-								Set<Long> set = new HashSet<Long>();
-								set.add(compileId);
-								groupAndCompileMap.put(groupId, set);
+										Map<Long, Set<Long>> compileAndGroupMap = maatRelation.getCompileAndGroupMap();
+										if (compileAndGroupMap != null) {
+											if (compileAndGroupMap.containsKey(compileId)) {
+												compileAndGroupMap.get(compileId).add(groupId);
+											} else {
+												Set<Long> set = new HashSet<Long>();
+												set.add(groupId);
+												compileAndGroupMap.put(compileId, set);
+											}
+										} else {
+											Map<Long, Set<Long>> compileAndGroupMap1 = new ConcurrentHashMap<Long, Set<Long>>();
+											Set<Long> set = new HashSet<Long>();
+											set.add(groupId);
+											compileAndGroupMap1.put(compileId, set);
+											maatRelation.setCompileAndGroupMap(compileAndGroupMap1);
+										}
+									}
+								}
 							}
-						} else {
-							Map<Long, Set<Long>> groupAndCompileMap1 = new ConcurrentHashMap<Long, Set<Long>>();
-							Set<Long> set = new HashSet<Long>();
-							set.add(compileId);
-							groupAndCompileMap1.put(groupId, set);
-							maatRelation.setGroupAndCompileMap(groupAndCompileMap1);
-						}
+							List<Map<String, String>> ipRegionMapList = maatConfig.getIpRegionMapList();
+							setReionAndGroupRela(ipRegionMapList, maatRelation);
+							List<Map<String, String>> numRegionMapList = maatConfig.getNumRegionMapList();
+							setReionAndGroupRela(numRegionMapList, maatRelation);
+							List<Map<String, String>> strRegionMapList = maatConfig.getStrRegionMapList();
+							setReionAndGroupRela(strRegionMapList, maatRelation);
+							List<Map<String, String>> strStrRegionMapList = maatConfig.getStrStrRegionMapList();
+							setReionAndGroupRela(strStrRegionMapList, maatRelation);
+							List<Map<String, String>> fileDigestRegionMapList = maatConfig.getFileDigestRegionMapList();
+							setReionAndGroupRela(fileDigestRegionMapList, maatRelation);
+							List<Map<String, String>> fileLikeRegionMapList = maatConfig.getFileLikeRegionMapList();
+							setReionAndGroupRela(fileLikeRegionMapList, maatRelation);
 
-						Map<Long, Set<Long>> compileAndGroupMap = maatRelation.getCompileAndGroupMap();
-						if (compileAndGroupMap != null) {
-							if (compileAndGroupMap.containsKey(compileId)) {
-								compileAndGroupMap.get(compileId).add(groupId);
-							} else {
-								Set<Long> set = new HashSet<Long>();
-								set.add(groupId);
-								compileAndGroupMap.put(compileId, set);
-							}
-						} else {
-							Map<Long, Set<Long>> compileAndGroupMap1 = new ConcurrentHashMap<Long, Set<Long>>();
-							Set<Long> set = new HashSet<Long>();
-							set.add(groupId);
-							compileAndGroupMap1.put(compileId, set);
-							maatRelation.setCompileAndGroupMap(compileAndGroupMap1);
 						}
 					}
+
 				}
 			}
-
-			List<Map<String, String>> ipRegionMapList = maatConfig.getIpRegionMapList();
-			setReionAndGroupRela(ipRegionMapList, maatRelation);
-			List<Map<String, String>> numRegionMapList = maatConfig.getNumRegionMapList();
-			setReionAndGroupRela(numRegionMapList, maatRelation);
-			List<Map<String, String>> strRegionMapList = maatConfig.getStrRegionMapList();
-			setReionAndGroupRela(strRegionMapList, maatRelation);
-			List<Map<String, String>> strStrRegionMapList = maatConfig.getStrStrRegionMapList();
-			setReionAndGroupRela(strStrRegionMapList, maatRelation);
-			List<Map<String, String>> fileDigestRegionMapList = maatConfig.getFileDigestRegionMapList();
-			setReionAndGroupRela(fileDigestRegionMapList, maatRelation);
-			List<Map<String, String>> fileLikeRegionMapList = maatConfig.getFileLikeRegionMapList();
-			setReionAndGroupRela(fileLikeRegionMapList, maatRelation);
-
 		}
+
 	}
 
 	public void setReionAndGroupRela(List<Map<String, String>> regionMapList, MaatRelation maatRelation) {
@@ -265,6 +274,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 				}
 			}
+			addMaatRelation(configMap);
 		}
 	}
 
@@ -398,7 +408,6 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	public Long getIncrId(String key) {
 		RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate0");
 		return redisTemplate.boundValueOps(key.toUpperCase()).increment(1l);
-		// return redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 	}
 
 	@Override
@@ -508,24 +517,122 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					if (maatVersionStr == null) {
 						maatVersionStr = "0";
 					}
+					MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
 					if (maatVersionStr != null) {
 						Long maatVersion = Long.valueOf(maatVersionStr) + 1;
 						for (Integer service : serviceConfigMap.keySet()) {
+							MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
+							setConfig(serviceConfigMap.get(service), maatXmlConfig, maatVersion, service, redisTemplate,
+									maatRelation);
 
 						}
-
 						redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 					}
 				}
 			}
+			// 删除配置成功后开始删除id对应关系
+			delMaatRelation(idMap);
 		}
 
 	}
 
-	@Override
-	public void delMaatRelation(List<Long> compileIdList, int service) {
-		// TODO Auto-generated method stub
+	public void setConfig(List<Long> idList, MaatXmlConfig maatXmlConfig, Long maatVersion, int service,
+			RedisTemplate<String, String> redisTemplate, MaatRelation maatRelation) {
+		if (maatRelation != null && idList != null && idList.size() > 0 && maatXmlConfig != null) {
+			for (Long id : idList) {
+				Set<Long> compileIdList = new HashSet<Long>();
+				compileIdList.add(id);
+				setCommonConfig(maatXmlConfig, compileIdList, 10, maatVersion.doubleValue(), service, redisTemplate);// 10代表是编译配置
+				Set<Long> groupSet = maatRelation.getCompileAndGroupMap().get(id);
+				if (groupSet != null && groupSet.size() > 0) {
+					setCommonConfig(maatXmlConfig, groupSet, 11, maatVersion.doubleValue(), service, redisTemplate);// 11代表是分组配置
+					for (Long groupId : groupSet) {
+						Set<Long> regionIdSet = maatRelation.getGroupAndRegionMap().get(groupId);
+						if (regionIdSet != null && regionIdSet.size() > 0) {
+							setCommonConfig(maatXmlConfig, regionIdSet, 12, maatVersion.doubleValue(), service,
+									redisTemplate);// 12代表是ip类域配置
+							setCommonConfig(maatXmlConfig, regionIdSet, 13, maatVersion.doubleValue(), service,
+									redisTemplate);// 13代表是数值类配置
+							setCommonConfig(maatXmlConfig, regionIdSet, 14, maatVersion.doubleValue(), service,
+									redisTemplate);// 14代表是字符串类域配置
+							setCommonConfig(maatXmlConfig, regionIdSet, 15, maatVersion.doubleValue(), service,
+									redisTemplate);// 15代表是增强字符串类域配置
+							setCommonConfig(maatXmlConfig, regionIdSet, 16, maatVersion.doubleValue(), service,
+									redisTemplate);// 16代表是文件摘要类域配置
+							setCommonConfig(maatXmlConfig, regionIdSet, 17, maatVersion.doubleValue(), service,
+									redisTemplate);// 17代表是文本相似性域配置
+						}
+					}
+				}
+			}
+		}
+	}
 
+	public void setCommonConfig(MaatXmlConfig maatXmlConfig, Set<Long> idList, int type, Double maatVersion,
+			int service, RedisTemplate<String, String> redisTemplate) {
+		if (maatXmlConfig != null && idList != null && idList.size() > 0) {
+			List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
+			String maatKey = "";
+			for (Long id : idList) {
+				for (MaatXmlExpr maatXmlExpr : expressionList) {
+					if (type == maatXmlExpr.getType().intValue()) {
+						StringBuffer keyBF = new StringBuffer();
+						String[] keySplit = maatXmlExpr.getKeyExpression().split(";");
+						for (String keyStr : keySplit) {
+							if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("[")) {
+								keyStr = keyStr.trim().replace("[", "").replace("]", "");
+								keyBF.append(id);
+							} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("{")) {
+								keyStr = keyStr.trim().replace("{", "").replace("}", "");
+								if (keyStr.toLowerCase().contains("table_name")) {
+									keyBF.append(ServiceAndRDBIndexReal.getTableName(service, type));
+								}
+
+							} else {
+								keyBF.append(keyStr.trim());
+							}
+						}
+						String oldKey = maatKey.toUpperCase();
+						maatKey = oldKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
+						redisTemplate.rename(maatKey.toUpperCase(), maatKey);
+						break;
+					}
+				}
+				for (MaatXmlExpr maatXmlExpr : expressionList) {
+					if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_UPDATE_STATUS")) {
+						String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
+						redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+					} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_RULE_TIMER")) {
+						Double score = 0d;// 界面下发的配置没有超时时间所以这里设置为0
+						redisTemplate.boundZSetOps("MAAT_RULE_TIMER").add(maatKey, score);
+					} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_VERSION_TIMER")) {
+						Long nowTime = new Date().getTime();
+						nowTime = nowTime / 1000l;
+						Double score = nowTime.doubleValue();// 使用redis自带的time,得到当前时间的秒
+						redisTemplate.boundZSetOps("MAAT_VERSION_TIMER").add(maatVersion + "", score);
+					}
+				}
+			}
+		}
+	}
+
+	@Override
+	public void delMaatRelation(Map<Integer, Map<Integer, List<Long>>> idMap) {
+		if (idMap != null && idMap.size() > 0) {
+			for (Integer redisDBIndex : idMap.keySet()) {
+				if (redisDBIndex >= 0 && redisDBIndex <= 15) {
+					MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+//					maatRelation
+					
+					
+					
+					
+					
+					
+					
+				}
+			}
+		}
 	}
 
 }
