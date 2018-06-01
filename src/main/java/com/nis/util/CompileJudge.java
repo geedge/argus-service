@@ -382,7 +382,7 @@ public class CompileJudge {
 	 * @param tableName
 	 * @return
 	 */
-	public static boolean type2TableNameIsOk(Long serviceType, String tableName) {
+	public static boolean type2TableNameIsOk(Integer serviceType, String tableName) {
 		if (null != serviceType && null != tableName && !tableName.equals("")) {
 			Map<Integer, Map<String, String>> tableRelation = ConfigSourcesService.getTableRelation();
 			Map<String, String> map = tableRelation.get(serviceType.intValue());
@@ -456,12 +456,6 @@ public class CompileJudge {
 		if (null == configCompile.getEffectiveRange() || configCompile.getEffectiveRange().equals("")) {
 			return "id为" + compileId + "的编译配置中effectiveRange不能为空";
 		}
-		if (null == configCompile.getConfigPercent()) {
-			return "id为" + compileId + "的编译配置中configPercent不能为空";
-		}
-		if (null == configCompile.getConfigOption()) {
-			return "id为" + compileId + "的编译配置中configOption不能为空";
-		}
 		if (null == configCompile.getStartTime()) {
 			return "id为" + compileId + "的编译配置中startTime不能为空";
 		}
@@ -482,9 +476,6 @@ public class CompileJudge {
 		}
 		if (null == configCompile.getOpTime()) {
 			return "id为" + compileId + "的编译配置中opTime不能为空";
-		}
-		if (null == configCompile.getActiveSys()) {
-			return "id为" + compileId + "的编译配置中activeSys不能为空";
 		}
 		return "ok";
 	}

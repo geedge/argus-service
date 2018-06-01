@@ -96,6 +96,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 											}
 										}
 										maatKey = keyBF.toString();
+										System.out.println(keyBF.toString());
+										System.out.println(valBF.toString());
 										redisTemplate.opsForValue().set(keyBF.toString().toUpperCase(),
 												valBF.toString());
 										break;
@@ -274,7 +276,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 				}
 			}
-			addMaatRelation(configMap);
+//			addMaatRelation(configMap);
 		}
 	}
 

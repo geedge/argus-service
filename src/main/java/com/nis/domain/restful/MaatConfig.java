@@ -50,6 +50,10 @@ public class MaatConfig implements Serializable {
 	private List<Map<String, String>> fileLikeRegionMapList;
 
 	/**
+	 * 
+	 */
+	private List<Map<String, String>> ipClientRangeMapList;
+	/**
 	 * 业务类型
 	 */
 	private Integer service;
@@ -116,6 +120,15 @@ public class MaatConfig implements Serializable {
 
 	public void setFileLikeRegionMapList(List<Map<String, String>> fileLikeRegionMapList) {
 		this.fileLikeRegionMapList = fileLikeRegionMapList;
+	}
+
+	public List<Map<String, String>> getIpClientRangeMapList() {
+		return ipClientRangeMapList;
+	}
+
+	public void setIpClientRangeMapList(
+			List<Map<String, String>> ipClientRangeMapList) {
+		this.ipClientRangeMapList = ipClientRangeMapList;
 	}
 
 	public Integer getService() {

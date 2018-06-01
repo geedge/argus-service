@@ -377,6 +377,7 @@ public class BaseRestController {
 		thread.setService(service);
 		thread.setContent(fileInfo);
 		thread.setOpAction(opAction);
+		thread.setTraceCode(sdf.format(new Date())+(Math.round((Math.random()*9+1)*10000)+""));
 		if (data != null && ConfigCommonSource.class.isAssignableFrom(data.getClass())) {
 			System.out.println(data.getClass().getSimpleName());
 			ConfigCommonSource source = (ConfigCommonSource) data;

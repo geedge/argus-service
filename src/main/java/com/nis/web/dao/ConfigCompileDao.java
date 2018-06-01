@@ -95,7 +95,7 @@ public interface ConfigCompileDao {
 	 * @return
 	 */
 	public List<ConfigCompileTest> queryAllCompile(@Param("searchEndTime") String searchEndTime,
-			@Param("searchStartTime") String searchStartTime, @Param("service") Long service,
+			@Param("searchStartTime") String searchStartTime, @Param("service") Integer service,
 			@Param("compileId") Long compileId);
 
 	/**

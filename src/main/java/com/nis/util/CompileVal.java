@@ -358,7 +358,7 @@ public class CompileVal {
 	 * @param tableName
 	 * @return
 	 */
-	public static boolean type2TableNameIsOk(Long serviceType, String tableName) {
+	public static boolean type2TableNameIsOk(Integer serviceType, String tableName) {
 		if (null != serviceType && null != tableName && !tableName.equals("")) {
 			Map<Integer, Map<String, String>> tableRelation = ConfigSourcesService.getTableRelation();
 			Map<String, String> map = tableRelation.get(serviceType.intValue());
@@ -432,12 +432,6 @@ public class CompileVal {
 		if (null == configCompile.getEffectiveRange() || configCompile.getEffectiveRange().equals("")) {
 			return "id为" + compileId + "的编译配置中effectiveRange不能为空";
 		}
-		if (null == configCompile.getConfigPercent()) {
-			return "id为" + compileId + "的编译配置中configPercent不能为空";
-		}
-		if (null == configCompile.getConfigOption()) {
-			return "id为" + compileId + "的编译配置中configOption不能为空";
-		}
 		if (null == configCompile.getStartTime()) {
 			return "id为" + compileId + "的编译配置中startTime不能为空";
 		}
@@ -458,9 +452,6 @@ public class CompileVal {
 		}
 		if (null == configCompile.getOpTime()) {
 			return "id为" + compileId + "的编译配置中opTime不能为空";
-		}
-		if (null == configCompile.getActiveSys()) {
-			return "id为" + compileId + "的编译配置中activeSys不能为空";
 		}
 		return "ok";
 	}
@@ -645,18 +636,19 @@ public class CompileVal {
 					+ "的域配置direction的值不正确,只能是0或1";
 		}
 
-		if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
-			if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-						+ "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
-			}
-		} else {
-			if (ipRegion.getProtocol() != 0) {
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置tableName为"
-						+ ipRegion.getTableName() + "时,protocol的值只能是0";
-			}
-
-		}
+		//zdx protocol验证？
+//		if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
+//			if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
+//				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+//						+ "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
+//			}
+//		} else {
+//			if (ipRegion.getProtocol() != 0) {
+//				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置tableName为"
+//						+ ipRegion.getTableName() + "时,protocol的值只能是0";
+//			}
+//
+//		}
 		return "ok";
 	}
 
@@ -692,14 +684,6 @@ public class CompileVal {
 
 		if (configCompile.getDoLog() != 0 && configCompile.getDoLog() != 1 && configCompile.getDoLog() != 2) {
 			return "编译配置id为" + compileId + "的配置中doLog的值只能是0(不需要),1(需要),2(只记录结构化日志，不记录非结构化日志)";
-		}
-
-		if (configCompile.getActiveSys() < 1 || configCompile.getActiveSys() > 7) {
-			return "编译配置id为" + compileId + "的配置中activeSys的值范围只能是1-7";
-		}
-
-		if (configCompile.getConfigOption() != 1 && configCompile.getConfigOption() != 2) {
-			return "编译配置id为" + compileId + "的配置中configOption的值只能是1或2";
 		}
 
 		if (configCompile.getFatherCfgId() != 0) {

@@ -188,5 +188,7 @@ public final class Constants {
 	 * 数据中心B版数据库名称,程序中每次查询时使用的数据库名称 use HIVEBDBNAME
 	 */
 	public static final String HIVEBDBNAME = Configurations.getStringProperty("jdbc.hive.BName", "xa_z2_mesalog_hive");
+	
+	public static final String DIGEST_GEN_TOOL_PATH = Configurations.getStringProperty("digest.gen.tool.path", "maat-redis/digest_gen");
 
 }

@@ -50,8 +50,10 @@ import com.nis.util.BasicProvingUtil;
 import com.nis.util.CamelUnderlineUtil;
 import com.nis.util.CompileVal;
 import com.nis.util.Configurations;
+import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.ReadCommSourceXmlUtil;
+import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.dao.ConfigCompileDao;
@@ -108,32 +110,32 @@ public class ConfigSourcesService extends BaseService {
 	public static Map<Integer, Map<String, String>> getTableRelation() {
 		Map<Integer, Map<String, String>> tableMap = new HashMap<Integer, Map<String, String>>();
 		Map<String, String> typeMap = new HashMap<String, String>();
-		typeMap.put("AV_CONT_IP_PORT", "ip");
+		typeMap.put("MM_AV_IP", "ip");
 		tableMap.put(80, typeMap);
 		tableMap.put(144, typeMap);
 		
 		typeMap = new HashMap<String, String>();
-		typeMap.put("AV_CONT_URL", "str");
+		typeMap.put("MM_AV_URL", "str");
 		tableMap.put(81, typeMap);
 		tableMap.put(145, typeMap);
 		
 		typeMap = new HashMap<String, String>();
-		typeMap.put("AV_PIC_IP_PORT", "ip");
+		typeMap.put("MM_PIC_IP", "ip");
 		tableMap.put(82, typeMap);
 		tableMap.put(146, typeMap);
 		
 		typeMap = new HashMap<String, String>();
-		typeMap.put("AV_PIC_URL", "str");
+		typeMap.put("MM_PIC_URL", "str");
 		tableMap.put(83, typeMap);
 		tableMap.put(147, typeMap);
 		
 		typeMap = new HashMap<String, String>();
-		typeMap.put("AV_VoIP_IP_PORT", "ip");
+		typeMap.put("MM_VOIP_IP", "ip");
 		tableMap.put(84, typeMap);
 		tableMap.put(148, typeMap);
 		
 		typeMap = new HashMap<String, String>();
-		typeMap.put("AV_VoIP_ACCOUNT", "str");
+		typeMap.put("MM_VOIP_ACCOUNT", "str");
 		tableMap.put(85, typeMap);
 		tableMap.put(149, typeMap);
 		
@@ -223,6 +225,8 @@ public class ConfigSourcesService extends BaseService {
 		typeMap.put("UNIVERSAL_IP", "ip");
 		typeMap.put("FX_HTTP_REQ_HDR", "str");
 		typeMap.put("FX_HTTP_URL", "str");
+		
+		typeMap.put("WHITE_LIST_IP", "ip");
 		tableMap.put(15, typeMap);
 
 		typeMap = new HashMap<String, String>();
@@ -472,7 +476,7 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			}
-			config.setLastUpdate(new Date());
+//			config.setLastUpdate(new Date());
 			if (Configurations.getStringProperty("isCommit", "false").equals("true")) {
 				batchSqlSession.getMapper(ConfigCompileDao.class).updateConfigCompile(config);
 			}
@@ -625,7 +629,6 @@ public class ConfigSourcesService extends BaseService {
 						num++;
 						configGroupRelation.setIsValid(0);
 						configGroupRelation.setOpTime(opTime);
-						configGroupRelation.setLastUpdate(new Date());
 						if (Configurations.getStringProperty("isCommit", "false").equals("true")) {
 							batchSqlSession.getMapper(ConfigGroupRelationDao.class)
 									.updateConfigGroupRelation(configGroupRelation);
@@ -1107,18 +1110,13 @@ public class ConfigSourcesService extends BaseService {
 	 */
 	public String saveMaatConfig(SaveRequestLogThread thread, long start, List<ConfigCompile> configCompileList,
 			StringBuffer sb) {
-		List<MaatConfig> maatConfigList = new ArrayList<MaatConfig>();
-		List<Integer> serviceList = new ArrayList<Integer>();
+//		List<MaatConfig> maatConfigList = new ArrayList<MaatConfig>();
+//		List<Integer> serviceList = new ArrayList<Integer>();
+		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		
 		for (ConfigCompile configCompile : configCompileList) {
-			serviceList.add(Integer.valueOf(configCompile.getService().toString()));
+			Integer service = Integer.valueOf(configCompile.getService().toString());
 			MaatConfig maatConfig = new MaatConfig();
-			List<ConfigGroupRelation> groupRelationList = new ArrayList<ConfigGroupRelation>();
-			List<StrRegion> strRegionList = new ArrayList<StrRegion>();
-			List<StrRegion> strStrongRegionList = new ArrayList<StrRegion>();
-			List<IpRegion> ipRegionList =new ArrayList<IpRegion>();
-			List<NumRegion> numRegionList = new ArrayList<NumRegion>();
-			List<DigestRegion> digestRegionList = new ArrayList<DigestRegion>();
 			String msg = CompileVal.compileIsOk(configCompile, false, sb);
 			if (msg != CompileJudgeCode.CompileIsOk.getErrorReason()) {
 				logger1.error(msg);
@@ -1128,9 +1126,7 @@ public class ConfigSourcesService extends BaseService {
 			}
 			
 			
-			if (null != configCompile.getGroupRelationList() && configCompile.getGroupRelationList().size() > 0) {
-				groupRelationList.addAll(configCompile.getGroupRelationList());
-			} else {
+			if (!(null != configCompile.getGroupRelationList() && configCompile.getGroupRelationList().size() > 0)) {
 				logger1.error("配置分组数量不能为空" + sb.toString());
 				thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "配置分组数量不能为空" + sb.toString(),
@@ -1138,34 +1134,18 @@ public class ConfigSourcesService extends BaseService {
 			}
 			if (null != configCompile.getStrRegionList() && configCompile.getStrRegionList().size() > 0) {
 				for (StrRegion strRegion : configCompile.getStrRegionList()) {
-					if (!isStrStrongRegion(strRegion.getTableName())) {
-						if (strRegion.getRegionId() == null) {
-							String errorMsg = "字符类域配置id不能为空 ,表名---" + strRegion.getTableName() + "" + sb.toString();
-							logger1.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
-									RestBusinessCode.missing_args.getValue());
-						}
-							strRegionList.add(strRegion);
-					} else {
-						if (strRegion.getRegionId() == null) {
-							String errorMsg = "增强字符类域配置id不能为空 ,表名---" + strRegion.getTableName() + "" + sb.toString();
-							logger1.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
-									RestBusinessCode.missing_args.getValue());
-						}
-						strStrongRegionList.add(strRegion);
+					if (strRegion.getRegionId() == null) {
+						String errorMsg = "字符类域配置id不能为空 ,表名---" + strRegion.getTableName() + "" + sb.toString();
+						logger1.error(errorMsg);
+						thread.setExceptionInfo(errorMsg);
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+								RestBusinessCode.missing_args.getValue());
 					}
 				}
 			}
 
 			if (null != configCompile.getIpRegionList() && configCompile.getIpRegionList().size() > 0) {
 				for (IpRegion ipRegion : configCompile.getIpRegionList()) {
-					if (!ipRegion.getTableName().toUpperCase().equals("DJ_IP_PORT")) {
-						ipRegion.setProtocol(0);
-					}
-
 					if (ipRegion.getRegionId() == null) {
 						String errorMsg = "ip类域配置id不能为空 ,表名---" + ipRegion.getTableName() + "" + sb.toString();
 						logger1.error(errorMsg);
@@ -1173,8 +1153,6 @@ public class ConfigSourcesService extends BaseService {
 						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
 								RestBusinessCode.missing_args.getValue());
 					}
-
-					ipRegionList.add(ipRegion);
 				}
 			}
 
@@ -1187,7 +1165,6 @@ public class ConfigSourcesService extends BaseService {
 						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
 								RestBusinessCode.missing_args.getValue());
 					}
-					numRegionList.add(numRegion);
 				}
 			}
 			if (null != configCompile.getDigestRegionList() && configCompile.getDigestRegionList().size() > 0) {
@@ -1199,46 +1176,56 @@ public class ConfigSourcesService extends BaseService {
 						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
 								RestBusinessCode.missing_args.getValue());
 					}
-
-					digestRegionList.add(digestRegion);
 				}
 			}
 			
-			maatConfig.setService(Integer.valueOf(configCompile.getService().toString()));
+			if (null != configCompile.getIpClientRangeList() && configCompile.getIpClientRangeList().size() > 0) {
+				for (IpRegion ipRegion : configCompile.getIpClientRangeList()) {
+					if (ipRegion.getRegionId() == null) {
+						String errorMsg = "生效范围IP域类域配置id不能为空 ,表名---" + ipRegion.getTableName() + "" + sb.toString();
+						logger1.error(errorMsg);
+						thread.setExceptionInfo(errorMsg);
+						throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
+								RestBusinessCode.missing_args.getValue());
+					}
+				}
+			}
+			
+			maatConfig.setService(service);
 			//编译
 			maatConfig.setCompileMap(convertObjectToMap(configCompile, ConfigCompile.class));
 			//分组
 			List<Map<String, String>> dstMaplList = null;
-			if (!StringUtil.isEmpty(groupRelationList)) {
+			if (!StringUtil.isEmpty(configCompile.getGroupRelationList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
-				for (ConfigGroupRelation group : groupRelationList) {
+				for (ConfigGroupRelation group : configCompile.getGroupRelationList()) {
 					dstMaplList.add(convertObjectToMap(group, ConfigGroupRelation.class));
 				}
 			}
 			maatConfig.setGroupMapList(dstMaplList);
 			//字符串域
 			dstMaplList = null;
-			if (!StringUtil.isEmpty(strRegionList)) {
+			if (!StringUtil.isEmpty(configCompile.getStrRegionList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
-				for (StrRegion region : strRegionList) {
+				for (StrRegion region : configCompile.getStrRegionList()) {
 					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
 				}
 			}	
 			maatConfig.setStrRegionMapList(dstMaplList);
-			//增强字符串域
-			dstMaplList = null;
-			if (!StringUtil.isEmpty(strStrongRegionList)) {
-				dstMaplList = new ArrayList<Map<String,String>>();
-				for (StrRegion region : strStrongRegionList) {
-					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
-				}
-			}	
-			maatConfig.setStrStrRegionMapList((dstMaplList));
+//			//增强字符串域
+//			dstMaplList = null;
+//			if (!StringUtil.isEmpty(strStrongRegionList)) {
+//				dstMaplList = new ArrayList<Map<String,String>>();
+//				for (StrRegion region : strStrongRegionList) {
+//					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
+//				}
+//			}	
+//			maatConfig.setStrStrRegionMapList((dstMaplList));
 			//数值域
 			dstMaplList = null;
-			if (!StringUtil.isEmpty(numRegionList)) {
+			if (!StringUtil.isEmpty(configCompile.getNumRegionList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
-				for (NumRegion region : numRegionList) {
+				for (NumRegion region : configCompile.getNumRegionList()) {
 					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
 				}
 			}	
@@ -1246,9 +1233,9 @@ public class ConfigSourcesService extends BaseService {
 			
 			//Ip域
 			dstMaplList = null;
-			if (!StringUtil.isEmpty(ipRegionList)) {
+			if (!StringUtil.isEmpty(configCompile.getIpRegionList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
-				for (IpRegion region : ipRegionList) {
+				for (IpRegion region : configCompile.getIpRegionList()) {
 					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
 				}
 			}	
@@ -1256,29 +1243,57 @@ public class ConfigSourcesService extends BaseService {
 			
 			//摘要类域
 			dstMaplList = null;
-			if (!StringUtil.isEmpty(digestRegionList)) {
+			if (!StringUtil.isEmpty(configCompile.getDigestRegionList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
-				for (DigestRegion region : digestRegionList) {
+				for (DigestRegion region : configCompile.getDigestRegionList()) {
 					dstMaplList.add(convertObjectToMap(region, DigestRegion.class));
 				}
 			}
 			
 			maatConfig.setFileDigestRegionMapList(dstMaplList);
-			dstMaplList = null;
+			
 			//文本相似性域
-			maatConfig.setFileLikeRegionMapList(dstMaplList);
-			maatConfigList.add(maatConfig);
-		}
-		if (!StringUtil.isEmpty(serviceList)&&serviceList.size()!=1) {
-			String errorMsg = "只能添加单一service配置信息列表";
-			logger1.error(errorMsg);
-			thread.setExceptionInfo(errorMsg);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, errorMsg,
-					RestBusinessCode.op_action_error.getValue());
+//			dstMaplList = null;
+//			maatConfig.setFileLikeRegionMapList(dstMaplList);
+			
+			
+			//生效范围IP域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(configCompile.getIpClientRangeList())) {
+				dstMaplList = new ArrayList<Map<String,String>>();
+				for (IpRegion region : configCompile.getIpClientRangeList()) {
+					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
+				}
+			}
+			maatConfig.setIpClientRangeMapList(dstMaplList);
+			
+			if (maatMap.containsKey(service)) {
+				maatMap.get(service).add(maatConfig);
+			}else{
+				List<MaatConfig> maatCfgList = new ArrayList<MaatConfig>();
+				maatCfgList.add(maatConfig);
+				maatMap.put(service, maatCfgList);
+				
+			}
 		}
 		
 		//调用接口入redis
-		configRedisService.saveMaatConfig(maatConfigList, serviceList.get(0));
+		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
+		Iterator serviceIterator = maatMap.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service =Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			for (Integer dbIndex : dbIndexList) {
+				if (configMap.containsKey(dbIndex)) {
+					configMap.get(dbIndex).addAll(maatMap.get(service));
+				}else{
+					configMap.put(dbIndex, maatMap.get(service));
+				}
+			}
+		}
+		
+		configRedisService.saveMaatConfig(configMap);
+		logger1.info("---------------调用maat配置新增接口---------------------");
 		
 		return "ok";
 	}
@@ -1307,6 +1322,32 @@ public class ConfigSourcesService extends BaseService {
 			logger1.error(e.getMessage());
 		}
 		return dstMap;
+	}
+	
+	public String cancleConfigSources(SaveRequestLogThread thread, long start, List<ConfigCompile> compileList,
+								Date opTime, StringBuffer sb) {
+		List<ConfigCompile> compileAllList = new ArrayList<ConfigCompile>();
+		if (null != compileList && compileList.size() > 0) {
+			for (ConfigCompile config : compileList) {
+				String msg = checkCompileOptForUpdate(config);
+				if (config.getOpTime()==null) {
+					config.setOpTime(opTime);
+				}
+				if (!msg.equals("ok")) {
+					thread.setExceptionInfo(msg + sb.toString());
+					throw new RestServiceException(thread, System.currentTimeMillis() - start, msg + sb.toString(),
+							RestBusinessCode.config_integrity_error.getValue());
+				}
+		
+				compileAllList.add(config);
+			}
+		
+		} else {
+			thread.setExceptionInfo("编译配置不能为空" + sb.toString());
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置不能为空" + sb.toString(),
+					RestBusinessCode.config_integrity_error.getValue());
+		}
+		return "";
 	}
 	public String saveByJDBCThread(SaveRequestLogThread thread, long start, List<ConfigCompile> configCompileList,
 			StringBuffer sb) {
@@ -1750,7 +1791,6 @@ public class ConfigSourcesService extends BaseService {
 									num++;
 									configGroupRelation.setIsValid(0);
 
-									configGroupRelation.setLastUpdate(new Date());
 									groupRelationAllList.add(configGroupRelation);
 								}
 							}
@@ -2172,6 +2212,11 @@ public class ConfigSourcesService extends BaseService {
 		if (StringUtil.isEmpty(config.getCompileId())) {
 			return "compileId字段不能为空";
 		}
+		
+		if (StringUtil.isEmpty(config.getService())) {
+			return "service字段不能为空";
+		}
+		
 		if (StringUtil.isEmpty(config.getIsValid())) {
 			return "编译配置id为" + config.getCompileId()+"的IsValid字段不能为空";
 		}
@@ -2349,7 +2394,7 @@ public class ConfigSourcesService extends BaseService {
 		return "ok";
 	}
 	
-	public String savaCommonSources(SaveRequestLogThread thread, long start,String jsonString,
+	public String saveCommonSources(SaveRequestLogThread thread, long start,String jsonString,
 			StringBuffer sb) {
 		JsonArray jsonObjectList = new JsonParser().parse(jsonString).getAsJsonArray();
 		Map<Integer,List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String,String>>>();
@@ -2360,7 +2405,7 @@ public class ConfigSourcesService extends BaseService {
 				Map<String,String> dstMap = new HashMap<String, String>();
 				List<CommonSourceFieldCfg> commonSourceFieldCfgList = ReadCommSourceXmlUtil.getCommonSourceCfgByService(srcMap.get("service").toString().trim());
 				if (StringUtil.isEmpty(commonSourceFieldCfgList)) {
-					logger.error("service请检查service配置是否正确");
+					logger1.error("service请检查service配置是否正确");
 					thread.setExceptionInfo("请检查service配置是否正确");
 					throw new RestServiceException(thread, System.currentTimeMillis() - start,"请检查service配置是否正确",
 						RestBusinessCode.wrong_range.getValue());
@@ -2368,7 +2413,7 @@ public class ConfigSourcesService extends BaseService {
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					//是否必填
 					if(commonSourceFieldCfg.getIsRequired()&&!srcMap.containsKey(commonSourceFieldCfg.getSrcName())){
-						logger.error(commonSourceFieldCfg.getSrcName()+"参数不能为空");
+						logger1.error(commonSourceFieldCfg.getSrcName()+"参数不能为空");
 						thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不能为空");
 						throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能为空",
 							RestBusinessCode.missing_args.getValue());
@@ -2381,7 +2426,7 @@ public class ConfigSourcesService extends BaseService {
 					switch (commonSourceFieldCfg.getFieldType()) {
 						case "Number":
 							if(!StringUtil.isNumeric(dstStr)){
-								logger.error(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
+								logger1.error(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
 								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
 								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确",
 									RestBusinessCode.missing_args.getValue());
@@ -2390,11 +2435,12 @@ public class ConfigSourcesService extends BaseService {
 						case "Date":
 							try {
 								sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+								System.out.println("--------------------TimeZone:"+sdf.getTimeZone());
 								Date date = sdf.parse(dstStr);
 								dstStr = date.getTime()+"000";
 							} catch (ParseException e) {
 								// TODO Auto-generated catch block
-								logger.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，必须是日期型");
+								logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，必须是日期型");
 								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，必须是日期型");
 								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，必须是日期型",
 									RestBusinessCode.missing_args.getValue());
@@ -2402,7 +2448,7 @@ public class ConfigSourcesService extends BaseService {
 							break;
 						case "Ip":
 							if (!isIp(dstStr)) {
-								logger.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
+								logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
 								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
 								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，不是合法的IP地址",
 									RestBusinessCode.missing_args.getValue());
@@ -2410,7 +2456,7 @@ public class ConfigSourcesService extends BaseService {
 							break;
 						case "Port":
 							if (!BasicProvingUtil.isPortOrPortMask(dstStr)) {
-								logger.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的Port");
+								logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的Port");
 								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的Port");
 								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，不是合法的Port",
 									RestBusinessCode.missing_args.getValue());
@@ -2422,7 +2468,7 @@ public class ConfigSourcesService extends BaseService {
 					if(!StringUtil.isEmpty(commonSourceFieldCfg.getRange())){
 						String [] range= commonSourceFieldCfg.getRange().split("-");
 						if(!(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr))<=0&&Long.valueOf(range[1]).compareTo(Long.valueOf(dstStr))>=0)){
-							logger.error(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
+							logger1.error(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
 							thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
 							throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数不在有效范围",
 									RestBusinessCode.wrong_range.getValue());
@@ -2439,7 +2485,7 @@ public class ConfigSourcesService extends BaseService {
 					if (valFlag) {
 						dstMap.put(commonSourceFieldCfg.getDstName(),dstStr);
 					}else{
-						logger.error(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
+						logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
 						thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
 						throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数格式不正确或数据不在有效范围",
 								RestBusinessCode.param_formate_error.getValue());
@@ -2460,13 +2506,22 @@ public class ConfigSourcesService extends BaseService {
 						RestBusinessCode.missing_args.getValue());
 			}
 		}
-		Iterator iterator =dstMaps.keySet().iterator();
-		while (iterator.hasNext()) {
-			Integer key =  Integer.valueOf(iterator.next().toString());
-			configRedisService.saveUnMaatConfig(dstMaps.get(key),key);
-		//	configRedisService.saveConfigYSPDemoCompile(key,);
+		logger1.info("------------------调用非maat配置新增接口-------------------");
+		//按service分库
+		Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
+		Iterator serviceIterator = dstMaps.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service =Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			for (Integer dbIndex : dbIndexList) {
+				if (configMap.containsKey(dbIndex)) {
+					configMap.get(dbIndex).addAll(dstMaps.get(service));
+				}else{
+					configMap.put(dbIndex, dstMaps.get(service));
+				}
+			}
 		}
-		
+		configRedisService.saveUnMaatConfig(configMap);
 		
 		return "ok";
 	}
@@ -2488,4 +2543,32 @@ public class ConfigSourcesService extends BaseService {
 		return "ok";
 	}
 
+	public String getDigestGen(String realPath,String filePath)throws Exception{
+		System.out.println("----------------getDigestGen");
+		String content="";
+		String digestGenToolPath=Constants.DIGEST_GEN_TOOL_PATH;
+		String chmodCommond="chmod +x "+realPath+digestGenToolPath;//执行权限命令
+		System.out.println("----------------chmodCommod:"+chmodCommond);
+		String commondStr=realPath+digestGenToolPath+" -f "+filePath; //执行
+		//执行摘要获取命令 digest -f /home/aa.txt
+		System.out.println("------------commondStr:"+commondStr);
+		Runtime.getRuntime().exec(chmodCommond);
+		Process p=Runtime.getRuntime().exec(commondStr);
+		byte[] b=new byte[1024];
+		StringBuffer sb=new StringBuffer();
+		while (p.getInputStream().read(b) != -1) {
+			sb.append(new String(b, "UTF-8"));
+		}
+		content=sb.toString();
+		if (!StringUtil.isBlank(content)) {
+			content = StringUtil.stripAll(content);
+		}
+		System.out.println("-------------------->>"+content);
+		String[] digestGenReslt=content.split(" ");
+		if(digestGenReslt.length >=4 && !StringUtil.isEmpty(digestGenReslt[3])){
+			return digestGenReslt[3]; 
+		}
+		return null;
+	}
+	
 }
