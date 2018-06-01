@@ -23,6 +23,7 @@ import com.nis.domain.restful.MaatConfig;
 import com.nis.domain.restful.MaatRelation;
 import com.nis.listener.CompileGroupRegionRela;
 import com.nis.util.Configurations;
+import com.nis.util.Exceptions;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.web.service.SpringContextHolder;
@@ -32,7 +33,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	private static Logger logger = LoggerFactory.getLogger(ConfigRedisServiceimpl.class);
 
 	@Transactional
-	public void saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap) {
+	public boolean saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
 			for (Integer redisDBIndex : configMap.keySet()) {
 				if (redisDBIndex >= 0 && redisDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 6)) {
@@ -136,10 +137,11 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 					logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 							Integer.valueOf(maatVersionStr) + 1);
+					return true;
 				}
 			}
 		}
-
+		return false;
 	}
 
 	/**
@@ -199,7 +201,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 
 	@Override
 	@Transactional
-	public void saveMaatConfig(Map<Integer, List<MaatConfig>> configMap) {
+	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
 			for (Integer redisDBIndex : configMap.keySet()) {
 				if (redisDBIndex >= 0 && redisDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 6)) {
@@ -218,16 +220,19 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 								MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
 								setConfig(maatConfig, maatXmlConfig, maatVersion, service, redisTemplate, redisDBIndex);
 							}
+							redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
+									Integer.valueOf(maatVersionStr) + 1);
+							return true;
 						}
 
 					}
-					redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
-					logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
-							Integer.valueOf(maatVersionStr) + 1);
+
 				}
 			}
-			addMaatRelation(configMap);
 		}
+		return false;
+
 	}
 
 	/**
@@ -401,7 +406,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 
 	@Override
 	@Transactional
-	public void delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
+	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
 			for (Integer redisDBIndex : idMap.keySet()) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder
@@ -500,18 +505,19 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 						redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 						logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 								Integer.valueOf(maatVersionStr) + 1);
+						return true;
 					}
 				}
 
 			}
 
 		}
-
+		return false;
 	}
 
 	@Override
 	@Transactional
-	public void delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
+	public boolean delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
 			for (Integer redisDBIndex : idMap.keySet()) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder
@@ -525,22 +531,23 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
 					if (maatVersionStr != null) {
 						Long maatVersion = Long.valueOf(maatVersionStr) + 1;
-						for (Integer service : serviceConfigMap.keySet()) {
-							MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
-							removeConfig(serviceConfigMap.get(service), maatXmlConfig, maatVersion, service,
-									redisTemplate, maatRelation, redisDBIndex);
+						if (maatRelation != null && redisTemplate != null) {
+							for (Integer service : serviceConfigMap.keySet()) {
+								MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
+								removeConfig(serviceConfigMap.get(service), maatXmlConfig, maatVersion, service,
+										redisTemplate, maatRelation, redisDBIndex);
 
+							}
+							redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
+									Integer.valueOf(maatVersionStr) + 1);
+							return true;
 						}
-						redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
-						logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
-								Integer.valueOf(maatVersionStr) + 1);
 					}
 				}
 			}
-			// 删除配置成功后开始删除id对应关系
-			delMaatRelation(idMap);
 		}
-
+		return false;
 	}
 
 	/**
@@ -595,7 +602,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	 * @param service
 	 * @param redisTemplate
 	 */
-	public void removeCommonConfig(MaatXmlConfig maatXmlConfig, Set<Long> idList, int type, Double maatVersion,
+	private void removeCommonConfig(MaatXmlConfig maatXmlConfig, Set<Long> idList, int type, Double maatVersion,
 			int service, RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
 		if (maatXmlConfig != null && idList != null && idList.size() > 0) {
 			List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
@@ -621,10 +628,14 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 						}
 						String oldKey = keyBF.toString().toUpperCase();
 						maatKey = oldKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
-						redisTemplate.rename(oldKey, maatKey.toUpperCase());
-						logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}", redisDBIndex, oldKey,
-								maatKey.toUpperCase());
-						break;
+						if (redisTemplate.hasKey(oldKey)) {
+							redisTemplate.rename(oldKey, maatKey.toUpperCase());
+							logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}", redisDBIndex, oldKey,
+									maatKey.toUpperCase());
+							break;
+						} else {
+							throw new RuntimeException(redisDBIndex + "号redis库中不存在key=" + oldKey + "请检查id映射关系是否正确");
+						}
 					}
 				}
 				for (MaatXmlExpr maatXmlExpr : expressionList) {

@@ -88,6 +88,7 @@ public class ConfigSourcesController extends BaseRestController {
 				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
 				configMap.put(1, listMap);
 				configRedisService.saveUnMaatConfig(configMap);
+
 			} else {
 				Integer service = 100;
 				Map<String, String> map = new HashMap<String, String>();
@@ -145,7 +146,10 @@ public class ConfigSourcesController extends BaseRestController {
 			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 			idMap.put(redisDB, map);
 
-			configRedisService.delMaatConfig(idMap);
+			boolean delMaatConfig = configRedisService.delMaatConfig(idMap);
+			if (delMaatConfig) {
+				configRedisService.delMaatRelation(idMap);
+			}
 			return "ok";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -165,7 +169,9 @@ public class ConfigSourcesController extends BaseRestController {
 			listMap = new ArrayList<MaatConfig>();
 			listMap.add(getMaatConfig(service));
 			configMap.put(2, listMap);
-			configRedisService.saveMaatConfig(configMap);
+			if (configRedisService.saveMaatConfig(configMap)) {
+				configRedisService.addMaatRelation(configMap);
+			}
 			// configRedisService.saveMaatConfig(listMap, service);
 			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
 			return "ok";
@@ -306,7 +312,7 @@ public class ConfigSourcesController extends BaseRestController {
 			checkOpAction(thread, System.currentTimeMillis() - start, opAction, 2);
 			String msg = "";
 			ConfigCompile compile = configSource.getConfigCompileList().get(0);
-			//zdx 20180528改为调用rkg接口取消配置
+			// zdx 20180528改为调用rkg接口取消配置
 			msg = configSourcesService.cancleConfigSources(thread, start, configSource.getConfigCompileList(),
 					configSource.getOpTime(), sb);
 
@@ -373,11 +379,12 @@ public class ConfigSourcesController extends BaseRestController {
 							throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置id不能为空",
 									RestBusinessCode.missing_args.getValue());
 						}
-//						if ((configCompile.getActiveSys() != null) || (configCompile.getEffectiveRange() != null
-//								&& !configCompile.getEffectiveRange().equals(""))) {
-//							count++;
-//							configSourcesService.setCompileInvalid(configCompile);
-//						}
+						// if ((configCompile.getActiveSys() != null) ||
+						// (configCompile.getEffectiveRange() != null
+						// && !configCompile.getEffectiveRange().equals(""))) {
+						// count++;
+						// configSourcesService.setCompileInvalid(configCompile);
+						// }
 					}
 					if (count > 0) {
 						Thread.sleep(14000);
@@ -405,33 +412,34 @@ public class ConfigSourcesController extends BaseRestController {
 							throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置id不能为空",
 									RestBusinessCode.missing_args.getValue());
 						}
-//						if ((configCompile.getActiveSys() != null) || (configCompile.getEffectiveRange() != null
-//								&& !configCompile.getEffectiveRange().equals(""))) {
-//							try {
-//								configSourcesService.setCompileValid(configCompile);
-//							} catch (Exception e1) {
-//								String errorCode = "";
-//								String message = e.getMessage();
-//								if (null != message && message.length() > 0) {
-//									int index = message.toUpperCase().indexOf("ORA-");
-//									if (index != -1) {
-//										errorCode = message.substring(index + 4, index + 9);
-//
-//									}
-//								}
-//								Map<Integer, String> throwExceptionInfo = OracleErrorCodeUtil
-//										.throwExceptionInfo(errorCode);
-//								for (int errorNum : throwExceptionInfo.keySet()) {
-//									if (errorNum == 998) {
-//										thread.setExceptionInfo(e.toString());
-//									} else {
-//										thread.setExceptionInfo(throwExceptionInfo.get(errorNum));
-//									}
-//									throw new RestServiceException(thread, System.currentTimeMillis() - start,
-//											throwExceptionInfo.get(errorNum), errorNum);
-//								}
-//							}
-//						}
+						// if ((configCompile.getActiveSys() != null) ||
+						// (configCompile.getEffectiveRange() != null
+						// && !configCompile.getEffectiveRange().equals(""))) {
+						// try {
+						// configSourcesService.setCompileValid(configCompile);
+						// } catch (Exception e1) {
+						// String errorCode = "";
+						// String message = e.getMessage();
+						// if (null != message && message.length() > 0) {
+						// int index = message.toUpperCase().indexOf("ORA-");
+						// if (index != -1) {
+						// errorCode = message.substring(index + 4, index + 9);
+						//
+						// }
+						// }
+						// Map<Integer, String> throwExceptionInfo = OracleErrorCodeUtil
+						// .throwExceptionInfo(errorCode);
+						// for (int errorNum : throwExceptionInfo.keySet()) {
+						// if (errorNum == 998) {
+						// thread.setExceptionInfo(e.toString());
+						// } else {
+						// thread.setExceptionInfo(throwExceptionInfo.get(errorNum));
+						// }
+						// throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						// throwExceptionInfo.get(errorNum), errorNum);
+						// }
+						// }
+						// }
 					}
 				}
 
@@ -509,21 +517,22 @@ public class ConfigSourcesController extends BaseRestController {
 				Constants.IS_DEBUG ? jsonString : null);
 	}
 
-	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PUT, produces=org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PUT, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "回调配置状态修改", httpMethod = "PUT", response = Map.class, notes = "回调配置状态修改服务")
-	public Map updateCommonConfigSource(@RequestBody String jsonString , HttpServletRequest request,
+	public Map updateCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,null);
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				null);
 		StringBuffer sb = new StringBuffer();
-		
+
 		configSourcesService.saveCommonSources(thread, start, jsonString, sb);
 
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"配置数据插入成功" , Constants.IS_DEBUG ? jsonString  : null);
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置数据插入成功",
+				Constants.IS_DEBUG ? jsonString : null);
 	}
-	
+
 	@RequestMapping(value = "/cfg/v1/fileUploadSources", method = RequestMethod.POST)
 	@ApiOperation(value = "样例文件上传服务", httpMethod = "POST", response = Map.class, notes = "样例文件上传服务")
 	@ApiParam(value = "样例文件上传服务", name = "MultipartFile", required = true)
@@ -531,36 +540,39 @@ public class ConfigSourcesController extends BaseRestController {
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,null);
-		String filePath ="";
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				null);
+		String filePath = "";
 		try {
-			FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),FileDesc.class);
-			if(null==file){
+			FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),
+					FileDesc.class);
+			if (null == file) {
 				thread.setExceptionInfo("请选择上传文件到file参数");
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "请选择上传文件到file参数",
 						RestBusinessCode.missing_args.getValue());
-				
+
 			}
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
-				//验证Md5
+				// 验证Md5
 				String md5 = DigestUtils.md5Hex(file.getBytes());
-				System.out.println("----------------------------MD5:'"+md5+"'==='"+fileDesc.getChecksum()+"'");
+				System.out.println("----------------------------MD5:'" + md5 + "'==='" + fileDesc.getChecksum() + "'");
 				if (!md5.equals(fileDesc.getChecksum())) {
 					thread.setExceptionInfo("checksum与文件MD5值不一致");
 					throw new RestServiceException(thread, System.currentTimeMillis() - start, "checksum与文件MD5值不一致",
 							RestBusinessCode.config_integrity_error.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(),file.getOriginalFilename(), ext);
-//				NameValuePair[] meta_list = new NameValuePair[5];
-//				meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
-//				meta_list[1] = new NameValuePair("fileLength", String.valueOf(file.getSize()));
-//				meta_list[2] = new NameValuePair("fileExt", ext);
-//				meta_list[3] = new NameValuePair("fileAuthor", "rkg");
-//				meta_list[4] = new NameValuePair("fileMd5", md5);
+				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
+				// NameValuePair[] meta_list = new NameValuePair[5];
+				// meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
+				// meta_list[1] = new NameValuePair("fileLength",
+				// String.valueOf(file.getSize()));
+				// meta_list[2] = new NameValuePair("fileExt", ext);
+				// meta_list[3] = new NameValuePair("fileAuthor", "rkg");
+				// meta_list[4] = new NameValuePair("fileMd5", md5);
 				logger.info("-----------------调用接口上传文件---------------");
 				filePath = FileManager.upload(fdsfile, null);
-			}else{
+			} else {
 				thread.setExceptionInfo("请求头信息中缺少checksum参数");
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求头信息中缺少checksum参数",
 						RestBusinessCode.missing_args.getValue());
@@ -571,61 +583,62 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
-//		jsonObj.put("accessUrl", "filePath");
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"文件上传成功" ,jsonObj);
+		// jsonObj.put("accessUrl", "filePath");
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "文件上传成功", jsonObj);
 	}
-	
+
 	@RequestMapping(value = "/cfg/v1/fileDigestSources", method = RequestMethod.POST)
 	@ApiOperation(value = "文件摘要获取", httpMethod = "POST", response = Map.class, notes = "文件摘要获取")
 	@ApiParam(value = "摘要文件", name = "MultipartFile", required = true)
-	public Map fileDigestSources(MultipartFile file,HttpServletRequest request,
-									HttpServletResponse response){
+	public Map fileDigestSources(MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,file,null);
-		//JSONArray fileArray=new JSONArray();
-		if (file==null) {
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				file, null);
+		// JSONArray fileArray=new JSONArray();
+		if (file == null) {
 			thread.setExceptionInfo("请上传获取摘要的文件到file");
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请上传获取摘要的文件到file参数",
 					RestBusinessCode.missing_args.getValue());
 		}
 		JSONObject resultObject = new JSONObject();
-		FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),FileDesc.class);
+		FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),
+				FileDesc.class);
 		try {
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
-				//验证Md5
+				// 验证Md5
 				String md5 = DigestUtils.md5Hex(file.getBytes());
-				System.out.println("----------------------------MD5:'"+md5+"'==='"+fileDesc.getChecksum()+"'");
+				System.out.println("----------------------------MD5:'" + md5 + "'==='" + fileDesc.getChecksum() + "'");
 				if (!md5.equals(fileDesc.getChecksum())) {
 					thread.setExceptionInfo("checksum与文件MD5值不一致");
 					throw new RestServiceException(thread, System.currentTimeMillis() - start, "checksum与文件MD5值不一致",
 							RestBusinessCode.config_integrity_error.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(),file.getOriginalFilename(), ext);
-	//			NameValuePair[] meta_list = new NameValuePair[5];
-	//			meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
-	//			meta_list[1] = new NameValuePair("fileLength", String.valueOf(file.getSize()));
-	//			meta_list[2] = new NameValuePair("fileExt", ext);
-	//			meta_list[3] = new NameValuePair("fileAuthor", "rkg");
-	//			meta_list[4] = new NameValuePair("fileMd5", md5);
+				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
+				// NameValuePair[] meta_list = new NameValuePair[5];
+				// meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
+				// meta_list[1] = new NameValuePair("fileLength",
+				// String.valueOf(file.getSize()));
+				// meta_list[2] = new NameValuePair("fileExt", ext);
+				// meta_list[3] = new NameValuePair("fileAuthor", "rkg");
+				// meta_list[4] = new NameValuePair("fileMd5", md5);
 				logger.info("-----------------调用接口上传文件---------------");
 				String filePath = FileManager.upload(fdsfile, null);
 				resultObject.put("path", filePath.substring(filePath.indexOf("group")));
-			}else{
+			} else {
 				thread.setExceptionInfo("请求头信息中缺少checksum参数");
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求头信息中缺少checksum参数",
 						RestBusinessCode.missing_args.getValue());
 			}
-			
+
 			CommonsMultipartFile filetemp = (CommonsMultipartFile) file;
-			String tempFilePath =  filetemp.getStorageDescription().toString();
-			tempFilePath = tempFilePath.substring(tempFilePath.indexOf("[")+1, tempFilePath.indexOf("]"));
-		
-			String digestStr = configSourcesService.getDigestGen(request.getRealPath("/"),tempFilePath);
+			String tempFilePath = filetemp.getStorageDescription().toString();
+			tempFilePath = tempFilePath.substring(tempFilePath.indexOf("[") + 1, tempFilePath.indexOf("]"));
+
+			String digestStr = configSourcesService.getDigestGen(request.getRealPath("/"), tempFilePath);
 			resultObject.put("digest", digestStr);
 			resultObject.put("rawLen", file.getSize());
-		}catch (IOException e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("文件上传过程中出现异常");
 			thread.setExceptionInfo("文件上传过程中出现异常");
@@ -639,8 +652,9 @@ public class ConfigSourcesController extends BaseRestController {
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "摘要获取过程中出现异常",
 					RestBusinessCode.unknow_error.getValue());
 		}
-		return serviceResponse(thread,System.currentTimeMillis()-start,request, response, "摘要获取成功",resultObject);
+		return serviceResponse(thread, System.currentTimeMillis() - start, request, response, "摘要获取成功", resultObject);
 	}
+
 	private boolean isBlank(Date datetime) {
 		if (null != datetime) {
 			return true;

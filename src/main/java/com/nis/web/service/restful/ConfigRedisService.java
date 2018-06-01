@@ -15,18 +15,24 @@ import com.nis.domain.restful.MaatConfig;
  *
  */
 public interface ConfigRedisService {
-
 	/**
 	 * 下发非maat配置接口,key是redisDBIndex,value是配置集合
 	 * @param configMap
+	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public void saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap);
+	public boolean saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap);
 
 	/**
 	 * 保存 maat配置接口,key是redisDBIndex,value是配置集合
 	 * @param configMap
+	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public void saveMaatConfig(Map<Integer, List<MaatConfig>> configMap);
+	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap);
+	/**
+	 * 下发配置成功后,需要更新编译,组,域等配置id的对应关系
+	 * @param configMap
+	 */
+	public void addMaatRelation(Map<Integer, List<MaatConfig>> configMap);
 
 	/**
 	 * 获取指定key的自增长值
@@ -38,14 +44,21 @@ public interface ConfigRedisService {
 	/**
 	 * 删除非maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
 	 * @param idMap
+	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public void delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
+	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
 
 	/**
 	 * 删除maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
 	 * @param idMap
+	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public void delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
+	public boolean delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
 
+	/**
+	 * 删除maat类配置成功后,需要更新编译,组,域等配置id的对应关系
+	 * @param idMap
+	 */
+	public void delMaatRelation(Map<Integer, Map<Integer, List<Long>>> idMap);
 
 }
