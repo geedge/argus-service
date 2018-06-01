@@ -10,7 +10,6 @@ import javax.servlet.ServletContextEvent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.context.ContextLoaderListener;
 
@@ -27,10 +26,6 @@ import com.nis.web.service.SpringContextHolder;
  */
 public class CompileGroupRegionRela extends ContextLoaderListener {
 	private static Logger logger = LoggerFactory.getLogger(CompileGroupRegionRela.class);
-
-	private static RedisTemplate<String, String> redisTemplate = null;
-	private static JedisConnectionFactory connectionFactory = null;
-
 	/**
 	 * 存储redis所有库中,编译分组域等配置关系,key是redis库
 	 */
@@ -39,28 +34,25 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		try {
-			redisTemplate = SpringContextHolder.getBean("redisTemplate");
-			connectionFactory = SpringContextHolder.getBean("connectionFactory");
-			for (int i = 0; i < 16; i++) {
-				connectionFactory.setDatabase(i);
-				redisTemplate.setConnectionFactory(connectionFactory);
-				getAllId(i);
+			for (int i = 0; i < 6; i++) {
+				RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate" + i);
+				getAllId(redisTemplate, i);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void getAllId(int redisDBIndex) {
+	private void getAllId(RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
 		Map<Long, Set<Long>> groupCompileIdMap = new ConcurrentHashMap<Long, Set<Long>>();
 		Map<Long, Set<Long>> groupRegionIdMap = new ConcurrentHashMap<Long, Set<Long>>();
 		Set<String> keySet = redisTemplate.keys("EFFECTIVE_RULE:*");
 		if (keySet != null && keySet.size() > 0) {
 			for (String keys : keySet) {
-				if (!keys.toLowerCase().contains("config_compile")) {
+				if (!keys.toLowerCase().contains("compile")) {
 					try {
 						String value = redisTemplate.opsForValue().get(keys).toString();
-						if (keys.toLowerCase().contains("config_group")) {
+						if (keys.toLowerCase().contains("group")) {
 							String[] split = value.split("\t");
 							String groupIdStr = split[0];
 							String compileIdStr = split[1];
@@ -160,6 +152,8 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 		} else {
 			logger.error("redis" + redisDBIndex + "号库中没有id对应关系(没有配置),请检查redisDBIndex是否正确");
 		}
+		syso(maatRelation);
+
 	}
 
 	private static void removKey(MaatRelation maatRelation, long compileId) {
@@ -225,6 +219,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 			addKey(maatRelation, compileAndGroupRelations);
 			idRelationMap.put(redisDBIndex, maatRelation);
 		}
+		syso(maatRelation);
 
 	}
 
@@ -293,5 +288,34 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 
 	public static void setIdRelationMap(Map<Integer, MaatRelation> idRelationMap) {
 		CompileGroupRegionRela.idRelationMap = idRelationMap;
+	}
+
+	private static void syso(MaatRelation maatRelation) {
+		Map<Long, Set<Long>> getCompileAndGroupMap = maatRelation.getCompileAndGroupMap();
+		for (Long compile : getCompileAndGroupMap.keySet()) {
+			Set<Long> groupList = getCompileAndGroupMap.get(compile);
+			for (Long group : groupList) {
+				System.out.println("编译:" + compile + "组:" + group);
+			}
+		}
+		Map<Long, Set<Long>> getGroupAndCompileMap = maatRelation.getGroupAndCompileMap();
+		for (Long group : getGroupAndCompileMap.keySet()) {
+			Set<Long> compileList = getGroupAndCompileMap.get(group);
+			for (Long compile : compileList) {
+				System.out.println("组:" + group + "编译:" + compile);
+			}
+		}
+		Map<Long, Set<Long>> getGroupAndRegionMap = maatRelation.getGroupAndRegionMap();
+		for (Long group : getGroupAndRegionMap.keySet()) {
+			Set<Long> regionList = getGroupAndRegionMap.get(group);
+			for (Long region : regionList) {
+				System.out.println("组:" + group + "域:" + region);
+			}
+		}
+
+		System.out.println();
+		System.out.println();
+		System.out.println();
+		System.out.println();
 	}
 }

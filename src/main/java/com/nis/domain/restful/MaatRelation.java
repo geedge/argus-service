@@ -52,7 +52,6 @@ public class MaatRelation implements Serializable {
 	public static void removKey(MaatRelation maatRelation, long compileId) {
 		if (maatRelation.getCompileAndGroupMap().containsKey(compileId)) {
 			Set<Long> list = maatRelation.getCompileAndGroupMap().get(compileId);
-
 			if (list != null && list.size() > 0) {
 				for (Long groupId : list) {
 					// }

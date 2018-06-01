@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.axis2.databinding.types.soapencoding.Array;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +18,8 @@ import org.springframework.util.StringUtils;
 import com.nis.domain.MaatXmlConfig;
 import com.nis.domain.MaatXmlExpr;
 import com.nis.domain.MaatXmlSeq;
+import com.nis.domain.restful.CompileAndGroupRelations;
+import com.nis.domain.restful.GroupAndRegionRelations;
 import com.nis.domain.restful.MaatConfig;
 import com.nis.domain.restful.MaatRelation;
 import com.nis.listener.CompileGroupRegionRela;
@@ -96,6 +97,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 											}
 										}
 										maatKey = keyBF.toString();
+										System.out.println(keyBF.toString());
+										System.out.println(valBF.toString());
 										redisTemplate.opsForValue().set(keyBF.toString().toUpperCase(),
 												valBF.toString());
 										break;
@@ -142,6 +145,53 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 
 	@Override
 	public void addMaatRelation(Map<Integer, List<MaatConfig>> configMap) {
+		if (configMap != null && configMap.size() > 0) {
+			for (Integer redisDBIndex : configMap.keySet()) {
+				if (redisDBIndex >= 0 && redisDBIndex <= 15) {
+					// MaatRelation maatRelation =
+					// CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+					List<MaatConfig> maatConfigList = configMap.get(redisDBIndex);
+					if (maatConfigList != null && maatConfigList.size() > 0) {
+						for (MaatConfig maatConfig : maatConfigList) {
+							Map<String, String> compileMap = maatConfig.getCompileMap();
+							String cfgIdStr = compileMap.get("cfg_id");
+							CompileAndGroupRelations compileAndGroupRelations = new CompileAndGroupRelations();
+							compileAndGroupRelations.setCompileId(Long.valueOf(cfgIdStr));
+							compileAndGroupRelations.setGroupIdList(new ArrayList<GroupAndRegionRelations>());
+
+							addGroupAndRegionRelations(maatConfig.getIpRegionMapList(), compileAndGroupRelations);
+							addGroupAndRegionRelations(maatConfig.getNumRegionMapList(), compileAndGroupRelations);
+							addGroupAndRegionRelations(maatConfig.getStrRegionMapList(), compileAndGroupRelations);
+							addGroupAndRegionRelations(maatConfig.getStrStrRegionMapList(), compileAndGroupRelations);
+							addGroupAndRegionRelations(maatConfig.getFileDigestRegionMapList(),
+									compileAndGroupRelations);
+							addGroupAndRegionRelations(maatConfig.getFileLikeRegionMapList(), compileAndGroupRelations);
+
+							CompileGroupRegionRela.addIdRelation(redisDBIndex, compileAndGroupRelations);
+						}
+					}
+				}
+			}
+		}
+
+	}
+
+	public void addGroupAndRegionRelations(List<Map<String, String>> regionMapList,
+			CompileAndGroupRelations compileAndGroupRelations) {
+		if (regionMapList != null && regionMapList.size() > 0 && compileAndGroupRelations != null) {
+			for (Map<String, String> map : regionMapList) {
+				String regionIdStr = map.get("region_id");
+				String groupIdStr = map.get("group_id");
+				GroupAndRegionRelations groupAndRegionRelations = new GroupAndRegionRelations();
+				groupAndRegionRelations.setGroupId(Long.valueOf(groupIdStr));
+				groupAndRegionRelations.setRegionId(Long.valueOf(regionIdStr));
+				compileAndGroupRelations.getGroupIdList().add(groupAndRegionRelations);
+			}
+		}
+
+	}
+
+	public void addMaatRelationOld(Map<Integer, List<MaatConfig>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
 			for (Integer redisDBIndex : configMap.keySet()) {
 				if (redisDBIndex >= 0 && redisDBIndex <= 15) {
@@ -274,7 +324,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 				}
 			}
-			addMaatRelation(configMap);
+//			addMaatRelation(configMap);
 		}
 	}
 
@@ -411,6 +461,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	}
 
 	@Override
+	@Transactional
 	public void delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
 			for (Integer redisDBIndex : idMap.keySet()) {
@@ -506,6 +557,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	}
 
 	@Override
+	@Transactional
 	public void delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
 			for (Integer redisDBIndex : idMap.keySet()) {
@@ -572,7 +624,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 			int service, RedisTemplate<String, String> redisTemplate) {
 		if (maatXmlConfig != null && idList != null && idList.size() > 0) {
 			List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
-			String maatKey = "";
+			String maatKey = null;
 			for (Long id : idList) {
 				for (MaatXmlExpr maatXmlExpr : expressionList) {
 					if (type == maatXmlExpr.getType().intValue()) {
@@ -592,19 +644,25 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 								keyBF.append(keyStr.trim());
 							}
 						}
-						String oldKey = maatKey.toUpperCase();
+						String oldKey = keyBF.toString().toUpperCase();
 						maatKey = oldKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
-						redisTemplate.rename(maatKey.toUpperCase(), maatKey);
+						redisTemplate.rename(oldKey, maatKey.toUpperCase());
 						break;
 					}
 				}
 				for (MaatXmlExpr maatXmlExpr : expressionList) {
 					if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_UPDATE_STATUS")) {
-						String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
-						redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+						if (maatKey != null) {
+							String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
+							redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+						}
+
 					} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_RULE_TIMER")) {
-						Double score = 0d;// 界面下发的配置没有超时时间所以这里设置为0
-						redisTemplate.boundZSetOps("MAAT_RULE_TIMER").add(maatKey, score);
+						if (maatKey != null) {
+
+							Double score = 0d;// 界面下发的配置没有超时时间所以这里设置为0
+							redisTemplate.boundZSetOps("MAAT_RULE_TIMER").add(maatKey, score);
+						}
 					} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_VERSION_TIMER")) {
 						Long nowTime = new Date().getTime();
 						nowTime = nowTime / 1000l;
@@ -621,18 +679,42 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 		if (idMap != null && idMap.size() > 0) {
 			for (Integer redisDBIndex : idMap.keySet()) {
 				if (redisDBIndex >= 0 && redisDBIndex <= 15) {
-					MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
-//					maatRelation
-					
-					
-					
-					
-					
-					
-					
+					// MaatRelation maatRelation =
+					// CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+					Map<Integer, List<Long>> map = idMap.get(redisDBIndex);
+					if (map != null && map.size() > 0) {
+						for (Integer service : map.keySet()) {
+							List<Long> idList = map.get(service);
+							if (idList != null && idList.size() > 0) {
+								for (Long compileId : idList) {
+									CompileGroupRegionRela.delIdRelation(redisDBIndex, compileId);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
 	}
 
+	public void delMaatRelationOld(Map<Integer, Map<Integer, List<Long>>> idMap) {
+		if (idMap != null && idMap.size() > 0) {
+			for (Integer redisDBIndex : idMap.keySet()) {
+				if (redisDBIndex >= 0 && redisDBIndex <= 15) {
+					MaatRelation maatRelation = CompileGroupRegionRela.getIdRelationMap().get(redisDBIndex);
+					Map<Integer, List<Long>> map = idMap.get(redisDBIndex);
+					if (map != null && map.size() > 0) {
+						for (Integer service : map.keySet()) {
+							List<Long> idList = map.get(service);
+							if (idList != null && idList.size() > 0) {
+								for (Long compileId : idList) {
+									// CompileGroupRegionRela.removKey(maatRelation, compileId);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
