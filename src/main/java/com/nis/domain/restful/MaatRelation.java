@@ -7,7 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+/**
+ * 
+ * <p>Title: MaatRelation</p>
+ * <p>Description: 描述:编译id,分组关系id,域配置id等的对应关系</p>
+ * <p>Company: IIE</p>
+ * @author rkg
+ * @date 2018年6月1日 
+ *
+ */
 public class MaatRelation implements Serializable {
 
 	private static final long serialVersionUID = 1L;

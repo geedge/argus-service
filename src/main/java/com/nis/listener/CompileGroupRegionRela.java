@@ -16,6 +16,7 @@ import org.springframework.web.context.ContextLoaderListener;
 import com.nis.domain.restful.CompileAndGroupRelations;
 import com.nis.domain.restful.GroupAndRegionRelations;
 import com.nis.domain.restful.MaatRelation;
+import com.nis.util.Configurations;
 import com.nis.web.service.SpringContextHolder;
 
 /**
@@ -34,7 +35,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		try {
-			for (int i = 0; i < 6; i++) {
+			for (int i = 0; i <Configurations.getIntProperty("maxRedisDBIndex", 6); i++) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate" + i);
 				getAllId(redisTemplate, i);
 			}

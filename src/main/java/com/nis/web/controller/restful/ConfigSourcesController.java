@@ -183,7 +183,7 @@ public class ConfigSourcesController extends BaseRestController {
 		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
 		long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
 		// int id=2;
-		configMap.put("cfg_id", seq_compileid + "");
+		configMap.put("compile_id", seq_compileid + "");
 		configMap.put("service", service + "");
 		configMap.put("action", "0");
 		configMap.put("do_blacklist", "1");
@@ -198,7 +198,7 @@ public class ConfigSourcesController extends BaseRestController {
 		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
 		Map<String, String> groupMap = new HashMap<String, String>();
 		groupMap.put("group_id", seq_groupid + "");
-		groupMap.put("cfg_id", seq_compileid + "");
+		groupMap.put("compile_id", seq_compileid + "");
 		groupMap.put("is_valid", "1");
 		groupMap.put("op_time", time);
 		groupMap.put("service", service + "");
