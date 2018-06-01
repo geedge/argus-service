@@ -50,7 +50,7 @@ public class ConfigPzIdService extends BaseLogService {
 		entity.setSourceName(entity.getSourceName().toUpperCase());
 		String seqName= StringUtil.isEmpty(sourceNameMap.get(entity.getSourceName()))?"SEQ_COMPILEID":sourceNameMap.get(entity.getSourceName());
 		for (int i = 0; i < entity.getNum(); i++) {
-			//pzIdList.add(dao.getConfigPzIdList(entity)); //直接从数据库序列号获取
+//			pzIdList.add(dao.getConfigPzIdList(entity)); //直接从数据库序列号获取
 			pzIdList.add(configRedisService.getIncrId(seqName));
 		}
 		entity.setPzIdList(pzIdList);

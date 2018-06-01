@@ -45,14 +45,14 @@
 		</p:expressions>
 	</p:maatType>
 
-	<p:maatType service="80;82;84;144;146;148">
+	<p:maatType service="3;15;80;82;84;144;146;148">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
+			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{group_table_name};,;[group_id]</p:keyExpression>
-			<p:valueExpression>[group_id];\t;[cfg_id];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[group_id];\t;[compile_id];\t;[is_valid];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{ip_region_table_name};,;[region_id]</p:keyExpression>
@@ -86,8 +86,8 @@
 
 	<p:maatType service="81;145">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
+			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{group_table_name};,;[group_id]</p:keyExpression>
@@ -128,12 +128,12 @@
 
 	<p:maatType service="83;85;147;149">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
+			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{group_table_name};,;[group_id]</p:keyExpression>
-			<p:valueExpression>[group_id];\t;[cfg_id];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[group_id];\t;[compile_id];\t;[is_valid];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{num_region_table_name};,;[region_id]</p:keyExpression>

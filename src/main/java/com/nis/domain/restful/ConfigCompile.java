@@ -33,35 +33,25 @@ public class ConfigCompile implements Serializable {
 	@ApiModelProperty(value = "配置ID", required = true)
 	private Long compileId;
 	@ApiModelProperty(value = "业务ID", required = true)
-	private Long service;
+	private Integer service;
 	@ApiModelProperty(value = "动作", required = true)
 	private Integer action;
-	@ApiModelProperty(value = "有害类型", required = false)
-	private Integer contType;
-	@ApiModelProperty(value = "有害性质", required = false)
-	private Integer attrType;
-	@ApiModelProperty(value = "内容标签", required = false)
+	@ApiModelProperty(value = "分类", required = false)
+	private String contType;
+	@ApiModelProperty(value = "性质", required = false)
+	private String attrType;
+	@ApiModelProperty(value = "标签", required = false)
 	private String contLabel;
 	@ApiModelProperty(value = "任务", required = false)
 	private Integer taskId;
-	@ApiModelProperty(value = "保障期", required = false)
-	private Integer guaranteeId;
-	@ApiModelProperty(value = "事件", required = false)
+	@ApiModelProperty(value = "来文函号ID", required = false)
 	private Integer affairId;
-	@ApiModelProperty(value = "子话题", required = false)
-	private Integer topicId;
 	@ApiModelProperty(value = "是否黑名单", required = true)
-	private Long doBlacklist;
+	private Integer doBlacklist;
 	@ApiModelProperty(value = "是否生成日志", required = true)
 	private Integer doLog;
 	@ApiModelProperty(value = "生效范围", required = true)
-	private Integer activeSys;
-	@ApiModelProperty(value = "生效系统", required = true)
 	private String effectiveRange;
-	@ApiModelProperty(value = "管控比例", required = true)
-	private Long configPercent;
-	@ApiModelProperty(value = "管控方式", required = true)
-	private Integer configOption;
 	@ApiModelProperty(value = "开始时间", required = true)
 	private Date startTime;
 	@ApiModelProperty(value = "结束时间", required = true)
@@ -76,13 +66,9 @@ public class ConfigCompile implements Serializable {
 	private Long fatherCfgId;
 	@ApiModelProperty(value = "操作时间", required = true)
 	private Date opTime;
-	@ApiModelProperty(value = "本地更新时间	", required = true)
-	private Date lastUpdate;
 
 	@ApiModelProperty(value = "编译分组关系列表", required = true)
 	private List<ConfigGroupRelation> groupRelationList;
-
-
 
 	@ApiModelProperty(value = "字符串域分组列表", access = "", required = true)
 	private List<StrRegion> strRegionList;
@@ -96,25 +82,9 @@ public class ConfigCompile implements Serializable {
 	@ApiModelProperty(value = "摘要域分组列表", required = true)
 	private List<DigestRegion> digestRegionList;
 	
-	@ApiModelProperty(value="版本序列号", required=true)
-	private Long procSeq;
+	@ApiModelProperty(value = "生效范围IP域分组列表", required = true)
+	private List<IpRegion> ipClientRangeList;
 	
-	@JsonIgnore
-	public Date getLastUpdate() {
-		return lastUpdate;
-	}
-
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdate = lastUpdate;
-	}
-	public Integer getActiveSys() {
-		return activeSys;
-	}
-
-	public void setActiveSys(Integer activeSys) {
-		this.activeSys = activeSys;
-	}
-
 	public Long getCompileId() {
 		return compileId;
 	}
@@ -126,7 +96,7 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return service
 	 */
-	public Long getService() {
+	public Integer getService() {
 		return service;
 	}
 
@@ -134,7 +104,7 @@ public class ConfigCompile implements Serializable {
 	 * @param service
 	 *            要设置的 service
 	 */
-	public void setService(Long service) {
+	public void setService(Integer service) {
 		this.service = service;
 	}
 
@@ -153,19 +123,19 @@ public class ConfigCompile implements Serializable {
 		this.action = action;
 	}
 
-	public Integer getContType() {
+	public String getContType() {
 		return contType;
 	}
 
-	public void setContType(Integer contType) {
+	public void setContType(String contType) {
 		this.contType = contType;
 	}
 
-	public Integer getAttrType() {
+	public String getAttrType() {
 		return attrType;
 	}
 
-	public void setAttrType(Integer attrType) {
+	public void setAttrType(String attrType) {
 		this.attrType = attrType;
 	}
 
@@ -180,7 +150,7 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return doBlackList
 	 */
-	public Long getDoBlacklist() {
+	public Integer getDoBlacklist() {
 		return doBlacklist;
 	}
 
@@ -188,7 +158,7 @@ public class ConfigCompile implements Serializable {
 	 * @param doBlackList
 	 *            要设置的 doBlackList
 	 */
-	public void setDoBlacklist(Long doBlacklist) {
+	public void setDoBlacklist(Integer doBlacklist) {
 		this.doBlacklist = doBlacklist;
 	}
 
@@ -222,35 +192,6 @@ public class ConfigCompile implements Serializable {
 		this.effectiveRange = effectiveRange;
 	}
 
-	/**
-	 * @return configPercent
-	 */
-	public Long getConfigPercent() {
-		return configPercent;
-	}
-
-	/**
-	 * @param configPercent
-	 *            要设置的 configPercent
-	 */
-	public void setConfigPercent(Long configPercent) {
-		this.configPercent = configPercent;
-	}
-
-	/**
-	 * @return configOption
-	 */
-	public Integer getConfigOption() {
-		return configOption;
-	}
-
-	/**
-	 * @param configOption
-	 *            要设置的 configOption
-	 */
-	public void setConfigOption(Integer configOption) {
-		this.configOption = configOption;
-	}
 
 	/**
 	 * @return startTime
@@ -437,14 +378,6 @@ public class ConfigCompile implements Serializable {
 		this.taskId = taskId;
 	}
 
-	public Integer getGuaranteeId() {
-		return guaranteeId;
-	}
-
-	public void setGuaranteeId(Integer guaranteeId) {
-		this.guaranteeId = guaranteeId;
-	}
-
 	public Integer getAffairId() {
 		return affairId;
 	}
@@ -453,19 +386,12 @@ public class ConfigCompile implements Serializable {
 		this.affairId = affairId;
 	}
 
-	public Integer getTopicId() {
-		return topicId;
+	public List<IpRegion> getIpClientRangeList() {
+		return ipClientRangeList;
 	}
 
-	public void setTopicId(Integer topicId) {
-		this.topicId = topicId;
+	public void setIpClientRangeList(List<IpRegion> ipClientRangeList) {
+		this.ipClientRangeList = ipClientRangeList;
 	}
-
-	@JsonIgnore
-	public Long getProcSeq() {
-		return procSeq;
-	}
-	public void setProcSeq(Long procSeq) {
-		this.procSeq = procSeq;
-	}
+	
 }
