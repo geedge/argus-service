@@ -35,6 +35,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	@Transactional
 	public boolean saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
+			int count = 0;
 			for (Integer redisDBIndex : configMap.keySet()) {
 				if (redisDBIndex >= 0 && redisDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 6)) {
 					RedisTemplate<String, String> redisTemplate = SpringContextHolder
@@ -132,13 +133,15 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 								}
 							}
 						}
-
+						redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+						logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
+								Integer.valueOf(maatVersionStr) + 1);
+						count++;
 					}
-					redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
-					logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
-							Integer.valueOf(maatVersionStr) + 1);
-					return true;
 				}
+			}
+			if (count == configMap.size()) {
+				return true;
 			}
 		}
 		return false;
@@ -203,6 +206,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	@Transactional
 	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
+			int count = 0;
 			for (Integer redisDBIndex : configMap.keySet()) {
 				if (redisDBIndex >= 0 && redisDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 6)) {
 					RedisTemplate<String, String> redisTemplate = SpringContextHolder
@@ -223,12 +227,15 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 									Integer.valueOf(maatVersionStr) + 1);
-							return true;
+							count++;
 						}
 
 					}
 
 				}
+			}
+			if (count == configMap.size()) {
+				return true;
 			}
 		}
 		return false;
@@ -408,6 +415,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	@Transactional
 	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
+			int count = 0;
 			for (Integer redisDBIndex : idMap.keySet()) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder
 						.getBean("redisTemplate" + redisDBIndex);
@@ -500,17 +508,20 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 										}
 									}
 								}
+								redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+								logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
+										Integer.valueOf(maatVersionStr) + 1);
+								count++;
 							}
 						}
-						redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
-						logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
-								Integer.valueOf(maatVersionStr) + 1);
-						return true;
+
 					}
 				}
 
 			}
-
+			if (count == idMap.size()) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -519,6 +530,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	@Transactional
 	public boolean delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
+			int count = 0;
 			for (Integer redisDBIndex : idMap.keySet()) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder
 						.getBean("redisTemplate" + redisDBIndex);
@@ -541,10 +553,13 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 									Integer.valueOf(maatVersionStr) + 1);
-							return true;
+							count++;
 						}
 					}
 				}
+			}
+			if (count == idMap.size()) {
+				return true;
 			}
 		}
 		return false;
