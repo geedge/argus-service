@@ -73,27 +73,28 @@ public class CompileVal {
 						+ CompileJudgeCode.GroupNumNEQGroupList.getErrorReason();
 			}
 
-//			int sizeCount = 0;
-//			if (configCompile.getIpRegionList() == null && configCompile.getStrRegionList() == null
-//					&& configCompile.getNumRegionList() == null) {
-//				return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-//						+ CompileJudgeCode.CompileNotNull.getErrorReason();
-//			} else {
-//				if (configCompile.getIpRegionList() != null) {
-//					sizeCount += configCompile.getIpRegionList().size();
-//				}
-//				if (configCompile.getStrRegionList() != null) {
-//					sizeCount += configCompile.getStrRegionList().size();
-//				}
-//				if (configCompile.getNumRegionList() != null) {
-//					sizeCount += configCompile.getNumRegionList().size();
-//				}
-//
-//				if (sizeCount == 0) {
-//					return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-//							+ CompileJudgeCode.CompileNotNull.getErrorReason();
-//				}
-//			}
+			// int sizeCount = 0;
+			// if (configCompile.getIpRegionList() == null &&
+			// configCompile.getStrRegionList() == null
+			// && configCompile.getNumRegionList() == null) {
+			// return "编译配置id为" + configCompile.getCompileId() + "的配置中"
+			// + CompileJudgeCode.CompileNotNull.getErrorReason();
+			// } else {
+			// if (configCompile.getIpRegionList() != null) {
+			// sizeCount += configCompile.getIpRegionList().size();
+			// }
+			// if (configCompile.getStrRegionList() != null) {
+			// sizeCount += configCompile.getStrRegionList().size();
+			// }
+			// if (configCompile.getNumRegionList() != null) {
+			// sizeCount += configCompile.getNumRegionList().size();
+			// }
+			//
+			// if (sizeCount == 0) {
+			// return "编译配置id为" + configCompile.getCompileId() + "的配置中"
+			// + CompileJudgeCode.CompileNotNull.getErrorReason();
+			// }
+			// }
 			if (!isUpdate) {
 				if (configCompile.getIsValid() != 1) {
 					return "编译配置id为" + configCompile.getCompileId() + "的配置在添加时不能为无效";
@@ -307,15 +308,14 @@ public class CompileVal {
 		}
 		List<DigestRegion> digestRegionList = configCompile.getDigestRegionList();
 
-		//不判断是否为空
-		
-		//验证
+		// 不判断是否为空
+
+		// 验证
 		if (digestRegionList != null && digestRegionList.size() > 0) {
 			for (DigestRegion digestRegion : digestRegionList) {
-				
-				//不验证表名和业务类型是否对应 
-				
-				
+
+				// 不验证表名和业务类型是否对应
+
 				if (!isUpdate && digestRegion.getIsValid() != 1) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionid为"
 							+ digestRegion.getRegionId() + "的域配置在添加时不能为无效";
@@ -360,14 +360,19 @@ public class CompileVal {
 	 */
 	public static boolean type2TableNameIsOk(Integer serviceType, String tableName) {
 		if (null != serviceType && null != tableName && !tableName.equals("")) {
-			Map<Integer, Map<String, String>> tableRelation = ConfigSourcesService.getTableRelation();
-			Map<String, String> map = tableRelation.get(serviceType.intValue());
-			if (null != map) {
-				if (map.containsKey(tableName.toUpperCase())) {
-					return true;
-				} else {
-					return false;
+			List<String> list = new ArrayList<String>();
+			Map<Integer, String> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(serviceType);
+			if (sercieNameMap != null && sercieNameMap.size() > 0) {
+				for (Integer type : sercieNameMap.keySet()) {
+					list.add(sercieNameMap.get(type).toLowerCase());
 				}
+
+			}
+			// Map<Integer, Map<String, String>> tableRelation =
+			// ConfigSourcesService.getTableRelation();
+			// Map<String, String> map = tableRelation.get(serviceType.intValue());
+			if (list.contains(tableName.toLowerCase())) {
+				return true;
 			} else {
 				return false;
 			}
@@ -569,7 +574,7 @@ public class CompileVal {
 		}
 		return "ok";
 	}
-	
+
 	public static String valDigestRegion(DigestRegion digestRegion, Long compileId) {
 		Long regionId = digestRegion.getRegionId();
 		if (null == regionId) {
@@ -636,19 +641,21 @@ public class CompileVal {
 					+ "的域配置direction的值不正确,只能是0或1";
 		}
 
-		//zdx protocol验证？
-//		if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
-//			if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
-//				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-//						+ "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
-//			}
-//		} else {
-//			if (ipRegion.getProtocol() != 0) {
-//				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置tableName为"
-//						+ ipRegion.getTableName() + "时,protocol的值只能是0";
-//			}
-//
-//		}
+		// zdx protocol验证？
+		// if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
+		// if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
+		// return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" +
+		// ipRegion.getRegionId()
+		// + "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
+		// }
+		// } else {
+		// if (ipRegion.getProtocol() != 0) {
+		// return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" +
+		// ipRegion.getRegionId() + "的域配置tableName为"
+		// + ipRegion.getTableName() + "时,protocol的值只能是0";
+		// }
+		//
+		// }
 		return "ok";
 	}
 
@@ -718,17 +725,17 @@ public class CompileVal {
 
 	}
 
-	
 	public static String serviceDigestRegionVal(DigestRegion digestRegion, Long compileId) {
 
 		Integer cfdsLevel = digestRegion.getCfdsLevel();
-		if (!(cfdsLevel>=1&&cfdsLevel<=10)) {
+		if (!(cfdsLevel >= 1 && cfdsLevel <= 10)) {
 			return "编译配置id为" + compileId + "的配置中digestRegionList中regionId为" + digestRegion.getRegionId()
 					+ "的域配置cfdsLevel的值只能是1到10";
 		}
 		return "ok";
 
 	}
+
 	/**
 	 * 禁配词业务校验
 	 * 

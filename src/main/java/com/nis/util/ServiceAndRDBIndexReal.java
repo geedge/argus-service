@@ -1,7 +1,6 @@
 package com.nis.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,4 +88,24 @@ public class ServiceAndRDBIndexReal {
 		}
 
 	}
+
+	public static Map<Integer, Map<Integer, String>> getSercieNameMap() {
+		return sercieNameMap;
+	}
+
+	public static void setSercieNameMap(Map<Integer, Map<Integer, String>> sercieNameMap) {
+		ServiceAndRDBIndexReal.sercieNameMap = sercieNameMap;
+	}
+
+	public static Map<Integer, List<Integer>> getServiceDBIndexmap() {
+		return serviceDBIndexmap;
+	}
+
+	public static void setServiceDBIndexmap(Map<Integer, List<Integer>> serviceDBIndexmap) {
+		ServiceAndRDBIndexReal.serviceDBIndexmap = serviceDBIndexmap;
+	}
+	
+	
+	
+	
 }
