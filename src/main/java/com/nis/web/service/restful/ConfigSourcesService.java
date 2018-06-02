@@ -1,10 +1,7 @@
 package com.nis.web.service.restful;
 
-import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,6 +40,7 @@ import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.MaatConfig;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
+import com.nis.domain.restful.UpdateStatConfig;
 import com.nis.restful.CompileJudgeCode;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -1125,7 +1123,6 @@ public class ConfigSourcesService extends BaseService {
 						RestBusinessCode.config_integrity_error.getValue());
 			}
 			
-			
 			if (!(null != configCompile.getGroupRelationList() && configCompile.getGroupRelationList().size() > 0)) {
 				logger1.error("配置分组数量不能为空" + sb.toString());
 				thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
@@ -1287,12 +1284,16 @@ public class ConfigSourcesService extends BaseService {
 				if (configMap.containsKey(dbIndex)) {
 					configMap.get(dbIndex).addAll(maatMap.get(service));
 				}else{
-					configMap.put(dbIndex, maatMap.get(service));
+					List<MaatConfig> list = new ArrayList<MaatConfig>();
+					list.addAll(maatMap.get(service));
+					configMap.put(dbIndex, list);
 				}
 			}
 		}
 		
-		configRedisService.saveMaatConfig(configMap);
+		if (configRedisService.saveMaatConfig(configMap)) {
+			configRedisService.addMaatRelation(configMap);
+		}
 		logger1.info("---------------调用maat配置新增接口---------------------");
 		
 		return "ok";
@@ -1324,8 +1325,9 @@ public class ConfigSourcesService extends BaseService {
 		return dstMap;
 	}
 	
-	public String cancleConfigSources(SaveRequestLogThread thread, long start, List<ConfigCompile> compileList,
+	public String updateConfigSources(SaveRequestLogThread thread, long start, List<ConfigCompile> compileList,
 								Date opTime, StringBuffer sb) {
+		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
 		List<ConfigCompile> compileAllList = new ArrayList<ConfigCompile>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
@@ -1339,7 +1341,14 @@ public class ConfigSourcesService extends BaseService {
 							RestBusinessCode.config_integrity_error.getValue());
 				}
 		
-				compileAllList.add(config);
+				//compileAllList.add(config);
+				if (compileMap.containsKey(config.getService())) {
+					compileMap.get(config.getService()).add(config.getCompileId());
+				} else {
+					List<Long> idList = new ArrayList<Long>();
+					idList.add(config.getCompileId());
+					compileMap.put(config.getService(), idList);
+				}
 			}
 		
 		} else {
@@ -1347,7 +1356,36 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置不能为空" + sb.toString(),
 					RestBusinessCode.config_integrity_error.getValue());
 		}
-		return "";
+		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
+		Iterator serviceIterator = compileMap.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service =Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			for (Integer dbIndex : dbIndexList) {
+				if (restMap.containsKey(dbIndex)) {
+					restMap.get(dbIndex).put(service, compileMap.get(service));
+				}else{
+					Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+					map.put(service, compileMap.get(service));
+					restMap.put(dbIndex, map);
+				}
+			}
+		}
+		try {
+			if(configRedisService.delMaatConfig(restMap)){
+				configRedisService.delMaatRelation(restMap);
+			}else{
+				RuntimeException e = new RuntimeException("不存在映射关系");
+				msgList.add(e);
+				return "error";
+			}
+		} catch (RuntimeException e) {
+			// TODO: handle exception
+			logger1.error(e.getMessage());
+			msgList.add(e);
+			return "error";
+		}
+		return "ok";
 	}
 	public String saveByJDBCThread(SaveRequestLogThread thread, long start, List<ConfigCompile> configCompileList,
 			StringBuffer sb) {
@@ -2517,11 +2555,77 @@ public class ConfigSourcesService extends BaseService {
 				if (configMap.containsKey(dbIndex)) {
 					configMap.get(dbIndex).addAll(dstMaps.get(service));
 				}else{
-					configMap.put(dbIndex, dstMaps.get(service));
+					List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+					list.addAll(dstMaps.get(service));
+					configMap.put(dbIndex, list);
+				}
+			}
+			
+		}
+		
+		configRedisService.saveUnMaatConfig(configMap);
+		
+		return "ok";
+	}
+	public String updateCommonSources(SaveRequestLogThread thread, long start, List<UpdateStatConfig> updateStatCfgList,
+			Date opTime, StringBuffer sb) {
+		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
+		if (null != updateStatCfgList && updateStatCfgList.size() > 0) {
+			for (UpdateStatConfig config : updateStatCfgList) {
+				String msg = checkOptForUpdate(config);
+				if (!msg.equals("ok")) {
+					thread.setExceptionInfo(msg + sb.toString());
+					throw new RestServiceException(thread, System.currentTimeMillis() - start, msg + sb.toString(),
+							RestBusinessCode.config_integrity_error.getValue());
+				}
+				if (cfgMap.containsKey(config.getService())) {
+					cfgMap.get(config.getService()).add(config.getCfgId());
+				} else {
+					List<Long> idList = new ArrayList<Long>();
+					idList.add(config.getCfgId());
+					cfgMap.put(config.getService(), idList);
+				}
+			}
+		
+		} else {
+			thread.setExceptionInfo("配置列表不能为空" + sb.toString());
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "配置列表不能为空" + sb.toString(),
+			RestBusinessCode.config_integrity_error.getValue());
+		}
+		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
+		Iterator serviceIterator = cfgMap.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service =Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			for (Integer dbIndex : dbIndexList) {
+				if (restMap.containsKey(dbIndex)) {
+					restMap.get(dbIndex).put(service, cfgMap.get(service));
+				}else{
+					Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+					map.put(service, cfgMap.get(service));
+					restMap.put(dbIndex, map);
 				}
 			}
 		}
-		configRedisService.saveUnMaatConfig(configMap);
+		configRedisService.delUnMaatConfig(restMap);
+		
+		return "ok";
+	}
+	private String checkOptForUpdate(UpdateStatConfig config) {
+		if (StringUtil.isEmpty(config.getCfgId())) {
+			return "cfgId字段不能为空";
+		}
+		
+		if (StringUtil.isEmpty(config.getService())) {
+			return "service字段不能为空";
+		}
+		
+		if (StringUtil.isEmpty(config.getIsValid())) {
+			return "配置id为" + config.getCfgId()+"的IsValid字段不能为空";
+		}
+		if (config.getIsValid() != 0) {
+			return "配置id为" + config.getCfgId() + "的配置在修改时不能为有效";
+		}
 		
 		return "ok";
 	}

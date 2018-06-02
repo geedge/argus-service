@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.security.MessageDigest;
 import java.util.Enumeration;
 
 import javax.servlet.ServletOutputStream;
@@ -727,5 +728,37 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				out=null;
 			}
 		}
+	}
+	/**
+	 * 计算文件MD5
+	 * @param file
+	 * @return
+	 */
+	public static String getFileMD5(File file){
+		if(!file.isFile()){
+			return "";
+		}
+		String md5 = "";  
+		MessageDigest digest=null;
+		FileInputStream in=null;
+		byte[] buffer=new byte[1024];
+		int len;
+		try{
+			digest=MessageDigest.getInstance("MD5");
+			in=new FileInputStream(file);
+			while ((len=in.read(buffer,0,1024)) !=-1) {
+					digest.update(buffer,0,len);
+			}
+			in.close();
+		}catch(Exception e){
+			e.printStackTrace();
+			return "";
+		}
+		byte[] b = digest.digest();
+		for (int i=0; i < b.length; i++) {  
+			md5 += Integer.toString( (b[i] & 0xff ) + 0x100, 16).substring(1);//加0x100是因为有的b[i]的十六进制只有1位  
+		}
+//		BigInteger bigInt=new BigInteger(1,digest.digest());
+		return md5;
 	}
 }

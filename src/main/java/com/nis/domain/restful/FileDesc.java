@@ -14,10 +14,33 @@ import java.util.Date;
  */
 public class FileDesc {
 
+	/**
+	 * 文件格式类型
+	 */
 	private String filetype;
+	/**
+	 * 文件数据类型
+	 */
+	private String dataType;
+	/**
+	 * fileSystem
+	 */
+	private String fileSystem;
+	/**
+	 * 文件创建时间，UTC时间格式
+	 */
 	private Date createTime;
+	/**
+	 * 文件惟一key
+	 */
 	private String key;
+	/**
+	 *文件名称
+	 */
 	private String fileName;
+	/**
+	 * 文件md5校验码
+	 */
 	private String checksum;
 	/**
 	 * 
