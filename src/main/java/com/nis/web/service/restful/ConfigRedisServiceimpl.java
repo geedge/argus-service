@@ -716,9 +716,9 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 				if (groupSet != null && groupSet.size() > 0) {
 					for (Long groupId : groupSet) {
 						Set<Long> set = maatRelation.getGroupAndCompileMap().get(groupId);// 获取组对应的编译id
-						if (set != null && set.size() == 0) {// 如果只有一个编译id且与上面的编译id相同则说明未被分组复用,可以将其下的所有域置失效,否则不处理域配置,只把编译,分组关系置为无效
+						if (set != null && set.size() != 0) {// 如果只有一个编译id且与上面的编译id相同则说明未被分组复用,可以将其下的所有域置失效,否则不处理域配置,只把编译,分组关系置为无效
 							for (Long compileId : set) {
-								if (compileId == id) {//
+								if (compileId.longValue() == id.longValue()) {//
 									Set<String> regionIdSet = maatRelation.getGroupAndRegionMap().get(groupId);
 									if (regionIdSet != null && regionIdSet.size() > 0) {
 										removeRegionConfig(maatXmlConfig, regionIdSet, 12, maatVersion.doubleValue(),
