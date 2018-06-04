@@ -18,6 +18,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.sf.json.JSONObject;
+
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -38,7 +40,6 @@ import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.MaatConfig;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
-import com.nis.domain.restful.UpdateStatConfig;
 import com.nis.restful.CompileJudgeCode;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -60,8 +61,6 @@ import com.nis.web.dao.StrRegionDao;
 import com.nis.web.service.BaseService;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.SpringContextHolder;
-
-import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ControlService
@@ -2566,31 +2565,40 @@ public class ConfigSourcesService extends BaseService {
 		
 		return "ok";
 	}
-	public String updateCommonSources(SaveRequestLogThread thread, long start, List<UpdateStatConfig> updateStatCfgList,
+	public String updateCommonSources(SaveRequestLogThread thread, long start,String jsonString,
 			Date opTime, StringBuffer sb) {
-		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
-		if (null != updateStatCfgList && updateStatCfgList.size() > 0) {
-			for (UpdateStatConfig config : updateStatCfgList) {
-				String msg = checkOptForUpdate(config);
-				if (!msg.equals("ok")) {
-					thread.setExceptionInfo(msg + sb.toString());
-					throw new RestServiceException(thread, System.currentTimeMillis() - start, msg + sb.toString(),
-							RestBusinessCode.config_integrity_error.getValue());
-				}
-				if (cfgMap.containsKey(config.getService())) {
-					cfgMap.get(config.getService()).add(config.getCfgId());
-				} else {
-					List<Long> idList = new ArrayList<Long>();
-					idList.add(config.getCfgId());
-					cfgMap.put(config.getService(), idList);
-				}
-			}
-		
-		} else {
-			thread.setExceptionInfo("配置列表不能为空" + sb.toString());
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "配置列表不能为空" + sb.toString(),
-			RestBusinessCode.config_integrity_error.getValue());
+		JsonArray jsonObjectList = null;
+		try {
+			jsonObjectList = new JsonParser().parse(jsonString).getAsJsonArray();
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger1.error(e.getMessage());
+			thread.setExceptionInfo(e.getMessage() + sb.toString());
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, e.getMessage() + sb.toString(),
+					RestBusinessCode.config_integrity_error.getValue());
 		}
+		//<service,cfgIdList>
+		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
+		for (int i = 0; i < jsonObjectList.size(); i++) {
+			JsonObject jsonObj=(JsonObject) jsonObjectList.get(i);
+			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject.fromObject((jsonObj.toString())));
+			String msg = checkOptForUpdate(srcMap);
+			if (!msg.equals("ok")) {
+				thread.setExceptionInfo(msg + sb.toString());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start, msg + sb.toString(),
+						RestBusinessCode.config_integrity_error.getValue());
+			}
+			Integer service = Integer.valueOf(srcMap.get("service").toString());
+			Long cfgId = Long.valueOf(srcMap.get("cfgId").toString());
+			if (cfgMap.containsKey(service)) {
+				cfgMap.get(service).add(cfgId);
+			} else {
+				List<Long> idList = new ArrayList<Long>();
+				idList.add(cfgId);
+				cfgMap.put(service, idList);
+			}
+		}
+		
 		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 		Iterator serviceIterator = cfgMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
@@ -2610,22 +2618,31 @@ public class ConfigSourcesService extends BaseService {
 		
 		return "ok";
 	}
-	private String checkOptForUpdate(UpdateStatConfig config) {
-		if (StringUtil.isEmpty(config.getCfgId())) {
+	private String checkOptForUpdate(Map<String, Object> srcMap) {
+		String cfgId = srcMap.get("cfgId").toString();
+		String service = srcMap.get("service").toString();
+		String isValid = srcMap.get("isValid").toString();
+		if (StringUtil.isEmpty(cfgId)) {
 			return "cfgId字段不能为空";
+		}else if(!StringUtil.isNumeric(cfgId)){
+			return "cfgId字段格式不正确";
 		}
 		
-		if (StringUtil.isEmpty(config.getService())) {
+		if (StringUtil.isEmpty(service)) {
 			return "service字段不能为空";
+		}else if(!StringUtil.isNumeric(service)){
+			return "service字段格式不正确";
 		}
 		
-		if (StringUtil.isEmpty(config.getIsValid())) {
-			return "配置id为" + config.getCfgId()+"的IsValid字段不能为空";
+		if (StringUtil.isEmpty(isValid)) {
+			return "配置id为" + srcMap.get("cfgId")+"的isValid字段不能为空";
+		}else {
+			if(!StringUtil.isNumeric(service)){
+				return "isValid字段格式不正确";
+			}else if(!isValid.equals("0")){
+				return "isValid字段取值只能是0(失效)";
+			}
 		}
-		if (config.getIsValid() != 0) {
-			return "配置id为" + config.getCfgId() + "的配置在修改时不能为有效";
-		}
-		
 		return "ok";
 	}
 	private boolean isIp(String ipStr){

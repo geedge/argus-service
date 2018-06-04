@@ -24,13 +24,18 @@ public class ServiceAndRDBIndexReal {
 	 * key是业务类型,value是业务类型对应的redisdbIndex
 	 */
 	private static Map<Integer, List<Integer>> serviceDBIndexmap = new HashMap<Integer, List<Integer>>();
-
+	/**
+	 * key是业务类型,value是业务类型对应的动作(action)
+	 */
+	private static Map<Integer, Integer> serviceActionMap = new HashMap<Integer, Integer>();
 	static {
 		String service = Configurations.getStringProperty("service", "");
 		if (service != null && !service.trim().equals("")) {
 			String[] split = service.split(";");
 			for (String str : split) {
-				String type = Configurations.getStringProperty(str, "");
+				String[] serviceAction = str.split(":");
+				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+				String type = Configurations.getStringProperty(serviceAction[0], "");
 				if (type != null && !type.trim().equals("")) {
 					Map<Integer, String> typeMap = new HashMap<Integer, String>();
 					String[] typeArrs = type.split(";");
@@ -41,7 +46,7 @@ public class ServiceAndRDBIndexReal {
 							typeMap.put(Integer.parseInt(typeArr[0]), tableName.toUpperCase());
 						}
 					}
-					sercieNameMap.put(Integer.parseInt(str), typeMap);
+					sercieNameMap.put(Integer.parseInt(serviceAction[0]), typeMap);
 				}
 
 			}
@@ -88,7 +93,10 @@ public class ServiceAndRDBIndexReal {
 		}
 
 	}
-
+	public static Integer getActionByService(Integer service) {
+		return serviceActionMap.get(service);
+	}
+	
 	public static Map<Integer, Map<Integer, String>> getSercieNameMap() {
 		return sercieNameMap;
 	}

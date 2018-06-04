@@ -681,9 +681,11 @@ public class CompileVal {
 
 	public static String serviceConfigCompileVal(ConfigCompile configCompile) {
 		Long compileId = configCompile.getCompileId();
-		if (configCompile.getAction() != 1 && configCompile.getAction() != 2 && configCompile.getAction() != 5
-				&& configCompile.getAction() != 6 && configCompile.getAction() != 7) {
-			return "编译配置id为" + compileId + "的配置中action的值只能是1(阻断),2(监测),5(封堵白名单),6(监测白名单),7(封堵监测都白名单)";
+		Integer action = ServiceAndRDBIndexReal.getActionByService(configCompile.getService());
+		if (StringUtil.isEmpty(action)){
+			return "编译配置id为" + compileId + "的配置中service的值为"+configCompile.getService()+"时action不存在";
+		}else if(action.compareTo(configCompile.getAction())!=0) {
+			return "编译配置id为" + compileId + "的配置中service的值为"+configCompile.getService()+"时action只能为"+action;
 		}
 		if (configCompile.getDoBlacklist() != 1) {
 			return "编译配置id为" + compileId + "的配置中doBlacklist的值只能是1";
