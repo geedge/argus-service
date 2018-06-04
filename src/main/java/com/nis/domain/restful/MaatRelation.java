@@ -31,7 +31,7 @@ public class MaatRelation implements Serializable {
 	/**
 	 * groupid与regionid的对应关系,key是groupid,value使用set不允许重复
 	 */
-	private Map<Long, Set<Long>> groupAndRegionMap;
+	private Map<Long, Set<String>> groupAndRegionMap;
 
 	public Map<Long, Set<Long>> getCompileAndGroupMap() {
 		return compileAndGroupMap;
@@ -49,11 +49,11 @@ public class MaatRelation implements Serializable {
 		this.groupAndCompileMap = groupAndCompileMap;
 	}
 
-	public Map<Long, Set<Long>> getGroupAndRegionMap() {
+	public Map<Long, Set<String>> getGroupAndRegionMap() {
 		return groupAndRegionMap;
 	}
 
-	public void setGroupAndRegionMap(Map<Long, Set<Long>> groupAndRegionMap) {
+	public void setGroupAndRegionMap(Map<Long, Set<String>> groupAndRegionMap) {
 		this.groupAndRegionMap = groupAndRegionMap;
 	}
 
@@ -120,10 +120,10 @@ public class MaatRelation implements Serializable {
 				System.out.println("组:" + group + "编译:" + compile);
 			}
 		}
-		Map<Long, Set<Long>> getGroupAndRegionMap = maatRelation.getGroupAndRegionMap();
+		Map<Long, Set<String>> getGroupAndRegionMap = maatRelation.getGroupAndRegionMap();
 		for (Long group : getGroupAndRegionMap.keySet()) {
-			Set<Long> regionList = getGroupAndRegionMap.get(group);
-			for (Long region : regionList) {
+			Set<String> regionList = getGroupAndRegionMap.get(group);
+			for (String region : regionList) {
 				System.out.println("组:" + group + "域:" + region);
 			}
 		}
@@ -162,12 +162,12 @@ public class MaatRelation implements Serializable {
 		List<GroupAndRegionRelations> groupIdList = new ArrayList<GroupAndRegionRelations>();
 		GroupAndRegionRelations gRR = new GroupAndRegionRelations();
 		gRR.setGroupId(100L);
-		gRR.setRegionId(200L);
+		gRR.setRegionId("200");
 		groupIdList.add(gRR);
 
 		gRR = new GroupAndRegionRelations();
 		gRR.setGroupId(100L);
-		gRR.setRegionId(300L);
+		gRR.setRegionId("300");
 		groupIdList.add(gRR);
 		cGR.setGroupIdList(groupIdList);
 		return cGR;
@@ -200,10 +200,10 @@ public class MaatRelation implements Serializable {
 						groupAndCompileMap2.get(gRR.getGroupId()).add(compileId);
 					}
 				}
-				Map<Long, Set<Long>> groupAndRegionMap2 = maatRelation.getGroupAndRegionMap();
+				Map<Long, Set<String>> groupAndRegionMap2 = maatRelation.getGroupAndRegionMap();
 				if (groupAndRegionMap2 != null && groupAndRegionMap2.size() > 0) {
 					if (!groupAndRegionMap2.containsKey(gRR.getGroupId())) {
-						Set<Long> set = new HashSet<Long>();
+						Set<String> set = new HashSet<String>();
 						set.add(gRR.getRegionId());
 						groupAndRegionMap2.put(gRR.getGroupId(), set);
 					} else {
@@ -230,11 +230,11 @@ public class MaatRelation implements Serializable {
 		list.add(2l);
 		groupAndCompileMap.put(1l, list);
 		// Map<Long, List<Long>> regionAndGroupMap = new HashMap<Long, List<Long>>();
-		list = new HashSet<Long>();
-		list.add(1l);
+		Set<String> 	list2 = new HashSet<String>();
+		list2.add("1");
 		// regionAndGroupMap.put(1l, list);
-		Map<Long, Set<Long>> groupAndRegionMap = new HashMap<Long, Set<Long>>();
-		groupAndRegionMap.put(1l, list);
+		Map<Long, Set<String>> groupAndRegionMap = new HashMap<Long, Set<String>>();
+		groupAndRegionMap.put(1l, list2);
 		maatRelation.setCompileAndGroupMap(compileAndGroupMap);
 		maatRelation.setGroupAndCompileMap(groupAndCompileMap);
 		maatRelation.setGroupAndRegionMap(groupAndRegionMap);

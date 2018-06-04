@@ -46,7 +46,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 
 	private void getAllId(RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
 		Map<Long, Set<Long>> groupCompileIdMap = new ConcurrentHashMap<Long, Set<Long>>();
-		Map<Long, Set<Long>> groupRegionIdMap = new ConcurrentHashMap<Long, Set<Long>>();
+		Map<Long, Set<String>> groupRegionIdMap = new ConcurrentHashMap<Long, Set<String>>();
 		Set<String> keySet = redisTemplate.keys("EFFECTIVE_RULE:*");
 		if (keySet != null && keySet.size() > 0) {
 			for (String keys : keySet) {
@@ -66,14 +66,24 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 							}
 
 						} else {
+//							String[] split = value.split("\t");
+//							String regionIdStr = split[0];
+//							String groupIdStr = split[1];
+//							if (groupRegionIdMap.containsKey(Long.valueOf(groupIdStr))) {
+//								groupRegionIdMap.get(Long.valueOf(groupIdStr)).add(Long.valueOf(regionIdStr));
+//							} else {
+//								Set<Long> list = new HashSet<Long>();
+//								list.add(Long.valueOf(regionIdStr));
+//								groupRegionIdMap.put(Long.valueOf(groupIdStr), list);
+//							}
 							String[] split = value.split("\t");
-							String regionIdStr = split[0];
+							//String regionIdStr = split[0];
 							String groupIdStr = split[1];
 							if (groupRegionIdMap.containsKey(Long.valueOf(groupIdStr))) {
-								groupRegionIdMap.get(Long.valueOf(groupIdStr)).add(Long.valueOf(regionIdStr));
+								groupRegionIdMap.get(Long.valueOf(groupIdStr)).add(keys);
 							} else {
-								Set<Long> list = new HashSet<Long>();
-								list.add(Long.valueOf(regionIdStr));
+								Set<String> list = new HashSet<String>();
+								list.add(keys);
 								groupRegionIdMap.put(Long.valueOf(groupIdStr), list);
 							}
 						}
@@ -106,7 +116,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 					groupAndCompileMap.put(groupId, compileIdList);
 				}
 
-				Map<Long, Set<Long>> groupAndRegionMap = maatRelation.getGroupAndRegionMap();
+				Map<Long, Set<String>> groupAndRegionMap = maatRelation.getGroupAndRegionMap();
 				if (groupAndRegionMap.containsKey(groupId)) {
 					groupAndRegionMap.get(groupId).addAll(groupRegionIdMap.get(groupId));
 				} else {
@@ -133,7 +143,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 				groupAndCompileMap.put(groupId, compileIdList);
 				maatRelation.setGroupAndCompileMap(groupAndCompileMap);
 
-				Map<Long, Set<Long>> groupAndRegionMap = new ConcurrentHashMap<Long, Set<Long>>();
+				Map<Long, Set<String>> groupAndRegionMap = new ConcurrentHashMap<Long, Set<String>>();
 				groupAndRegionMap.put(groupId, groupRegionIdMap.get(groupId));
 				maatRelation.setGroupAndRegionMap(groupAndRegionMap);
 				idRelationMap.put(redisDBIndex, maatRelation);
@@ -263,18 +273,18 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 
 					maatRelation.setGroupAndCompileMap(groupAndCompileMap);
 				}
-				Map<Long, Set<Long>> groupAndRegionMap2 = maatRelation.getGroupAndRegionMap();
+				Map<Long, Set<String>> groupAndRegionMap2 = maatRelation.getGroupAndRegionMap();
 				if (groupAndRegionMap2 != null && groupAndRegionMap2.size() > 0) {
 					if (!groupAndRegionMap2.containsKey(gRR.getGroupId())) {
-						Set<Long> set = new HashSet<Long>();
+						Set<String> set = new HashSet<String>();
 						set.add(gRR.getRegionId());
 						groupAndRegionMap2.put(gRR.getGroupId(), set);
 					} else {
 						groupAndRegionMap2.get(gRR.getGroupId()).add(gRR.getRegionId());
 					}
 				} else {
-					Map<Long, Set<Long>> groupAndRegionMap = new ConcurrentHashMap<Long, Set<Long>>();
-					Set<Long> set = new HashSet<Long>();
+					Map<Long, Set<String>> groupAndRegionMap = new ConcurrentHashMap<Long, Set<String>>();
+					Set<String> set = new HashSet<String>();
 					set.add(gRR.getRegionId());
 					groupAndRegionMap.put(gRR.getGroupId(), set);
 					maatRelation.setGroupAndRegionMap(groupAndRegionMap);
@@ -306,10 +316,10 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 				System.out.println("组:" + group + "编译:" + compile);
 			}
 		}
-		Map<Long, Set<Long>> getGroupAndRegionMap = maatRelation.getGroupAndRegionMap();
+		Map<Long, Set<String>> getGroupAndRegionMap = maatRelation.getGroupAndRegionMap();
 		for (Long group : getGroupAndRegionMap.keySet()) {
-			Set<Long> regionList = getGroupAndRegionMap.get(group);
-			for (Long region : regionList) {
+			Set<String> regionList = getGroupAndRegionMap.get(group);
+			for (String region : regionList) {
 				System.out.println("组:" + group + "域:" + region);
 			}
 		}
