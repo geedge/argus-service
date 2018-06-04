@@ -27,7 +27,6 @@ import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigSource;
 import com.nis.domain.restful.FileDesc;
 import com.nis.domain.restful.MaatConfig;
-import com.nis.domain.restful.UpdateStatConfigSource;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
@@ -503,19 +502,17 @@ public class ConfigSourcesController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PUT)
 	@ApiOperation(value = "回调配置状态修改", httpMethod = "PUT", response = Map.class, notes = "回调配置状态修改服务")
 	@ApiParam(value = "回调配置状态修改", name = "updateStatConfigSource", required = true)
-	public Map updateCommonConfigSource(@RequestBody UpdateStatConfigSource updateStatConfigSource,
-			HttpServletRequest request, HttpServletResponse response) {
+	public Map updateCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
-				updateStatConfigSource);
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,jsonString);
 		StringBuffer sb = new StringBuffer();
+		
+		configSourcesService.updateCommonSources(thread, start,jsonString, new Date(),sb);
 
-		configSourcesService.updateCommonSources(thread, start, updateStatConfigSource.getUpdateStatCfgList(),
-				new Date(), sb);
-
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置状态修改成功",
-				Constants.IS_DEBUG ? updateStatConfigSource : null);
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"配置状态修改成功" , Constants.IS_DEBUG ?  jsonString : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/fileUploadSources", method = RequestMethod.POST)
@@ -564,8 +561,8 @@ public class ConfigSourcesController extends BaseRestController {
 			e.printStackTrace();
 		}
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
-		// jsonObj.put("accessUrl", "filePath");
+//		jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
+		jsonObj.put("accessUrl", "filePath");
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "文件上传成功", jsonObj);
 	}
 
@@ -606,7 +603,8 @@ public class ConfigSourcesController extends BaseRestController {
 				// meta_list[4] = new NameValuePair("fileMd5", md5);
 				logger.info("-----------------调用接口上传文件---------------");
 				String filePath = FileManager.upload(fdsfile, null);
-				resultObject.put("path", filePath.substring(filePath.indexOf("group")));
+//				resultObject.put("path", filePath.substring(filePath.indexOf("group")));
+				resultObject.put("path", filePath);
 			}
 
 			CommonsMultipartFile filetemp = (CommonsMultipartFile) file;
