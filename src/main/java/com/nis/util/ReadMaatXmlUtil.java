@@ -45,6 +45,7 @@ public class ReadMaatXmlUtil {
 	static {
 		readXml();
 	}
+
 	public static void main(String[] args) {
 		try {
 			// validateXmlByXSD();
@@ -54,13 +55,13 @@ public class ReadMaatXmlUtil {
 				MaatXmlConfig maatXmlConfig = map.get(key);
 				List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
 				for (MaatXmlExpr maatXmlExpr : expressionList) {
-					System.out.println("service=" + key + "    key="
-							+ maatXmlExpr.getKeyExpression() + "   value=" + maatXmlExpr.getValueExpression());
+					System.out.println("service=" + key + "    key=" + maatXmlExpr.getKeyExpression() + "   value="
+							+ maatXmlExpr.getValueExpression());
 				}
 				List<MaatXmlSeq> sequenceList = maatXmlConfig.getSequenceList();
 				for (MaatXmlSeq maatXmlSeq : sequenceList) {
-					System.out.println("service=" + key + "     key="
-							+ maatXmlSeq.getSequenceKey() + "   operation=" + maatXmlSeq.getOperation());
+					System.out.println("service=" + key + "     key=" + maatXmlSeq.getSequenceKey() + "   operation="
+							+ maatXmlSeq.getOperation());
 				}
 			}
 
@@ -94,9 +95,9 @@ public class ReadMaatXmlUtil {
 										if (ele.getName().toLowerCase().equals("operation")) {
 											maatXmlSeq.setOperation(Integer.parseInt(ele.getTextTrim()));
 										}
-//										if (ele.getName().toLowerCase().equals("redisdb")) {
-//											maatXmlSeq.setRedisDB(Integer.parseInt(ele.getTextTrim()));
-//										}
+										// if (ele.getName().toLowerCase().equals("redisdb")) {
+										// maatXmlSeq.setRedisDB(Integer.parseInt(ele.getTextTrim()));
+										// }
 										if (ele.getName().toLowerCase().equals("sequencekey")) {
 											maatXmlSeq.setSequenceKey(ele.getTextTrim());
 										}
@@ -129,16 +130,16 @@ public class ReadMaatXmlUtil {
 												maatXmlExpr.setType(17);
 											} else if (ele.getTextTrim().contains("ip_client_range_table_name")) {
 												maatXmlExpr.setType(18);
-											} else {
+											} else if (ele.getTextTrim().contains("un_maat_table_name")) {
 												maatXmlExpr.setType(0);
 											}
 										}
 										if (ele.getName().toLowerCase().equals("valueexpression")) {
 											maatXmlExpr.setValueExpression(ele.getTextTrim());
 										}
-//										if (ele.getName().toLowerCase().equals("redisdb")) {
-//											maatXmlExpr.setRedisDB(Integer.parseInt(ele.getTextTrim()));
-//										}
+										// if (ele.getName().toLowerCase().equals("redisdb")) {
+										// maatXmlExpr.setRedisDB(Integer.parseInt(ele.getTextTrim()));
+										// }
 
 									}
 									exprList.add(maatXmlExpr);

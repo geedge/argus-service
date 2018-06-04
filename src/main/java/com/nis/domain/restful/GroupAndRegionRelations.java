@@ -14,17 +14,17 @@ public class GroupAndRegionRelations implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private Long groupId;
-	private Long regionId;
+	private String regionId;
 	public Long getGroupId() {
 		return groupId;
 	}
 	public void setGroupId(Long groupId) {
 		this.groupId = groupId;
 	}
-	public Long getRegionId() {
+	public String getRegionId() {
 		return regionId;
 	}
-	public void setRegionId(Long regionId) {
+	public void setRegionId(String regionId) {
 		this.regionId = regionId;
 	}
 

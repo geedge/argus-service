@@ -5,6 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.nis.web.service.restful.ConfigRedisServiceimpl;
+
 /**
  * 
  * <p>Title: ServiceAndRDBIndexReal</p>
@@ -15,7 +20,7 @@ import java.util.Map;
  *
  */
 public class ServiceAndRDBIndexReal {
-
+	private static Logger logger = LoggerFactory.getLogger(ServiceAndRDBIndexReal.class);
 	/**
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
 	 */
@@ -42,7 +47,7 @@ public class ServiceAndRDBIndexReal {
 			for (String str : split) {
 				String[] serviceAction = str.split(":");
 				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
-				
+
 				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
 				if (serviceType != null && !serviceType.trim().equals("")) {
 					String[] typeArrs = serviceType.split(";");
@@ -108,19 +113,45 @@ public class ServiceAndRDBIndexReal {
 	}
 
 	/**
-	 * 根据业务类型和具体的type获取对应的表名
+	 * 根据业务类型和具体的type获取maat类型对应的表名
 	 * @param service 业务类型
 	 * @param type 10代表是编译配置,11代表是分组配置,12代表是ip类域配置,13代表是数值类配置,14代表是字符串类域配置,15代表是增强字符串类域配置
 	 * @return
 	 */
-	public static String getTableName(int service, int type) {
+	public static String getMaatTableName(int service, int type, String tableName) {
 		Map<Integer, String> typeMap = sercieNameMap.get(service);
 		if (typeMap != null && typeMap.size() > 0) {
-			return typeMap.get(type);
-		} else {
-			return "";
-		}
+			if (tableName == null || tableName.trim().equals("")) {
+				return typeMap.get(type);
+			} else {
+				String tableNames = typeMap.get(type);
+				String[] split = tableNames.split(",");
+				for (String str : split) {
+					if (str.toLowerCase().contains(tableName.toLowerCase())) {
+						return str;
+					} else {
+						logger.error(
+								"未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名",service,type,tableName);
+					}
+				}
 
+			}
+
+		}
+		return null;
+
+	}
+
+	/**
+	 * 根据业务类型获取unmaat配置表名
+	 * @param service
+	 * @return
+	 */
+	public static String getUnMaatTableName(int service) {
+		if (unMaatSercieNameMap != null && unMaatSercieNameMap.size() > 0) {
+			return unMaatSercieNameMap.get(service);
+		}
+		return null;
 	}
 
 	public static Integer getActionByService(Integer service) {
