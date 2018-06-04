@@ -1282,14 +1282,20 @@ public class ConfigSourcesService extends BaseService {
 		while (serviceIterator.hasNext()) {
 			Integer service =Integer.valueOf(serviceIterator.next().toString());
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			for (Integer dbIndex : dbIndexList) {
-				if (configMap.containsKey(dbIndex)) {
-					configMap.get(dbIndex).addAll(maatMap.get(service));
-				}else{
-					List<MaatConfig> list = new ArrayList<MaatConfig>();
-					list.addAll(maatMap.get(service));
-					configMap.put(dbIndex, list);
+			if (!StringUtil.isEmpty(dbIndexList)&&dbIndexList.size()>0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (configMap.containsKey(dbIndex)) {
+						configMap.get(dbIndex).addAll(maatMap.get(service));
+					}else{
+						List<MaatConfig> list = new ArrayList<MaatConfig>();
+						list.addAll(maatMap.get(service));
+						configMap.put(dbIndex, list);
+					}
 				}
+			}else {
+				RuntimeException e = new RuntimeException("service与写入数据库序号映射关系不存在");
+				msgList.add(e);
+				return "error";
 			}
 		}
 		
@@ -1362,14 +1368,20 @@ public class ConfigSourcesService extends BaseService {
 		while (serviceIterator.hasNext()) {
 			Integer service =Integer.valueOf(serviceIterator.next().toString());
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			for (Integer dbIndex : dbIndexList) {
-				if (restMap.containsKey(dbIndex)) {
-					restMap.get(dbIndex).put(service, compileMap.get(service));
-				}else{
-					Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-					map.put(service, compileMap.get(service));
-					restMap.put(dbIndex, map);
+			if (!StringUtil.isEmpty(dbIndexList)&&dbIndexList.size()>0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (restMap.containsKey(dbIndex)) {
+						restMap.get(dbIndex).put(service, compileMap.get(service));
+					}else{
+						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+						map.put(service, compileMap.get(service));
+						restMap.put(dbIndex, map);
+					}
 				}
+			}else {
+				RuntimeException e = new RuntimeException("service值为"+service+",与写入数据库序号映射关系不存在");
+				msgList.add(e);
+				return "error";
 			}
 		}
 		try {
@@ -2552,14 +2564,20 @@ public class ConfigSourcesService extends BaseService {
 		while (serviceIterator.hasNext()) {
 			Integer service =Integer.valueOf(serviceIterator.next().toString());
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			for (Integer dbIndex : dbIndexList) {
-				if (configMap.containsKey(dbIndex)) {
-					configMap.get(dbIndex).addAll(dstMaps.get(service));
-				}else{
-					List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-					list.addAll(dstMaps.get(service));
-					configMap.put(dbIndex, list);
+			if (!StringUtil.isEmpty(dbIndexList)&&dbIndexList.size()>0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (configMap.containsKey(dbIndex)) {
+						configMap.get(dbIndex).addAll(dstMaps.get(service));
+					}else{
+						List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+						list.addAll(dstMaps.get(service));
+						configMap.put(dbIndex, list);
+					}
 				}
+			}else {
+				RuntimeException e = new RuntimeException("service与写入数据库序号映射关系不存在");
+				msgList.add(e);
+				return "error";
 			}
 			
 		}
@@ -2607,14 +2625,20 @@ public class ConfigSourcesService extends BaseService {
 		while (serviceIterator.hasNext()) {
 			Integer service =Integer.valueOf(serviceIterator.next().toString());
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			for (Integer dbIndex : dbIndexList) {
-				if (restMap.containsKey(dbIndex)) {
-					restMap.get(dbIndex).put(service, cfgMap.get(service));
-				}else{
-					Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-					map.put(service, cfgMap.get(service));
-					restMap.put(dbIndex, map);
+			if (!StringUtil.isEmpty(dbIndexList)&&dbIndexList.size()>0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (restMap.containsKey(dbIndex)) {
+						restMap.get(dbIndex).put(service, cfgMap.get(service));
+					}else{
+						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+						map.put(service, cfgMap.get(service));
+						restMap.put(dbIndex, map);
+					}
 				}
+			}else {
+				RuntimeException e = new RuntimeException("service与写入数据库序号映射关系不存在");
+				msgList.add(e);
+				return "error";
 			}
 		}
 		configRedisService.delUnMaatConfig(restMap);

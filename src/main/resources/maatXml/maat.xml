@@ -45,7 +45,7 @@
 		</p:expressions>
 	</p:maatType>
 
-	<p:maatType service="17;1;80;82;84;144;146;148">
+	<p:maatType service="17;1;256;258;260;384;386;388">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
 			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
@@ -84,7 +84,7 @@
 
 
 
-	<p:maatType service="81;145">
+	<p:maatType service="257;385">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
 			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
@@ -126,7 +126,7 @@
 
 
 
-	<p:maatType service="83;85;147;149">
+	<p:maatType service="259;387">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
 			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
