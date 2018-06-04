@@ -493,12 +493,16 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 												}
 												maatKey = keyBF.toString();
 												String oldKey = maatKey.replace("OBSOLETE_RULE", "EFFECTIVE_RULE");
-												redisTemplate.rename(oldKey.toString().toUpperCase(),
-														keyBF.toString().toUpperCase());
-												logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}", redisDBIndex,
-														oldKey.toString().toUpperCase(),
-														keyBF.toString().toUpperCase());
-												break;
+												if (redisTemplate.hasKey(	oldKey.toString().toUpperCase())) {
+													redisTemplate.rename(oldKey.toString().toUpperCase(),
+															keyBF.toString().toUpperCase());
+													logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}", redisDBIndex,
+															oldKey.toString().toUpperCase(),
+															keyBF.toString().toUpperCase());
+													break;
+												} else {
+													throw new RuntimeException(redisDBIndex + "号redis库中不存在key=" + oldKey + "请检查id映射关系是否正确");
+												}
 											}
 											// redisTemplate.boundValueOps(keyBF.toString().toUpperCase()).set(valBF.toString());
 
