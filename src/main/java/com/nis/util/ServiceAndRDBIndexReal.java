@@ -20,6 +20,12 @@ public class ServiceAndRDBIndexReal {
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
 	 */
 	private static Map<Integer, Map<Integer, String>> sercieNameMap = new HashMap<Integer, Map<Integer, String>>();
+
+	/**
+	 * 非maat结构业务类型与表名对应关系,key是业务类型,value是表名
+	 */
+	private static Map<Integer, String> unMaatSercieNameMap = new HashMap<Integer, String>();
+
 	/**
 	 * key是业务类型,value是业务类型对应的redisdbIndex
 	 */
@@ -29,6 +35,28 @@ public class ServiceAndRDBIndexReal {
 	 */
 	private static Map<Integer, Integer> serviceActionMap = new HashMap<Integer, Integer>();
 	static {
+
+		String unMaatService = Configurations.getStringProperty("unMaatService", "");
+		if (unMaatService != null && !unMaatService.trim().equals("")) {
+			String[] split = unMaatService.split(";");
+			for (String str : split) {
+				String[] serviceAction = str.split(":");
+				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+				
+				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+				if (serviceType != null && !serviceType.trim().equals("")) {
+					String[] typeArrs = serviceType.split(";");
+					for (String typeStr : typeArrs) {
+						String[] typeArr = typeStr.split(":");
+						String tableNameArr[] = typeArr[1].split(",");
+						for (String tableName : tableNameArr) {
+							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
+						}
+					}
+				}
+			}
+		}
+
 		String service = Configurations.getStringProperty("service", "");
 		if (service != null && !service.trim().equals("")) {
 			String[] split = service.split(";");
@@ -65,11 +93,12 @@ public class ServiceAndRDBIndexReal {
 			}
 		}
 	}
-/**
- * 根据业务类型获取这个
- * @param service
- * @return
- */
+
+	/**
+	 * 根据业务类型获取这个
+	 * @param service
+	 * @return
+	 */
 	public static List<Integer> getRedisDBByService(Integer service) {
 		List<Integer> redisIndexList = serviceDBIndexmap.get(service);
 		if (redisIndexList == null) {
@@ -93,10 +122,11 @@ public class ServiceAndRDBIndexReal {
 		}
 
 	}
+
 	public static Integer getActionByService(Integer service) {
 		return serviceActionMap.get(service);
 	}
-	
+
 	public static Map<Integer, Map<Integer, String>> getSercieNameMap() {
 		return sercieNameMap;
 	}
@@ -112,8 +142,5 @@ public class ServiceAndRDBIndexReal {
 	public static void setServiceDBIndexmap(Map<Integer, List<Integer>> serviceDBIndexmap) {
 		ServiceAndRDBIndexReal.serviceDBIndexmap = serviceDBIndexmap;
 	}
-	
-	
-	
-	
+
 }

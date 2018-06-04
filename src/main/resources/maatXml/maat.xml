@@ -5,7 +5,7 @@
 
 	<p:maatType service="96;97;98;99;160;161;162;163">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;FILE_INDEX_INFO;,;[cfg_id]</p:keyExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[time_stamp];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
@@ -26,7 +26,7 @@
 
 	<p:maatType service="100;101;164;165">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;mark_sample;,;[cfg_id]</p:keyExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;[service];\t;[level];\t;[description];\t;[is_valid]</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
