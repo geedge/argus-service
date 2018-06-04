@@ -1201,22 +1201,25 @@ public class ConfigSourcesService extends BaseService {
 			maatConfig.setGroupMapList(dstMaplList);
 			//字符串域
 			dstMaplList = null;
+			List<Map<String, String>> strongMapList = null;
 			if (!StringUtil.isEmpty(configCompile.getStrRegionList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
 				for (StrRegion region : configCompile.getStrRegionList()) {
-					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
+					if(!StringUtil.isEmpty(region.getDistrict())){
+						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
+					}else{
+						if (StringUtil.isEmpty(strongMapList)) {
+							strongMapList = new ArrayList<Map<String,String>>();
+						}
+						strongMapList.add(convertObjectToMap(region, StrRegion.class));
+					}
 				}
 			}	
 			maatConfig.setStrRegionMapList(dstMaplList);
-//			//增强字符串域
-//			dstMaplList = null;
-//			if (!StringUtil.isEmpty(strStrongRegionList)) {
-//				dstMaplList = new ArrayList<Map<String,String>>();
-//				for (StrRegion region : strStrongRegionList) {
-//					dstMaplList.add(convertObjectToMap(region, StrRegion.class));
-//				}
-//			}	
-//			maatConfig.setStrStrRegionMapList((dstMaplList));
+//			增强字符串域
+			if (!StringUtil.isEmpty(strongMapList)&&strongMapList.size()>0) {
+				maatConfig.setStrStrRegionMapList((dstMaplList));
+			}
 			//数值域
 			dstMaplList = null;
 			if (!StringUtil.isEmpty(configCompile.getNumRegionList())) {

@@ -175,7 +175,8 @@ public class CompileVal {
 			for (NumRegion numRegion : numRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(numRegion.getGroupId())) {
-				if (!type2TableNameIsOk(configCompile.getService(), numRegion.getTableName())) {
+				
+				if (!StringUtil.isEmpty(numRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), numRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionid为"
 							+ numRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
@@ -221,7 +222,7 @@ public class CompileVal {
 			for (StrRegion strRegion : strRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(strRegion.getGroupId())) {
-				if (!type2TableNameIsOk(configCompile.getService(), strRegion.getTableName())) {
+				if (!StringUtil.isEmpty(strRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), strRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionid为"
 							+ strRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
@@ -269,7 +270,7 @@ public class CompileVal {
 			for (IpRegion ipRegion : ipRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
-				if (!type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
+				if (!StringUtil.isEmpty(ipRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionid为"
 							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
