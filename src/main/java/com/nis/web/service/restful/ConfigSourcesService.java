@@ -18,8 +18,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.json.JSONObject;
-
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -62,6 +60,8 @@ import com.nis.web.dao.StrRegionDao;
 import com.nis.web.service.BaseService;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.SpringContextHolder;
+
+import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ControlService
@@ -1328,7 +1328,6 @@ public class ConfigSourcesService extends BaseService {
 	public String updateConfigSources(SaveRequestLogThread thread, long start, List<ConfigCompile> compileList,
 								Date opTime, StringBuffer sb) {
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
-		List<ConfigCompile> compileAllList = new ArrayList<ConfigCompile>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
 				String msg = checkCompileOptForUpdate(config);

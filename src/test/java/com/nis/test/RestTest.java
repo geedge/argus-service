@@ -23,6 +23,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
@@ -42,15 +43,17 @@ public class RestTest {
 	public void testFileUpload() {
 		CloseableHttpResponse response = null;
 		try {
-			File file = new File("C:/Users/dell/Desktop/Lighthouse.jpg");
+			File file = new File("F:/git.rar");
 
 //			String md5 = DigestUtils.md5Hex(file);
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			builder.addBinaryBody("file", file);
 
 			HttpPost request = new HttpPost(
-					"http://10.0.6.104:8080/galaxy/service/cfg/v1/fileUploadSources");
+					"http://10.0.6.120:8080/galaxy/service/cfg/v1/fileUploadSources");
 			//galaxy/service/cfg/v1/fileUploadSources
+			request.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 600000);
+			request.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 600000);
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("filetype", "doc");
 			jsonObject.put("createTime", "2018-05-21 21:00:00");
@@ -58,13 +61,12 @@ public class RestTest {
 			jsonObject.put("fileName", "1.png");
 			//jsonObject.put("checksum", "d99f9aa4f3748fa48aa6e350c628c67f");
 
-			jsonObject.put("checksum", "8969288f4245120e7c3870287cce0ff3");
-			
+			jsonObject.put("checksum", "faa364a36cddcbbfd65c0224f35fcfd0");
 			request.setHeader("File-Desc", jsonObject.toString());
 			HttpEntity entity = builder.build();
 			request.setEntity(entity);
 			CloseableHttpClient httpClient = HttpClients.createDefault();
-
+			
 			response = httpClient.execute(request);
 			System.out.println(EntityUtils.toString(response.getEntity()));
 			System.out.println("aa");	

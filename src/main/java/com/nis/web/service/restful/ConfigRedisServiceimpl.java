@@ -23,7 +23,6 @@ import com.nis.domain.restful.MaatConfig;
 import com.nis.domain.restful.MaatRelation;
 import com.nis.listener.CompileGroupRegionRela;
 import com.nis.util.Configurations;
-import com.nis.util.Exceptions;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.web.service.SpringContextHolder;
@@ -41,108 +40,119 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					RedisTemplate<String, String> redisTemplate = SpringContextHolder
 							.getBean("redisTemplate" + redisDBIndex);
 					List<Map<String, String>> listMap = configMap.get(redisDBIndex);
+					if (listMap != null && listMap.size() > 0) {
+						String maatVersionStr = redisTemplate.opsForValue().get("MAAT_VERSION");
+						if (maatVersionStr == null) {
+							maatVersionStr = "0";
+						}
+						if (maatVersionStr != null) {
+							Long maatVersion = Long.valueOf(maatVersionStr) + 1;
+							for (Map<String, String> map : listMap) {
+								String serviceStr = map.get("service");
+								int service = Integer.parseInt(serviceStr);
+								MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
+								if (maatXmlConfig != null) {
+									List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
+									String maatKey = null;
+									for (MaatXmlExpr maatXmlExpr : expressionList) {
+										if (0 == maatXmlExpr.getType().intValue()) {
+											StringBuffer keyBF = new StringBuffer();
+											String[] keySplit = maatXmlExpr.getKeyExpression().split(";");
+											for (String keyStr : keySplit) {
+												if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("[")) {
+													keyStr = keyStr.trim().replace("[", "").replace("]", "");
+													keyBF.append(map.get(keyStr));
+												} else {
+													keyBF.append(keyStr.trim());
+												}
+											}
+											StringBuffer valBF = new StringBuffer();
+											String[] valSplit = maatXmlExpr.getValueExpression().split(";");
+											for (String valStr : valSplit) {
+												if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
+													valStr = valStr.trim().replace("[", "").replace("]", "");
+													valBF.append(map.get(valStr));
+												} else if (valStr.equals("&nbsp")) {
+													valBF.append(" ");
+												} else if (valStr.equals("\\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
+													valBF.append("\t");
+												} else if (valStr.equals("\\n")) {
+													valBF.append("\n");
+												}
+											}
+											maatKey = keyBF.toString();
+											redisTemplate.opsForValue().set(keyBF.toString().toUpperCase(),
+													valBF.toString());
+											logger.info("向{}号redis数据库添加了一条配置,key是{},value是{}", redisDBIndex,
+													keyBF.toString().toUpperCase(), valBF.toString());
+											break;
+										}
+									}
+									for (MaatXmlExpr maatXmlExpr : expressionList) {
+										if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_UPDATE_STATUS")) {
+											if (maatKey != null) {
+												String zset = maatKey.replace("EFFECTIVE_RULE:", "ADD,");
+												redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+												logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
+														redisDBIndex, zset.toUpperCase(), maatVersion);
 
-					String maatVersionStr = redisTemplate.opsForValue().get("MAAT_VERSION");
-					if (maatVersionStr == null) {
-						maatVersionStr = "0";
-					}
-					if (maatVersionStr != null) {
-						Long maatVersion = Long.valueOf(maatVersionStr) + 1;
-						for (Map<String, String> map : listMap) {
-							String serviceStr = map.get("service");
-							int service = Integer.parseInt(serviceStr);
-							MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
-							if (maatXmlConfig != null) {
-								List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
-								String maatKey = null;
-								for (MaatXmlExpr maatXmlExpr : expressionList) {
-									if (0 == maatXmlExpr.getType().intValue()) {
-										StringBuffer keyBF = new StringBuffer();
-										String[] keySplit = maatXmlExpr.getKeyExpression().split(";");
-										for (String keyStr : keySplit) {
-											if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("[")) {
-												keyStr = keyStr.trim().replace("[", "").replace("]", "");
-												keyBF.append(map.get(keyStr));
-											} else {
-												keyBF.append(keyStr.trim());
+											}
+										} else if (maatXmlExpr.getKeyExpression().toUpperCase()
+												.equals("MAAT_RULE_TIMER")) {
+											if (maatKey != null) {
+												Double score = 0d;// 界面下发的配置没有超时时间所以这里设置为0
+												redisTemplate.boundZSetOps("MAAT_RULE_TIMER").add(maatKey, score);
+
+												logger.info("向{}号redis数据库更新了MAAT_RULE_TIMER,内容是{},SCORES是{}",
+														redisDBIndex, maatKey, score);
+
+											}
+										} else if (maatXmlExpr.getKeyExpression().toUpperCase()
+												.equals("MAAT_VERSION_TIMER")) {
+											Long nowTime = new Date().getTime();
+											nowTime = nowTime / 1000l;
+											Double score = nowTime.doubleValue();// 使用redis自带的time,得到当前时间的秒
+											redisTemplate.boundZSetOps("MAAT_VERSION_TIMER").add(maatVersion + "",
+													score);
+
+											logger.info("向{}号redis数据库更新了MAAT_VERSION_TIMER,内容是{},SCORES是{}",
+													redisDBIndex, maatVersion, score);
+										}
+									}
+									List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
+									for (MaatXmlSeq maatXmlSeq : seqList) {
+										// setRedisDataBase(maatXmlSeq.getRedisDB(),
+										// redisTemplate);
+										String seqKey = maatXmlSeq.getSequenceKey();
+										if (!seqKey.toUpperCase().equals("MAAT_VERSION")) {
+											Integer operation = maatXmlSeq.getOperation();
+											if (operation == 1) {
+												redisTemplate.boundValueOps(seqKey.toUpperCase()).increment(1l);
 											}
 										}
-										StringBuffer valBF = new StringBuffer();
-										String[] valSplit = maatXmlExpr.getValueExpression().split(";");
-										for (String valStr : valSplit) {
-											if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
-												valStr = valStr.trim().replace("[", "").replace("]", "");
-												valBF.append(map.get(valStr));
-											} else if (valStr.equals("&nbsp")) {
-												valBF.append(" ");
-											} else if (valStr.equals("\\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
-												valBF.append("\t");
-											} else if (valStr.equals("\\n")) {
-												valBF.append("\n");
-											}
-										}
-										maatKey = keyBF.toString();
-										redisTemplate.opsForValue().set(keyBF.toString().toUpperCase(),
-												valBF.toString());
-										logger.info("向{}号redis数据库添加了一条配置,key是{},value是{}", redisDBIndex,
-												keyBF.toString().toUpperCase(), valBF.toString());
-										break;
+
 									}
-								}
-								for (MaatXmlExpr maatXmlExpr : expressionList) {
-									if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_UPDATE_STATUS")) {
-										if (maatKey != null) {
-											String zset = maatKey.replace("EFFECTIVE_RULE:", "ADD,");
-											redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
-											logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
-													redisDBIndex, zset.toUpperCase(), maatVersion);
-
-										}
-									} else if (maatXmlExpr.getKeyExpression().toUpperCase().equals("MAAT_RULE_TIMER")) {
-										if (maatKey != null) {
-											Double score = 0d;// 界面下发的配置没有超时时间所以这里设置为0
-											redisTemplate.boundZSetOps("MAAT_RULE_TIMER").add(maatKey, score);
-
-											logger.info("向{}号redis数据库更新了MAAT_RULE_TIMER,内容是{},SCORES是{}", redisDBIndex,
-													maatKey, score);
-
-										}
-									} else if (maatXmlExpr.getKeyExpression().toUpperCase()
-											.equals("MAAT_VERSION_TIMER")) {
-										Long nowTime = new Date().getTime();
-										nowTime = nowTime / 1000l;
-										Double score = nowTime.doubleValue();// 使用redis自带的time,得到当前时间的秒
-										redisTemplate.boundZSetOps("MAAT_VERSION_TIMER").add(maatVersion + "", score);
-
-										logger.info("向{}号redis数据库更新了MAAT_VERSION_TIMER,内容是{},SCORES是{}", redisDBIndex,
-												maatVersion, score);
-									}
-								}
-								List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
-								for (MaatXmlSeq maatXmlSeq : seqList) {
-									// setRedisDataBase(maatXmlSeq.getRedisDB(),
-									// redisTemplate);
-									String seqKey = maatXmlSeq.getSequenceKey();
-									if (!seqKey.toUpperCase().equals("MAAT_VERSION")) {
-										Integer operation = maatXmlSeq.getOperation();
-										if (operation == 1) {
-											redisTemplate.boundValueOps(seqKey.toUpperCase()).increment(1l);
-										}
-									}
-
+								} else {
+									throw new RuntimeException("无法从maat.xml中获取业务类型" + service + "对应的规则,请检查业务类型是否正确");
 								}
 							}
+							redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
+							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
+									Integer.valueOf(maatVersionStr) + 1);
+							count++;
 						}
-						redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
-						logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
-								Integer.valueOf(maatVersionStr) + 1);
-						count++;
+					} else {
+						throw new RuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
 					}
+				} else {
+					throw new RuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号");
 				}
 			}
 			if (count == configMap.size()) {
 				return true;
 			}
+		} else {
+			throw new RuntimeException("参数不能为空");
 		}
 		return false;
 	}
@@ -176,8 +186,12 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							CompileGroupRegionRela.addIdRelation(redisDBIndex, compileAndGroupRelations);
 						}
 					}
+				} else {
+					throw new RuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号");
 				}
 			}
+		} else {
+			throw new RuntimeException("参数不能为空");
 		}
 
 	}
@@ -228,15 +242,21 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 									Integer.valueOf(maatVersionStr) + 1);
 							count++;
+						} else {
+							throw new RuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
 						}
 
 					}
 
+				} else {
+					throw new RuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号");
 				}
 			}
 			if (count == configMap.size()) {
 				return true;
 			}
+		} else {
+			throw new RuntimeException("参数不能为空");
 		}
 		return false;
 
@@ -254,13 +274,21 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	public void setConfig(MaatConfig maatConfig, MaatXmlConfig maatXmlConfig, Long maatVersion, int service,
 			RedisTemplate<String, String> redisTemplate, Integer redisDBIndex) {
 		Map<String, String> compileMap = maatConfig.getCompileMap();
-		setCommonConfig(maatXmlConfig, compileMap, 10, maatVersion.doubleValue(), service, redisTemplate, redisDBIndex);// 10代表是编译配置
+		if (compileMap != null && compileMap.size() > 0) {
+			setCommonConfig(maatXmlConfig, compileMap, 10, maatVersion.doubleValue(), service, redisTemplate,
+					redisDBIndex);// 10代表是编译配置
+		} else {
+			throw new RuntimeException("无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确");
+		}
+
 		List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
 		if (groupMapList != null && groupMapList.size() > 0) {
 			for (Map<String, String> map : groupMapList) {
 				setCommonConfig(maatXmlConfig, map, 11, maatVersion.doubleValue(), service, redisTemplate,
 						redisDBIndex);// 11代表是分组配置
 			}
+		} else {
+			throw new RuntimeException("无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的分组配置信息,请检查配置参数是否正确");
 		}
 
 		List<Map<String, String>> ipRegionMapList = maatConfig.getIpRegionMapList();
@@ -305,6 +333,15 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 						redisDBIndex);// 17代表是文本相似性域配置
 			}
 		}
+
+		List<Map<String, String>> ipclientList = maatConfig.getIpClientRangeMapList();
+		if (ipclientList != null && ipclientList.size() > 0) {
+			for (Map<String, String> map : ipclientList) {
+				setCommonConfig(maatXmlConfig, map, 18, maatVersion.doubleValue(), service, redisTemplate,
+						redisDBIndex);// 18代表是区域ip域配置
+			}
+		}
+
 		// updateCommonKey(maatXmlConfig);
 	}
 
@@ -388,6 +425,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					logger.info("向{}号redis数据库更新了MAAT_VERSION_TIMER,内容是{},SCORES是{}", redisDBIndex, maatVersion, score);
 				}
 			}
+		} else {
+			throw new RuntimeException("无法获取业务类型" + service + "对应的maat规则或传入的配置信息有误,请检查!");
 		}
 	}
 
@@ -506,22 +545,32 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 											}
 
 										}
+									} else {
+										throw new RuntimeException(
+												"无法从maat.xml中获取业务类型" + service + "对应的规则,请检查业务类型是否正确");
 									}
 								}
 								redisTemplate.boundValueOps("MAAT_VERSION").increment(1l);
 								logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 										Integer.valueOf(maatVersionStr) + 1);
 								count++;
+							} else {
+								throw new RuntimeException(
+										"无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的配置id信息,请检查配置参数是否正确");
 							}
 						}
 
 					}
+				} else {
+					throw new RuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
 				}
 
 			}
 			if (count == idMap.size()) {
 				return true;
 			}
+		} else {
+			throw new RuntimeException("参数信息有误,请检查!");
 		}
 		return false;
 	}
@@ -556,11 +605,15 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							count++;
 						}
 					}
+				} else {
+					throw new RuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
 				}
 			}
 			if (count == idMap.size()) {
 				return true;
 			}
+		} else {
+			throw new RuntimeException("参数信息有误,请检查!");
 		}
 		return false;
 	}
@@ -601,10 +654,14 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 									redisTemplate, redisDBIndex);// 16代表是文件摘要类域配置
 							removeCommonConfig(maatXmlConfig, regionIdSet, 17, maatVersion.doubleValue(), service,
 									redisTemplate, redisDBIndex);// 17代表是文本相似性域配置
+							removeCommonConfig(maatXmlConfig, regionIdSet, 18, maatVersion.doubleValue(), service,
+									redisTemplate, redisDBIndex);// 18代表是区域ip域配置
 						}
 					}
 				}
 			}
+		} else {
+			throw new RuntimeException("无法获取内存中记录的id映射关系,无法获取业务类型" + service + "对应的maat规则或传入的配置id有误,请检查!");
 		}
 	}
 
@@ -683,6 +740,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					}
 				}
 			}
+		} else {
+			throw new RuntimeException("无法获取业务类型" + service + "对应的maat规则或传入的配置信息有误,请检查!");
 		}
 	}
 
@@ -707,8 +766,12 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							}
 						}
 					}
+				} else {
+					throw new RuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号");
 				}
 			}
+		} else {
+			throw new RuntimeException("参数不能为空");
 		}
 	}
 

@@ -127,6 +127,8 @@ public class ReadMaatXmlUtil {
 												maatXmlExpr.setType(16);
 											} else if (ele.getTextTrim().contains("file_like_table_name")) {
 												maatXmlExpr.setType(17);
+											} else if (ele.getTextTrim().contains("ip_client_range_table_name")) {
+												maatXmlExpr.setType(18);
 											} else {
 												maatXmlExpr.setType(0);
 											}
