@@ -115,7 +115,7 @@
 		</p:sequences>
 	</p:maatType>
  	
-<!--
+<!-- 
 	<p:maatType service="17;1;256;258;260;384;386;388">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
@@ -135,28 +135,23 @@
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
-			<!-- <p:valueExpression>add;{tableName};,;{id}</p:valueExpression> -->
-<!-- 		</p:expressions>
+			<p:valueExpression>add;{tableName};,;{id}</p:valueExpression>
+ 		</p:expressions>
 
 		<p:expressions>
 			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
-			<!-- <p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression> -->
-<!--		</p:expressions>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
-			<!-- <p:valueExpression>{region_id};{maatVersion}</p:valueExpression> -->
-<!--	</p:expressions>
+			<p:valueExpression>{region_id};{maatVersion}</p:valueExpression>
+  	 	</p:expressions>
 
 		<p:sequences>
 			<p:operation>1</p:operation>
 			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
 		</p:sequences>
 	</p:maatType>
-
-
-
-
-
 
 
 	<p:maatType service="257;385">
@@ -176,30 +171,23 @@
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
-			<!-- <p:valueExpression>add;{tableName};,;{id}</p:valueExpression> -->
-<!--	</p:expressions>
+			<p:valueExpression>add;{tableName};,;{id}</p:valueExpression>
+	</p:expressions>
 
 		<p:expressions>
 			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
-			<!-- <p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression> -->
-<!--	</p:expressions>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+	</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
-			<!-- <p:valueExpression>{region_id};{maatVersion}</p:valueExpression> -->
-<!--	</p:expressions>
+			<p:valueExpression>{region_id};{maatVersion}</p:valueExpression>
+	</p:expressions>
 
 		<p:sequences>
 			<p:operation>1</p:operation>
 			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
 		</p:sequences>
 	</p:maatType>
-
-
-
-
-
-
-
 
 	<p:maatType service="259;387">
 		<p:expressions>
@@ -216,25 +204,24 @@
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
-			<!-- <p:valueExpression>add;{tableName};,;{id}</p:valueExpression> -->
-<!--	</p:expressions>
+			<p:valueExpression>add;{tableName};,;{id}</p:valueExpression>
+	</p:expressions>
 
 		<p:expressions>
 			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
-			<!-- <p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression> -->
-<!--		</p:expressions>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
-			<!-- <p:valueExpression>{region_id};{maatVersion}</p:valueExpression> -->
-<!--		</p:expressions>
+			<p:valueExpression>{region_id};{maatVersion}</p:valueExpression>
+		</p:expressions>
 
 		<p:sequences>
 			<p:operation>1</p:operation>
 			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
 		</p:sequences>
-	</p:maatType>
+	</p:maatType> -->
 
--->
 
 </p:maat>
 
