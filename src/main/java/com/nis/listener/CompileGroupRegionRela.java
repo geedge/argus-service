@@ -1,6 +1,7 @@
 package com.nis.listener;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +36,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		try {
-			for (int i = 0; i <Configurations.getIntProperty("maxRedisDBIndex", 6); i++) {
+			for (int i = 0; i < Configurations.getIntProperty("maxRedisDBIndex", 6); i++) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate" + i);
 				getAllId(redisTemplate, i);
 			}
@@ -66,18 +67,18 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 							}
 
 						} else {
-//							String[] split = value.split("\t");
-//							String regionIdStr = split[0];
-//							String groupIdStr = split[1];
-//							if (groupRegionIdMap.containsKey(Long.valueOf(groupIdStr))) {
-//								groupRegionIdMap.get(Long.valueOf(groupIdStr)).add(Long.valueOf(regionIdStr));
-//							} else {
-//								Set<Long> list = new HashSet<Long>();
-//								list.add(Long.valueOf(regionIdStr));
-//								groupRegionIdMap.put(Long.valueOf(groupIdStr), list);
-//							}
+							// String[] split = value.split("\t");
+							// String regionIdStr = split[0];
+							// String groupIdStr = split[1];
+							// if (groupRegionIdMap.containsKey(Long.valueOf(groupIdStr))) {
+							// groupRegionIdMap.get(Long.valueOf(groupIdStr)).add(Long.valueOf(regionIdStr));
+							// } else {
+							// Set<Long> list = new HashSet<Long>();
+							// list.add(Long.valueOf(regionIdStr));
+							// groupRegionIdMap.put(Long.valueOf(groupIdStr), list);
+							// }
 							String[] split = value.split("\t");
-							//String regionIdStr = split[0];
+							// String regionIdStr = split[0];
 							String groupIdStr = split[1];
 							if (groupRegionIdMap.containsKey(Long.valueOf(groupIdStr))) {
 								groupRegionIdMap.get(Long.valueOf(groupIdStr)).add(keys);
@@ -172,9 +173,9 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 			Set<Long> list = maatRelation.getCompileAndGroupMap().get(compileId);
 
 			if (list != null && list.size() > 0) {
-				for (Long groupId : list) {
-					// }
-					// for (Long groupId: list.size()) {
+				Iterator<Long> iterator = list.iterator();
+				while (iterator.hasNext()) {
+					Long groupId = iterator.next();
 					if (maatRelation.getGroupAndCompileMap().containsKey(groupId)) {
 						// && maatRelation.getGroupAndCompileMap().get(groupId).size() == 1
 						// && maatRelation.getGroupAndCompileMap().get(groupId).get(0).longValue() ==
@@ -192,7 +193,8 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 										// maatRelation.getCompileAndGroupMap().get(compileId)
 										// list.remove(maatRelation.getCompileAndGroupMap().get(compileId).indexOf(groupId));//
 										// 删除编译下面的组
-										list.remove(groupId);// 删除编译下面的组
+										// list.remove(groupId);// 删除编译下面的组
+										iterator.remove();// 删除编译下面的组
 									}
 								}
 							}
@@ -203,8 +205,8 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 							// maatRelation.getGroupAndCompileMap().get(groupId)
 							// .remove(maatRelation.getGroupAndCompileMap().get(groupId).indexOf(compileId));//
 							// 删除分组关系中的组和编译关系
-
-							list.remove(groupId);// 删除编译下面的这个组
+							// list.remove(groupId);// 删除编译下面的这个组
+							iterator.remove();// 删除编译下面的这个组
 							maatRelation.getGroupAndCompileMap().get(groupId).remove(compileId);
 						}
 					} else {
