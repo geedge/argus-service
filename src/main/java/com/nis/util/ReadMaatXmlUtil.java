@@ -132,6 +132,8 @@ public class ReadMaatXmlUtil {
 												maatXmlExpr.setType(18);
 											} else if (ele.getTextTrim().contains("un_maat_table_name")) {
 												maatXmlExpr.setType(0);
+											}else{
+												maatXmlExpr.setType(-1);
 											}
 										}
 										if (ele.getName().toLowerCase().equals("valueexpression")) {

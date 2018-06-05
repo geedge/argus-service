@@ -1205,7 +1205,7 @@ public class ConfigSourcesService extends BaseService {
 			if (!StringUtil.isEmpty(configCompile.getStrRegionList())) {
 				dstMaplList = new ArrayList<Map<String,String>>();
 				for (StrRegion region : configCompile.getStrRegionList()) {
-					if(!StringUtil.isEmpty(region.getDistrict())){
+					if(StringUtil.isEmpty(region.getDistrict())){
 						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
 					}else{
 						if (StringUtil.isEmpty(strongMapList)) {
