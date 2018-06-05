@@ -27,7 +27,7 @@
 	<p:maatType service="1;2;16;17;18;19;20;21;22;23;24;26;27;30;31;128;129;130;131;132;133;134;135;136;137;138;139;140;141;256;257;258;259;260;384;385;386;387;388;512;513;528;529;544;545;560;561">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
-			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{group_table_name};,;[group_id]</p:keyExpression>
@@ -35,23 +35,23 @@
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{ip_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{str_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{str_str_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[district];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{num_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{digest_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[raw_len];\t;[digest];\t;[cfds_level];\t;[is_valid];\t;[op_time]</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[raw_len];\t;[digest];\t;[cfds_level];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
