@@ -50,7 +50,7 @@
 									</xs:attribute>
 									<xs:attribute name="defaultVal" type="xs:string">
 										<xs:annotation>
-											<xs:documentation><![CDATA[默认值]]>
+											<xs:documentation><![CDATA[默认值，[]包围的代表从其他属性取值]]>
 											</xs:documentation>
 										</xs:annotation>
 									</xs:attribute>	
