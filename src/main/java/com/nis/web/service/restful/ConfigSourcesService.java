@@ -2479,7 +2479,7 @@ public class ConfigSourcesService extends BaseService {
 							if(!StringUtil.isNumeric(dstStr)){
 								logger1.error(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
 								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型");
-								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确",
+								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确,必需是数值型",
 									RestBusinessCode.missing_args.getValue());
 							}
 							break;
