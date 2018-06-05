@@ -450,6 +450,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							valBF.append("\t");
 						} else if (valStr.equals("\\n")) {
 							valBF.append("\n");
+						} else {
+							valBF.append(valStr.trim());
 						}
 					}
 					maatKey = keyBF.toString();
@@ -723,18 +725,18 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 									if (regionIdSet != null && regionIdSet.size() > 0) {
 										removeRegionConfig(maatXmlConfig, regionIdSet, maatVersion.doubleValue(),
 												service, redisTemplate, redisDBIndex);// 12代表是ip类域配置
-//										removeRegionConfig(maatXmlConfig, regionIdSet, 13, maatVersion.doubleValue(),
-//												service, redisTemplate, redisDBIndex);// 13代表是数值类配置
-//										removeRegionConfig(maatXmlConfig, regionIdSet, 14, maatVersion.doubleValue(),
-//												service, redisTemplate, redisDBIndex);// 14代表是字符串类域配置
-//										removeRegionConfig(maatXmlConfig, regionIdSet, 15, maatVersion.doubleValue(),
-//												service, redisTemplate, redisDBIndex);// 15代表是增强字符串类域配置
-//										removeRegionConfig(maatXmlConfig, regionIdSet, 16, maatVersion.doubleValue(),
-//												service, redisTemplate, redisDBIndex);// 16代表是文件摘要类域配置
-//										removeRegionConfig(maatXmlConfig, regionIdSet, 17, maatVersion.doubleValue(),
-//												service, redisTemplate, redisDBIndex);// 17代表是文本相似性域配置
-//										removeRegionConfig(maatXmlConfig, regionIdSet, 18, maatVersion.doubleValue(),
-//												service, redisTemplate, redisDBIndex);// 18代表是区域ip域配置
+										// removeRegionConfig(maatXmlConfig, regionIdSet, 13, maatVersion.doubleValue(),
+										// service, redisTemplate, redisDBIndex);// 13代表是数值类配置
+										// removeRegionConfig(maatXmlConfig, regionIdSet, 14, maatVersion.doubleValue(),
+										// service, redisTemplate, redisDBIndex);// 14代表是字符串类域配置
+										// removeRegionConfig(maatXmlConfig, regionIdSet, 15, maatVersion.doubleValue(),
+										// service, redisTemplate, redisDBIndex);// 15代表是增强字符串类域配置
+										// removeRegionConfig(maatXmlConfig, regionIdSet, 16, maatVersion.doubleValue(),
+										// service, redisTemplate, redisDBIndex);// 16代表是文件摘要类域配置
+										// removeRegionConfig(maatXmlConfig, regionIdSet, 17, maatVersion.doubleValue(),
+										// service, redisTemplate, redisDBIndex);// 17代表是文本相似性域配置
+										// removeRegionConfig(maatXmlConfig, regionIdSet, 18, maatVersion.doubleValue(),
+										// service, redisTemplate, redisDBIndex);// 18代表是区域ip域配置
 									}
 								}
 							}
@@ -832,8 +834,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 		}
 	}
 
-	private void removeRegionConfig(MaatXmlConfig maatXmlConfig, Set<String> idList, Double maatVersion,
-			int service, RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
+	private void removeRegionConfig(MaatXmlConfig maatXmlConfig, Set<String> idList, Double maatVersion, int service,
+			RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
 		if (maatXmlConfig != null && idList != null && idList.size() > 0) {
 			List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
 			String maatKey = null;
