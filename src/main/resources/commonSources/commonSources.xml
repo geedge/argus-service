@@ -13,10 +13,10 @@
 		<t:field fieldType="IP" srcName="maskDstIp" dstName="mask_dst_ip"  isRequired="true"/>
 		<t:field fieldType="Port" srcName="dstPort" dstName="dst_port" isRequired="true" range="0-65535"/>
 		<t:field fieldType="Port" srcName="maskDstPort" dstName="mask_dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Number" srcName="protocol" dstName="protocol" isRequired="true" regexp="[0|6|17]"/>
 		<t:field fieldType="Number" srcName="direction" dstName="direction" isRequired="true" range="0-1"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
-		<t:field fieldType="Date" srcName="opTime" dstName="time_stamp" isRequired="true"/>
-		<t:field fieldType="Number" srcName="" dstName="file_id" defaultVal="[cfgId]"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
 	<t:commonSource serviceIds="261,262,263,264,389,390,391,392">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
@@ -25,8 +25,8 @@
 		<t:field fieldType="String" srcName="dstFileMd5" dstName="dst_file_md5"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="level" dstName="level" range="0-100" defaultVal="0"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
-		<t:field fieldType="Date" srcName="opTime" dstName="time_stamp" isRequired="true"/>
-		<t:field fieldType="Number" srcName="" dstName="file_id" defaultVal="[cfgId]"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+		<t:field fieldType="Number" srcName="" dstName="file_id" defaultVal="[dstFile]"/>
 	</t:commonSource>
 	<t:commonSource serviceIds="265,266,393,394">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
