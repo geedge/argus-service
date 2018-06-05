@@ -74,7 +74,7 @@
 												编译表名:compile_table_name,分组表名:group_table_name,ip类域配置表名:ip_region_table_name,
 												数值类域配置表名:num_region_table_name,字符串类域配置表名:str_region_table_name,
 												增强字符串域配置表名:str_str_region_table_name,文件摘要类域配置表名:file_digest_table_name,
-												文本相似性域配置表名:file_like_table_name,区域ip配置表名:ip_client_range_table_name。
+												文本相似性域配置表名:file_like_table_name,区域ip配置表名:ip_client_range_table_name,非maat配置表名:un_maat_table_name.
 												直接写的代表是固定值,直接拼接即可,
 												每个属性间用分号分隔,空格用&amp;nbsp表示]]>
 												</xs:documentation>

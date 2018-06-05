@@ -59,6 +59,10 @@
 			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time]</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{str_region_table_name};,;[region_id]</p:keyExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time]</p:valueExpression>
+		</p:expressions>
+		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
 			<!-- <p:valueExpression>add;{tableName};,;{id}</p:valueExpression> -->
 		</p:expressions>
