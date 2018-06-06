@@ -11,8 +11,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +29,7 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
+import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
@@ -43,6 +42,8 @@ import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+
+import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ConfigSourcesController
@@ -65,10 +66,10 @@ public class ConfigSourcesController extends BaseRestController {
 	@Autowired
 	ConfigRedisService configRedisService;
 
-	@RequestMapping(value = "/cfg/v1/save", method = RequestMethod.GET)
+	@RequestMapping(value = "/cfg/v1/saveUnMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String testRedis(Integer type) {
+	public String saveUnMaat(Integer type) {
 		try {
 			List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
 			if (type == 1) {
@@ -162,13 +163,14 @@ public class ConfigSourcesController extends BaseRestController {
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
 	public String saveMaat(Integer service) {
 		try {
-			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
-			listMap.add(getMaatConfig(service));
 			Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-			configMap.put(1, listMap);
-			listMap = new ArrayList<MaatConfig>();
-			listMap.add(getMaatConfig(service));
-			configMap.put(2, listMap);
+			List<Integer> redisDBByService = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			MaatConfig maatConfig = getMaatConfig(service);
+			for (Integer db : redisDBByService) {
+				List<MaatConfig> listMap = new ArrayList<MaatConfig>();
+				listMap.add(maatConfig);	
+				configMap.put(db, listMap);
+			}
 			if (configRedisService.saveMaatConfig(configMap)) {
 				configRedisService.addMaatRelation(configMap);
 			}

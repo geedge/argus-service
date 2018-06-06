@@ -36,10 +36,13 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
 		try {
+			long begin = System.currentTimeMillis();
 			for (int i = 0; i < Configurations.getIntProperty("maxRedisDBIndex", 6); i++) {
 				RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate" + i);
 				getAllId(redisTemplate, i);
 			}
+			long end = System.currentTimeMillis();
+			logger.info("从redis读取数据需要" + ((end - begin) / 1000) + "秒");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -97,57 +100,60 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 
 		for (Long groupId : groupCompileIdMap.keySet()) {
 			if (idRelationMap.containsKey(redisDBIndex)) {
-				MaatRelation maatRelation = idRelationMap.get(redisDBIndex);
-
-				Map<Long, Set<Long>> compileAndGroupMap = maatRelation.getCompileAndGroupMap();
-				Set<Long> compileIdList = groupCompileIdMap.get(groupId);
-				for (Long compileId : compileIdList) {
-					if (compileAndGroupMap.containsKey(compileId)) {
-						compileAndGroupMap.get(compileId).add(groupId);
-					} else {
-						Set<Long> set = new HashSet<Long>();
-						set.add(groupId);
-						compileAndGroupMap.put(compileId, set);
+				Set<String> regionIdSet = groupRegionIdMap.get(groupId);
+				if (regionIdSet != null && regionIdSet.size() > 0) {// 防止出现错误数据,redis里面有域配置但是找不多对应的编译配置,分组配置,或者有分组配置但是找不到域或编译,或者有编译找不到分组和域
+					MaatRelation maatRelation = idRelationMap.get(redisDBIndex);
+					Map<Long, Set<Long>> compileAndGroupMap = maatRelation.getCompileAndGroupMap();
+					Set<Long> compileIdList = groupCompileIdMap.get(groupId);
+					for (Long compileId : compileIdList) {
+						if (compileAndGroupMap.containsKey(compileId)) {
+							compileAndGroupMap.get(compileId).add(groupId);
+						} else {
+							Set<Long> set = new HashSet<Long>();
+							set.add(groupId);
+							compileAndGroupMap.put(compileId, set);
+						}
 					}
-				}
-				Map<Long, Set<Long>> groupAndCompileMap = maatRelation.getGroupAndCompileMap();
-				if (groupAndCompileMap.containsKey(groupId)) {
-					groupAndCompileMap.get(groupId).addAll(compileIdList);
-				} else {
-					groupAndCompileMap.put(groupId, compileIdList);
-				}
+					Map<Long, Set<Long>> groupAndCompileMap = maatRelation.getGroupAndCompileMap();
+					if (groupAndCompileMap.containsKey(groupId)) {
+						groupAndCompileMap.get(groupId).addAll(compileIdList);
+					} else {
+						groupAndCompileMap.put(groupId, compileIdList);
+					}
 
-				Map<Long, Set<String>> groupAndRegionMap = maatRelation.getGroupAndRegionMap();
-				if (groupAndRegionMap.containsKey(groupId)) {
-					groupAndRegionMap.get(groupId).addAll(groupRegionIdMap.get(groupId));
-				} else {
-					groupAndRegionMap.put(groupId, groupRegionIdMap.get(groupId));
-				}
+					Map<Long, Set<String>> groupAndRegionMap = maatRelation.getGroupAndRegionMap();
+					if (groupAndRegionMap.containsKey(groupId)) {
+						groupAndRegionMap.get(groupId).addAll(groupRegionIdMap.get(groupId));
+					} else {
+						groupAndRegionMap.put(groupId, groupRegionIdMap.get(groupId));
+					}
 
+				}
 			} else {
-				MaatRelation maatRelation = new MaatRelation();
-
-				Map<Long, Set<Long>> compileAndGroupMap = new ConcurrentHashMap<Long, Set<Long>>();
-				Set<Long> compileIdList = groupCompileIdMap.get(groupId);
-				for (Long compileId : compileIdList) {
-					if (compileAndGroupMap.containsKey(compileId)) {
-						compileAndGroupMap.get(compileId).add(groupId);
-					} else {
-						Set<Long> set = new HashSet<Long>();
-						set.add(groupId);
-						compileAndGroupMap.put(compileId, set);
+				Set<String> regionIdSet = groupRegionIdMap.get(groupId);
+				if (regionIdSet != null && regionIdSet.size() > 0) {// 防止出现错误数据,redis里面有域配置但是找不多对应的编译配置,分组配置,或者有分组配置但是找不到域或编译,或者有编译找不到分组和域
+					MaatRelation maatRelation = new MaatRelation();
+					Map<Long, Set<Long>> compileAndGroupMap = new ConcurrentHashMap<Long, Set<Long>>();
+					Set<Long> compileIdList = groupCompileIdMap.get(groupId);
+					for (Long compileId : compileIdList) {
+						if (compileAndGroupMap.containsKey(compileId)) {
+							compileAndGroupMap.get(compileId).add(groupId);
+						} else {
+							Set<Long> set = new HashSet<Long>();
+							set.add(groupId);
+							compileAndGroupMap.put(compileId, set);
+						}
 					}
+					maatRelation.setCompileAndGroupMap(compileAndGroupMap);
+					Map<Long, Set<Long>> groupAndCompileMap = new ConcurrentHashMap<Long, Set<Long>>();
+					groupAndCompileMap.put(groupId, compileIdList);
+					maatRelation.setGroupAndCompileMap(groupAndCompileMap);
+					Map<Long, Set<String>> groupAndRegionMap = new ConcurrentHashMap<Long, Set<String>>();
+					groupAndRegionMap.put(groupId, groupRegionIdMap.get(groupId));
+					maatRelation.setGroupAndRegionMap(groupAndRegionMap);
+					idRelationMap.put(redisDBIndex, maatRelation);
 				}
-				maatRelation.setCompileAndGroupMap(compileAndGroupMap);
 
-				Map<Long, Set<Long>> groupAndCompileMap = new ConcurrentHashMap<Long, Set<Long>>();
-				groupAndCompileMap.put(groupId, compileIdList);
-				maatRelation.setGroupAndCompileMap(groupAndCompileMap);
-
-				Map<Long, Set<String>> groupAndRegionMap = new ConcurrentHashMap<Long, Set<String>>();
-				groupAndRegionMap.put(groupId, groupRegionIdMap.get(groupId));
-				maatRelation.setGroupAndRegionMap(groupAndRegionMap);
-				idRelationMap.put(redisDBIndex, maatRelation);
 			}
 		}
 	}
@@ -164,7 +170,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 		} else {
 			logger.error("redis" + redisDBIndex + "号库中没有id对应关系(没有配置),请检查redisDBIndex是否正确");
 		}
-		syso(maatRelation);
+		// syso(maatRelation);
 
 	}
 
@@ -232,7 +238,7 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 			addKey(maatRelation, compileAndGroupRelations);
 			idRelationMap.put(redisDBIndex, maatRelation);
 		}
-		syso(maatRelation);
+		// syso(maatRelation);
 
 	}
 

@@ -23,6 +23,7 @@
 		<property name="maxTotal" value="${redis.maxTotal}" />
 		<property name="maxWaitMillis" value="${redis.maxWaitMillis}" />
 		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
+		<property name="testOnReturn" value="${redis.testOnReturn}" />
 	</bean>
 	<!-- 默认使用数据库0,设置connectionFactory为非单例模式,方便选择redis数据库 -->
 	<bean id="connectionFactory0"
