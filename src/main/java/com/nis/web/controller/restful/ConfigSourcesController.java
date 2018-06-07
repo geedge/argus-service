@@ -28,6 +28,7 @@ import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.FileUtils;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
@@ -148,9 +149,6 @@ public class ConfigSourcesController extends BaseRestController {
 			idMap.put(redisDB, map);
 
 			boolean delMaatConfig = configRedisService.delMaatConfig(idMap);
-			if (delMaatConfig) {
-				configRedisService.delMaatRelation(idMap);
-			}
 			return "ok";
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -165,15 +163,16 @@ public class ConfigSourcesController extends BaseRestController {
 		try {
 			Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
 			List<Integer> redisDBByService = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			MaatConfig maatConfig = getMaatConfig(service);
+			long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
+			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
+			long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
+			listMap.add(getMaatConfig1(service, seq_groupid,seq_regionid2));
+			//listMap.add(getMaatConfig2(service, seq_groupid,seq_regionid2));
+
 			for (Integer db : redisDBByService) {
-				List<MaatConfig> listMap = new ArrayList<MaatConfig>();
-				listMap.add(maatConfig);	
 				configMap.put(db, listMap);
 			}
-			if (configRedisService.saveMaatConfig(configMap)) {
-				configRedisService.addMaatRelation(configMap);
-			}
+			configRedisService.saveMaatConfig(configMap);
 			// configRedisService.saveMaatConfig(listMap, service);
 			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
 			return "ok";
@@ -183,13 +182,93 @@ public class ConfigSourcesController extends BaseRestController {
 		return "false";
 	}
 
-	public MaatConfig getMaatConfig(Integer service) {
+	public MaatConfig getMaatConfig1(Integer service, long seq_groupid,long seq_regionid2) {
+		String time = new Date().getTime() + "";
+		Map<String, String> configMap1 = new HashMap<String, String>();
+		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
+		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
+		// int id=2;
+		configMap1.put("compile_id", seq_compileid + "");
+		configMap1.put("service", service + "");
+		configMap1.put("action", "0");
+		configMap1.put("do_blacklist", "1");
+		configMap1.put("do_log", "1");
+		configMap1.put("effective_range", "0");
+		configMap1.put("user_region", "0");
+		configMap1.put("is_valid", "1");
+		configMap1.put("group_num", "1");
+		configMap1.put("father_cfg_id", "0");
+		configMap1.put("op_time", time);
+
+		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
+		Map<String, String> groupMap1 = new HashMap<String, String>();
+		groupMap1.put("group_id", seq_groupid + "");
+		groupMap1.put("compile_id", seq_compileid + "");
+		groupMap1.put("is_valid", "1");
+		groupMap1.put("op_time", time);
+		groupMap1.put("service", service + "");
+		groupMapList.add(groupMap1);
+		Long incrId = configRedisService.getIncrId("SEQ_GROUPID");
+		Map<String, String> groupMap2 = new HashMap<String, String>();
+		groupMap2.put("group_id", incrId + "");
+		groupMap2.put("compile_id", seq_compileid + "");
+		groupMap2.put("is_valid", "1");
+		groupMap2.put("op_time", time);
+		groupMap2.put("service", service + "");
+		groupMapList.add(groupMap2);
+		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
+		Map<String, String> strMap = new HashMap<String, String>();
+		strMap.put("group_id", incrId + "");
+		strMap.put("region_id", seq_regionid1 + "");
+		strMap.put("addr_type", "4");
+		strMap.put("src_ip", "0.0.0.0");
+		strMap.put("mask_src_ip", "255.255.255.255");
+		strMap.put("src_port", "0");
+		strMap.put("mask_src_port", "0");
+		strMap.put("dst_ip", "0.0.0.0");
+		strMap.put("mask_dst_ip", "255.255.255.255");
+		strMap.put("dst_port", "0");
+		strMap.put("mask_dst_port", "0");
+		strMap.put("protocol", "0");
+		strMap.put("direction", "0");
+		strMap.put("is_valid", "1");
+		strMap.put("op_time", time);
+		strMap.put("service", service + "");
+
+		ipRegionMapList.add(strMap);
+
+		strMap = new HashMap<String, String>();
+		strMap.put("group_id", seq_groupid + "");
+		strMap.put("region_id", seq_regionid2 + "");
+		strMap.put("addr_type", "4");
+		strMap.put("src_ip", "0.0.0.0");
+		strMap.put("mask_src_ip", "255.255.255.255");
+		strMap.put("src_port", "0");
+		strMap.put("mask_src_port", "0");
+		strMap.put("dst_ip", "0.0.0.0");
+		strMap.put("mask_dst_ip", "255.255.255.255");
+		strMap.put("dst_port", "0");
+		strMap.put("mask_dst_port", "0");
+		strMap.put("protocol", "0");
+		strMap.put("direction", "0");
+		strMap.put("is_valid", "1");
+		strMap.put("op_time", time);
+		strMap.put("service", service + "");
+		ipRegionMapList.add(strMap);
+
+		MaatConfig maatConfig = new MaatConfig();
+		maatConfig.setCompileMap(configMap1);
+		maatConfig.setGroupMapList(groupMapList);
+		maatConfig.setService(service);
+		maatConfig.setIpRegionMapList(ipRegionMapList);
+		return maatConfig;
+	}
+
+	public MaatConfig getMaatConfig2(Integer service, long seq_groupid,long seq_regionid2) {
 		String time = new Date().getTime() + "";
 		Map<String, String> configMap = new HashMap<String, String>();
 		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
-		long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
-		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
-		long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
+
 		// int id=2;
 		configMap.put("compile_id", seq_compileid + "");
 		configMap.put("service", service + "");
@@ -210,31 +289,10 @@ public class ConfigSourcesController extends BaseRestController {
 		groupMap.put("is_valid", "1");
 		groupMap.put("op_time", time);
 		groupMap.put("service", service + "");
-
 		groupMapList.add(groupMap);
 
 		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
-
 		Map<String, String> strMap = new HashMap<String, String>();
-		strMap.put("group_id", seq_groupid + "");
-		strMap.put("region_id", seq_regionid1 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-
-		ipRegionMapList.add(strMap);
-
 		strMap = new HashMap<String, String>();
 		strMap.put("group_id", seq_groupid + "");
 		strMap.put("region_id", seq_regionid2 + "");
@@ -508,13 +566,14 @@ public class ConfigSourcesController extends BaseRestController {
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,jsonString);
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
+				jsonString);
 		StringBuffer sb = new StringBuffer();
-		
-		configSourcesService.updateCommonSources(thread, start,jsonString, new Date(),sb);
 
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"配置状态修改成功" , Constants.IS_DEBUG ?  jsonString : null);
+		configSourcesService.updateCommonSources(thread, start, jsonString, new Date(), sb);
+
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置状态修改成功",
+				Constants.IS_DEBUG ? jsonString : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/fileUploadSources", method = RequestMethod.POST)
@@ -539,7 +598,7 @@ public class ConfigSourcesController extends BaseRestController {
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
 				// 验证Md5
 				String md5 = DigestUtils.md5Hex(file.getInputStream());
-				//String md5 = DigestUtils.md5Hex(file.getBytes());
+				// String md5 = DigestUtils.md5Hex(file.getBytes());
 				System.out.println("----------------------------MD5:'" + md5 + "'==='" + fileDesc.getChecksum() + "'");
 				if (!md5.equals(fileDesc.getChecksum())) {
 					thread.setExceptionInfo("checksum与文件MD5值不一致");
@@ -563,7 +622,7 @@ public class ConfigSourcesController extends BaseRestController {
 			e.printStackTrace();
 		}
 		JSONObject jsonObj = new JSONObject();
-//		jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
+		// jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
 		jsonObj.put("accessUrl", "filePath");
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "文件上传成功", jsonObj);
 	}
@@ -571,7 +630,8 @@ public class ConfigSourcesController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/fileDigestSources", method = RequestMethod.POST)
 	@ApiOperation(value = "文件摘要获取", httpMethod = "POST", response = Map.class, notes = "文件摘要获取")
 	@ApiParam(value = "摘要文件", name = "MultipartFile", required = true)
-	public Map fileDigestSources(MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+	public Map fileDigestSources(@RequestBody MultipartFile file, HttpServletRequest request,
+			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				file, null);
@@ -587,6 +647,7 @@ public class ConfigSourcesController extends BaseRestController {
 		try {
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
 				// 验证Md5
+
 				String md5 = DigestUtils.md5Hex(file.getInputStream());
 				System.out.println("----------------------------MD5:'" + md5 + "'==='" + fileDesc.getChecksum() + "'");
 				if (!md5.equals(fileDesc.getChecksum())) {
@@ -605,17 +666,18 @@ public class ConfigSourcesController extends BaseRestController {
 				// meta_list[4] = new NameValuePair("fileMd5", md5);
 				logger.info("-----------------调用接口上传文件---------------");
 				String filePath = FileManager.upload(fdsfile, null);
-//				resultObject.put("path", filePath.substring(filePath.indexOf("group")));
+				// resultObject.put("path", filePath.substring(filePath.indexOf("group")));
 				resultObject.put("path", filePath);
 			}
 
-			CommonsMultipartFile filetemp = (CommonsMultipartFile) file;
-			String tempFilePath = filetemp.getStorageDescription().toString();
-			tempFilePath = tempFilePath.substring(tempFilePath.indexOf("[") + 1, tempFilePath.indexOf("]"));
-
+			String tempFilePath = request.getRealPath(File.separator) + "upload" + File.separator
+					+ (new Date()).getTime() + file.getOriginalFilename();
+			file.transferTo(new File(tempFilePath));
+			System.out.println("------------" + tempFilePath);
 			String digestStr = configSourcesService.getDigestGen(request.getRealPath(File.separator), tempFilePath);
 			resultObject.put("digest", digestStr);
 			resultObject.put("rawLen", file.getSize());
+			FileUtils.deleteFile(tempFilePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("文件上传过程中出现异常");
