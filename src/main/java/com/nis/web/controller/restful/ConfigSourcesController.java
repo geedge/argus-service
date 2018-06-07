@@ -28,6 +28,7 @@ import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.FileUtils;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
@@ -571,7 +572,7 @@ public class ConfigSourcesController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/fileDigestSources", method = RequestMethod.POST)
 	@ApiOperation(value = "文件摘要获取", httpMethod = "POST", response = Map.class, notes = "文件摘要获取")
 	@ApiParam(value = "摘要文件", name = "MultipartFile", required = true)
-	public Map fileDigestSources(MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+	public Map fileDigestSources(@RequestBody MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				file, null);
@@ -587,6 +588,7 @@ public class ConfigSourcesController extends BaseRestController {
 		try {
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
 				// 验证Md5
+				
 				String md5 = DigestUtils.md5Hex(file.getInputStream());
 				System.out.println("----------------------------MD5:'" + md5 + "'==='" + fileDesc.getChecksum() + "'");
 				if (!md5.equals(fileDesc.getChecksum())) {
@@ -608,14 +610,14 @@ public class ConfigSourcesController extends BaseRestController {
 //				resultObject.put("path", filePath.substring(filePath.indexOf("group")));
 				resultObject.put("path", filePath);
 			}
-
-			CommonsMultipartFile filetemp = (CommonsMultipartFile) file;
-			String tempFilePath = filetemp.getStorageDescription().toString();
-			tempFilePath = tempFilePath.substring(tempFilePath.indexOf("[") + 1, tempFilePath.indexOf("]"));
-
+		
+			String tempFilePath = request.getRealPath(File.separator)+"upload"+File.separator+(new Date()).getTime()+file.getOriginalFilename();
+			file.transferTo(new File(tempFilePath));
+			System.out.println("------------"+tempFilePath);
 			String digestStr = configSourcesService.getDigestGen(request.getRealPath(File.separator), tempFilePath);
 			resultObject.put("digest", digestStr);
 			resultObject.put("rawLen", file.getSize());
+			FileUtils.deleteFile(tempFilePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("文件上传过程中出现异常");

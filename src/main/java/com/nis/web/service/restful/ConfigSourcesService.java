@@ -2461,6 +2461,29 @@ public class ConfigSourcesService extends BaseService {
 					throw new RestServiceException(thread, System.currentTimeMillis() - start,"请检查service配置是否正确",
 						RestBusinessCode.wrong_range.getValue());
 				}
+				//获取IP类型
+				Integer ipType = null;
+				String ipTypeName ="";
+				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
+					if(commonSourceFieldCfg.getDstName().equals("ip_type")){
+						String dstVal = srcMap.get(commonSourceFieldCfg.getSrcName()).toString();
+						ipTypeName = commonSourceFieldCfg.getSrcName();
+						//regexp 特殊格式正则验证
+						Boolean valFlag = true;
+						if(!StringUtil.isEmpty(commonSourceFieldCfg.getRegexp())){
+							Pattern pattern = Pattern.compile(commonSourceFieldCfg.getRegexp());
+							Matcher matcher = pattern.matcher(dstVal);
+							valFlag = valFlag&matcher.matches();
+						}
+						if (!valFlag) {
+							logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
+							thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
+							throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数格式不正确或数据不在有效范围",
+									RestBusinessCode.param_formate_error.getValue());
+						}
+						ipType = Integer.parseInt(dstVal);
+					}
+				}
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					//是否必填
 					if(commonSourceFieldCfg.getIsRequired()&&!srcMap.containsKey(commonSourceFieldCfg.getSrcName())){
@@ -2498,10 +2521,10 @@ public class ConfigSourcesService extends BaseService {
 							}
 							break;
 						case "Ip":
-							if (!isIp(dstStr)) {
-								logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
-								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确，不是合法的IP地址");
-								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数不能格式不正确，不是合法的IP地址",
+							if (!BasicProvingUtil.isIpOrIpMask(dstStr,ipType)) {
+								logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式不正确或与"+ipTypeName+"不一致");
+								thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式不正确或与"+ipTypeName+"不一致");
+								throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数格式不正确或与"+ipTypeName+"不一致",
 									RestBusinessCode.missing_args.getValue());
 							}
 							break;
