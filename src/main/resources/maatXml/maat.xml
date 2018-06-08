@@ -114,8 +114,12 @@
 			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{digest_region_table_name};,;[region_id]</p:keyExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{file_digest_table_name};,;[region_id]</p:keyExpression>
 			<p:valueExpression>[region_id];\t;[group_id];\t;[raw_len];\t;[digest];\t;[cfds_level];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{ip_client_range_table_name};,;[region_id]</p:keyExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>

@@ -349,6 +349,50 @@ public class CompileVal {
 				}
 			}
 		}
+		
+		List<IpRegion> ipClientRangeList = configCompile.getIpClientRangeList();
+
+		if (ipClientRangeList != null && ipClientRangeList.size() > 0) {
+			for (IpRegion ipRegion : ipClientRangeList) {
+				// if (configCompile.getIsValid() != 0 &&
+				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
+				if (!StringUtil.isEmpty(ipRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
+							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
+				}
+
+				if (!isUpdate && (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 1)) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
+							+ ipRegion.getRegionId() + "的域配置在添加时不能为无效";
+				}
+				if (isUpdate && (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 0)) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
+							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效";
+				}
+
+				if (groupList.size() > 0 && !groupList.contains(ipRegion.getGroupId())) {
+					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
+							+ ipRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+				}
+				if (!regionGroupIdList.contains(ipRegion.getGroupId())) {
+					regionGroupIdList.add(ipRegion.getGroupId());
+				}
+
+				if (!isUpdate && Constants.BASE_VALIDATE) {
+					String valIpRegion = valIpRegion(ipRegion, compileId);
+					if (!valIpRegion.equals("ok")) {
+						return valIpRegion;
+					}
+				}
+
+				if (!isUpdate && Constants.SERVICE_VALIDATE) {
+					String serviceIpRegionVal = serviceIpRegionVal(ipRegion, compileId);
+					if (!serviceIpRegionVal.equals("ok")) {
+						return serviceIpRegionVal;
+					}
+				}
+			}
+		}
 		return CompileJudgeCode.CompileGroupSizeGtZero.getErrorReason();
 	}
 
