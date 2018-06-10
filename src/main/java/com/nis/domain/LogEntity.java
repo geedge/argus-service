@@ -48,12 +48,10 @@ public abstract class LogEntity<T> implements Serializable {
 	protected Date foundTime;
 	@ApiModelProperty(value="接收时间", required=true)
 	protected Date recvTime;
-	/*@ApiModelProperty(value="外层嵌套关联信息ID", required=true)
-	protected Long overId;*/
-	@ApiModelProperty(value="外层嵌套关联信息ID", required=true)
-	protected String overId;
 	@ApiModelProperty(value="协议类型", required=true)
 	protected String protocol;
+	@ApiModelProperty(value="IP地址类型", required=true)
+	protected Integer addrType;
 	@ApiModelProperty(value="服务端ip地址", required=true)
 	protected String serverIp;
 	@ApiModelProperty(value="客户端ip地址", required=true)
@@ -62,29 +60,25 @@ public abstract class LogEntity<T> implements Serializable {
 	protected Integer serverPort;
 	@ApiModelProperty(value="客户端端口", required=true)
 	protected Integer clientPort;
-	@ApiModelProperty(value="嵌套协议类型", required=true)
-	protected String nestProtocol;
-	@ApiModelProperty(value="嵌套服务端ip地址", required=true)
-	protected String nestServerIp;
-	@ApiModelProperty(value="嵌套客户端ip地址", required=true)
-	protected String nestClientIp;
-	@ApiModelProperty(value="嵌套服务端端口", required=true)
-	protected Integer nestServerPort;
-	@ApiModelProperty(value="嵌套客户端端口", required=true)
-	protected Integer nestClientPort;
-	@ApiModelProperty(value="业务类型", required=true)
+    @ApiModelProperty(value="业务类型", required=true)
 	protected Integer serviceType;
+	@ApiModelProperty(value="串联设备编号", required=true)
+	protected Integer deviceId;
+	@ApiModelProperty(value="传输方向", required=true, notes = "0：域内->域外，1：域外->域内，描述的是CLIENT_IP信息")
+	protected Integer direction;
+	@ApiModelProperty(value="流类型", required=true, notes = "0：c2s，1：s2c；2；double")
+	protected Integer streamType;
 	@ApiModelProperty(value="出入口编号", required=true)
 	protected Long entranceId;
 	@ApiModelProperty(value="处理机IP", required=true)
 	protected String cljIp;
-	@ApiModelProperty(value="封堵包记录文件", required=true)
-	protected String injectedPktFile;
-	
-	@ApiModelProperty(value="存放现场日志文件的URL地址", required=true)
-	protected String sceneFile;
-	@ApiModelProperty(value="管控动作", required=true)
-	protected Integer action;
+
+	@ApiModelProperty(value="用户嵌套地址列表", required=true)
+	protected String nestAddrList;
+
+	@ApiModelProperty(value="用户自定义域", required=true)
+	private String userRegion;
+
 	@ApiModelProperty(value="服务端地址定位信息", required=true)
 	protected String serverLocate;
 	@ApiModelProperty(value="客户端地址定位信息", required=true)
@@ -94,21 +88,21 @@ public abstract class LogEntity<T> implements Serializable {
 	protected Long foundTimeCluster;
 	protected Long recvTimeCluster;
 
-	
-	
 
+
+	protected String searchCfgId;
 	protected String searchFoundStartTime;
 	protected String searchFoundEndTime;
 	protected Long searchFoundStartTimeCluster;
 	protected Long searchFoundEndTimeCluster;
-	protected String searchCfgId;
 	protected String searchProtocol;
-	protected String searchServiceType;
 	protected String searchServerIp;
 	protected String searchClientIp;
+	protected Integer searchDirection;
+	protected String searchServiceType;
 	protected String searchEntranceId;
 	protected String searchCljIp;
-	protected String tableName;//神通数据库根据A/B版，动态切换表名
+
 	
 	@JsonIgnore
 	public Long getFoundTimeCluster() {
@@ -139,19 +133,7 @@ public abstract class LogEntity<T> implements Serializable {
 	public void setSearchFoundEndTimeCluster(Long searchFoundEndTimeCluster) {
 		this.searchFoundEndTimeCluster = searchFoundEndTimeCluster;
 	}
-	@JsonIgnore
-	public String getTableName() {
-		return tableName;
-	}
-	public void setTableName(String tableName) {
-		this.tableName = tableName;
-	}
-	public String getOverId() {
-		return overId;
-	}
-	public void setOverId(String overId) {
-		this.overId = overId;
-	}
+
 	/**
 	 * 当前实体分页对象
 	 */
@@ -165,19 +147,12 @@ public abstract class LogEntity<T> implements Serializable {
 	/**  
 	* @Title:  
 	* @Description: TODO  
-	* @param     入参   
+	* @param
 	*/
 	public LogEntity() {
 		super();
 	}
-	
-	public String getInjectedPktFile() {
-		return injectedPktFile;
-	}
-	
-	public void setInjectedPktFile(String injectedPktFile) {
-		this.injectedPktFile = injectedPktFile;
-	}
+
 	
 	
 	/** 
@@ -264,26 +239,6 @@ public abstract class LogEntity<T> implements Serializable {
 	public void setRecvTime(Date recvTime) {
 		this.recvTime = recvTime;
 	}
-
-
-
-
-	/** 
-	* @return overId 
-	*/
-	/*public Long getOverId() {
-		return overId;
-	}
-
-
-
-
-	*//** 
-	* @param overId 要设置的 overId 
-	*//*
-	public void setOverId(Long overId) {
-		this.overId = overId;
-	}*/
 
 
 
@@ -385,105 +340,6 @@ public abstract class LogEntity<T> implements Serializable {
 		this.clientPort = clientPort;
 	}
 
-
-
-
-	/** 
-	* @return nestProtocol 
-	*/
-	public String getNestProtocol() {
-		return nestProtocol;
-	}
-
-
-
-
-	/** 
-	* @param nestProtocol 要设置的 nestProtocol 
-	*/
-	public void setNestProtocol(String nestProtocol) {
-		this.nestProtocol = nestProtocol;
-	}
-
-
-
-
-	/** 
-	* @return nestServerIp 
-	*/
-	public String getNestServerIp() {
-		return nestServerIp;
-	}
-
-
-
-
-	/** 
-	* @param nestServerIp 要设置的 nestServerIp 
-	*/
-	public void setNestServerIp(String nestServerIp) {
-		this.nestServerIp = nestServerIp;
-	}
-
-
-
-
-	/** 
-	* @return nestClientIp 
-	*/
-	public String getNestClientIp() {
-		return nestClientIp;
-	}
-
-
-
-
-	/** 
-	* @param nestClientIp 要设置的 nestClientIp 
-	*/
-	public void setNestClientIp(String nestClientIp) {
-		this.nestClientIp = nestClientIp;
-	}
-
-
-
-
-	/** 
-	* @return nestServerPort 
-	*/
-	public Integer getNestServerPort() {
-		return nestServerPort;
-	}
-
-
-
-
-	/** 
-	* @param nestServerPort 要设置的 nestServerPort 
-	*/
-	public void setNestServerPort(Integer nestServerPort) {
-		this.nestServerPort = nestServerPort;
-	}
-
-
-
-
-	/** 
-	* @return nestClientPort 
-	*/
-	public Integer getNestClientPort() {
-		return nestClientPort;
-	}
-
-
-
-
-	/** 
-	* @param nestClientPort 要设置的 nestClientPort 
-	*/
-	public void setNestClientPort(Integer nestClientPort) {
-		this.nestClientPort = nestClientPort;
-	}
 
 
 
@@ -742,8 +598,6 @@ public abstract class LogEntity<T> implements Serializable {
 	}
 
 
-
-
 	/** 
 	* @param searchClientIp 要设置的 searchClientIp 
 	*/
@@ -761,8 +615,6 @@ public abstract class LogEntity<T> implements Serializable {
 	public String getSearchEntranceId() {
 		return searchEntranceId;
 	}
-
-
 
 
 	/** 
@@ -795,8 +647,6 @@ public abstract class LogEntity<T> implements Serializable {
 	}
 
 
-
-
 	/** 
 	* @return searchServiceType 
 	*/
@@ -805,9 +655,6 @@ public abstract class LogEntity<T> implements Serializable {
 		return searchServiceType;
 	}
 
-
-
-
 	/** 
 	* @param searchServiceType 要设置的 searchServiceType 
 	*/
@@ -815,25 +662,64 @@ public abstract class LogEntity<T> implements Serializable {
 		this.searchServiceType = searchServiceType;
 	}
 
-	
+    public Integer getAddrType() {
+        return addrType;
+    }
 
-	public String getSceneFile() {
-		return sceneFile;
-	}
-	public void setSceneFile(String sceneFile) {
-		this.sceneFile = sceneFile;
-	}
-	
-	public Integer getAction() {
-		return action;
-	}
-	public void setAction(Integer action) {
-		this.action = action;
-	}
-	
-	
+    public void setAddrType(Integer addrType) {
+        this.addrType = addrType;
+    }
 
-	@Override
+    public Integer getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(Integer deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public Integer getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Integer direction) {
+        this.direction = direction;
+    }
+
+    public Integer getStreamType() {
+        return streamType;
+    }
+
+    public void setStreamType(Integer streamType) {
+        this.streamType = streamType;
+    }
+
+    public String getNestAddrList() {
+        return nestAddrList;
+    }
+
+    public void setNestAddrList(String nestAddrList) {
+        this.nestAddrList = nestAddrList;
+    }
+
+    @JsonIgnore
+    public Integer getSearchDirection() {
+        return searchDirection;
+    }
+
+    public void setSearchDirection(Integer searchDirection) {
+        this.searchDirection = searchDirection;
+    }
+
+    public String getUserRegion() {
+        return userRegion;
+    }
+
+    public void setUserRegion(String userRegion) {
+        this.userRegion = userRegion;
+    }
+
+    @Override
     public String toString() {
         return ReflectionToStringBuilder.toString(this);
     }

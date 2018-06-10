@@ -50,7 +50,7 @@ public class DfKeyConvertUrlController  extends BaseRestController{
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
 	
-	protected String logSource = "0";
+	protected int logSource = 0;
 	
 	@RequestMapping(value="/dfKeyConvertUrlSources", method = RequestMethod.GET)
 	@ApiOperation(value="关键字业务转换URL日志信息获取" , httpMethod = "GET",  notes="get log list")
@@ -61,7 +61,9 @@ public class DfKeyConvertUrlController  extends BaseRestController{
 		
 		if(!Constants.ACTIVESYS_A.equals(searchActiveSys) 
 				&& !Constants.ACTIVESYS_C.equals(searchActiveSys)
-				) searchActiveSys=Constants.ACTIVESYS_B;
+				) {
+			searchActiveSys=Constants.ACTIVESYS_B;
+		}
 		
 		long start=System.currentTimeMillis();
 		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_GET,request, null);
@@ -80,11 +82,10 @@ public class DfKeyConvertUrlController  extends BaseRestController{
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(thread, System.currentTimeMillis() - start, "关键字业务转换URL日志信息检索失败");
 			}
-			((RestServiceException) e).setActiveSys(searchActiveSys);
 			((RestServiceException) e).setLogSource(logSource);
 			throw ((RestServiceException) e);
 		}
-		return serviceResponse(thread,System.currentTimeMillis()-start,request, response, "关键字业务转换URL日志信息检索成功",dfKeyConvertUrlPage
-				,searchActiveSys, logSource);
+		return serviceLogResponse(thread, System.currentTimeMillis()-start, request, "关键字业务转换URL日志信息检索成功",dfKeyConvertUrlPage
+				, logSource);
 	}
 }

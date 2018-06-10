@@ -219,9 +219,18 @@ public class BaseRestController {
 		return convert(restResult);
 	}
 
-	public Map serviceResponse(SaveRequestLogThread thread, long time, HttpServletRequest request,
-			HttpServletResponse response, String msg, Object data, String activeSys, String logSource) {
-		logger.info("结果集处理开始----" + System.currentTimeMillis());
+    /**
+     * 日志结果响应格式规范
+     * @param auditLogThread
+     * @param executedTime
+     * @param request
+     * @param msg
+     * @param data
+     * @param logSource
+     * @return
+     */
+	public Map serviceLogResponse(SaveRequestLogThread auditLogThread, long executedTime, HttpServletRequest request,
+                                  String msg, Object data, Integer logSource) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -240,12 +249,11 @@ public class BaseRestController {
 		restResult.setFromUri(request.getRequestURI());
 		restResult.setData(data);
 		restResult.setMsg(msg);
-		restResult.setActiveSys(activeSys);
 		restResult.setLogSource(logSource);
-		restResult.setTraceCode(thread.getTraceCode());
-		thread.setConsumerTime(time);
-		thread.setBusinessCode(restResult.getBusinessCode().getValue());
-		new Thread(thread).start();
+		restResult.setTraceCode(auditLogThread.getTraceCode());
+        auditLogThread.setConsumerTime(executedTime);
+        auditLogThread.setBusinessCode(restResult.getBusinessCode().getValue());
+		new Thread(auditLogThread).start();
 		return convert(restResult);
 	}
 
@@ -264,7 +272,6 @@ public class BaseRestController {
 		}
 		successMap.put(RestConstants.TRACE_CODE, re.getTraceCode());
 		successMap.put(RestConstants.REST_SERVICE_DATA, re.getData());
-		logger.info("结果集处理结束----" + System.currentTimeMillis());
 		return successMap;
 	}
 

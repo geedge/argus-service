@@ -50,7 +50,7 @@ public class IntervalTimeSearchController  extends BaseRestController{
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
 
-	protected String logSource = "0";
+	protected Integer logSource = 0;
 	
 	@RequestMapping(value="/djFlowControlStopSources", method = RequestMethod.GET)
 	@ApiOperation(value="监测规则流控信息获取" , httpMethod = "GET",  notes="get log list")
@@ -59,9 +59,12 @@ public class IntervalTimeSearchController  extends BaseRestController{
 			Page page, DjFlowControlStop flowControlStop, HttpServletRequest request, 
 			HttpServletResponse response, Model model) {
 		
-		if(!Constants.ACTIVESYS_A.equals(searchActiveSys)
+		if (!Constants.ACTIVESYS_A.equals(searchActiveSys)
 				&& !Constants.ACTIVESYS_C.equals(searchActiveSys)
-				)searchActiveSys=Constants.ACTIVESYS_B;
+				) {
+			searchActiveSys=Constants.ACTIVESYS_B;
+
+		}
 		
 		long start=System.currentTimeMillis();
 		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_GET,request, null);
@@ -79,11 +82,10 @@ public class IntervalTimeSearchController  extends BaseRestController{
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(thread, System.currentTimeMillis() - start, "监测规则流控信息检索失败");
 			}
-			((RestServiceException) e).setActiveSys(searchActiveSys);
 			((RestServiceException) e).setLogSource(logSource);
 			throw ((RestServiceException) e);
 		}
-		return serviceResponse(thread,System.currentTimeMillis()-start,request, response, "监测规则流控信息检索成功",flowControlStopPage
-				,searchActiveSys, logSource);
+		return serviceLogResponse(thread, System.currentTimeMillis()-start,request, "监测规则流控信息检索成功", flowControlStopPage
+				, logSource);
 	}
 }

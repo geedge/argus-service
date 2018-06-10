@@ -40,14 +40,7 @@ public class DefaultRestErrorResolver implements RestErrorResolver,InitializingB
 		RestResult error = new RestResult();
 		error.setStatus(this.getHttpStatusByEx(ex));// 设置http状态
 		//获取日志源[只有日志需要返回日志源和ActiveSys]
-		String logSource = ((RestServiceException) ex).getLogSource();
-		String activeSys = ((RestServiceException) ex).getActiveSys();
-		if(logSource != null ){
-			error.setLogSource(logSource);
-		}
-		if(activeSys != null ){
-			error.setActiveSys(activeSys);
-		}
+		int logSource = ((RestServiceException) ex).getLogSource();
 		
 		//RestServiceException 包含有错误code
 		if(ex instanceof RestServiceException){
@@ -71,8 +64,9 @@ public class DefaultRestErrorResolver implements RestErrorResolver,InitializingB
 		if(this.exceptionMappingDefinitions.containsKey(ex.getClass().getName())){
 			return HttpStatus.valueOf(Integer.parseInt(this.exceptionMappingDefinitions.get(ex.getClass()
 					.getName())));
+		} else {
+			return HttpStatus.INTERNAL_SERVER_ERROR;
 		}
-		else return HttpStatus.INTERNAL_SERVER_ERROR;
 	}
 	
 
