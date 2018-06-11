@@ -1298,9 +1298,15 @@ public class ConfigSourcesService extends BaseService {
 				return "error";
 			}
 		}
-		
-		configRedisService.saveMaatConfig(configMap);
-		logger1.info("---------------调用maat配置新增接口---------------------");
+		try {
+			logger1.info("---------------调用maat配置新增接口---------------------");
+			configRedisService.saveMaatConfig(configMap);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger1.error(e.getMessage());
+			msgList.add(e);
+			return "error";
+		}
 		return "ok";
 	}
 	private Map<String, String> convertObjectToMap(Object obj,Class clazz){
@@ -2599,8 +2605,14 @@ public class ConfigSourcesService extends BaseService {
 			}
 			
 		}
-		
-		configRedisService.saveUnMaatConfig(configMap);
+		try {
+			configRedisService.saveUnMaatConfig(configMap);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger1.error(e.getMessage());
+			msgList.add(e);
+			return "error";
+		}
 		
 		return "ok";
 	}
@@ -2659,8 +2671,14 @@ public class ConfigSourcesService extends BaseService {
 				return "error";
 			}
 		}
-		configRedisService.delUnMaatConfig(restMap);
-		
+		try {
+			configRedisService.delUnMaatConfig(restMap);
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger1.error(e.getMessage());
+			msgList.add(e);
+			return "error";
+		}
 		return "ok";
 	}
 	private String checkOptForUpdate(Map<String, Object> srcMap) {

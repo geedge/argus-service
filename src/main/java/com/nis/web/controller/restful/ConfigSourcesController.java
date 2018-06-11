@@ -338,8 +338,12 @@ public class ConfigSourcesController extends BaseRestController {
 			// 验证配置编译数据
 			validateConfigSource(thread, start, configSource);
 			Long benginTime = System.currentTimeMillis();
-			configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
-
+			String msg = configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
+			if ("error".equals(msg)) {
+				Exception exception = ConfigSourcesService.getMsgList().get(0);
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"存储编译配置时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+			}
 			Long endSaveTime = System.currentTimeMillis();
 			Long time = (endSaveTime - benginTime) / 1000;
 			System.out.println("插入数据成功总共需要" + time + "秒");
@@ -553,8 +557,12 @@ public class ConfigSourcesController extends BaseRestController {
 				null);
 		StringBuffer sb = new StringBuffer();
 
-		configSourcesService.saveCommonSources(thread, start, jsonString, sb);
-
+		String msg = configSourcesService.saveCommonSources(thread, start, jsonString, sb);
+		if (msg.equals("error")) {
+			Exception exception = ConfigSourcesService.getMsgList().get(0);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"存储回调配置时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置数据插入成功",
 				Constants.IS_DEBUG ? jsonString : null);
 	}
@@ -570,8 +578,12 @@ public class ConfigSourcesController extends BaseRestController {
 				jsonString);
 		StringBuffer sb = new StringBuffer();
 
-		configSourcesService.updateCommonSources(thread, start, jsonString, new Date(), sb);
-
+		String msg = configSourcesService.updateCommonSources(thread, start, jsonString, new Date(), sb);
+		if (msg.equals("error")) {
+			Exception exception = ConfigSourcesService.getMsgList().get(0);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"修改回调配置状态时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置状态修改成功",
 				Constants.IS_DEBUG ? jsonString : null);
 	}
