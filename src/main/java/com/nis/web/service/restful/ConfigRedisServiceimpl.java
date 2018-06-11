@@ -307,7 +307,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("{")) {
 								keyStr = keyStr.trim().replace("{", "").replace("}", "");
 								if (keyStr.toLowerCase().contains("table_name")) {
-									String argTableName = map.get("tableName");
+									String argTableName = map.get("table_name");
 									String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 											argTableName == null ? null : argTableName);
 									if (maatTableName == null) {
@@ -410,7 +410,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("{")) {
 								keyStr = keyStr.trim().replace("{", "").replace("}", "");
 								if (keyStr.toLowerCase().contains("table_name")) {
-									String argTableName = map.get("tableName");
+									String argTableName = map.get("table_name");
 									String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 											argTableName == null ? null : argTableName);
 									if (maatTableName == null) {
@@ -596,11 +596,10 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							if (type == 11 && keyStr.toLowerCase().equals("group_id")) {
 								keyBF.append(compileId);
 							}
-
 						} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("{")) {
 							keyStr = keyStr.trim().replace("{", "").replace("}", "");
 							if (keyStr.toLowerCase().contains("table_name")) {
-								String argTableName = map.get("tableName");
+								String argTableName = map.get("table_name");
 								String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 										argTableName == null ? null : argTableName);
 								if (maatTableName == null) {
