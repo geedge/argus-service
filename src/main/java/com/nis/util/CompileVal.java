@@ -175,8 +175,9 @@ public class CompileVal {
 			for (NumRegion numRegion : numRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(numRegion.getGroupId())) {
-				
-				if (!StringUtil.isEmpty(numRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), numRegion.getTableName())) {
+
+				if (!StringUtil.isEmpty(numRegion.getTableName())
+						&& !type2TableNameIsOk(configCompile.getService(), numRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionid为"
 							+ numRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
@@ -222,7 +223,8 @@ public class CompileVal {
 			for (StrRegion strRegion : strRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(strRegion.getGroupId())) {
-				if (!StringUtil.isEmpty(strRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), strRegion.getTableName())) {
+				if (!StringUtil.isEmpty(strRegion.getTableName())
+						&& !type2TableNameIsOk(configCompile.getService(), strRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionid为"
 							+ strRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
@@ -270,7 +272,8 @@ public class CompileVal {
 			for (IpRegion ipRegion : ipRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
-				if (!StringUtil.isEmpty(ipRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
+				if (!StringUtil.isEmpty(ipRegion.getTableName())
+						&& !type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionid为"
 							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
@@ -349,14 +352,15 @@ public class CompileVal {
 				}
 			}
 		}
-		
+
 		List<IpRegion> ipClientRangeList = configCompile.getIpClientRangeList();
 
 		if (ipClientRangeList != null && ipClientRangeList.size() > 0) {
 			for (IpRegion ipRegion : ipClientRangeList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
-				if (!StringUtil.isEmpty(ipRegion.getTableName())&&!type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
+				if (!StringUtil.isEmpty(ipRegion.getTableName())
+						&& !type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
 					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
 							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
 				}
@@ -406,10 +410,17 @@ public class CompileVal {
 	public static boolean type2TableNameIsOk(Integer serviceType, String tableName) {
 		if (null != serviceType && null != tableName && !tableName.equals("")) {
 			List<String> list = new ArrayList<String>();
-			Map<Integer, String> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(serviceType);
+			Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(serviceType);
 			if (sercieNameMap != null && sercieNameMap.size() > 0) {
 				for (Integer type : sercieNameMap.keySet()) {
-					list.add(sercieNameMap.get(type).toLowerCase());
+
+					List<String> tableList = sercieNameMap.get(type);
+					if (tableList != null && tableList.size() > 0) {
+						for (String table : tableList) {
+							list.add(table.toLowerCase());
+						}
+					}
+
 				}
 
 			}
@@ -727,10 +738,10 @@ public class CompileVal {
 	public static String serviceConfigCompileVal(ConfigCompile configCompile) {
 		Long compileId = configCompile.getCompileId();
 		Integer action = ServiceAndRDBIndexReal.getActionByService(configCompile.getService());
-		if (StringUtil.isEmpty(action)){
-			return "编译配置id为" + compileId + "的配置中service的值为"+configCompile.getService()+"时action不存在";
-		}else if(action.compareTo(configCompile.getAction())!=0) {
-			return "编译配置id为" + compileId + "的配置中service的值为"+configCompile.getService()+"时action只能为"+action;
+		if (StringUtil.isEmpty(action)) {
+			return "编译配置id为" + compileId + "的配置中service的值为" + configCompile.getService() + "时action不存在";
+		} else if (action.compareTo(configCompile.getAction()) != 0) {
+			return "编译配置id为" + compileId + "的配置中service的值为" + configCompile.getService() + "时action只能为" + action;
 		}
 		if (configCompile.getDoBlacklist() != 1) {
 			return "编译配置id为" + compileId + "的配置中doBlacklist的值只能是1";

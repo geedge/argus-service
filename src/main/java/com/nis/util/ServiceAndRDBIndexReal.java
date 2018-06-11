@@ -22,7 +22,7 @@ public class ServiceAndRDBIndexReal {
 	/**
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
 	 */
-	private static Map<Integer, Map<Integer, String>> sercieNameMap = new HashMap<Integer, Map<Integer, String>>();
+	private static Map<Integer, Map<Integer, List<String>>> sercieNameMap = new HashMap<Integer, Map<Integer, List<String>>>();
 
 	/**
 	 * 非maat结构业务类型与表名对应关系,key是业务类型,value是表名
@@ -68,13 +68,20 @@ public class ServiceAndRDBIndexReal {
 				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
 				String type = Configurations.getStringProperty(serviceAction[0], "");
 				if (type != null && !type.trim().equals("")) {
-					Map<Integer, String> typeMap = new HashMap<Integer, String>();
+					Map<Integer, List<String>> typeMap = new HashMap<Integer, List<String>>();
 					String[] typeArrs = type.split(";");
 					for (String typeStr : typeArrs) {
 						String[] typeArr = typeStr.split(":");
+						int tableType = Integer.parseInt(typeArr[0]);
 						String tableNameArr[] = typeArr[1].split(",");
 						for (String tableName : tableNameArr) {
-							typeMap.put(Integer.parseInt(typeArr[0]), tableName.toUpperCase());
+							if (typeMap.containsKey(tableType)) {
+								typeMap.get(tableType).add(tableName.toUpperCase());
+							} else {
+								List<String> list = new ArrayList<String>();
+								list.add(tableName.toUpperCase());
+								typeMap.put(tableType, list);
+							}
 						}
 					}
 					sercieNameMap.put(Integer.parseInt(serviceAction[0]), typeMap);
@@ -117,19 +124,23 @@ public class ServiceAndRDBIndexReal {
 	 * @return
 	 */
 	public static String getMaatTableName(int service, int type, String tableName) {
-		Map<Integer, String> typeMap = sercieNameMap.get(service);
+		Map<Integer, List<String>> typeMap = sercieNameMap.get(service);
 		if (typeMap != null && typeMap.size() > 0) {
+			List<String> tableList = typeMap.get(type);
 			if (tableName == null || tableName.trim().equals("")) {
-				return typeMap.get(type);
+				if (tableList.size() > 1) {
+					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
+					throw new RuntimeException("业务类型:"+service+",配置类型:"+type+"对应多个表,请输入具体的表名");
+				} else {
+					return tableList.get(0);
+				}
 			} else {
-				String tableNames = typeMap.get(type);
-				String[] split = tableNames.split(",");
-				for (String str : split) {
+				for (String str : tableList) {
 					if (str.toLowerCase().contains(tableName.toLowerCase())) {
 						return str;
 					} else {
-						logger.error(
-								"未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名",service,type,tableName);
+						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
+						throw new RuntimeException("未从业务类型和表对应关系中,找到业务类型:"+service+",配置类型:"+type+"表名:"+tableName+"对应的真实表名");
 					}
 				}
 
@@ -156,11 +167,12 @@ public class ServiceAndRDBIndexReal {
 		return serviceActionMap.get(service);
 	}
 
-	public static Map<Integer, Map<Integer, String>> getSercieNameMap() {
+
+	public static Map<Integer, Map<Integer, List<String>>> getSercieNameMap() {
 		return sercieNameMap;
 	}
 
-	public static void setSercieNameMap(Map<Integer, Map<Integer, String>> sercieNameMap) {
+	public static void setSercieNameMap(Map<Integer, Map<Integer, List<String>>> sercieNameMap) {
 		ServiceAndRDBIndexReal.sercieNameMap = sercieNameMap;
 	}
 
