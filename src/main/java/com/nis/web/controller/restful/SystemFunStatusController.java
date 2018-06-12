@@ -71,12 +71,16 @@ public class SystemFunStatusController  extends BaseRestController {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			logger.error(e.getCause());
-			if(e instanceof RestServiceException) throw e;
+			if(e instanceof RestServiceException) {throw e;}
 			String info=OracleErrorCodeUtil.getOraCode(e);
-			if(!StringUtil.isEmpty(info))
+			if(!StringUtil.isEmpty(info)) {
 				OracleErrorCodeUtil.throwExceptionInfo(thread,System.currentTimeMillis()-start,info);
-			else
-				throw new RestServiceException(thread,System.currentTimeMillis()-start,"保存文本系统功能类业务配置失败", RestBusinessCode.unknow_error.getValue());
+			} else {
+                throw new RestServiceException(thread,System.currentTimeMillis()-start,"保存文本系统功能类业务配置失败", RestBusinessCode.unknow_error.getValue());
+            }
+
+
+
 		}
 		return serviceResponse(thread,System.currentTimeMillis()-start,request,response,"保存文本系统功能类业务配置成功",systemFunStatusSource.getSystemFunStatusList());
 	}
@@ -108,21 +112,25 @@ public class SystemFunStatusController  extends BaseRestController {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			logger.error(e.getCause());
-			if(e instanceof RestServiceException) throw e;
+			if(e instanceof RestServiceException) {throw e; }
 			String info=OracleErrorCodeUtil.getOraCode(e);
-			if(!StringUtil.isEmpty(info))
-				OracleErrorCodeUtil.throwExceptionInfo(thread,System.currentTimeMillis()-start,info);
-			else
-				throw new RestServiceException(thread,System.currentTimeMillis()-start,"更新文本系统功能类业务配置失败", RestBusinessCode.unknow_error.getValue());
+			if(!StringUtil.isEmpty(info)) {
+                OracleErrorCodeUtil.throwExceptionInfo(thread, System.currentTimeMillis() - start, info);
+            } else {
+                throw new RestServiceException(thread, System.currentTimeMillis() - start, "更新文本系统功能类业务配置失败", RestBusinessCode.unknow_error.getValue());
+            }
 		}
 		return serviceResponse(thread,System.currentTimeMillis()-start,request,response,"更新文本系统功能类业务配置成功",systemFunStatusSource.getSystemFunStatusList());
+
 	}
 	
 	
 	private void chekckData(SystemFunStatusSource entity) {
 		for (SystemFunStatus systemFunStatus : entity.getSystemFunStatusList()) {
-			if (systemFunStatus.getOpTime() == null)
-				systemFunStatus.setOpTime(entity.getOpTime());
+			if (systemFunStatus.getOpTime() == null) {
+                systemFunStatus.setOpTime(entity.getOpTime());
+            }
+
 		}
 	}
 }

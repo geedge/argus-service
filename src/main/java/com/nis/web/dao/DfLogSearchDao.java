@@ -15,10 +15,6 @@ import com.nis.domain.ControlLog;
 import com.nis.domain.LogEntity;
 import com.nis.domain.restful.DfDnsLog;
 import com.nis.domain.restful.DfFtpLog;
-import com.nis.domain.restful.DfHttpKeywordLog;
-import com.nis.domain.restful.DfHttpReqLog;
-import com.nis.domain.restful.DfHttpResLog;
-import com.nis.domain.restful.DfIpPortLog;
 import com.nis.domain.restful.DfIpsecLog;
 import com.nis.domain.restful.DfL2tpLog;
 import com.nis.domain.restful.DfMailLog;
@@ -37,11 +33,7 @@ import com.nis.domain.restful.DfTunnelRandomLog;
 */
 @MyBatisDao
 public interface DfLogSearchDao extends CrudDao<LogEntity> {
-	
-	List<DfIpPortLog> findIpPortLogs(DfIpPortLog log);
-	List<DfHttpReqLog> findHttpReqLogs(DfHttpReqLog log);
-	List<DfHttpResLog> findHttpResLogs(DfHttpResLog log);
-	List<DfHttpKeywordLog> findHttpKeywordLogs(DfHttpKeywordLog log);
+
 	List<DfMailLog> findMailLogs(DfMailLog log);
 	List<DfDnsLog> findDnsLogs(DfDnsLog log);
 	List<DfFtpLog> findFtpLogs(DfFtpLog log);
@@ -52,10 +44,6 @@ public interface DfLogSearchDao extends CrudDao<LogEntity> {
 	List<DfSshLog> findSshLogs(DfSshLog log);
 	List<DfSslLog> findSslLogs(DfSslLog log);
 	List<DfTunnelRandomLog> findTunnelRandomLogs(DfTunnelRandomLog log);
-	List<DfIpPortLog> findIpPortLogsCluster(DfIpPortLog log);
-	List<DfHttpReqLog> findHttpReqLogsCluster(DfHttpReqLog log);
-	List<DfHttpResLog> findHttpResLogsCluster(DfHttpResLog log);
-	List<DfHttpKeywordLog> findHttpKeywordLogsCluster(DfHttpKeywordLog log);
 	List<DfMailLog> findMailLogsCluster(DfMailLog log);
 	List<DfDnsLog> findDnsLogsCluster(DfDnsLog log);
 	List<DfFtpLog> findFtpLogsCluster(DfFtpLog log);

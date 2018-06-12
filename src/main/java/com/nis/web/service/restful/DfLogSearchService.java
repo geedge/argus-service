@@ -25,10 +25,6 @@ import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
 import com.nis.domain.restful.DfDnsLog;
 import com.nis.domain.restful.DfFtpLog;
-import com.nis.domain.restful.DfHttpKeywordLog;
-import com.nis.domain.restful.DfHttpReqLog;
-import com.nis.domain.restful.DfHttpResLog;
-import com.nis.domain.restful.DfIpPortLog;
 import com.nis.domain.restful.DfIpsecLog;
 import com.nis.domain.restful.DfL2tpLog;
 import com.nis.domain.restful.DfMailLog;
@@ -87,109 +83,8 @@ public class DfLogSearchService extends BaseLogService{
 	public List<LogEntity> findList(LogEntity entity) {
 		return dao.findList(entity);
 	}
-	/**
-	 * 查询端口封堵分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfIpPortLog> findIpPortPage(Page<DfIpPortLog> page, DfIpPortLog entity,String activeSys) throws Exception{
-		entity.setPage(page);
-		if(Constants.IS_USE_ES){
-			List<DfIpPortLog> resultList=new ArrayList<>();
-			elasticsearchSqlDao.findLogs(resultList, entity,activeSys);
-			page.setList(resultList);
-		}else{
-			page.setList(dao.findIpPortLogs(entity));
-		}
-		
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfHttpReqLog> findHttpReqPage(Page<DfHttpReqLog> page, DfHttpReqLog entity,String activeSys) throws Exception {
-		entity.setPage(page);
-		if(Constants.IS_USE_ES){
-			List<DfHttpReqLog> resultList=new ArrayList<>();
-			elasticsearchSqlDao.findLogs(resultList, entity,activeSys);
-			page.setList(resultList);
-		}else{
-			page.setList(dao.findHttpReqLogs(entity));
-		}
-		/*if(type.equals("jdbc")){
-			logger.info("**********oralce JDBC数据查询开始时间"+System.currentTimeMillis());
-			page.setList(MysqlJDBC.queryByCondition(page, entity));
-			logger.info("**********oralce JDBC数据查询结束时间"+System.currentTimeMillis());
-		}else if(type.equals("es")){
-			logger.info("**********es数据查询开始时间"+System.currentTimeMillis());
-			List<DfHttpReqLog> dfHttpReqLogs=new ArrayList<DfHttpReqLog>();
-			elasticsearchSqlDao.findLogs(dfHttpReqLogs, entity);
-			page.setList(dfHttpReqLogs);
-			logger.info("**********es数据查询开始时间"+System.currentTimeMillis());
-		}else{
-			logger.info("**********oralce Mybatis数据查询开始时间"+System.currentTimeMillis());
-			page.setList(dao.findHttpReqLogs(entity));
-			logger.info("**********oralce Mybatis数据查询开始结束"+System.currentTimeMillis());
-		}*/
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfHttpResLog> findHttpResPage(Page<DfHttpResLog> page, DfHttpResLog entity,String activeSys) throws Exception{
-		entity.setPage(page);
-		if(Constants.IS_USE_ES){
-			List<DfHttpResLog> resultList=new ArrayList<>();
-			elasticsearchSqlDao.findLogs(resultList, entity,activeSys);
-			page.setList(resultList);
-		}else{
-			page.setList(dao.findHttpResLogs(entity));
-		}
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfHttpKeywordLog> findHttpKeywordPage(Page<DfHttpKeywordLog> page, DfHttpKeywordLog entity,String activeSys) throws Exception {
-		entity.setPage(page);
-		if(Constants.IS_USE_ES){
-			List<DfHttpKeywordLog> resultList=new ArrayList<>();
-			elasticsearchSqlDao.findLogs(resultList, entity,activeSys);
-			page.setList(resultList);
-		}else{
-			page.setList(dao.findHttpKeywordLogs(entity));
-		}
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @throws Exception 
-	 */
-	public Page<DfHttpKeywordLog> findHttpMultiPartPage(Page<DfHttpKeywordLog> page, DfHttpKeywordLog entity,String activeSys) throws Exception {
-		entity.setPage(page);
-		if(Constants.IS_USE_ES){
-			List<DfHttpKeywordLog> resultList=new ArrayList<>();
-			elasticsearchSqlDao.findLogs(resultList, entity,activeSys);
-			page.setList(resultList);
-		}else{
-			page.setList(dao.findHttpKeywordLogs(entity));
-		}
-		return page;
-	}
+
+
 	/**
 	 * 查询分页数据
 	 * @param page 分页对象
@@ -373,64 +268,7 @@ public class DfLogSearchService extends BaseLogService{
 	}
 	
 	
-	/**
-	 * 查询端口封堵分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfIpPortLog> findIpPortPageCluster(Page<DfIpPortLog> page, DfIpPortLog entity,String activeSys) throws Exception{
-		entity.setPage(page);
-		page.setList(daoCluster.findIpPortLogsCluster(entity));
-		
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfHttpReqLog> findHttpReqPageCluster(Page<DfHttpReqLog> page, DfHttpReqLog entity,String activeSys) throws Exception {
-		entity.setPage(page);
-		page.setList(daoCluster.findHttpReqLogsCluster(entity));
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfHttpResLog> findHttpResPageCluster(Page<DfHttpResLog> page, DfHttpResLog entity,String activeSys) throws Exception{
-		entity.setPage(page);
-		page.setList(daoCluster.findHttpResLogsCluster(entity));
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @param page 分页对象
-	 * @param entity
-	 * @return
-	 * @throws Exception 
-	 */
-	public Page<DfHttpKeywordLog> findHttpKeywordPageCluster(Page<DfHttpKeywordLog> page, DfHttpKeywordLog entity,String activeSys) throws Exception {
-		entity.setPage(page);
-		page.setList(daoCluster.findHttpKeywordLogsCluster(entity));
-		return page;
-	}
-	/**
-	 * 查询分页数据
-	 * @throws Exception 
-	 */
-	public Page<DfHttpKeywordLog> findHttpMultiPartPageCluster(Page<DfHttpKeywordLog> page, DfHttpKeywordLog entity,String activeSys) throws Exception {
-		entity.setPage(page);
-		page.setList(daoCluster.findHttpKeywordLogsCluster(entity));
-		return page;
-	}
+
 	/**
 	 * 查询分页数据
 	 * @param page 分页对象
