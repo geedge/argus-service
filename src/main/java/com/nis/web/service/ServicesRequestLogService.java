@@ -67,9 +67,6 @@ public class ServicesRequestLogService {
 	 *            request中的参数
 	 * @param contextPath
 	 *            request中的参数
-	 * @param request
-	 *            请求
-	 * @param response
 	 *            响应
 	 * @param operator
 	 *            操作人

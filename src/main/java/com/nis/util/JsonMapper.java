@@ -31,7 +31,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nis.domain.Page;
-import com.nis.domain.restful.DfIpPortLog;
+
 
 /**
  * 简单封装Jackson，实现JSON String<->Java Object的Mapper. 封装不同的输出风格,
@@ -264,15 +264,7 @@ public class JsonMapper extends ObjectMapper {
 		 * map.put("id", 2); map.put("pId", 1); map.put("name", "你好");
 		 * map.put("open", true); list.add(map);
 		 */
-		List<DfIpPortLog> ipPort = new ArrayList<DfIpPortLog>();
-		DfIpPortLog ip = new DfIpPortLog();
-		ip.setCljIp("aa");
-		ip.setId(null);
-		ipPort.add(ip);
-		Page page = new Page();
-		page.setList(ipPort);
-		String json = JsonMapper.getInstance().toJsonString(ipPort);
-		System.out.println(json);
+
 	}
 
 }

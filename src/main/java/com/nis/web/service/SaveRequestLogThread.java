@@ -19,8 +19,9 @@ import org.apache.log4j.Logger;
 import com.nis.datasource.CustomerContextHolder;
 
 /**
+ * 审计日志工作线程
  * @ClassName: SaveLogThread.java 
- * @Description: TODO
+ * @Description: 用于记录业务操作日志，后期用于审计及相关联调验证工作
  * @author (dell)
  * @date 2016年10月14日 下午6:26:41
  * @version V1.0
@@ -66,7 +67,6 @@ public class SaveRequestLogThread implements Runnable {
 	 * 创建一个新的实例 SaveRequestLogThread.
 	 *
 	 * @param service
-	 * @param requestAddr
 	 * @param requestURI
 	 * @param queryString
 	 * @param contextPath

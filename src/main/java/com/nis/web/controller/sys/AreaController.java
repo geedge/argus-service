@@ -24,7 +24,7 @@ import com.nis.web.controller.BaseController;
 @Controller
 @RequestMapping("${adminPath}/sys/area")
 public class AreaController extends BaseController {
-	
+
 	
 	@ModelAttribute
 	public SysArea get(@RequestParam(required=false) Long id) {

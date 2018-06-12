@@ -219,7 +219,7 @@ public abstract class BaseLogService {
 	/**
 	 * wx 报表查询条件检查
 	 * 
-	 * @param className
+	 * @param clazz
 	 *            需要检验的实体名称[需要保证resultMap的id命名方式为[className]Map]
 	 * @param page
 	 *            需要校验的page对象

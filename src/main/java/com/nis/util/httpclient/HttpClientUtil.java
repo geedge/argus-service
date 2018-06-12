@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.nis.util.JsonMapper;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -107,10 +108,9 @@ public class HttpClientUtil {
     }  
     public static void main(String[] args) throws ClientProtocolException, IOException {  
     	HttpClientUtil hd = new HttpClientUtil();  
-        hd.get("http://10.0.6.115:9200/_sql?sql=select * from dfipportlog-2016-09-07-15 limit 1 10");  
-        Map<String,String> map = new HashMap();  
-        map.put("id","1");  
-        hd.post("http://localhost:8080/springMVC/menu/getChildren.do",map);  
+        String result =  hd.get("http://10.0.6.104:8080/galaxy/service/cfg/v1/configPzIdSources");
+        Object mapResult = JsonMapper.fromJsonString(result,Map.class);
+        System.out.println(result);
     }  
   
 }

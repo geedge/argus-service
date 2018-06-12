@@ -8,9 +8,7 @@ public class RestServiceException extends RuntimeException{
 	
 	private int errorCode;
 	
-	private String logSource;
-	
-	private String activeSys;
+	private int logSource;
 	
 	private String traceCode;
 	/**
@@ -33,8 +31,10 @@ public class RestServiceException extends RuntimeException{
 		this.traceCode = thread.getTraceCode();
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(this.getErrorCode());
-		if(StringUtils.isEmpty(thread.getExceptionInfo()))
-			thread.setExceptionInfo(message);
+		if(StringUtils.isEmpty(thread.getExceptionInfo())) {
+            thread.setExceptionInfo(message);
+        }
+
 		new Thread(thread).start();
 	}
 
@@ -48,8 +48,10 @@ public class RestServiceException extends RuntimeException{
 		this.traceCode = thread.getTraceCode();
 		thread.setConsumerTime(time);
 		thread.setBusinessCode(this.getErrorCode());
-		if(StringUtils.isEmpty(thread.getExceptionInfo()))
-			thread.setExceptionInfo(message);
+		if(StringUtils.isEmpty(thread.getExceptionInfo())) {
+            thread.setExceptionInfo(message);
+        }
+
 		new Thread(thread).start();
 	}
 
@@ -61,19 +63,14 @@ public class RestServiceException extends RuntimeException{
 	public void setErrorCode(int errorCode) {
 		this.errorCode = errorCode;
 	}
-	
-	public String getLogSource() {
-		return logSource;
-	}
-	public void setLogSource(String logSource) {
-		this.logSource = logSource;
-	}
-	public String getActiveSys() {
-		return activeSys;
-	}
-	public void setActiveSys(String activeSys) {
-		this.activeSys = activeSys;
-	}
+
+    public int getLogSource() {
+        return logSource;
+    }
+
+    public void setLogSource(int logSource) {
+        this.logSource = logSource;
+    }
 
 	public String getTraceCode() {
 		return traceCode;

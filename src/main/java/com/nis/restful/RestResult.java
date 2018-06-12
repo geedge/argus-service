@@ -48,7 +48,7 @@ public class RestResult {
 	/**
 	 * 日志数据来源本地：0  数据中心：1
 	 */
-	private String logSource;
+	private Integer logSource;
 	
 	/**
 	 * 追踪状态码
@@ -59,14 +59,13 @@ public class RestResult {
 		
 	}
 	
-	public RestResult(HttpStatus status, RestBusinessCode businessCode, String msg,String fromUri,String activeSys,String fromSign,String traceCode) {
+	public RestResult(HttpStatus status, RestBusinessCode businessCode, String msg, String fromUri, Integer logSource,String traceCode) {
 		super();
 		this.status = status;
 		this.businessCode = businessCode;
 		this.msg = msg;
 		this.fromUri = fromUri;
-		this.activeSys=activeSys;
-		this.logSource=logSource;
+		this.logSource= logSource;
 		this.traceCode=traceCode;
 	}
 	
@@ -137,14 +136,15 @@ public class RestResult {
 		this.activeSys = activeSys;
 	}
 
-	public String getLogSource() {
+	public Integer getLogSource() {
 		return logSource;
 	}
-	public void setLogSource(String logSource) {
+
+	public void setLogSource(Integer logSource) {
 		this.logSource = logSource;
 	}
-	
-	/** 
+
+	/**
 	* @return data 
 	*/
 	public Object getData() {
@@ -166,7 +166,9 @@ public class RestResult {
 		this.traceCode = traceCode;
 	}
 
+    @Override
 	public String toString() {
+
 	        return new StringBuilder().append("HttpStatus:").append(getStatus().value())
 	                .append(" errorcode:")
 	                .append(this.getBusinessCode().getValue())
