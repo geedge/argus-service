@@ -18,7 +18,6 @@ import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nis.domain.restful.DfIpPortLog;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.CookieUtil;
@@ -809,6 +808,6 @@ public class Page<T> {
 //		this.list = page.getContent();
 //	
 public static void main(String[] args) {
-	Page page=new Page<DfIpPortLog>();
+//	Page page=new Page<DfIpPortLog>();
 }	
 }

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.Page;
 import com.nis.domain.ServicesRequestLog;
-import com.nis.domain.restful.DfIpPortLog;
 import com.nis.domain.restful.ServicesRequestLogBean;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;

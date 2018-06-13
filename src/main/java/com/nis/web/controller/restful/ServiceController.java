@@ -9,30 +9,15 @@
 package com.nis.web.controller.restful;
 
 
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.ControlLog;
-import com.nis.domain.Page;
-import com.nis.domain.restful.ConfigSource;
-import com.nis.domain.restful.DfIpPortLog;
-import com.nis.restful.RestBusinessCode;
-import com.nis.restful.RestServiceException;
-import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.restful.ControlLogService;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 /** 
 * @ClassName: ServiceController 
