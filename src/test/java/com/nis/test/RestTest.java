@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
 
@@ -28,6 +30,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import com.nis.restful.RestConstants;
+import com.nis.util.FileUtils;
 import com.nis.util.JsonMapper;
 
 /**
@@ -43,14 +46,14 @@ public class RestTest {
 	public void testFileUpload() {
 		CloseableHttpResponse response = null;
 		try {
-			File file = new File("F:/git.rar");
+			File file = new File("C:/Users/dell/Desktop/Cal.java");
 
 //			String md5 = DigestUtils.md5Hex(file);
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			builder.addBinaryBody("file", file);
 
 			HttpPost request = new HttpPost(
-					"http://10.0.6.120:8080/galaxy/service/cfg/v1/fileUploadSources");
+					"http://10.0.6.201:8090/galaxy/service/cfg/v1/fileDigestSources");
 			//galaxy/service/cfg/v1/fileUploadSources
 			request.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 600000);
 			request.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 600000);
@@ -61,7 +64,7 @@ public class RestTest {
 			jsonObject.put("fileName", "1.png");
 			//jsonObject.put("checksum", "d99f9aa4f3748fa48aa6e350c628c67f");
 
-			jsonObject.put("checksum", "faa364a36cddcbbfd65c0224f35fcfd0");
+			jsonObject.put("checksum", "fa7f24ab0f449f5d805bdcf51d476074");
 			request.setHeader("File-Desc", jsonObject.toString());
 			HttpEntity entity = builder.build();
 			request.setEntity(entity);
@@ -69,7 +72,6 @@ public class RestTest {
 			
 			response = httpClient.execute(request);
 			System.out.println(EntityUtils.toString(response.getEntity()));
-			System.out.println("aa");	
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -229,5 +231,10 @@ public class RestTest {
 			return sqlDate;
 
 		}
-
+		@Test
+		public void test11() {
+			Pattern pattern = Pattern.compile("[0|6|17]");
+			Matcher matcher = pattern.matcher("0");
+			System.out.println(matcher.matches());
+		}
 }
