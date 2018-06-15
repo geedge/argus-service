@@ -14,9 +14,7 @@ public class CamelUnderlineUtil {
 
 	private static final char UNDERLINE ='_';
 	public static String camelToUnderline(String param) {
-
 		if (StringUtil.isEmpty(param)) {
-
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();
@@ -34,9 +32,7 @@ public class CamelUnderlineUtil {
 	}
 	
 	public static String underlineToCamel(String param){
-		
 		if (StringUtil.isEmpty(param)) {
-
 			return "";
 		}
 		StringBuilder sb = new StringBuilder();

@@ -21,7 +21,6 @@ import com.nis.domain.MaatXmlSeq;
 import com.nis.domain.restful.CompileAndGroupRelations;
 import com.nis.domain.restful.GroupAndRegionRelations;
 import com.nis.domain.restful.MaatConfig;
-import com.nis.domain.restful.MaatRelation;
 import com.nis.listener.CompileGroupRegionRela;
 import com.nis.util.Configurations;
 import com.nis.util.ReadMaatXmlUtil;
