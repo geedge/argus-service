@@ -11,7 +11,9 @@ package com.nis.domain.restful;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nis.util.JsonDateDeserializer;
 import com.nis.util.JsonDateSerializer;
 
 /** 
@@ -82,6 +84,7 @@ public  class ConfigSource extends ConfigCommonSource{
 	/** 
 	* @param opTime 要设置的 opTime 
 	*/
+	@JsonDeserialize(using=JsonDateDeserializer.class)
 	public void setOpTime(Date opTime) {
 		this.opTime = opTime;
 	}

@@ -11,6 +11,7 @@ package com.nis.domain.restful;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nis.util.JsonDateSerializer;
 
@@ -29,6 +30,7 @@ public abstract class ConfigCommonSource implements Serializable {
 	private static final long serialVersionUID = 152715081015545848L;
 	protected String version;//默认版本1.0
 	protected String operator;//操作人员
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	protected Date opTime;//操作时间
 	protected Integer opAction;//操作行为 1-插入 2-更新 3-删除 4-查询（暂无）
 	/** 

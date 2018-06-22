@@ -1,18 +1,30 @@
 package com.nis.web.service.restful;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
 import com.beust.jcommander.internal.Lists;
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
-import com.nis.domain.restful.*;
-import com.nis.util.Constants;
+import com.nis.domain.restful.NtcDnsLog;
+import com.nis.domain.restful.NtcFtpLog;
+import com.nis.domain.restful.NtcHttpLog;
+import com.nis.domain.restful.NtcIpLog;
+import com.nis.domain.restful.NtcIpsecLog;
+import com.nis.domain.restful.NtcL2tpLog;
+import com.nis.domain.restful.NtcMailLog;
+import com.nis.domain.restful.NtcOpenvpnLog;
+import com.nis.domain.restful.NtcPptpLog;
+import com.nis.domain.restful.NtcPzReport;
+import com.nis.domain.restful.NtcSshLog;
+import com.nis.domain.restful.NtcSslLog;
 import com.nis.web.service.BaseLogService;
-import org.apache.log4j.Logger;
-import org.apache.twill.api.logging.LogEntry;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created by darnell on 2018/6/10.
@@ -101,12 +113,11 @@ public class LogTestService extends BaseLogService {
         ntcHttpLog.setCfgId(1532L);
         ntcHttpLog.setServiceType(17);
         ntcHttpLog.setUserRegion("1532");
-        ntcHttpLog.setC2sIsn(19034211L);
-        ntcHttpLog.setHttpProxyFlag(211L);
-        ntcHttpLog.setHttpSeq(1L);
         ntcHttpLog.setUrl("http://jd.com/get/api/json");
-        ntcHttpLog.setReqLine("Get jd.com");
-        ntcHttpLog.setResLine("response line content");
+        ntcHttpLog.setReqHdrFile("reqHdrFile1532.txt");
+        ntcHttpLog.setReqBodyFile("reqBodyFile1532");
+        ntcHttpLog.setResHdrFile("resHdrFile1532.txt");
+        ntcHttpLog.setResBodyFile("resBodyFile1532"); 
         ntcHttpLogs.add(ntcHttpLog);
 
 
@@ -116,14 +127,11 @@ public class LogTestService extends BaseLogService {
         ntcHttpLog.setCfgId(1533L);
         ntcHttpLog.setServiceType(129);
         ntcHttpLog.setUserRegion("1533");
-        ntcHttpLog.setC2sIsn(19034211L);
-        ntcHttpLog.setHttpProxyFlag(211L);
-        ntcHttpLog.setC2sIsn(190342112L);
-        ntcHttpLog.setHttpProxyFlag(212L);
-        ntcHttpLog.setHttpSeq(2L);
         ntcHttpLog.setUrl("http://jd.com/get/api/json/abc");
-        ntcHttpLog.setReqLine("Get jd.com");
-        ntcHttpLog.setResLine("response line content");
+        ntcHttpLog.setReqHdrFile("reqHdrFile1533.txt");
+        ntcHttpLog.setReqBodyFile("reqBodyFile1533");
+        ntcHttpLog.setResHdrFile("resHdrFile1533.txt");
+        ntcHttpLog.setResBodyFile("resBodyFile1533"); 
         ntcHttpLogs.add(ntcHttpLog);
 
 
@@ -561,7 +569,90 @@ public class LogTestService extends BaseLogService {
         return page;
     }
 
+    /**
+     * FTP 日志检索测试方法
+     * @param page
+     * @param entity
+     * @return
+     * @throws Exception
+     */
+    public Page<?> findNtcPzReport(Page<NtcPzReport> page, NtcPzReport entity) throws Exception {
 
+        
+
+        if ("1".equals(entity.getSearchBusinessType())) {
+        	Page<Map> page1 = new Page<Map>();
+        	page1.setPageNo(page.getPageNo());
+        	page1.setPageSize(page.getPageSize());
+        	List<Map> restList = new ArrayList<Map>();
+        	Map<String, Long> restMap  = new HashMap<String, Long>();
+        	restMap.put("cfgId", 20l);
+        	restMap.put("sum", 1000l);
+        	restList.add(restMap);
+        	Map<String, Long> restMap2  = new HashMap<String, Long>();
+        	restMap2.put("cfgId", 30l);
+        	restMap2.put("sum", 1001l);
+        	restList.add(restMap2);
+        	page1.setCount(restList.size());
+	        page1.setList(restList);
+	        return page1;
+        }else if ("2".equals(entity.getSearchBusinessType())){
+        	
+        	List<NtcPzReport> ntcPzReports = Lists.newArrayList();
+        	Date date = new Date();
+			NtcPzReport ntcPzReport = new NtcPzReport();
+			ntcPzReport.setCfgId(20l);
+			ntcPzReport.setSum(400l);
+			ntcPzReport.setService(1);
+			ntcPzReport.setReportTime(date);
+	        ntcPzReports.add(ntcPzReport);
+	        
+	        NtcPzReport ntcPzReport3 = new NtcPzReport();
+			ntcPzReport3.setCfgId(30l);
+			ntcPzReport3.setSum(351l);
+			ntcPzReport3.setService(1);
+			ntcPzReport3.setReportTime(date);
+	        ntcPzReports.add(ntcPzReport3);
+	        Date date1 = new Date();
+	        date1.setMinutes(date1.getMinutes()+5);
+	        NtcPzReport ntcPzReport1 = new NtcPzReport();
+			ntcPzReport1.setCfgId(20l);
+			ntcPzReport1.setSum(400l);
+			ntcPzReport1.setService(1);
+			ntcPzReport1.setReportTime(date1);
+	        ntcPzReports.add(ntcPzReport1);
+	        
+	        NtcPzReport ntcPzReport4 = new NtcPzReport();
+			ntcPzReport4.setCfgId(30l);
+			ntcPzReport4.setSum(500l);
+			ntcPzReport4.setService(1);
+			ntcPzReport4.setReportTime(date1);
+	        ntcPzReports.add(ntcPzReport4);
+	        
+	        Date date2 = new Date();
+	        date2.setMinutes(date2.getMinutes()+10);
+	        NtcPzReport ntcPzReport2 = new NtcPzReport();
+			ntcPzReport2.setCfgId(20l);
+			ntcPzReport2.setSum(200l);
+			ntcPzReport2.setService(1);
+			ntcPzReport2.setReportTime(date2);
+	        ntcPzReports.add(ntcPzReport2);
+	        
+	        NtcPzReport ntcPzReport5 = new NtcPzReport();
+			ntcPzReport5.setCfgId(30l);
+			ntcPzReport5.setSum(150l);
+			ntcPzReport5.setService(1);
+			ntcPzReport5.setReportTime(date2);
+	        ntcPzReports.add(ntcPzReport5);
+	        
+	        page.setCount(ntcPzReports.size());
+	        page.setList(ntcPzReports);
+	        return page;
+		}
+        
+        return null;
+        
+    }
 
 
 

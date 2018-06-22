@@ -1,7 +1,29 @@
 package com.nis.web.controller.restful;
 
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.nis.domain.Page;
-import com.nis.domain.restful.*;
+import com.nis.domain.restful.NtcDnsLog;
+import com.nis.domain.restful.NtcFtpLog;
+import com.nis.domain.restful.NtcHttpLog;
+import com.nis.domain.restful.NtcIpLog;
+import com.nis.domain.restful.NtcIpsecLog;
+import com.nis.domain.restful.NtcL2tpLog;
+import com.nis.domain.restful.NtcMailLog;
+import com.nis.domain.restful.NtcOpenvpnLog;
+import com.nis.domain.restful.NtcPptpLog;
+import com.nis.domain.restful.NtcPzReport;
+import com.nis.domain.restful.NtcSshLog;
+import com.nis.domain.restful.NtcSslLog;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.SaveRequestLogThread;
@@ -9,15 +31,6 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.LogTestService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * Created by darnell on 2018/6/10.
@@ -112,7 +125,7 @@ public class LogController extends BaseRestController{
     }
 
 
-    @RequestMapping(value = "/ntcSSLLogs", method = RequestMethod.GET)
+    @RequestMapping(value = "/ntcSslLogs", method = RequestMethod.GET)
     @ApiOperation(value = "SSL日志查询", httpMethod = "GET", notes = "对应配置为“网站管理-SSL”，存储动作为阻断与监测的命中日志。对日志功能“网站管理-SSL”提供数据基础查询服务。")
     public Map<String, ?> ntcSslLogs(Page page, NtcSslLog ntcSslLog, Model model, HttpServletRequest request, HttpServletResponse response) {
         long start = System.currentTimeMillis();
@@ -251,7 +264,21 @@ public class LogController extends BaseRestController{
         return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "FTP日志检索成功", ntcFtpLogPage, 0);
     }
 
+    @RequestMapping(value = "/ntcPzReport", method = RequestMethod.GET)
+    @ApiOperation(value = "配置日志总量统计", httpMethod = "GET", notes = "配置命中日志数量实时统计报表，对外提供多种数据表现形式，具体可应用于界面配置命中总量业务、配置报表业务等")
+    public Map<String, ?> ntcPzReport(Page page, NtcPzReport ntcPzReport, Model model, HttpServletRequest request, HttpServletResponse response) {
+        long start = System.currentTimeMillis();
+        SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 
+        Page<?> ntcPzReportPage = new Page<>();
+        try {
+        	ntcPzReportPage = testService.findNtcPzReport(new Page<NtcPzReport>(request, response,NtcPzReport.class), ntcPzReport);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "配置总量统计成功", ntcPzReportPage, 0);
+    }
 
 
 }

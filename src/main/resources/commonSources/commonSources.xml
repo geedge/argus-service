@@ -4,6 +4,7 @@
 	xsi:schemaLocation="http://www.w3school.com.cn commonSourcesSchema.xsd">
 	<t:commonSource serviceIds="3,4,25,28,29">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
 		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
 		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true"/>
@@ -21,6 +22,7 @@
 	</t:commonSource>
 	<t:commonSource serviceIds="261,262,263,264,389,390,391,392">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
 		<t:field fieldType="String" srcName="dstFile" dstName="dst_file"  isRequired="true"/>
 		<t:field fieldType="String" srcName="dstFileMd5" dstName="dst_file_md5"  isRequired="true"/>
@@ -31,6 +33,7 @@
 	</t:commonSource>
 	<t:commonSource serviceIds="265,266,393,394">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
 		<t:field fieldType="String" srcName="description" dstName="description"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="level" dstName="level" range="0-100" defaultVal="0"/>
@@ -47,6 +50,45 @@
 		<t:field fieldType="Number" srcName="location" dstName="location" isRequired="true" regexp="[0|1]"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	<t:commonSource serviceIds="64">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="policyGroup" dstName="policy_group" isRequired="true" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
+		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true"/>
+		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true"/>
+		<t:field fieldType="Port" srcName="srcPort" dstName="src_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Port" srcName="maskSrcPort" dstName="mask_src_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="IP" srcName="dstIp" dstName="dst_ip" isRequired="true"/>
+		<t:field fieldType="IP" srcName="maskDstIp" dstName="mask_dst_ip"  isRequired="true"/>
+		<t:field fieldType="Port" srcName="dstPort" dstName="dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Port" srcName="maskDstPort" dstName="mask_dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Number" srcName="protocol" dstName="protocol" isRequired="true" regexp="[0|6|17]"/>
+		<t:field fieldType="Number" srcName="direction" dstName="direction" isRequired="true" range="0-1"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	<t:commonSource serviceIds="65">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="reqStrateId" dstName="req_strate_id" isRequired="true" range="100-"/>
+		<t:field fieldType="String" srcName="strateName" dstName="strate_name" isRequired="true"/>
+		<t:field fieldType="Number" srcName="resGroup1Id" dstName="res_group_1_id" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup1Num" dstName="res_group_1_num" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup2Id" dstName="res_group_2_id" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup2Num" dstName="res_group_2_num" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup3Id" dstName="res_group_3_id" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup3Num" dstName="res_group_3_num" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup4Id" dstName="res_group_4_id" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup4Num" dstName="res_group_4_num" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup5Id" dstName="res_group_5_id" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="resGroup5Num" dstName="res_group_5_num" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="minTtl" dstName="min_ttl" isRequired="true"/>
+		<t:field fieldType="Number" srcName="maxTtl" dstName="max_ttl" isRequired="true"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
 	</t:commonSource>
 </t:commonSources>
 

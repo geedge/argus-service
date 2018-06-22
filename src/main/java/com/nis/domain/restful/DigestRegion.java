@@ -3,6 +3,8 @@ package com.nis.domain.restful;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class DigestRegion implements Serializable{
 
 	/**
@@ -16,6 +18,7 @@ public class DigestRegion implements Serializable{
 	private String digest;
 	private Integer cfdsLevel;
 	private int isValid ;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date opTime = new Date();
 	public Long getRegionId() {
 		return regionId;
@@ -59,9 +62,17 @@ public class DigestRegion implements Serializable{
 	public void setIsValid(int isValid) {
 		this.isValid = isValid;
 	}
+	
+	/** 
+	* @return opTime 
+	*/
 	public Date getOpTime() {
 		return opTime;
 	}
+
+	/** 
+	* @param opTime 要设置的 opTime 
+	*/
 	public void setOpTime(Date opTime) {
 		this.opTime = opTime;
 	}

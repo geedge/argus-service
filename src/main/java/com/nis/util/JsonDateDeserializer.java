@@ -4,9 +4,7 @@
 package com.nis.util;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,7 +20,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
  */
 public class JsonDateDeserializer extends JsonDeserializer<Date> {
 
-	private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//	private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	/* (non-Javadoc)
 	 * @see com.fasterxml.jackson.databind.JsonDeserializer#deserialize(com.fasterxml.jackson.core.JsonParser, com.fasterxml.jackson.databind.DeserializationContext)
 	 */
@@ -31,10 +29,8 @@ public class JsonDateDeserializer extends JsonDeserializer<Date> {
 			throws IOException, JsonProcessingException {
 		// TODO Auto-generated method stub
 		Date date = null;
-		try {
-			date = sdf.parse(p.getText());
-		} catch (Exception e) {
-			// TODO: handle exception
+		if (null!=p&&!"".equals(p.getText())) {
+			date = DateUtil.convertStringToDate(p.getText(), DateUtil.YYYY_MM_DD_HH24_MM_SS);
 		}
 		return date;
 	}

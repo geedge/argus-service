@@ -11,19 +11,26 @@
 								<xs:complexType>
 									<xs:attribute name="srcName" type="xs:string" use="required">
 										<xs:annotation>
-											<xs:documentation><![CDATA[源字段名]]>
+											<xs:documentation><![CDATA[源字段名，接口传入json串中的Key]]>
 											</xs:documentation>
 										</xs:annotation>
 									</xs:attribute>
 									<xs:attribute name="dstName" type="xs:string" use="required">
 										<xs:annotation>
-											<xs:documentation><![CDATA[目的字段名]]>
+											<xs:documentation><![CDATA[目的字段名，需要传给服务接口中的Key]]>
 											</xs:documentation>
 										</xs:annotation>
 									</xs:attribute>
 									<xs:attribute name="fieldType" use="required">
 										<xs:annotation>
-											<xs:documentation><![CDATA[字段类型]]>
+											<xs:documentation>
+												<![CDATA[字段类型，目前只有String、Date、Number、IP、Port多种类型，
+												其中Date、Number、IP、Port有格式验证,具体验证内容如下:
+												Date:格式为yyyy-MM-dd HH:mm:ss;
+												Number:value必须为数值类型;
+												IP:根据指定的addrType(4|6)来验证IP是否与类型是否一致，如果未指定IP类型，不验证与ipType是否一致,仅验证是否是ip格式;
+												Port:必须是合法的端口，取值范围为0-65535。
+												]]>
 											</xs:documentation>
 										</xs:annotation>
 										<xs:simpleType>
@@ -31,14 +38,15 @@
 												<xs:enumeration value="String"></xs:enumeration>
 												<xs:enumeration value="Date"></xs:enumeration>
 												<xs:enumeration value="Number"></xs:enumeration>
-												<xs:enumeration value="IP"></xs:enumeration>
+												<xs:enumeration value="IP">
+												</xs:enumeration>
 												<xs:enumeration value="Port"></xs:enumeration>
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:attribute>
 									<xs:attribute name="range" type="xs:string">
 										<xs:annotation>
-											<xs:documentation><![CDATA[取值范围]]>
+											<xs:documentation><![CDATA[取值范围，最小值-最大值，可以单独指定最大或最小值，如：最小值为100 range="100-"]]>
 											</xs:documentation>
 										</xs:annotation>
 									</xs:attribute>	

@@ -11,9 +11,8 @@ package com.nis.domain.restful;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /** 
@@ -62,6 +61,7 @@ public class IpRegion implements Serializable {
 	@ApiModelProperty(value="有效标志", required=true)
 	private Integer isValid;
 	@ApiModelProperty(value="操作时间", required=true)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date opTime;
 	@ApiModelProperty(value="版本序列号", required=true)
 	private Long procSeq;
@@ -286,7 +286,6 @@ public class IpRegion implements Serializable {
 	/** 
 	* @return opTime 
 	*/
-	@JsonSerialize(using=JsonDateSerializer.class)
 	public Date getOpTime() {
 		return opTime;
 	}

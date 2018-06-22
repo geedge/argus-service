@@ -10,48 +10,21 @@ public class NtcHttpLog extends LogEntity {
 
     private static final long serialVersionUID = 2553033624540656138L;
 
-    @ApiModelProperty(value="TCP初始序列号", required=true)
-    protected Long c2sIsn;
-
-    @ApiModelProperty(value="是否HTTP代理标志", required=true)
-    protected Long httpProxyFlag;
-
-    @ApiModelProperty(value="HTTP会话序列号", required=true)
-    protected Long httpSeq;
-
     @ApiModelProperty(value="url地址", required=true)
     protected String url;
 
-    @ApiModelProperty(value="请求行", required=true)
-    protected String reqLine;
+    @ApiModelProperty(value="请求头转储文件", required=true)
+    protected String reqHdrFile;
 
-    @ApiModelProperty(value="应答行", required=true)
-    protected String resLine;
+    @ApiModelProperty(value="请求体转储文件", required=true)
+    protected String reqBodyFile;
+    
+    @ApiModelProperty(value="应答头转储文件", required=true)
+    protected String resHdrFile;
 
+    @ApiModelProperty(value="应答体转储文件", required=true)
+    protected String resBodyFile;
 
-    public Long getC2sIsn() {
-        return c2sIsn;
-    }
-
-    public void setC2sIsn(Long c2sIsn) {
-        this.c2sIsn = c2sIsn;
-    }
-
-    public Long getHttpProxyFlag() {
-        return httpProxyFlag;
-    }
-
-    public void setHttpProxyFlag(Long httpProxyFlag) {
-        this.httpProxyFlag = httpProxyFlag;
-    }
-
-    public Long getHttpSeq() {
-        return httpSeq;
-    }
-
-    public void setHttpSeq(Long httpSeq) {
-        this.httpSeq = httpSeq;
-    }
 
     public String getUrl() {
         return url;
@@ -61,19 +34,36 @@ public class NtcHttpLog extends LogEntity {
         this.url = url;
     }
 
-    public String getReqLine() {
-        return reqLine;
-    }
+	public String getReqHdrFile() {
+		return reqHdrFile;
+	}
 
-    public void setReqLine(String reqLine) {
-        this.reqLine = reqLine;
-    }
+	public void setReqHdrFile(String reqHdrFile) {
+		this.reqHdrFile = reqHdrFile;
+	}
 
-    public String getResLine() {
-        return resLine;
-    }
+	public String getReqBodyFile() {
+		return reqBodyFile;
+	}
 
-    public void setResLine(String resLine) {
-        this.resLine = resLine;
-    }
+	public void setReqBodyFile(String reqBodyFile) {
+		this.reqBodyFile = reqBodyFile;
+	}
+
+	public String getResHdrFile() {
+		return resHdrFile;
+	}
+
+	public void setResHdrFile(String resHdrFile) {
+		this.resHdrFile = resHdrFile;
+	}
+
+	public String getResBodyFile() {
+		return resBodyFile;
+	}
+
+	public void setResBodyFile(String resBodyFile) {
+		this.resBodyFile = resBodyFile;
+	}
+
 }

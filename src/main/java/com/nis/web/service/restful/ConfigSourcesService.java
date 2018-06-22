@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,7 +98,7 @@ public class ConfigSourcesService extends BaseService {
 	@Autowired
 	private StrRegionDao strRegionDao;
 
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@Autowired
 	ConfigRedisService configRedisService;
@@ -1640,7 +1639,7 @@ public class ConfigSourcesService extends BaseService {
 	}
 	
 	private String convertToTimeStamp16(Date date){
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 		return date.getTime()+"000";
 	}
 	
@@ -2509,7 +2508,7 @@ public class ConfigSourcesService extends BaseService {
 							break;
 						case "Date":
 							try {
-								sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+//								sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 								System.out.println("--------------------TimeZone:"+sdf.getTimeZone());
 								Date date = sdf.parse(dstStr);
 								dstStr = date.getTime()+"000";
@@ -2542,12 +2541,26 @@ public class ConfigSourcesService extends BaseService {
 					//range取值范围验证
 					if(!StringUtil.isEmpty(commonSourceFieldCfg.getRange())){
 						String [] range= commonSourceFieldCfg.getRange().split("-");
-						if(!(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr))<=0&&Long.valueOf(range[1]).compareTo(Long.valueOf(dstStr))>=0)){
-							logger1.error(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
-							thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不在有效范围");
-							throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数不在有效范围",
+						Boolean flag = false;
+						if (range.length==2) {
+							if(!(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr))<=0&&Long.valueOf(range[1]).compareTo(Long.valueOf(dstStr))>=0)){
+								flag = true;
+							}
+						
+						}else if (commonSourceFieldCfg.getRange().startsWith("-")) {//只有最大值限制
+							if(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr))<=0){
+								flag = true;
+							}
+						}else if (commonSourceFieldCfg.getRange().endsWith("-")) {//只有最小值限制
+							if(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr))>=0){
+								flag = true;
+							}
+						}
+						if (flag) {
+							logger1.error(commonSourceFieldCfg.getSrcName()+"参数不在有效范围("+ commonSourceFieldCfg.getRange()+")");
+							thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数不在有效范围("+ commonSourceFieldCfg.getRange()+")");
+							throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数不在有效范围("+ commonSourceFieldCfg.getRange()+")",
 									RestBusinessCode.wrong_range.getValue());
-							
 						}
 					}
 					//regexp 特殊格式正则验证
@@ -2560,9 +2573,9 @@ public class ConfigSourcesService extends BaseService {
 					if (valFlag) {
 						dstMap.put(commonSourceFieldCfg.getDstName(),dstStr);
 					}else{
-						logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
-						thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式与正则不匹配");
-						throw new RestServiceException(thread, System.currentTimeMillis() - start, commonSourceFieldCfg.getSrcName()+"参数格式不正确或数据不在有效范围",
+						logger1.error(commonSourceFieldCfg.getSrcName()+"参数格式与正则("+commonSourceFieldCfg.getRegexp()+")不匹配");
+						thread.setExceptionInfo(commonSourceFieldCfg.getSrcName()+"参数格式与正则("+commonSourceFieldCfg.getRegexp()+")不匹配");
+						throw new RestServiceException(thread, System.currentTimeMillis() - start,commonSourceFieldCfg.getSrcName()+"参数格式与正则("+commonSourceFieldCfg.getRegexp()+")不匹配",
 								RestBusinessCode.param_formate_error.getValue());
 					}
 				}
@@ -2731,10 +2744,10 @@ public class ConfigSourcesService extends BaseService {
 		String content="";
 		String digestGenToolPath=Constants.DIGEST_GEN_TOOL_PATH;
 		String chmodCommond="chmod +x "+realPath+digestGenToolPath;//执行权限命令
-		System.out.println("----------------chmodCommod:"+chmodCommond);
+//		System.out.println("----------------chmodCommod:"+chmodCommond);
 		String commondStr=realPath+digestGenToolPath+" -f "+filePath; //执行
 		//执行摘要获取命令 digest -f /home/aa.txt
-		System.out.println("------------commondStr:"+commondStr);
+//		System.out.println("------------commondStr:"+commondStr);
 		Runtime.getRuntime().exec(chmodCommond);
 		Process p=Runtime.getRuntime().exec(commondStr);
 		byte[] b=new byte[1024];
@@ -2746,7 +2759,7 @@ public class ConfigSourcesService extends BaseService {
 		if (!StringUtil.isBlank(content)) {
 			content = StringUtil.stripAll(content);
 		}
-		System.out.println("-------------------->>"+content);
+//		System.out.println("-------------------->>"+content);
 		String[] digestGenReslt=content.split(" ");
 		if(digestGenReslt.length >=4 && !StringUtil.isEmpty(digestGenReslt[3])){
 			return digestGenReslt[3]; 

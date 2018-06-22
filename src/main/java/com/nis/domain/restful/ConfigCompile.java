@@ -12,9 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.nis.util.JsonDateSerializer;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
@@ -52,9 +50,11 @@ public class ConfigCompile implements Serializable {
 	private Integer doLog;
 	@ApiModelProperty(value = "生效范围", required = true)
 	private String effectiveRange;
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty(value = "开始时间", required = true)
 	private Date startTime;
 	@ApiModelProperty(value = "结束时间", required = true)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date endTime;
 	@ApiModelProperty(value = "用户自定义域", required = true)
 	private String userRegion;
@@ -65,6 +65,7 @@ public class ConfigCompile implements Serializable {
 	@ApiModelProperty(value = "父配置ID", required = true)
 	private Long fatherCfgId;
 	@ApiModelProperty(value = "操作时间", required = true)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	private Date opTime;
 
 	@ApiModelProperty(value = "编译分组关系列表", required = true)
@@ -196,7 +197,6 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return startTime
 	 */
-	@JsonSerialize(using=JsonDateSerializer.class)
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -212,7 +212,6 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return endTime
 	 */
-	@JsonSerialize(using=JsonDateSerializer.class)
 	public Date getEndTime() {
 		return endTime;
 	}
@@ -288,7 +287,6 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return opTime
 	 */
-	@JsonSerialize(using=JsonDateSerializer.class)
 	public Date getOpTime() {
 		return opTime;
 	}

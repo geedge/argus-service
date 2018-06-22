@@ -4,6 +4,7 @@
 package com.nis.test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,7 +31,6 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import com.nis.restful.RestConstants;
-import com.nis.util.FileUtils;
 import com.nis.util.JsonMapper;
 
 /**
@@ -46,14 +46,14 @@ public class RestTest {
 	public void testFileUpload() {
 		CloseableHttpResponse response = null;
 		try {
-			File file = new File("C:/Users/dell/Desktop/Cal.java");
+			File file = new File("C:/Users/dell/Desktop/ssl_test.txt");
 
 //			String md5 = DigestUtils.md5Hex(file);
 			MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 			builder.addBinaryBody("file", file);
 
 			HttpPost request = new HttpPost(
-					"http://10.0.6.201:8090/galaxy/service/cfg/v1/fileDigestSources");
+					"http://10.0.6.242:8080/galaxy/service/cfg/v1/fileDigestSources");
 			//galaxy/service/cfg/v1/fileUploadSources
 			request.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 600000);
 			request.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, 600000);
@@ -64,7 +64,7 @@ public class RestTest {
 			jsonObject.put("fileName", "1.png");
 			//jsonObject.put("checksum", "d99f9aa4f3748fa48aa6e350c628c67f");
 
-			jsonObject.put("checksum", "fa7f24ab0f449f5d805bdcf51d476074");
+			jsonObject.put("checksum", DigestUtils.md5Hex(new FileInputStream(file)));
 			request.setHeader("File-Desc", jsonObject.toString());
 			HttpEntity entity = builder.build();
 			request.setEntity(entity);

@@ -11,6 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.nis.domain.restful.ConfigCompile;
 import com.nis.domain.restful.ConfigSource;
@@ -43,8 +44,6 @@ import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-
-import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ConfigSourcesController
@@ -339,6 +338,7 @@ public class ConfigSourcesController extends BaseRestController {
 			validateConfigSource(thread, start, configSource);
 			Long benginTime = System.currentTimeMillis();
 			String msg = configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
+//			String msg = "";
 			if ("error".equals(msg)) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
@@ -635,7 +635,7 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 		JSONObject jsonObj = new JSONObject();
 		// jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
-		jsonObj.put("accessUrl", "filePath");
+		jsonObj.put("accessUrl", filePath);
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "文件上传成功", jsonObj);
 	}
 
@@ -647,7 +647,6 @@ public class ConfigSourcesController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				file, null);
-		// JSONArray fileArray=new JSONArray();
 		if (file == null) {
 			thread.setExceptionInfo("请上传获取摘要的文件到file");
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请上传获取摘要的文件到file参数",
@@ -681,21 +680,24 @@ public class ConfigSourcesController extends BaseRestController {
 				// resultObject.put("path", filePath.substring(filePath.indexOf("group")));
 				resultObject.put("path", filePath);
 			}
-
-			String tempFilePath = request.getRealPath(File.separator) + "upload" + File.separator
-					+ (new Date()).getTime() + file.getOriginalFilename();
-			file.transferTo(new File(tempFilePath));
-			System.out.println("------------" + tempFilePath);
-			String digestStr = configSourcesService.getDigestGen(request.getRealPath(File.separator), tempFilePath);
-			resultObject.put("digest", digestStr);
-			resultObject.put("rawLen", file.getSize());
-			FileUtils.deleteFile(tempFilePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			logger.error("文件上传过程中出现异常");
 			thread.setExceptionInfo("文件上传过程中出现异常");
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "文件上传过程中出现异常",
 					RestBusinessCode.unknow_error.getValue());
+		}
+		try {
+			String tempFilePath = request.getRealPath(File.separator) + "upload" + File.separator
+					+ (new Date()).getTime() + file.getOriginalFilename();
+			file.transferTo(new File(tempFilePath));
+			//System.out.println("------------" + tempFilePath);
+			System.out.println("摘要获取开始：---------------");
+			String digestStr = configSourcesService.getDigestGen(request.getRealPath(File.separator), tempFilePath);
+			System.out.println("摘要获取结束：---------------:"+digestStr);
+			resultObject.put("digest", digestStr);
+			resultObject.put("rawLen", file.getSize());
+			FileUtils.deleteFile(tempFilePath);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
