@@ -390,7 +390,7 @@ public class CompileVal {
 				}
 
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
-					String serviceIpRegionVal = serviceIpRegionVal(ipRegion, compileId);
+					String serviceIpRegionVal = serviceIpClientRegionVal(ipRegion, compileId);
 					if (!serviceIpRegionVal.equals("ok")) {
 						return serviceIpRegionVal;
 					}
@@ -651,52 +651,116 @@ public class CompileVal {
 		return "ok";
 	}
 
-	public static String serviceIpRegionVal(IpRegion ipRegion, Long compileId) {
+	public static String serviceIpClientRegionVal(IpRegion ipRegion, Long compileId) {
 		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置srcIp的格式不正确或与addrType不一致";
 		}
 		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
 		}
 		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置dstIp的格式不正确或与addrType不一致";
 		}
 		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置maskDstIp的格式不正确或与addrType不一致";
 		}
 
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置srcPort的格式不正确";
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId() + "的域配置srcPort的格式不正确";
 		}
 
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskSrcPort())) {
 			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskSrcPort())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置maskSrcPort的格式不正确";
 		}
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getDstPort())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置dstPort的格式不正确";
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId() + "的域配置dstPort的格式不正确";
 		}
 
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskDstPort())) {
 			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskDstPort())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置maskDstPort的格式不正确";
 		}
 
 		if (ipRegion.getSrcIp().equals(ipRegion.getDstIp())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置srcIp和dstIp不能相同";
 		}
 		if (ipRegion.getDirection() != 1 && ipRegion.getDirection() != 0) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
 					+ "的域配置direction的值不正确,只能是0或1";
 		}
 
+		// zdx protocol验证？
+		// if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
+		// if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
+		// return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" +
+		// ipRegion.getRegionId()
+		// + "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
+		// }
+		// } else {
+		// if (ipRegion.getProtocol() != 0) {
+		// return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" +
+		// ipRegion.getRegionId() + "的域配置tableName为"
+		// + ipRegion.getTableName() + "时,protocol的值只能是0";
+		// }
+		//
+		// }
+		return "ok";
+	}
+	
+	public static String serviceIpRegionVal(IpRegion ipRegion, Long compileId) {
+		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置srcIp的格式不正确或与addrType不一致";
+		}
+		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+		}
+		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置dstIp的格式不正确或与addrType不一致";
+		}
+		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+		}
+		
+		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置srcPort的格式不正确";
+		}
+		
+		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskSrcPort())) {
+			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskSrcPort())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置maskSrcPort的格式不正确";
+		}
+		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getDstPort())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置dstPort的格式不正确";
+		}
+		
+		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskDstPort())) {
+			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskDstPort())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置maskDstPort的格式不正确";
+		}
+		
+		if (ipRegion.getSrcIp().equals(ipRegion.getDstIp())) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置srcIp和dstIp不能相同";
+		}
+		if (ipRegion.getDirection() != 1 && ipRegion.getDirection() != 0) {
+			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+			+ "的域配置direction的值不正确,只能是0或1";
+		}
+		
 		// zdx protocol验证？
 		// if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
 		// if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
