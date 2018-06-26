@@ -123,7 +123,7 @@ public class SaveRequestLogThread implements Runnable {
 		try {
 			reader=request.getReader();
 			while((line=reader.readLine())!=null){
-				bulider.append(line);
+				bulider.append(new String(line.getBytes(),"utf-8"));
 				bulider.append("\n");
 			}
 		} catch (IOException e) {

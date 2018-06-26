@@ -19,21 +19,21 @@ public class DataSourceCInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request,
 			HttpServletResponse response, Object handler) throws Exception {
-		searchActiveSys=request.getParameter("searchActiveSys");
-		if(searchActiveSys == null 
-				|| !(Constants.ACTIVESYS_A.equals(searchActiveSys) 
-						|| Constants.ACTIVESYS_C.equals(searchActiveSys))
-							) searchActiveSys=Constants.ACTIVESYS_B;
-		if(Constants.ACTIVESYS_A.equals(searchActiveSys)){
-			logger.info("开启数据源日志A操作库---"+System.currentTimeMillis());
-			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_F);//开启数据源F
-		}else if(Constants.ACTIVESYS_C.equals(searchActiveSys)){
-			logger.info("开启数据源日志C操作库---"+System.currentTimeMillis());
-			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_G);//开启数据源F
-		}else{
-			logger.info("开启数据源日志B操作库---"+System.currentTimeMillis());
+//		searchActiveSys=request.getParameter("searchActiveSys");
+//		if(searchActiveSys == null 
+//				|| !(Constants.ACTIVESYS_A.equals(searchActiveSys) 
+//						|| Constants.ACTIVESYS_C.equals(searchActiveSys))
+//							) searchActiveSys=Constants.ACTIVESYS_B;
+//		if(Constants.ACTIVESYS_A.equals(searchActiveSys)){
+//			logger.info("开启数据源日志A操作库---"+System.currentTimeMillis());
+//			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_F);//开启数据源F
+//		}else if(Constants.ACTIVESYS_C.equals(searchActiveSys)){
+//			logger.info("开启数据源日志C操作库---"+System.currentTimeMillis());
+//			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_G);//开启数据源F
+//		}else{
+			logger.info("开启数据源日志操作库---"+System.currentTimeMillis());
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_C);//开启数据源C
-		}
+//		}
 		logger.info("日志数据源开启成功---"+System.currentTimeMillis());
 		return true;
 	}

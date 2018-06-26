@@ -74,7 +74,7 @@
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
-		<t:field fieldType="Number" srcName="reqStrateId" dstName="req_strate_id" isRequired="true" range="100-"/>
+		<t:field fieldType="Number" srcName="reqStrateId" dstName="req_strate_id" isRequired="true" regexp="[0]|[1-9]+[0-9]{2,}"/>
 		<t:field fieldType="String" srcName="strateName" dstName="strate_name" isRequired="true"/>
 		<t:field fieldType="Number" srcName="resGroup1Id" dstName="res_group_1_id" defaultVal="0"/>
 		<t:field fieldType="Number" srcName="resGroup1Num" dstName="res_group_1_num" defaultVal="0"/>

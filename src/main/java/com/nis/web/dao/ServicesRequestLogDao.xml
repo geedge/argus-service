@@ -7,12 +7,12 @@
 		<result column="VERSION" jdbcType="VARCHAR" property="version" />
 		<result column="OPACTION" jdbcType="INTEGER" property="opAction" />
 		<result column="OPTIME" jdbcType="TIMESTAMP" property="opTime" />
-		<result column="REQUEST_CONTENT" jdbcType="CLOB" property="requestContent" />
+		<result column="REQUEST_CONTENT" jdbcType="BLOB" property="requestContent" typeHandler="com.nis.util.BlobTypeHandler"/>
 		<result column="REQUEST_TIME" jdbcType="TIMESTAMP" property="requestTime" />
 		<result column="CONSUMER_TIME" jdbcType="BIGINT" property="consumerTime" />
 		<result column="REQUEST_IP" jdbcType="VARCHAR" property="requestIp" />
 		<result column="BUSINESS_CODE" jdbcType="INTEGER" property="businessCode" />
-		<result column="EXCEPTION_INFO" jdbcType="VARCHAR" property="exceptionInfo" />
+		<result column="EXCEPTION_INFO" jdbcType="BLOB" property="exceptionInfo" typeHandler="com.nis.util.BlobTypeHandler"/>
 		<result column="SERVER_IP" jdbcType="VARCHAR" property="serverIp" />
 		<result column="TRACE_CODE" jdbcType="VARCHAR" property="traceCode" />
 	</resultMap>
@@ -90,7 +90,7 @@
 	<insert id="insert" parameterType="com.nis.domain.ServicesRequestLog">
 		insert into SERVICES_REQUEST_LOG
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			ID,
+			
 			<if test="operator != null">
 				OPERATOR,
 			</if>
@@ -129,7 +129,7 @@
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			SEQ_SERVICES_REQUEST_LOG.Nextval,
+			
 			<if test="operator != null">
 				#{operator,jdbcType=VARCHAR},
 			</if>

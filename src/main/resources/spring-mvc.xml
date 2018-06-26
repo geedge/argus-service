@@ -179,32 +179,11 @@
 			<bean class="com.nis.interceptor.LogInterceptor" />
 		</mvc:interceptor>
 
-
-
-
-		<!-- 数据源拦截器，该拦截路径下使用数据源B -->
-		<mvc:interceptor>
-			<mvc:mapping path="/service/cfg/**" />
-			<bean class="com.nis.interceptor.DataSourceBInterceptor"></bean>
-		</mvc:interceptor>
-
 		<!-- 数据源拦截器，该拦截路径下使用数据源C -->
 		<mvc:interceptor>
 			<mvc:mapping path="/service/log/**" />
+			<mvc:mapping path="/log/**"/>
 			<bean class="com.nis.interceptor.DataSourceCInterceptor"></bean>
-		</mvc:interceptor>
-
-
-		<!-- 数据源拦截器，该拦截路径下使用数据源D,后期会删除 -->
-		<mvc:interceptor>
-			<mvc:mapping path="/service/test/**" />
-			<bean class="com.nis.interceptor.DataSourceDInterceptor"></bean>
-		</mvc:interceptor>
-
-		<!-- 数据源拦截器，该拦截路径下使用数据源E -->
-		<mvc:interceptor>
-			<mvc:mapping path="/service/jk/**" />
-			<bean class="com.nis.interceptor.DataSourceEInterceptor"></bean>
 		</mvc:interceptor>
 
 	</mvc:interceptors>

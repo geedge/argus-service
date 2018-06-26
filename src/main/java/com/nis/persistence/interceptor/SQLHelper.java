@@ -127,7 +127,7 @@ public class SQLHelper {
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_B)) {
 			return "oracle";
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_C)) {
-			return "oracle";
+			return "mysql";
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_D)) {
 			return "oracle";
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_F)) {
