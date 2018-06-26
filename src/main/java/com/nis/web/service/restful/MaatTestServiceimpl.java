@@ -1,11 +1,11 @@
 package com.nis.web.service.restful;
 
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -19,13 +19,17 @@ import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
 import com.nis.util.CamelUnderlineUtil;
+import com.nis.util.Configurations;
+import com.nis.util.FileUtils;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.web.service.SpringContextHolder;
 
 @Service()
 public class MaatTestServiceimpl {
-	private static Logger logger = LoggerFactory.getLogger(MaatTestServiceimpl.class);
+	// private static Logger logger =
+	// LoggerFactory.getLogger(MaatTestServiceimpl.class);
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public void getKeys(List<ConfigCompile> configCompileList) {
 		if (configCompileList != null && configCompileList.size() > 0) {
@@ -106,7 +110,7 @@ public class MaatTestServiceimpl {
 					if (!StringUtils.isEmpty(keyStr)
 							&& keyStr.trim().startsWith("[") & keyStr.toLowerCase().contains("id")) {
 						if (type == 11) {
-							keyBF.append(compileId + "" + id);
+							keyBF.append(id + "" + compileId);
 						} else {
 							keyBF.append(id);
 						}
@@ -142,7 +146,11 @@ public class MaatTestServiceimpl {
 			}
 		}
 		if (sysoLog(valArr, valList, obj, redisDb, key)) {
-			logger.warn("编译配置id为{}的配置中,在{}号redis库中key={}的值与实际插入的值相符", compileId, redisDb, key);
+			FileUtils
+					.addStrToFile("\t" + 
+							sdf.format(new Date()) + " 编译配置id为" + compileId + "的配置中,在" + redisDb
+									+ "号redis库中key=" + key + "的值与实际插入的值相符\n",
+							Configurations.getStringProperty("maatTestLogPath", ""), true);
 		}
 	}
 
@@ -155,8 +163,10 @@ public class MaatTestServiceimpl {
 				String beanVal = getFieldValueByFieldName(filedName, obj);
 				String redisVal = valArr[i];
 				if (!beanVal.trim().equals(redisVal.trim())) {
-					logger.warn("{}号redis库中key={}的值第{}位{}的值:{}与实际传的值不一样,实际值是:{}", redisDb, key, i, attrName, redisVal,
-							beanVal);
+					FileUtils.addStrToFile("\t" + 
+							sdf.format(new Date()) + " error:" + redisDb + "号redis库中key=" + key + "的值第" + i + "位"
+									+ attrName + "的值:" + redisVal + "与实际传的值不一样,实际值是:{}\n",
+							Configurations.getStringProperty("maatTestLogPath", ""), true);
 					bool = false;
 				}
 			}

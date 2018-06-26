@@ -3,12 +3,16 @@
  */
 package com.nis.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Enumeration;
@@ -667,7 +671,6 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 
 	}
 
-	
 	/**
 	 * 获取文件后缀
 	 * 
@@ -689,10 +692,8 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 	}
 
 	// 文件下载
-	public static void fileDownload(HttpServletRequest request,
-			HttpServletResponse response, 
-			String filename,
-			String filepath) throws IOException{
+	public static void fileDownload(HttpServletRequest request, HttpServletResponse response, String filename,
+			String filepath) throws IOException {
 		FileInputStream in = null;
 		ServletOutputStream out = null;
 		try {
@@ -718,47 +719,152 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
 				out.write(buffer, 0, len);
 			}
 			out.flush();
-		} finally {			
+		} finally {
 			if (in != null) {
 				in.close();
-				in=null;
+				in = null;
 			}
 			if (out != null) {
 				out.close();
-				out=null;
+				out = null;
 			}
 		}
 	}
+
 	/**
 	 * 计算文件MD5
 	 * @param file
 	 * @return
 	 */
-	public static String getFileMD5(File file){
-		if(!file.isFile()){
+	public static String getFileMD5(File file) {
+		if (!file.isFile()) {
 			return "";
 		}
-		String md5 = "";  
-		MessageDigest digest=null;
-		FileInputStream in=null;
-		byte[] buffer=new byte[1024];
+		String md5 = "";
+		MessageDigest digest = null;
+		FileInputStream in = null;
+		byte[] buffer = new byte[1024];
 		int len;
-		try{
-			digest=MessageDigest.getInstance("MD5");
-			in=new FileInputStream(file);
-			while ((len=in.read(buffer,0,1024)) !=-1) {
-					digest.update(buffer,0,len);
+		try {
+			digest = MessageDigest.getInstance("MD5");
+			in = new FileInputStream(file);
+			while ((len = in.read(buffer, 0, 1024)) != -1) {
+				digest.update(buffer, 0, len);
 			}
 			in.close();
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			return "";
 		}
 		byte[] b = digest.digest();
-		for (int i=0; i < b.length; i++) {  
-			md5 += Integer.toString( (b[i] & 0xff ) + 0x100, 16).substring(1);//加0x100是因为有的b[i]的十六进制只有1位  
+		for (int i = 0; i < b.length; i++) {
+			md5 += Integer.toString((b[i] & 0xff) + 0x100, 16).substring(1);// 加0x100是因为有的b[i]的十六进制只有1位
 		}
-//		BigInteger bigInt=new BigInteger(1,digest.digest());
+		// BigInteger bigInt=new BigInteger(1,digest.digest());
 		return md5;
+	}
+
+	/**
+	 * 以字节为单位读取文件,通常用于读取二进制文件,如图片
+	 * @param path 文件路径
+	 * @return
+	 */
+	public static String readByBytes(String path) {
+		String content = null;
+		try {
+			InputStream inputStream = new FileInputStream(path);
+
+			StringBuffer sb = new StringBuffer();
+			int c = 0;
+			byte[] bytes = new byte[1024];
+			while ((c = inputStream.read(bytes)) != -1) {
+				sb.append(new String(bytes, 0, c, "utf-8"));
+			}
+			content = sb.toString();
+			inputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
+
+	/**
+	 * 以行为单位读取文件,常用语读取面向行的格式化文件
+	 * @param path
+	 * @return
+	 */
+	public static String readByLines(String path) {
+		String content = null;
+		try {
+
+			BufferedReader bufferedReader = new BufferedReader(
+					new InputStreamReader(new FileInputStream(path), "utf-8"));
+
+			StringBuffer sb = new StringBuffer();
+			String temp = null;
+			while ((temp = bufferedReader.readLine()) != null) {
+				sb.append(temp);
+			}
+			content = sb.toString();
+			bufferedReader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
+
+	/**
+	 * 以字符串为单位读取文件,常用与读取文本文件
+	 * @param path
+	 * @return
+	 */
+	public static String readByChar(String path) {
+		String content = null;
+		try {
+			Reader reader = new InputStreamReader(new FileInputStream(path), "utf-8");
+
+			StringBuffer sb = new StringBuffer();
+			char[] tempChars = null;
+			while ((reader.read(tempChars)) != -1) {
+				sb.append(tempChars);
+			}
+			content = sb.toString();
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return content;
+	}
+
+	/**
+	 * 把content的内容写到文件中
+	 * @param content 内容
+	 * @param path 文件路径
+	 * @param isAppend 是否追加,true追加,flase是覆盖文件
+	 * @return
+	 */
+	public static boolean addStrToFile(String content, String path, boolean isAppend) {
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(new File(path), isAppend);
+			if (content != null) {
+				fw.write(content);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		} finally {
+			if (fw != null) {
+				try {
+					fw.flush();
+					fw.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
+		return true;
 	}
 }

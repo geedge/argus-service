@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://www.w3school.com.cn maat.xsd">
 
 
-	<p:maatType service="261;261;263;264;389;390;391;392">
+	<p:maatType service="261;263;264;389;390;391;392">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[op_time];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression>

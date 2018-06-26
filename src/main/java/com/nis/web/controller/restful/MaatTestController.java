@@ -1,12 +1,14 @@
 package com.nis.web.controller.restful;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +22,10 @@ import com.nis.domain.restful.IpRegion;
 import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
 import com.nis.util.Configurations;
+import com.nis.util.ExceptionUtil;
+import com.nis.util.FileUtils;
 import com.nis.util.ServiceAndRDBIndexReal;
+import com.nis.util.StringUtil;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigRedisService;
@@ -34,7 +39,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping("${servicePath}")
 @Api(value = "ConfigSourcesController", description = "测试maat及非maat配置入库,取消功能")
 public class MaatTestController {
-	private static Logger logger = LoggerFactory.getLogger(MaatTestController.class);
+	// private static Logger logger =
+	// LoggerFactory.getLogger(MaatTestController.class);
 	@Autowired
 	MaatTestServiceimpl maatTestServiceimpl;
 	@Autowired
@@ -43,29 +49,134 @@ public class MaatTestController {
 	ConfigSourcesService configSourcesService;
 	@Autowired
 	ServicesRequestLogService servicesRequestLogService;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	@RequestMapping(value = "/cfg/v1/testDelMaat", method = RequestMethod.GET)
+	@ApiOperation(value = "测试批量删除maat配置", httpMethod = "GET", response = String.class, notes = "测试批量删除maat配置,configId为配置id,多个配置id用逗号分隔")
+	@ApiParam(value = "测试批量删除maat配置", name = "testDelMaat", required = true)
+	public String testDelMaat(@RequestParam(required = true) String configId,
+			@RequestParam(required = true) Integer serviceType) {
+		String[] configArr = null;
+		if (configId.contains(",")) {
+			configArr = configId.split(",");
+		}
+		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
+		for (String id : configArr) {
+			if (compileMap.containsKey(serviceType)) {
+				compileMap.get(serviceType).add(Long.valueOf(id.trim()));
+			} else {
+				List<Long> idList = new ArrayList<Long>();
+				idList.add(Long.valueOf(id.trim()));
+				compileMap.put(serviceType, idList);
+			}
+		}
+		FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "开始删除业务类型" + serviceType + "下的配置" + configId + "\n",
+				Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
+		Iterator<Integer> serviceIterator = compileMap.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (restMap.containsKey(dbIndex)) {
+						restMap.get(dbIndex).put(service, compileMap.get(service));
+					} else {
+						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+						map.put(service, compileMap.get(service));
+						restMap.put(dbIndex, map);
+					}
+				}
+			} else {
+				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "获取业务类型" + service + "对应的redisDb失败\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+				return "error";
+			}
+		}
+		try {
+			if (!configRedisService.delMaatConfig(restMap)) {
+				FileUtils.addStrToFile(
+						sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的配置" + configId + "失败\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+				return "error";
+			} else {
+				FileUtils.addStrToFile(
+						sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的配置" + configId + "成功\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			FileUtils.addStrToFile(
+					sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的配置" + configId + "失败,失败原因:"
+							+ ExceptionUtil.getExceptionMsg(e) + "\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+			return "error";
+		}
+		return "ok";
+	}
+
+	@RequestMapping(value = "/cfg/v1/testSaveMaatMore", method = RequestMethod.GET)
+	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,saveCount:保存几条配置")
+	@ApiParam(value = "测试批量保存maat配置", name = "testSaveMaat", required = true)
+	public String testSaveMaatMore(@RequestParam(required = true) Integer service,
+			@RequestParam(required = true) Integer saveCount, Integer forCount) {
+		List<String> list = new ArrayList<String>();
+		for (int a = 0; a < forCount; a++) {
+			long start = System.currentTimeMillis();
+			SaveRequestLogThread thread = new SaveRequestLogThread();
+			StringBuffer sb = new StringBuffer();
+			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+			for (int i = 0; i < saveCount; i++) {
+				configCompileList.add(getConfigCompile(service));
+			}
+			// 保存测试配置
+			configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+			List<Long> compileIdList = new ArrayList<Long>();
+			for (ConfigCompile configCompile : configCompileList) {
+				compileIdList.add(configCompile.getCompileId());
+			}
+			FileUtils.addStrToFile(
+					sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
+							+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			// 验证数据是否在正确
+			maatTestServiceimpl.getKeys(configCompileList);
+			list.add(testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service));
+		}
+		return list.toString();
+		// return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
+		// + service + "&configId="
+		// + compileIdList.toString().replace("[", "").replace("]", "");
+	}
 	@RequestMapping(value = "/cfg/v1/testSaveMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,saveCount:保存几条配置")
 	@ApiParam(value = "测试批量保存maat配置", name = "testSaveMaat", required = true)
 	public String testSaveMaat(@RequestParam(required = true) Integer service,
 			@RequestParam(required = true) Integer saveCount) {
-		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = new SaveRequestLogThread();
-		StringBuffer sb = new StringBuffer();
-		List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
-		for (int i = 0; i < saveCount; i++) {
-			configCompileList.add(getConfigCompile(service));
-		}
-		// 保存测试配置
-		configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
-		List<Long> compileIdList = new ArrayList<Long>();
-		for (ConfigCompile configCompile : configCompileList) {
-			compileIdList.add(configCompile.getCompileId());
-		}
-		logger.warn("业务类型{}添加{}条数据成功,配置id是{}", service, saveCount, compileIdList);
-		// 验证数据是否在正确
-		maatTestServiceimpl.getKeys(configCompileList);
-		return "ok";
+			long start = System.currentTimeMillis();
+			SaveRequestLogThread thread = new SaveRequestLogThread();
+			StringBuffer sb = new StringBuffer();
+			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+			for (int i = 0; i < saveCount; i++) {
+				configCompileList.add(getConfigCompile(service));
+			}
+			// 保存测试配置
+			configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+			List<Long> compileIdList = new ArrayList<Long>();
+			for (ConfigCompile configCompile : configCompileList) {
+				compileIdList.add(configCompile.getCompileId());
+			}
+			FileUtils.addStrToFile(
+					sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
+							+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			// 验证数据是否在正确
+			maatTestServiceimpl.getKeys(configCompileList);
+		return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType=" + service + "&configId="
+				+ compileIdList.toString().replace("[", "").replace("]", "");
 	}
 
 	private ConfigCompile getConfigCompile(Integer service) {

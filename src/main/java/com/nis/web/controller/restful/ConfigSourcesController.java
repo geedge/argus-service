@@ -74,14 +74,14 @@ public class ConfigSourcesController extends BaseRestController {
 			List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
 			if (type == 1) {
 				Map<String, String> map = new HashMap<String, String>();
-				Integer service = 98;
+				Integer service = 261;
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
 				map.put("cfg_id", id + "");
 				map.put("is_valid", "1");
 				map.put("dst_file", "home");
 				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
-				map.put("time_stamp", new Date().getTime() + "");
+				map.put("op_time", new Date().getTime() + "");
 				map.put("level", "20");
 				map.put("file_id", id + "");
 				map.put("service", service + "");
@@ -91,7 +91,7 @@ public class ConfigSourcesController extends BaseRestController {
 				configMap.put(1, listMap);
 				configRedisService.saveUnMaatConfig(configMap);
 			} else {
-				Integer service = 100;
+				Integer service = 265;
 				Map<String, String> map = new HashMap<String, String>();
 				long id = configRedisService.getIncrId("seq_compileid");
 				// int id=2;
