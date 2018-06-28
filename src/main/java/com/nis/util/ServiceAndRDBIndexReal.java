@@ -37,6 +37,17 @@ public class ServiceAndRDBIndexReal {
 	 * key是业务类型,value是业务类型对应的动作(action)
 	 */
 	private static Map<Integer, Integer> serviceActionMap = new HashMap<Integer, Integer>();
+	
+	/**
+	 * 保存maat分发到阀门需要添加到域的属性：maat2Valve
+	 * Map<service,Map<regionType,fields>>
+	 */
+	private static Map<Integer,Map<String, String[]>> maatToValveMap = new HashMap<Integer, Map<String,String[]>>();
+	
+	/**
+	 * 阀门保存的redis数据库Index，在seriveTable.properties中定义
+	 */
+	private static Integer valveDBIndex = 7;
 	static {
 
 		String unMaatService = Configurations.getStringProperty("unMaatService", "");
@@ -102,6 +113,31 @@ public class ServiceAndRDBIndexReal {
 				serviceDBIndexmap.put(Integer.parseInt(serviceDBIndex[0]), redisDbList);
 			}
 		}
+		
+		String maat2Valve = Configurations.getStringProperty("maat2Valve", "");
+		if (maat2Valve!=null && !maat2Valve.trim().equals("")) {
+			String [] maat2ValveAry= maat2Valve.split(";");
+			for (String maat2ValveStr : maat2ValveAry) {
+				String [] serviceAndRegion = maat2ValveStr.split(":");
+				if (serviceAndRegion!=null&&serviceAndRegion.length==2) {
+					String [] regionAndFields = serviceAndRegion[1].split("@");
+					Map<String,String[]> fieldMap = new HashMap<String, String[]>();
+					String [] fields = regionAndFields[1].split("&");
+					//同一service有不同的域类型，多个之间用“|”分隔
+					if (regionAndFields[0].contains("|")) {
+						String [] regionTypeAry = regionAndFields[0].split("|");
+						for (String regionType : regionTypeAry) {
+							fieldMap.put(regionType, fields);
+						}
+					}else{
+						fieldMap.put(regionAndFields[0], fields);
+					}
+					
+					maatToValveMap.put(Integer.parseInt(serviceAndRegion[0]), fieldMap);
+				
+				}
+			}
+		}
 	}
 
 	/**
@@ -135,15 +171,21 @@ public class ServiceAndRDBIndexReal {
 					return tableList.get(0);
 				}
 			} else {
-				for (String str : tableList) {
+				//保存tableName在表名列表中的序号
+				int index = -1;
+				for (int i = 0; i < tableList.size(); i++) {
+					String str = tableList.get(i);
 					if (str.toLowerCase().contains(tableName.toLowerCase())) {
-						return str;
-					} else {
+						index = i;
+					} 
+				}
+				if (index!=-1) {
+						return tableList.get(index);
+				} else {
 						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
 						throw new RuntimeException("未从业务类型和表对应关系中,找到业务类型:"+service+",配置类型:"+type+"表名:"+tableName+"对应的真实表名");
-					}
 				}
-
+				
 			}
 
 		}
@@ -184,4 +226,25 @@ public class ServiceAndRDBIndexReal {
 		ServiceAndRDBIndexReal.serviceDBIndexmap = serviceDBIndexmap;
 	}
 
+	public static Map<Integer, Map<String, String[]>> getMaatToValveMap() {
+		return maatToValveMap;
+	}
+
+	public static void setMaatToValveMap(
+			Map<Integer, Map<String, String[]>> maatToValveMap) {
+		ServiceAndRDBIndexReal.maatToValveMap = maatToValveMap;
+	}
+	/**
+	 * @param valveDBIndex the valveDBIndex to set
+	 */
+	public static void setValveDBIndex(Integer valveDBIndex) {
+		ServiceAndRDBIndexReal.valveDBIndex = valveDBIndex;
+	}
+	
+	/**
+	 * @return the valveDBIndex
+	 */
+	public static Integer getValveDBIndex() {
+		return valveDBIndex;
+	}
 }

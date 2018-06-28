@@ -48,45 +48,41 @@ public class LogTestService extends BaseLogService {
         NtcIpLog ntcIpLog = new NtcIpLog();
         ntcIpLog.setId(35L);
         ntcIpLog.setCfgId(531L);
-        ntcIpLog.setServiceType(16);
+        ntcIpLog.setService(16);
         ntcIpLog.setFoundTime(new Date());
         ntcIpLog.setRecvTime(new Date());
         ntcIpLog.setAddrType(4);
-        ntcIpLog.setProtocol("IPv4_TCP");
-        ntcIpLog.setClientIp("192.168.10.106");
-        ntcIpLog.setClientPort(80);
-        ntcIpLog.setServerIp("202.106.0.20");
-        ntcIpLog.setServerPort(8443);
-        ntcIpLog.setCljIp("10.0.6.240");
+        ntcIpLog.setTransProto("IPv4_TCP");
+        ntcIpLog.setsIp("192.168.10.106");
+        ntcIpLog.setsPort("80");
+        ntcIpLog.setdIp("202.106.0.20");
+        ntcIpLog.setdPort("8443");
+        ntcIpLog.setCapIp("10.0.6.240");
         ntcIpLog.setDeviceId(1356981);
         ntcIpLog.setDirection(0);
-        ntcIpLog.setStreamType(0);
+        ntcIpLog.setStreamDir(0);
         ntcIpLog.setEntranceId(21L);
         ntcIpLog.setUserRegion("531");
-        ntcIpLog.setClientLocate("本地地址");
-        ntcIpLog.setServerLocate("中国 北京 电信宽带光纤");
         ntcIpLogs.add(ntcIpLog);
 
         ntcIpLog = new NtcIpLog();
         ntcIpLog.setId(36L);
         ntcIpLog.setCfgId(532L);
-        ntcIpLog.setServiceType(128);
+        ntcIpLog.setService(128);
         ntcIpLog.setFoundTime(new Date());
         ntcIpLog.setRecvTime(new Date());
         ntcIpLog.setAddrType(4);
-        ntcIpLog.setProtocol("IPv4_TCP");
-        ntcIpLog.setClientIp("192.168.10.106");
-        ntcIpLog.setClientPort(80);
-        ntcIpLog.setServerIp("202.106.0.20");
-        ntcIpLog.setServerPort(8443);
-        ntcIpLog.setCljIp("10.0.6.240");
+        ntcIpLog.setTransProto("IPv4_TCP");
+        ntcIpLog.setsIp("192.168.10.106");
+        ntcIpLog.setsPort("80");
+        ntcIpLog.setdIp("202.106.0.20");
+        ntcIpLog.setdPort("8443");
+        ntcIpLog.setCapIp("10.0.6.240");
         ntcIpLog.setDeviceId(1356981);
         ntcIpLog.setDirection(0);
-        ntcIpLog.setStreamType(0);
+        ntcIpLog.setStreamDir(0);
         ntcIpLog.setEntranceId(21L);
         ntcIpLog.setUserRegion("531");
-        ntcIpLog.setClientLocate("本地地址");
-        ntcIpLog.setServerLocate("中国 北京 电信宽带光纤");
         ntcIpLogs.add(ntcIpLog);
         page.setCount(ntcIpLogs.size());
 
@@ -111,7 +107,7 @@ public class LogTestService extends BaseLogService {
         ntcHttpLog = (NtcHttpLog) createTestData(ntcHttpLog);
         ntcHttpLog.setId(35L);
         ntcHttpLog.setCfgId(1532L);
-        ntcHttpLog.setServiceType(17);
+        ntcHttpLog.setService(17);
         ntcHttpLog.setUserRegion("1532");
         ntcHttpLog.setUrl("http://jd.com/get/api/json");
         ntcHttpLog.setReqHdrFile("reqHdrFile1532.txt");
@@ -125,7 +121,7 @@ public class LogTestService extends BaseLogService {
         ntcHttpLog = (NtcHttpLog) createTestData(ntcHttpLog);
         ntcHttpLog.setId(36L);
         ntcHttpLog.setCfgId(1533L);
-        ntcHttpLog.setServiceType(129);
+        ntcHttpLog.setService(129);
         ntcHttpLog.setUserRegion("1533");
         ntcHttpLog.setUrl("http://jd.com/get/api/json/abc");
         ntcHttpLog.setReqHdrFile("reqHdrFile1533.txt");
@@ -156,7 +152,7 @@ public class LogTestService extends BaseLogService {
         ntcDnsLog = (NtcDnsLog) createTestData(ntcDnsLog);
         ntcDnsLog.setId(37L);
         ntcDnsLog.setCfgId(2532L);
-        ntcDnsLog.setServiceType(18);
+        ntcDnsLog.setService(18);
         ntcDnsLog.setUserRegion("2532");
         ntcDnsLog.setQr(0);
         ntcDnsLog.setRd(1);
@@ -176,7 +172,7 @@ public class LogTestService extends BaseLogService {
         ntcDnsLog = (NtcDnsLog) createTestData(ntcDnsLog);
         ntcDnsLog.setId(38L);
         ntcDnsLog.setCfgId(2533L);
-        ntcDnsLog.setServiceType(130);
+        ntcDnsLog.setService(130);
         ntcDnsLog.setUserRegion("2533");
         ntcDnsLog.setQr(1);
         ntcDnsLog.setRd(1);
@@ -213,7 +209,7 @@ public class LogTestService extends BaseLogService {
         ntcSslLog = (NtcSslLog) createTestData(ntcSslLog);
         ntcSslLog.setId(39L);
         ntcSslLog.setCfgId(4532L);
-        ntcSslLog.setServiceType(19);
+        ntcSslLog.setService(19);
         ntcSslLog.setUserRegion("4532");
         ntcSslLog.setVersion("版本 3");
         ntcSslLog.setSni("*.cnblogs.cn");
@@ -228,7 +224,7 @@ public class LogTestService extends BaseLogService {
         ntcSslLog = (NtcSslLog) createTestData(ntcSslLog);
         ntcSslLog.setId(40L);
         ntcSslLog.setCfgId(4533L);
-        ntcSslLog.setServiceType(131);
+        ntcSslLog.setService(131);
         ntcSslLog.setUserRegion("4533");
         ntcSslLog.setVersion("版本 3");
         ntcSslLog.setSni("*.cnblogs.cn");
@@ -261,7 +257,7 @@ public class LogTestService extends BaseLogService {
         ntcMailLog = (NtcMailLog) createTestData(ntcMailLog);
         ntcMailLog.setId(38L);
         ntcMailLog.setCfgId(3532L);
-        ntcMailLog.setServiceType(20);
+        ntcMailLog.setService(20);
         ntcMailLog.setUserRegion("3532");
         ntcMailLog.setMailProto("SMTP");
         ntcMailLog.setMailFrom("darnell@163.com");
@@ -275,7 +271,7 @@ public class LogTestService extends BaseLogService {
         ntcMailLog = (NtcMailLog) createTestData(ntcMailLog);
         ntcMailLog.setId(39L);
         ntcMailLog.setCfgId(3533L);
-        ntcMailLog.setServiceType(132);
+        ntcMailLog.setService(132);
         ntcMailLog.setUserRegion("3533");
         ntcMailLog.setMailProto("smtp");
         ntcMailLog.setMailFrom("iamfree@163.com");
@@ -308,7 +304,7 @@ public class LogTestService extends BaseLogService {
         ntcPptpLog = (NtcPptpLog) createTestData(ntcPptpLog);
         ntcPptpLog.setId(41L);
         ntcPptpLog.setCfgId(5532L);
-        ntcPptpLog.setServiceType(22);
+        ntcPptpLog.setService(22);
         ntcPptpLog.setUserRegion("5532");
         ntcPptpLog.setTunnelType(1);
         ntcPptpLog.setEncryptMode(1);
@@ -322,7 +318,7 @@ public class LogTestService extends BaseLogService {
         ntcPptpLog = (NtcPptpLog) createTestData(ntcPptpLog);
         ntcPptpLog.setId(42L);
         ntcPptpLog.setCfgId(4533L);
-        ntcPptpLog.setServiceType(134);
+        ntcPptpLog.setService(134);
         ntcPptpLog.setUserRegion("5533");
         ntcPptpLog.setTunnelType(2);
         ntcPptpLog.setEncryptMode(6);
@@ -354,7 +350,7 @@ public class LogTestService extends BaseLogService {
         ntcL2tpLog = (NtcL2tpLog) createTestData(ntcL2tpLog);
         ntcL2tpLog.setId(43L);
         ntcL2tpLog.setCfgId(6532L);
-        ntcL2tpLog.setServiceType(23);
+        ntcL2tpLog.setService(23);
         ntcL2tpLog.setUserRegion("6532");
         ntcL2tpLog.setTunnelType(1);
         ntcL2tpLog.setEncryptMode(1);
@@ -366,7 +362,7 @@ public class LogTestService extends BaseLogService {
         ntcL2tpLog = (NtcL2tpLog) createTestData(ntcL2tpLog);
         ntcL2tpLog.setId(44L);
         ntcL2tpLog.setCfgId(6533L);
-        ntcL2tpLog.setServiceType(135);
+        ntcL2tpLog.setService(135);
         ntcL2tpLog.setUserRegion("6533");
         ntcL2tpLog.setTunnelType(2);
         ntcL2tpLog.setEncryptMode(2);
@@ -397,7 +393,7 @@ public class LogTestService extends BaseLogService {
         ntcOpenvpnLog = (NtcOpenvpnLog) createTestData(ntcOpenvpnLog);
         ntcOpenvpnLog.setId(45L);
         ntcOpenvpnLog.setCfgId(6532L);
-        ntcOpenvpnLog.setServiceType(24);
+        ntcOpenvpnLog.setService(24);
         ntcOpenvpnLog.setUserRegion("6532");
         ntcOpenvpnLog.setVersion("版本1");
         ntcOpenvpnLog.setEncryptMode("AES");
@@ -413,7 +409,7 @@ public class LogTestService extends BaseLogService {
         ntcOpenvpnLog = (NtcOpenvpnLog) createTestData(ntcOpenvpnLog);
         ntcOpenvpnLog.setId(46L);
         ntcOpenvpnLog.setCfgId(4533L);
-        ntcOpenvpnLog.setServiceType(136);
+        ntcOpenvpnLog.setService(136);
         ntcOpenvpnLog.setUserRegion("6533");
         ntcOpenvpnLog.setVersion("版本1");
         ntcOpenvpnLog.setEncryptMode("MD5");
@@ -447,7 +443,7 @@ public class LogTestService extends BaseLogService {
         ntcIpsecLog = (NtcIpsecLog) createTestData(ntcIpsecLog);
         ntcIpsecLog.setId(47L);
         ntcIpsecLog.setCfgId(7532L);
-        ntcIpsecLog.setServiceType(137);
+        ntcIpsecLog.setService(137);
         ntcIpsecLog.setUserRegion("7532");
         ntcIpsecLog.setExProtocol(1);
         ntcIpsecLog.setIsakmpMode(1);
@@ -460,7 +456,7 @@ public class LogTestService extends BaseLogService {
 
         ntcIpsecLog.setId(48L);
         ntcIpsecLog.setCfgId(7533L);
-        ntcIpsecLog.setServiceType(137);
+        ntcIpsecLog.setService(137);
         ntcIpsecLog.setUserRegion("7533");
         ntcIpsecLog.setExProtocol(2);
         ntcIpsecLog.setIsakmpMode(2);
@@ -492,7 +488,7 @@ public class LogTestService extends BaseLogService {
         ntcSshLog = (NtcSshLog) createTestData(ntcSshLog);
         ntcSshLog.setId(49L);
         ntcSshLog.setCfgId(8532L);
-        ntcSshLog.setServiceType(26);
+        ntcSshLog.setService(26);
         ntcSshLog.setUserRegion("8532");
         ntcSshLog.setVersion("版本2");
         ntcSshLog.setHostKey("*&SDAEAS");
@@ -509,7 +505,7 @@ public class LogTestService extends BaseLogService {
         ntcSshLog = (NtcSshLog) createTestData(ntcSshLog);
         ntcSshLog.setId(50L);
         ntcSshLog.setCfgId(8533L);
-        ntcSshLog.setServiceType(138);
+        ntcSshLog.setService(138);
         ntcSshLog.setUserRegion("8533");
         ntcSshLog.setVersion("版本2");
         ntcSshLog.setHostKey("*&SDAEAS111");
@@ -542,7 +538,7 @@ public class LogTestService extends BaseLogService {
         ntcFtpLog = (NtcFtpLog) createTestData(ntcFtpLog);
         ntcFtpLog.setId(51L);
         ntcFtpLog.setCfgId(9532L);
-        ntcFtpLog.setServiceType(21);
+        ntcFtpLog.setService(21);
         ntcFtpLog.setUserRegion(" 9532");
         ntcFtpLog.setFtpUrl("ftp://127.0.0.1/a/b/c.txt");
         ntcFtpLog.setFtpContent("我能解附件内容");
@@ -556,7 +552,7 @@ public class LogTestService extends BaseLogService {
         ntcFtpLog = (NtcFtpLog) createTestData(ntcFtpLog);
         ntcFtpLog.setId(52L);
         ntcFtpLog.setCfgId(9533L);
-        ntcFtpLog.setServiceType(133);
+        ntcFtpLog.setService(133); 
         ntcFtpLog.setUserRegion("9533");
         ntcFtpLog.setFtpUrl("ftp://127.0.0.1/a/b/d.txt");
         ntcFtpLog.setFtpContent("我能解附件内容");
@@ -658,21 +654,19 @@ public class LogTestService extends BaseLogService {
 
 
     private Object createTestData(LogEntity logEntity) {
-        logEntity.setProtocol("IPv4_TCP");
+        logEntity.setTransProto("IPv4_TCP");
         logEntity.setFoundTime(new Date());
         logEntity.setRecvTime(new Date());
         logEntity.setAddrType(4);
-        logEntity.setClientIp("192.168.10.106");
-        logEntity.setClientPort(80);
-        logEntity.setServerIp("202.106.0.20");
-        logEntity.setServerPort(8443);
-        logEntity.setCljIp("10.0.6.240");
+        logEntity.setsIp("192.168.10.106");
+        logEntity.setsPort("80");
+        logEntity.setdIp("202.106.0.20");
+        logEntity.setdPort("8443");
+        logEntity.setCapIp("10.0.6.240");
         logEntity.setDeviceId(1356981);
         logEntity.setDirection(0);
-        logEntity.setStreamType(0);
+        logEntity.setStreamDir(0);
         logEntity.setEntranceId(21L);
-        logEntity.setClientLocate("本地地址");
-        logEntity.setServerLocate("中国 北京 电信宽带光纤");
 
         return logEntity;
 

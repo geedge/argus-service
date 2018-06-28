@@ -47,6 +47,7 @@ import com.nis.util.CamelUnderlineUtil;
 import com.nis.util.CompileVal;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
+import com.nis.util.JsonMapper;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
@@ -1275,6 +1276,7 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		
+		
 		//调用接口入redis
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
 		Iterator serviceIterator = maatMap.keySet().iterator();
@@ -1283,13 +1285,65 @@ public class ConfigSourcesService extends BaseService {
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList)&&dbIndexList.size()>0) {
 				for (Integer dbIndex : dbIndexList) {
+					//分发到阀门有些业务需要添加编译属性到域配置
+					List<MaatConfig> newMaatConfigList = new ArrayList<MaatConfig>();
+					newMaatConfigList.addAll(maatMap.get(service));
+					if (dbIndex.intValue()==ServiceAndRDBIndexReal.getValveDBIndex().intValue()) {
+						Map<Integer, Map<String, String []>> maatToValueMap = ServiceAndRDBIndexReal.getMaatToValveMap();
+						if (maatToValueMap.containsKey(service)) {
+							
+							Map<String, String[]> regionAndFiledMap	= maatToValueMap.get(service);
+							//for (MaatConfig maatConfig : newMaatConfigList) {
+							for (int i = 0; i <newMaatConfigList.size(); i++) {
+								MaatConfig maatConfig = newMaatConfigList.get(i);
+								MaatConfig newMaatConfig = (MaatConfig) JsonMapper.fromJsonString(JsonMapper.toJsonString(maatConfig), MaatConfig.class);
+								Iterator iterator = regionAndFiledMap.keySet().iterator();
+								while (iterator.hasNext()) {
+									String regionName = iterator.next().toString();
+									PropertyDescriptor pd;
+									try {
+										pd = new PropertyDescriptor(regionName+"MapList", MaatConfig.class);
+										Method method = pd.getReadMethod();
+										Object object = method.invoke(newMaatConfig);
+										
+										if (object!=null) {
+											
+											List<Map<String, String>> listMaps =new ArrayList<Map<String,String>>();
+											listMaps.addAll((List<Map<String, String>>) object);
+											String [] fields = regionAndFiledMap.get(regionName);
+											for (String fieldName : fields) {
+												fieldName = CamelUnderlineUtil.underlineToCamel(fieldName.toLowerCase());
+												String value = newMaatConfig.getCompileMap().get(fieldName);
+												if (!StringUtil.isEmpty(value)) {
+													for (Map<String, String> map: listMaps) {
+														map.put(fieldName, value);
+													}
+												}
+											}
+											method = pd.getWriteMethod();
+											method.invoke(newMaatConfig, listMaps);
+										}
+										newMaatConfigList.set(i, newMaatConfig);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e = new RuntimeException("未找到域列表，请检查域类型是否正确！");
+										msgList.add(e);
+										return "error";
+									}
+									
+								}
+							}
+						}
+					}
+					
 					if (configMap.containsKey(dbIndex)) {
-						configMap.get(dbIndex).addAll(maatMap.get(service));
+						configMap.get(dbIndex).addAll(newMaatConfigList);
 					}else{
 						List<MaatConfig> list = new ArrayList<MaatConfig>();
-						list.addAll(maatMap.get(service));
+						list.addAll(newMaatConfigList);
 						configMap.put(dbIndex, list);
 					}
+					
 				}
 			}else {
 				RuntimeException e = new RuntimeException("service与写入数据库序号映射关系不存在");

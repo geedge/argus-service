@@ -499,9 +499,9 @@ public class CompileVal {
 		if (null == configCompile.getEndTime()) {
 			return "id为" + compileId + "的编译配置中endTime不能为空";
 		}
-		if (null == configCompile.getUserRegion() || configCompile.getUserRegion().equals("")) {
-			return "id为" + compileId + "的编译配置中userRegion不能为空";
-		}
+//		if (null == configCompile.getUserRegion() || configCompile.getUserRegion().equals("")) {
+//			return "id为" + compileId + "的编译配置中userRegion不能为空";
+//		}
 		if (null == configCompile.getIsValid()) {
 			return "id为" + compileId + "的编译配置中isValid不能为空";
 		}
