@@ -494,7 +494,12 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					for (String keyStr : keySplit) {
 						if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("[")) {
 							keyStr = keyStr.trim().replace("[", "").replace("]", "");
-							keyBF.append(map.get(keyStr));
+							String keyVal = map.get(keyStr);
+							if (keyVal != null && !keyVal.equals("")) {
+								keyBF.append(keyVal);
+							} else {
+								throw new RuntimeException("未从map中获取到" + keyStr + "的值,无法拼接redisKey,请检查数据是否正确");
+							}
 							if (type == 11 && keyStr.toLowerCase().equals("group_id")) {
 								keyBF.append(compileId);
 							}
@@ -522,7 +527,25 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					for (String valStr : valSplit) {
 						if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
 							valStr = valStr.trim().replace("[", "").replace("]", "");
-							valBF.append(map.get(valStr));
+							String val = map.get(valStr);
+							if (val != null) {
+								valBF.append(val);
+							} else {
+								if (type != 10 && type != 11) {// 域配置
+									if (valStr.toLowerCase().equals("service") || valStr.toLowerCase().equals("action")
+											|| valStr.toLowerCase().equals("user_region")) {// 域配置中只有这三个可以为空
+										// 删除前面的\t
+									} else {// 其他不可以为空
+										throw new RuntimeException(
+												"未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
+									}
+								} else {// 编译配置或分组配置 所有在maat.xml中配置的属性都不可以为空
+									// if (!valStr.toLowerCase().equals("service")&&!
+									// valStr.toLowerCase().equals("action")
+									// &&!valStr.toLowerCase().equals("user_region") &&type==10) {
+									throw new RuntimeException("未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
+								}
+							}
 						} else if (valStr.equals("&nbsp")) {
 							valBF.append(" ");
 						} else if (valStr.equals("\\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
@@ -1026,7 +1049,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 															redisTemplate.delete(groupRegion);// 删除组对应的域
 														} else {
 															throw new RuntimeException("从" + idRelaRedisDBIndex
-																	+ "号redis库中判断"+groupRegion+"组和域关系时不存在,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
+																	+ "号redis库中判断" + groupRegion
+																	+ "组和域关系时不存在,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
 
 														}
 
@@ -1035,7 +1059,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 															redisTemplate.delete(groupCompile.toUpperCase());// 删除当前组所对应的编译
 														} else {
 															throw new RuntimeException("从" + idRelaRedisDBIndex
-																	+ "号redis库中判断"+groupCompile.toUpperCase()+"组和域关系时不存在,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
+																	+ "号redis库中判断" + groupCompile.toUpperCase()
+																	+ "组和域关系时不存在,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
 
 														}
 
