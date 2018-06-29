@@ -1312,11 +1312,10 @@ public class ConfigSourcesService extends BaseService {
 											listMaps.addAll((List<Map<String, String>>) object);
 											String [] fields = regionAndFiledMap.get(regionName);
 											for (String fieldName : fields) {
-												fieldName = CamelUnderlineUtil.underlineToCamel(fieldName.toLowerCase());
-												String value = newMaatConfig.getCompileMap().get(fieldName);
+												String value = newMaatConfig.getCompileMap().get(fieldName.toLowerCase());
 												if (!StringUtil.isEmpty(value)) {
 													for (Map<String, String> map: listMaps) {
-														map.put(fieldName, value);
+														map.put(fieldName.toLowerCase(), value);
 													}
 												}
 											}
