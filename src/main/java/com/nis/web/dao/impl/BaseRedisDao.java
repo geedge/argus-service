@@ -43,7 +43,7 @@ public class BaseRedisDao {
 			}
 			return hasKey;
 		} else {
-			throw new RuntimeException("从" + index + "号redis库中判断" + key + "是否存在时失败,失败原因:redisTemplate为null请联系开发人员");
+			throw new RuntimeException("后台错误:从" + index + "号redis库中判断" + key + "是否存在时失败,失败原因:redisTemplate为null请联系开发人员");
 		}
 	}
 
@@ -60,7 +60,7 @@ public class BaseRedisDao {
 			Long id = redisTemplate.boundValueOps(key.toUpperCase()).increment(1l);
 			return id;
 		} else {
-			throw new RuntimeException("从" + index + "号redis库中获取" + key + "的自增长值时失败,失败原因:redisTemplate为null请联系开发人员");
+			throw new RuntimeException("后台错误:从" + index + "号redis库中获取" + key + "的自增长值时失败,失败原因:redisTemplate为null请联系开发人员");
 		}
 	}
 
@@ -70,7 +70,7 @@ public class BaseRedisDao {
 			redisTemplate.setEnableTransactionSupport(false);
 			return redisTemplate.opsForValue().get(key);
 		} else {
-			throw new RuntimeException("从" + index + "号redis库中获取" + key + "的值时失败,失败原因:redisTemplate为null请联系开发人员");
+			throw new RuntimeException("后台错误:从" + index + "号redis库中获取" + key + "的值时失败,失败原因:redisTemplate为null请联系开发人员");
 		}
 	}
 
