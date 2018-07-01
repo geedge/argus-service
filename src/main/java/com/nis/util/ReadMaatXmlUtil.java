@@ -120,10 +120,10 @@ public class ReadMaatXmlUtil {
 												maatXmlExpr.setType(12);
 											} else if (ele.getTextTrim().contains("num_region_table_name")) {
 												maatXmlExpr.setType(13);
-											} else if (ele.getTextTrim().contains("str_region_table_name")) {
-												maatXmlExpr.setType(14);
 											} else if (ele.getTextTrim().contains("str_str_region_table_name")) {
 												maatXmlExpr.setType(15);
+											} else if (ele.getTextTrim().contains("str_region_table_name")) {
+												maatXmlExpr.setType(14);
 											} else if (ele.getTextTrim().contains("file_digest_table_name")) {
 												maatXmlExpr.setType(16);
 											} else if (ele.getTextTrim().contains("file_like_table_name")) {

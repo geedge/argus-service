@@ -1218,7 +1218,7 @@ public class ConfigSourcesService extends BaseService {
 			maatConfig.setStrRegionMapList(dstMaplList);
 //			增强字符串域
 			if (!StringUtil.isEmpty(strongMapList)&&strongMapList.size()>0) {
-				maatConfig.setStrStrRegionMapList((dstMaplList));
+				maatConfig.setStrStrRegionMapList((strongMapList));
 			}
 			//数值域
 			dstMaplList = null;

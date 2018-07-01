@@ -678,7 +678,7 @@ public class ConfigSourcesController extends BaseRestController {
 				logger.info("-----------------调用接口上传文件---------------");
 				String filePath = FileManager.upload(fdsfile, null);
 				// resultObject.put("path", filePath.substring(filePath.indexOf("group")));
-				resultObject.put("path", filePath);
+				resultObject.put("accessUrl", filePath);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
