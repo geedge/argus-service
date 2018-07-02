@@ -181,13 +181,9 @@ public final class Constants {
 	public static final String SEARCH_ES_HOSTANDPORT_C = Configurations.getStringProperty("search.eshostandport_C",
 			null);
 	/**
-	 * 数据中心A版数据库名称,程序中每次查询时使用的数据库名称 use HIVEADBNAME
+	 * 数据中心数据库名称,程序中每次查询时使用的数据库名称 use HIVEDBNAME
 	 */
-	public static final String HIVEADBNAME = Configurations.getStringProperty("jdbc.hive.AName", "xa_dfbhit_hive");
-	/**
-	 * 数据中心B版数据库名称,程序中每次查询时使用的数据库名称 use HIVEBDBNAME
-	 */
-	public static final String HIVEBDBNAME = Configurations.getStringProperty("jdbc.hive.BName", "xa_z2_mesalog_hive");
+	public static final String HIVEDBNAME = Configurations.getStringProperty("jdbc.hive.Name", "xa_dfbhit_hive");
 	
 	public static final String DIGEST_GEN_TOOL_PATH = Configurations.getStringProperty("digest.gen.tool.path", "maat-redis/digest_gen");
 

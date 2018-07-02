@@ -51,7 +51,7 @@ public class SaveRequestLogThread implements Runnable {
 	public void run() {
 		logger.info("线程开始执行！");
 		//新开线程切换数据源，不影响action中的数据源
-		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_C);//开启数据源C
+		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);//开启数据源B
 		// TODO Auto-generated method stub
 		if(service!=null){
 			service.saveRequestLog(remoteAddr,requestURI,queryString,contextPath, operator, version, opAction, opTime, content, requestTime, consumerTime,businessCode,exceptionInfo,traceCode);

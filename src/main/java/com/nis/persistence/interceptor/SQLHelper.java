@@ -125,17 +125,9 @@ public class SQLHelper {
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_A)) {
 			return "mysql";
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_B)) {
-			return "oracle";
+			return "mysql";
 		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_C)) {
 			return "mysql";
-		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_D)) {
-			return "oracle";
-		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_F)) {
-			return "oracle";
-		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_G)) {
-			return "oracle";
-		} else if (dataSource.equals(CustomerContextHolder.DATA_SOURCE_H)) {//神通数据库
-			return "cluster";
 		}else {
 			return "mysql";
 		}

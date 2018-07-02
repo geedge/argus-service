@@ -40,6 +40,7 @@ public abstract class BaseLogService {
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	@Autowired
 	protected ElasticsearchSqlDao elasticsearchSqlDao;
+
 	/**
 	 * wx checkCloumnIsExist(这里用一句话描述这个方法的作用) (这里描述这个方法适用条件 – 可选)
 	 * 
@@ -126,21 +127,45 @@ public abstract class BaseLogService {
 		}
 	}
 
-	public void queryConditionCheck(SaveRequestLogThread thread,long start,LogEntity<?> entity,Class clazz,Page page) {
-		logger.info("请求参数校验开始----"+System.currentTimeMillis());
+	/**
+	 * 验证日志查询条件格式是否正确
+	 * @param thread
+	 * @param start
+	 * @param entity
+	 * @param clazz
+	 * @param page
+	 */
+	public void queryConditionCheck(SaveRequestLogThread thread, long start, LogEntity<?> entity, Class clazz,
+			Page page) {
+		logger.info("请求参数校验开始----" + System.currentTimeMillis());
 		try {
 			if (!StringUtil.isBlank(entity.getSearchCfgId())) {
 				Long.parseLong(entity.getSearchCfgId());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchCfgId参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchCfgId参数错误");
+		}
+
+		try {
+			if (!StringUtil.isBlank(entity.getSearchDirection())) {
+				Integer.parseInt(entity.getSearchDirection());
+			}
+		} catch (NumberFormatException e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "getSearchDirection参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "getSearchDirection参数错误");
 		}
 
 		try {
@@ -148,12 +173,12 @@ public abstract class BaseLogService {
 				Long.parseLong(entity.getSearchEntranceId());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchEntranceId参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchEntranceId参数错误");
 		}
@@ -163,12 +188,12 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式格式");
 		}
@@ -178,41 +203,41 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数错误");
 		}
 
 		try {
-			if (!StringUtil.isBlank(entity.getSearchServiceType())) {
-				Integer.parseInt(entity.getSearchServiceType());
+			if (!StringUtil.isBlank(entity.getSearchService())) {
+				Integer.parseInt(entity.getSearchService());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchServiceType参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchServiceType参数错误");
 		}
 		try {
-			checkCloumnIsExist(thread,start,clazz, page);
+			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
 			logger.error(e);
 			throw e;
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求参数错误");
 		}
-		logger.info("请求参数校验结束----"+System.currentTimeMillis());
+		logger.info("请求参数校验结束----" + System.currentTimeMillis());
 
 	}
 
@@ -232,12 +257,12 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchStatStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchStatStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchStatStartTime参数格式错误");
 		}
@@ -247,12 +272,12 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchStatEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchStatEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchStatEndTime参数错误");
 		}
@@ -261,29 +286,28 @@ public abstract class BaseLogService {
 				Integer.parseInt(entity.getSearchService());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数错误");
 		}
 
 		try {
-			checkCloumnIsExist(thread,start,clazz, page);
+			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
 			logger.error(e);
 			throw e;
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求参数错误");
 		}
 
 	}
-
 
 	/**
 	 * 管控实时统计公共查询字段验证
@@ -297,11 +321,11 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchReportEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数格式格式");
 		}
 		try {
@@ -309,11 +333,11 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchReportStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数错误");
 		}
 
@@ -322,11 +346,11 @@ public abstract class BaseLogService {
 				Integer.parseInt(entity.getSearchService());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数错误");
 		}
 
@@ -336,12 +360,12 @@ public abstract class BaseLogService {
 				Integer.parseInt(searchAttrType);
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchAttrType参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchAttrType参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchAttrType参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchAttrType参数错误");
 		}
 		try {
 			String searchLwhh = getSearchField(clazz, entity, "searchLwhh");
@@ -349,21 +373,21 @@ public abstract class BaseLogService {
 				Integer.parseInt(searchLwhh);
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchLwhh参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchLwhh参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchLwhh参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchLwhh参数错误");
 		}
-		
+
 		try {
-			checkCloumnIsExist(thread,start,clazz, page);
+			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
 			logger.error(e);
 			throw e;
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求参数错误");
 		}
@@ -375,31 +399,32 @@ public abstract class BaseLogService {
 	 * 
 	 * @param entity
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread, long start,DfReportEntity entity, Class clazz, Page page) {
+	public void queryConditionCheck(SaveRequestLogThread thread, long start, DfReportEntity entity, Class clazz,
+			Page page) {
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
 				sdf.parse(entity.getSearchReportEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchReportEndTime参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchReportEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchReportEndTime参数格式格式");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchReportEndTime参数格式格式");
 		}
-		
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportStartTime())) {
 				sdf.parse(entity.getSearchReportStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchReportStartTime参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchReportStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchReportStartTime参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchReportStartTime参数错误");
 		}
 
 		try {
@@ -408,12 +433,12 @@ public abstract class BaseLogService {
 				Integer.parseInt(searchAttrType);
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchAttrType参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchAttrType参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchAttrType参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchAttrType参数错误");
 		}
 		try {
 			String searchLwhh = getSearchField(clazz, entity, "searchLwhh");
@@ -421,12 +446,12 @@ public abstract class BaseLogService {
 				Integer.parseInt(searchLwhh);
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchLwhh参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchLwhh参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchLwhh参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchLwhh参数错误");
 		}
 		try {
 			String searchId = getSearchField(clazz, entity, "searchId");
@@ -434,42 +459,41 @@ public abstract class BaseLogService {
 				Integer.parseInt(searchId);
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchId参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchId参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchId参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchId参数错误");
 		}
-		
+
 		try {
 			String searchService = getSearchField(clazz, entity, "searchService");
 			if (!StringUtil.isBlank(searchService)) {
 				Integer.parseInt(searchService);
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchService参数格式错误",
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchService参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
-			throw new RestServiceException(thread,start,"searchService参数错误");
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			throw new RestServiceException(thread, start, "searchService参数错误");
 		}
-		
-		
+
 		try {
-			checkCloumnIsExist(thread,start,clazz, page);
+			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
 			logger.error(e);
 			throw e;
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
-			throw new RestServiceException(thread,start,"请求参数错误");
+			throw new RestServiceException(thread, start, "请求参数错误");
 		}
 
 	}
-	
+
 	/**
 	 * 
 	 * @Title: getJedisKey
@@ -510,7 +534,7 @@ public abstract class BaseLogService {
 				String[] strArr = { "30" };
 				parapeterMapNew.put("pageSize", strArr);
 			}
-		}else{
+		} else {
 			if (parapeterMapNew.get("pageNo") != null) {
 				parapeterMapNew.remove("pageNo");
 			}
@@ -538,8 +562,7 @@ public abstract class BaseLogService {
 		return key;
 	}
 
-	protected String getSearchField(Class<?> clazz, 
-			Serializable entity, String fieldName) {
+	protected String getSearchField(Class<?> clazz, Serializable entity, String fieldName) {
 		try {
 			Field field = clazz.getDeclaredField(fieldName);
 			field.setAccessible(true);

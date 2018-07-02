@@ -9,8 +9,6 @@
 package com.nis.domain;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
@@ -77,57 +75,16 @@ public abstract class LogEntity<T> implements Serializable {
 	@ApiModelProperty(value = "用户自定义域", required = true)
 	private String userRegion;
 
-	protected Long foundTimeCluster;
-	protected Long recvTimeCluster;
-
 	protected String searchCfgId;
+	protected String searchTransProto;
+	protected String searchDIp;
+	protected String searchSIp;
+	protected String searchDirection;
+	protected String searchService;
+	protected String searchEntranceId;
+	protected String searchCapIp;
 	protected String searchFoundStartTime;
 	protected String searchFoundEndTime;
-	protected Long searchFoundStartTimeCluster;
-	protected Long searchFoundEndTimeCluster;
-	protected String searchProtocol;
-	protected String searchServerIp;
-	protected String searchClientIp;
-	protected Integer searchDirection;
-	protected String searchServiceType;
-	protected String searchEntranceId;
-	protected String searchCljIp;
-
-	@JsonIgnore
-	public Long getFoundTimeCluster() {
-		return foundTimeCluster;
-	}
-
-	@JsonIgnore
-	public Long getRecvTimeCluster() {
-		return recvTimeCluster;
-	}
-
-	public void setFoundTimeCluster(Long foundTimeCluster) {
-		this.foundTimeCluster = foundTimeCluster;
-	}
-
-	public void setRecvTimeCluster(Long recvTimeCluster) {
-		this.recvTimeCluster = recvTimeCluster;
-	}
-
-	@JsonIgnore
-	public Long getSearchFoundStartTimeCluster() {
-		return searchFoundStartTimeCluster;
-	}
-
-	public void setSearchFoundStartTimeCluster(Long searchFoundStartTimeCluster) {
-		this.searchFoundStartTimeCluster = searchFoundStartTimeCluster;
-	}
-
-	@JsonIgnore
-	public Long getSearchFoundEndTimeCluster() {
-		return searchFoundEndTimeCluster;
-	}
-
-	public void setSearchFoundEndTimeCluster(Long searchFoundEndTimeCluster) {
-		this.searchFoundEndTimeCluster = searchFoundEndTimeCluster;
-	}
 
 	/**
 	 * 当前实体分页对象
@@ -151,6 +108,7 @@ public abstract class LogEntity<T> implements Serializable {
 	/**
 	 * @return id
 	 */
+	@JsonIgnore
 	public Long getId() {
 		return id;
 	}
@@ -183,9 +141,6 @@ public abstract class LogEntity<T> implements Serializable {
 	 */
 	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getFoundTime() {
-		if (foundTime == null && this.foundTimeCluster != null) {
-			foundTime = new Date(this.foundTimeCluster * 1000);
-		}
 		return foundTime;
 	}
 
@@ -202,9 +157,6 @@ public abstract class LogEntity<T> implements Serializable {
 	 */
 	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getRecvTime() {
-		if (recvTime == null && this.recvTimeCluster != null) {
-			recvTime = new Date(this.recvTimeCluster * 1000);
-		}
 		return recvTime;
 	}
 
@@ -353,151 +305,6 @@ public abstract class LogEntity<T> implements Serializable {
 		return null == this.getId() ? false : this.getId().equals(that.getId());
 	}
 
-	/**
-	 * @return searchFoundStartTime
-	 */
-	@JsonIgnore
-	public String getSearchFoundStartTime() {
-		return searchFoundStartTime;
-	}
-
-	/**
-	 * @param searchFoundStartTime
-	 *            要设置的 searchFoundStartTime
-	 */
-	public void setSearchFoundStartTime(String searchFoundStartTime) {
-		this.searchFoundStartTime = searchFoundStartTime;
-	}
-
-	/**
-	 * @return searchFoundEndTime
-	 */
-	@JsonIgnore
-	public String getSearchFoundEndTime() {
-		return searchFoundEndTime;
-	}
-
-	/**
-	 * @param searchFoundEndTime
-	 *            要设置的 searchFoundEndTime
-	 */
-	public void setSearchFoundEndTime(String searchFoundEndTime) {
-		this.searchFoundEndTime = searchFoundEndTime;
-	}
-
-	/**
-	 * @return searchCfgId
-	 */
-	@JsonIgnore
-	public String getSearchCfgId() {
-		return searchCfgId;
-	}
-
-	/**
-	 * @param searchCfgId
-	 *            要设置的 searchCfgId
-	 */
-	public void setSearchCfgId(String searchCfgId) {
-		this.searchCfgId = searchCfgId;
-	}
-
-	/**
-	 * @return searchProtocol
-	 */
-	@JsonIgnore
-	public String getSearchProtocol() {
-		return searchProtocol;
-	}
-
-	/**
-	 * @param searchProtocol
-	 *            要设置的 searchProtocol
-	 */
-	public void setSearchProtocol(String searchProtocol) {
-		this.searchProtocol = searchProtocol;
-	}
-
-	/**
-	 * @return searchServerIp
-	 */
-	@JsonIgnore
-	public String getSearchServerIp() {
-		return searchServerIp;
-	}
-
-	/**
-	 * @param searchServerIp
-	 *            要设置的 searchServerIp
-	 */
-	public void setSearchServerIp(String searchServerIp) {
-		this.searchServerIp = searchServerIp;
-	}
-
-	/**
-	 * @return searchClientIp
-	 */
-	@JsonIgnore
-	public String getSearchClientIp() {
-		return searchClientIp;
-	}
-
-	/**
-	 * @param searchClientIp
-	 *            要设置的 searchClientIp
-	 */
-	public void setSearchClientIp(String searchClientIp) {
-		this.searchClientIp = searchClientIp;
-	}
-
-	/**
-	 * @return searchEntranceId
-	 */
-	@JsonIgnore
-	public String getSearchEntranceId() {
-		return searchEntranceId;
-	}
-
-	/**
-	 * @param searchEntranceId
-	 *            要设置的 searchEntranceId
-	 */
-	public void setSearchEntranceId(String searchEntranceId) {
-		this.searchEntranceId = searchEntranceId;
-	}
-
-	/**
-	 * @return searchCljIp
-	 */
-	@JsonIgnore
-	public String getSearchCljIp() {
-		return searchCljIp;
-	}
-
-	/**
-	 * @param searchCljIp
-	 *            要设置的 searchCljIp
-	 */
-
-	public void setSearchCljIp(String searchCljIp) {
-		this.searchCljIp = searchCljIp;
-	}
-
-	/**
-	 * @return searchServiceType
-	 */
-	@JsonIgnore
-	public String getSearchServiceType() {
-		return searchServiceType;
-	}
-
-	/**
-	 * @param searchServiceType
-	 *            要设置的 searchServiceType
-	 */
-	public void setSearchServiceType(String searchServiceType) {
-		this.searchServiceType = searchServiceType;
-	}
-
 	public Integer getAddrType() {
 		return addrType;
 	}
@@ -522,15 +329,6 @@ public abstract class LogEntity<T> implements Serializable {
 		this.direction = direction;
 	}
 
-	@JsonIgnore
-	public Integer getSearchDirection() {
-		return searchDirection;
-	}
-
-	public void setSearchDirection(Integer searchDirection) {
-		this.searchDirection = searchDirection;
-	}
-
 	public String getUserRegion() {
 		return userRegion;
 	}
@@ -542,6 +340,96 @@ public abstract class LogEntity<T> implements Serializable {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
+	}
+
+	@JsonIgnore
+	public String getSearchCfgId() {
+		return searchCfgId;
+	}
+
+	public void setSearchCfgId(String searchCfgId) {
+		this.searchCfgId = searchCfgId;
+	}
+
+	@JsonIgnore
+	public String getSearchTransProto() {
+		return searchTransProto;
+	}
+
+	public void setSearchTransProto(String searchTransProto) {
+		this.searchTransProto = searchTransProto;
+	}
+
+	@JsonIgnore
+	public String getSearchDIp() {
+		return searchDIp;
+	}
+
+	public void setSearchDIp(String searchDIp) {
+		this.searchDIp = searchDIp;
+	}
+
+	@JsonIgnore
+	public String getSearchSIp() {
+		return searchSIp;
+	}
+
+	public void setSearchSIp(String searchSIp) {
+		this.searchSIp = searchSIp;
+	}
+
+	@JsonIgnore
+	public String getSearchDirection() {
+		return searchDirection;
+	}
+
+	public void setSearchDirection(String searchDirection) {
+		this.searchDirection = searchDirection;
+	}
+
+	@JsonIgnore
+	public String getSearchService() {
+		return searchService;
+	}
+
+	public void setSearchService(String searchService) {
+		this.searchService = searchService;
+	}
+
+	@JsonIgnore
+	public String getSearchEntranceId() {
+		return searchEntranceId;
+	}
+
+	public void setSearchEntranceId(String searchEntranceId) {
+		this.searchEntranceId = searchEntranceId;
+	}
+
+	@JsonIgnore
+	public String getSearchCapIp() {
+		return searchCapIp;
+	}
+
+	public void setSearchCapIp(String searchCapIp) {
+		this.searchCapIp = searchCapIp;
+	}
+
+	@JsonIgnore
+	public String getSearchFoundStartTime() {
+		return searchFoundStartTime;
+	}
+
+	public void setSearchFoundStartTime(String searchFoundStartTime) {
+		this.searchFoundStartTime = searchFoundStartTime;
+	}
+
+	@JsonIgnore
+	public String getSearchFoundEndTime() {
+		return searchFoundEndTime;
+	}
+
+	public void setSearchFoundEndTime(String searchFoundEndTime) {
+		this.searchFoundEndTime = searchFoundEndTime;
 	}
 
 }

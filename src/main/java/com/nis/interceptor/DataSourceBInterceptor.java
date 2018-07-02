@@ -16,7 +16,7 @@ public class DataSourceBInterceptor implements HandlerInterceptor {
 			HttpServletResponse response, Object handler) throws Exception {
 		logger.info("开启数据源配置操作库---");
 		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);//开启数据源B
-		
+		logger.info("mysql日志数据源开启成功---"+System.currentTimeMillis());
 		return true;
 	}
 

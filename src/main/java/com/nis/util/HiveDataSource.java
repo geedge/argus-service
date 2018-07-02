@@ -3,55 +3,56 @@ package com.nis.util;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import org.apache.log4j.Logger;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jolbox.bonecp.BoneCPDataSource;
+import com.nis.web.service.SpringContextHolder;
 
 public class HiveDataSource {
-	private final static Logger logger = Logger.getLogger(HiveDataSource.class);
+	private final static Logger logger = LoggerFactory.getLogger(HiveDataSource.class);
+	static BoneCPDataSource datasource = null;
 	static Connection conn = null;
-	static ResultSet rsA = null;
-	static Statement stA = null;
+	static ResultSet rs = null;
+	static Statement st = null;
 
-	static ResultSet rsB = null;
-	static Statement stB = null;
-
-	public static ResultSet query(String sql, String searchActiveSys) throws Exception {
-		if (null != searchActiveSys && searchActiveSys.equals("4")) {// A版数据库
-			logger.info("开始连接数据中心A版日志库--------------------------");
-			if (conn == null || conn.isClosed()) {
-				ApplicationContext ct = new ClassPathXmlApplicationContext("applicationContext-mybatis.xml");
-				BoneCPDataSource datasource = (BoneCPDataSource) ct.getBean("HiveADataSource");
-				conn = datasource.getConnection();
-			}
-			logger.info("连接数据中心A版日志库成功--------------------------");
-			stA = conn.createStatement();
-			String hiveAName = "use " + Constants.HIVEADBNAME;
-			// stA.execute("use xa_dfbhit_p_hive");
-			stA.execute(hiveAName);
-			logger.info("开始执行查询数据中心A版日志库操作--------------------------" + sql);
-			rsA = stA.executeQuery(sql);
-			logger.info("执行查询数据中心A版日志库成功--------------------------");
-			return rsA;
-		} else {// 目前默认B版数据库,后期增加C版数据库
-			logger.info("开始连接数据中心B版日志库--------------------------");
-			if (conn == null || conn.isClosed()) {
-				ApplicationContext ct = new ClassPathXmlApplicationContext("applicationContext-mybatis.xml");
-				BoneCPDataSource datasource = (BoneCPDataSource) ct.getBean("HiveBDataSource");
-				conn = datasource.getConnection();
-			}
-			logger.info("连接数据中心B版日志库成功--------------------------");
-			stB = conn.createStatement();
-			String hiveBName = "use " + Constants.HIVEBDBNAME;
-			// stB.execute("use xa_z2_mesalog_hive");
-			stB.execute(hiveBName);
-			logger.info("开始执行查询数据中心B版日志库操作--------------------------" + sql);
-			rsB = stB.executeQuery(sql);
-			logger.info("执行查询数据中心B版日志库成功--------------------------");
-			return rsB;
+	public static ResultSet query(String sql) throws Exception {
+		if (datasource == null) {
+			datasource = (BoneCPDataSource) SpringContextHolder.getBean("HiveDataSource");
 		}
+		conn = datasource.getConnection();
+		logger.info("连接数据中心日志库成功--------------------------");
+		st = conn.createStatement();
+		// logger.info("开始选择{}数据库--------------------------", Constants.HIVEDBNAME);
+		// String hiveAName = "use " + Constants.HIVEDBNAME;
+		// st.execute(hiveAName);
+		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
+		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
+		rs = st.executeQuery(sql);
+		logger.info("执行查询语句成功sql={}",sql);
+		return rs;
 
 	}
 
+	public static void closeConn() {
+		try {
+			if (rs != null) {
+				rs.close();
+				rs = null;
+			}
+			if (st != null) {
+				st.close();
+				st = null;
+			}
+			if (conn != null) {
+				conn.close();
+				conn = null;
+			}
+			logger.info("关闭数据中心连接成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("关闭数据中心连接失败,失败原因" + e);
+		}
+	}
 }
