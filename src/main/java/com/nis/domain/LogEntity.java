@@ -75,16 +75,16 @@ public abstract class LogEntity<T> implements Serializable {
 	@ApiModelProperty(value = "用户自定义域", required = true)
 	private String userRegion;
 
-	protected String searchCfgId;
-	protected String searchTransProto;
-	protected String searchDIp;
-	protected String searchSIp;
-	protected String searchDirection;
-	protected String searchService;
-	protected String searchEntranceId;
-	protected String searchCapIp;
-	protected String searchFoundStartTime;
-	protected String searchFoundEndTime;
+	protected String searchCfgId;//配置id
+	protected String searchTransProto;//协议类型
+	protected String searchDIp;//服务端ip地址
+	protected String searchSIp;//客户端ip地址
+	protected String searchDirection;//传输方向
+	protected String searchService;//业务类型
+	protected String searchEntranceId;//出入口编号
+	protected String searchCapIp;//处理机IP
+	protected String searchFoundStartTime;//开始发现时间
+	protected String searchFoundEndTime;//结束发现时间
 
 	/**
 	 * 当前实体分页对象

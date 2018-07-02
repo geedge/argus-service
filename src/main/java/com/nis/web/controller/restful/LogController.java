@@ -37,7 +37,6 @@ import com.nis.util.DateUtils;
 import com.nis.util.HiveJDBC;
 import com.nis.util.JsonMapper;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.BaseLogService;
 import com.nis.web.service.HiveSqlService;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -76,7 +75,7 @@ public class LogController extends BaseRestController {
 			ntcIpLogPage = new Page<NtcIpLog>();
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = page.getOrderBySql(NtcIpLog.class.getSimpleName(), page.getOrderBy());
+				orderBy = Page.getOrderBySql(NtcIpLog.class.getSimpleName(), page.getOrderBy());
 			} else {
 				orderBy = "found_Time";
 			}
@@ -99,6 +98,7 @@ public class LogController extends BaseRestController {
 					List<NtcIpLog> List = (java.util.List<NtcIpLog>) JsonMapper.fromJsonList(jsonString,
 							NtcIpLog.class);
 					ntcIpLogPage.setList(List);
+					ntcIpLogPage.setCount(List.size());
 
 				} else {
 					ntcIpLogPage.setList(new ArrayList());
@@ -109,7 +109,7 @@ public class LogController extends BaseRestController {
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "HTTP协议请求日志检索失败");
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "IP地址日志检索失败");
 			}
 			throw ((RestServiceException) e);
 		}
@@ -125,13 +125,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcHttpLog> ntcHttpLogPage = new Page<>();
+		Page<NtcHttpLog> ntcHttpLogPage = null;
 		try {
-			ntcHttpLogPage = testService.findNtcHttpLogPage(new Page<NtcHttpLog>(request, response, NtcHttpLog.class),
-					ntcHttpLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcHttpLog, NtcHttpLog.class, page);
+			ntcHttpLogPage = new Page<NtcHttpLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcHttpLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcHttpLog,
+					Configurations.getStringProperty(NtcHttpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcHttpLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcHttpLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcHttpLog> List = (java.util.List<NtcHttpLog>) JsonMapper.fromJsonList(jsonString,
+							NtcHttpLog.class);
+					ntcHttpLogPage.setList(List);
+					ntcHttpLogPage.setCount(List.size());
 
+				} else {
+					ntcHttpLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "Http日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Http日志检索成功",
@@ -146,13 +182,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcDnsLog> ntcDnsLogPage = new Page<>();
+		Page<NtcDnsLog> ntcDnsLogPage = null;
 		try {
-			ntcDnsLogPage = testService.findNtcDnsLogPage(new Page<NtcDnsLog>(request, response, NtcDnsLog.class),
-					ntcDnsLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcDnsLog, NtcDnsLog.class, page);
+			ntcDnsLogPage = new Page<NtcDnsLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcDnsLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcDnsLog,
+					Configurations.getStringProperty(NtcDnsLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcDnsLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcDnsLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcDnsLog> List = (java.util.List<NtcDnsLog>) JsonMapper.fromJsonList(jsonString,
+							NtcDnsLog.class);
+					ntcDnsLogPage.setList(List);
+					ntcDnsLogPage.setCount(List.size());
 
+				} else {
+					ntcDnsLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "Dns日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Dns日志检索成功",
@@ -167,13 +239,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcMailLog> ntcMailLogPage = new Page<>();
+		Page<NtcMailLog> ntcMailLogPage = null;
 		try {
-			ntcMailLogPage = testService.findNtcMailLogPage(new Page<NtcMailLog>(request, response, NtcMailLog.class),
-					ntcMailLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);
+			ntcMailLogPage = new Page<NtcMailLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcMailLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcMailLog,
+					Configurations.getStringProperty(NtcMailLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcMailLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcMailLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcMailLog> List = (java.util.List<NtcMailLog>) JsonMapper.fromJsonList(jsonString,
+							NtcMailLog.class);
+					ntcMailLogPage.setList(List);
+					ntcMailLogPage.setCount(List.size());
 
+				} else {
+					ntcMailLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "Mail日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Mail日志检索成功",
@@ -188,13 +296,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcSslLog> ntcSslLogPage = new Page<>();
+		Page<NtcSslLog> ntcSslLogPage = null;
 		try {
-			ntcSslLogPage = testService.findNtcSslLogPage(new Page<NtcSslLog>(request, response, NtcSslLog.class),
-					ntcSslLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcSslLog, NtcSslLog.class, page);
+			ntcSslLogPage = new Page<NtcSslLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcSslLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcSslLog,
+					Configurations.getStringProperty(NtcSslLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcSslLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcSslLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcSslLog> List = (java.util.List<NtcSslLog>) JsonMapper.fromJsonList(jsonString,
+							NtcSslLog.class);
+					ntcSslLogPage.setList(List);
+					ntcSslLogPage.setCount(List.size());
 
+				} else {
+					ntcSslLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "SSL日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSL日志检索成功",
@@ -209,13 +353,48 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcPptpLog> ntcPptpLogPage = new Page<>();
+		Page<NtcPptpLog> ntcPptpLogPage = null;
 		try {
-			ntcPptpLogPage = testService.findNtcPptpLogPage(new Page<NtcPptpLog>(request, response, NtcPptpLog.class),
-					ntcPptpLog);
-
+			testService.queryConditionCheck(auditLogThread, start, ntcPptpLog, NtcPptpLog.class, page);
+			ntcPptpLogPage = new Page<NtcPptpLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcPptpLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcPptpLog,
+					Configurations.getStringProperty(NtcPptpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcPptpLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcPptpLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcPptpLog> List = (java.util.List<NtcPptpLog>) JsonMapper.fromJsonList(jsonString,
+							NtcPptpLog.class);
+					ntcPptpLogPage.setList(List);
+					ntcPptpLogPage.setCount(List.size());
+				} else {
+					ntcPptpLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "PPTP日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "PPTP日志检索成功",
@@ -230,13 +409,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcL2tpLog> ntcL2tpLogPage = new Page<>();
+		Page<NtcL2tpLog> ntcL2tpLogPage = null;
 		try {
-			ntcL2tpLogPage = testService.findNtcL2tpLogPage(new Page<NtcL2tpLog>(request, response, NtcL2tpLog.class),
-					ntcL2tpLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcL2tpLog, NtcL2tpLog.class, page);
+			ntcL2tpLogPage = new Page<NtcL2tpLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcL2tpLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcL2tpLog,
+					Configurations.getStringProperty(NtcL2tpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcL2tpLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcL2tpLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcL2tpLog> List = (java.util.List<NtcL2tpLog>) JsonMapper.fromJsonList(jsonString,
+							NtcL2tpLog.class);
+					ntcL2tpLogPage.setList(List);
+					ntcL2tpLogPage.setCount(List.size());
 
+				} else {
+					ntcL2tpLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "L2TP日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "L2TP日志检索成功",
@@ -251,13 +466,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcOpenvpnLog> ntcOpenvpnLogPage = new Page<>();
+		Page<NtcOpenvpnLog> ntcOpenvpnLogPage = null;
 		try {
-			ntcOpenvpnLogPage = testService.findNtcOpenvpnLogPage(
-					new Page<NtcOpenvpnLog>(request, response, NtcOpenvpnLog.class), ntcOpenvpnLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcOpenvpnLog, NtcOpenvpnLog.class, page);
+			ntcOpenvpnLogPage = new Page<NtcOpenvpnLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcOpenvpnLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcOpenvpnLog,
+					Configurations.getStringProperty(NtcOpenvpnLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcOpenvpnLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcOpenvpnLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcOpenvpnLog> List = (java.util.List<NtcOpenvpnLog>) JsonMapper.fromJsonList(jsonString,
+							NtcOpenvpnLog.class);
+					ntcOpenvpnLogPage.setList(List);
+					ntcOpenvpnLogPage.setCount(List.size());
 
+				} else {
+					ntcOpenvpnLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "Openvpn日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Openvpn日志检索成功",
@@ -272,13 +523,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcIpsecLog> ntcIpsecLogPage = new Page<>();
+		Page<NtcIpsecLog> ntcIpsecLogPage = null;
 		try {
-			ntcIpsecLogPage = testService
-					.findNtcIpsecLogPage(new Page<NtcIpsecLog>(request, response, NtcIpsecLog.class), ntcIpsecLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcIpsecLog, NtcIpsecLog.class, page);
+			ntcIpsecLogPage = new Page<NtcIpsecLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcIpsecLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcIpsecLog,
+					Configurations.getStringProperty(NtcIpsecLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcIpsecLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcIpsecLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcIpsecLog> List = (java.util.List<NtcIpsecLog>) JsonMapper.fromJsonList(jsonString,
+							NtcIpsecLog.class);
+					ntcIpsecLogPage.setList(List);
+					ntcIpsecLogPage.setCount(List.size());
 
+				} else {
+					ntcIpsecLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "IPSEC日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "IPSEC日志检索成功",
@@ -293,13 +580,49 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcSshLog> ntcSshLogPage = new Page<>();
+		Page<NtcSshLog> ntcSshLogPage = null;
 		try {
-			ntcSshLogPage = testService.findNtcSshLogPage(new Page<NtcSshLog>(request, response, NtcSshLog.class),
-					ntcSshLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcSshLog, NtcSshLog.class, page);
+			ntcSshLogPage = new Page<NtcSshLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcSshLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcSshLog,
+					Configurations.getStringProperty(NtcSshLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcSshLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcSshLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcSshLog> List = (java.util.List<NtcSshLog>) JsonMapper.fromJsonList(jsonString,
+							NtcSshLog.class);
+					ntcSshLogPage.setList(List);
+					ntcSshLogPage.setCount(List.size());
 
+				} else {
+					ntcSshLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "SSH日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSH日志检索成功",
@@ -314,15 +637,50 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcFtpLog> ntcFtpLogPage = new Page<>();
+		Page<NtcFtpLog> ntcFtpLogPage = null;
 		try {
-			ntcFtpLogPage = testService.findNtcFtpLogPage(new Page<NtcFtpLog>(request, response, NtcSshLog.class),
-					ntcFtpLog);
+			testService.queryConditionCheck(auditLogThread, start, ntcFtpLog, NtcFtpLog.class, page);
+			ntcFtpLogPage = new Page<NtcFtpLog>();
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcFtpLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcFtpLog,
+					Configurations.getStringProperty(NtcFtpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcFtpLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcFtpLogPage.setList(new ArrayList());
+			} else {
+				List list = new ArrayList();
+				if (tableMapping.get("obj").size() > page.getPageSize()) {
+					list = tableMapping.get("obj").subList(0, page.getPageSize());
+				} else {
+					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcFtpLog> List = (java.util.List<NtcFtpLog>) JsonMapper.fromJsonList(jsonString,
+							NtcFtpLog.class);
+					ntcFtpLogPage.setList(List);
+					ntcFtpLogPage.setCount(List.size());
 
+				} else {
+					ntcFtpLogPage.setList(new ArrayList());
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "FTP日志检索失败");
+			}
+			throw ((RestServiceException) e);
 		}
-
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "FTP日志检索成功",
 				ntcFtpLogPage, 0);
 	}
@@ -335,7 +693,7 @@ public class LogController extends BaseRestController {
 		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<?> ntcPzReportPage = new Page<>();
+		Page<?> ntcPzReportPage = null;
 		try {
 			ntcPzReportPage = testService.findNtcPzReport(new Page<NtcPzReport>(request, response, NtcPzReport.class),
 					ntcPzReport);

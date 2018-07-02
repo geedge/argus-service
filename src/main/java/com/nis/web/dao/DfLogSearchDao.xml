@@ -40,10 +40,280 @@
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 	</resultMap>
+
+	<resultMap id="NtcHttpLogMap" type="com.nis.domain.restful.NtcHttpLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="req_hdr_file" jdbcType="VARCHAR" property="reqHdrFile" />
+		<result column="req_body_file" jdbcType="VARCHAR" property="reqBodyFile" />
+		<result column="res_hdr_file" jdbcType="VARCHAR" property="resHdrFile" />
+		<result column="res_body_file" jdbcType="VARCHAR" property="resBodyFile" />
+	</resultMap>
+
+	<resultMap id="NtcDnsLogMap" type="com.nis.domain.restful.NtcDnsLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="rd" jdbcType="INTEGER" property="rd" />
+		<result column="qr" jdbcType="INTEGER" property="qr" />
+		<result column="ra" jdbcType="INTEGER" property="ra" />
+		<result column="rr" jdbcType="VARCHAR" property="rr" />
+		<result column="qtype" jdbcType="INTEGER" property="qType" />
+		<result column="qclass" jdbcType="INTEGER" property="qclass" />
+		<result column="opcode" jdbcType="INTEGER" property="opcode" />
+		<result column="qname" jdbcType="VARCHAR" property="qname" />
+		<result column="cname" jdbcType="VARCHAR" property="cname" />
+		<result column="dns_sub" jdbcType="INTEGER" property="dnsSub" />
+	</resultMap>
+
+
+
+
+	<resultMap id="NtcMailLogMap" type="com.nis.domain.restful.NtcMailLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="mail_proto" jdbcType="VARCHAR" property="mailProto" />
+		<result column="mail_from" jdbcType="VARCHAR" property="mailFrom" />
+		<result column="mail_to" jdbcType="VARCHAR" property="mailTo" />
+		<result column="subject" jdbcType="VARCHAR" property="subject" />
+		<result column="eml_file" jdbcType="VARCHAR" property="emlFile" />
+	</resultMap>
+
+
+
+	<resultMap id="NtcSslLogMap" type="com.nis.domain.restful.NtcSslLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="version" jdbcType="VARCHAR" property="version" />
+		<result column="sni" jdbcType="VARCHAR" property="sni" />
+		<result column="san" jdbcType="VARCHAR" property="san" />
+		<result column="ca" jdbcType="VARCHAR" property="ca" />
+	</resultMap>
+
+
+
+	<resultMap id="NtcPptpLogMap" type="com.nis.domain.restful.NtcPptpLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
+		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
+	</resultMap>
+
+
+
+	<resultMap id="NtcL2tpLogMap" type="com.nis.domain.restful.NtcL2tpLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
+		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
+		<result column="chap_name" jdbcType="VARCHAR" property="chapName" />
+	</resultMap>
+
+	<resultMap id="NtcOpenvpnLogMap" type="com.nis.domain.restful.NtcOpenvpnLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="version" jdbcType="VARCHAR" property="version" />
+		<result column="encrypt_mode" jdbcType="VARCHAR" property="encryptMode" />
+		<result column="hmac" jdbcType="INTEGER" property="hmac" />
+		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
+	</resultMap>
 	
+	
+	<resultMap id="NtcIpsecLogMap" type="com.nis.domain.restful.NtcIpsecLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 
-
+		<result column="ex_protocol" jdbcType="INTEGER" property="exProtocol" />
+		<result column="isakmp_mode" jdbcType="INTEGER" property="isakmpMode" />
+	</resultMap>
 
 	
+	<resultMap id="NtcSshLogMap" type="com.nis.domain.restful.NtcSshLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="version" jdbcType="VARCHAR" property="version" />
+		<result column="host_key" jdbcType="VARCHAR" property="hostKey" />
+		<result column="host_cookie" jdbcType="VARCHAR" property="hostCookie" />
+		<result column="encrypt_mode" jdbcType="VARCHAR" property="encryptMode" />
+		<result column="mac" jdbcType="VARCHAR" property="mac" />
+		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
+	</resultMap>
+	
+	<resultMap id="NtcFtpLogMap" type="com.nis.domain.restful.NtcFtpLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+
+		<result column="ftp_url" jdbcType="VARCHAR" property="ftpUrl" />
+		<result column="ftp_content" jdbcType="VARCHAR" property="ftpContent" />
+	</resultMap>
+
+
+
+
+
+
+
+
+
+
 
 </mapper>
