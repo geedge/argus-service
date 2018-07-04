@@ -28,6 +28,7 @@ import com.nis.domain.restful.FileDesc;
 import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.util.CompileVal;
 import com.nis.util.Constants;
 import com.nis.util.FileUtils;
 import com.nis.util.OracleErrorCodeUtil;
@@ -324,7 +325,7 @@ public class ConfigSourcesController extends BaseRestController {
 	@ApiParam(value = "业务配置数据源", name = "configSource", required = true)
 	public Map createConfigSource(@RequestBody ConfigSource configSource, HttpServletRequest request,
 			HttpServletResponse response) {
-
+		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
@@ -342,7 +343,7 @@ public class ConfigSourcesController extends BaseRestController {
 			if ("error".equals(msg)) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"存储编译配置时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+						"存储编译配置时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
 			}
 			Long endSaveTime = System.currentTimeMillis();
 			Long time = (endSaveTime - benginTime) / 1000;
@@ -362,6 +363,7 @@ public class ConfigSourcesController extends BaseRestController {
 	@ApiParam(value = "业务配置数据源", name = "configSource", required = true)
 	public Map updateConfigSource(@RequestBody ConfigSource configSource, HttpServletRequest request,
 			HttpServletResponse response) {
+		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
@@ -383,7 +385,7 @@ public class ConfigSourcesController extends BaseRestController {
 			if (msg.equals("error")) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"修改编译配置状态时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+						"修改编译配置状态时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
 			}
 			// configSourcesService.updateConfigSource(thread, start,
 			// configSource.getConfigCompileList(),
@@ -551,17 +553,17 @@ public class ConfigSourcesController extends BaseRestController {
 	@ApiOperation(value = "回调配置存储", httpMethod = "POST", response = Map.class, notes = "回调配置存储服务")
 	public Map createCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
+		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		StringBuffer sb = new StringBuffer();
-
 		String msg = configSourcesService.saveCommonSources(thread, start, jsonString, sb);
 		if (msg.equals("error")) {
 			Exception exception = ConfigSourcesService.getMsgList().get(0);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"存储回调配置时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+					"存储回调配置时出现异常" + exception.getMessage(), CompileVal.getBusinessCode());
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置数据插入成功",
 				Constants.IS_DEBUG ? jsonString : null);
@@ -572,17 +574,17 @@ public class ConfigSourcesController extends BaseRestController {
 	@ApiParam(value = "回调配置状态修改", name = "updateStatConfigSource", required = true)
 	public Map updateCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
+		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
 		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
 				jsonString);
 		StringBuffer sb = new StringBuffer();
-
 		String msg = configSourcesService.updateCommonSources(thread, start, jsonString, new Date(), sb);
 		if (msg.equals("error")) {
 			Exception exception = ConfigSourcesService.getMsgList().get(0);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"修改回调配置状态时出现异常" + exception.getMessage(), RestBusinessCode.unknow_error.getValue());
+					"修改回调配置状态时出现异常" + exception.getMessage(), CompileVal.getBusinessCode());
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置状态修改成功",
 				Constants.IS_DEBUG ? jsonString : null);
@@ -604,7 +606,7 @@ public class ConfigSourcesController extends BaseRestController {
 			if (null == file) {
 				thread.setExceptionInfo("请选择上传文件到file参数");
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "请选择上传文件到file参数",
-						RestBusinessCode.missing_args.getValue());
+						RestBusinessCode.FileIsNull.getValue());
 
 			}
 			if (!StringUtil.isEmpty(fileDesc.getChecksum())) {
@@ -615,7 +617,7 @@ public class ConfigSourcesController extends BaseRestController {
 				if (!md5.equals(fileDesc.getChecksum())) {
 					thread.setExceptionInfo("checksum与文件MD5值不一致");
 					throw new RestServiceException(thread, System.currentTimeMillis() - start, "checksum与文件MD5值不一致",
-							RestBusinessCode.config_integrity_error.getValue());
+							RestBusinessCode.CheckSumIsWrong.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
@@ -650,7 +652,7 @@ public class ConfigSourcesController extends BaseRestController {
 		if (file == null) {
 			thread.setExceptionInfo("请上传获取摘要的文件到file");
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请上传获取摘要的文件到file参数",
-					RestBusinessCode.missing_args.getValue());
+					RestBusinessCode.FileIsNull.getValue());
 		}
 		JSONObject resultObject = new JSONObject();
 		FileDesc fileDesc = (FileDesc) JSONObject.toBean(JSONObject.fromObject(request.getHeader("File-Desc")),
@@ -664,7 +666,7 @@ public class ConfigSourcesController extends BaseRestController {
 				if (!md5.equals(fileDesc.getChecksum())) {
 					thread.setExceptionInfo("checksum与文件MD5值不一致");
 					throw new RestServiceException(thread, System.currentTimeMillis() - start, "checksum与文件MD5值不一致",
-							RestBusinessCode.config_integrity_error.getValue());
+							RestBusinessCode.CheckSumIsWrong.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);

@@ -44,6 +44,7 @@
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
 		<t:field fieldType="Number" srcName="policyGroup" dstName="policy_group" isRequired="true"/>
+		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
 		<t:field fieldType="IP" srcName="ip" dstName="ip" isRequired="true"/>
 		<t:field fieldType="Port" srcName="port" dstName="port" isRequired="true"/>
 		<t:field fieldType="String" srcName="userRegion" dstName="user_region" isRequired="true"/>

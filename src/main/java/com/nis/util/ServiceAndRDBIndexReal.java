@@ -179,11 +179,11 @@ public class ServiceAndRDBIndexReal {
 						index = i;
 					} 
 				}
-				if (index!=-1) {
+				if (index!=-1&&tableList!=null) {
 						return tableList.get(index);
 				} else {
 						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-						throw new RuntimeException("未从业务类型和表对应关系中,找到业务类型:"+service+",配置类型:"+type+"表名:"+tableName+"对应的真实表名");
+						throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到业务类型:"+service+",配置类型:"+type+"表名:"+tableName+"对应的真实表名");
 				}
 				
 			}
