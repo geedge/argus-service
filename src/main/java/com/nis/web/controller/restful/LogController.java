@@ -71,8 +71,11 @@ public class LogController extends BaseRestController {
 				request, null);
 		Page<NtcIpLog> ntcIpLogPage = null;
 		try {
+			resetTime(ntcIpLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcIpLog, NtcIpLog.class, page);
 			ntcIpLogPage = new Page<NtcIpLog>();
+			ntcIpLogPage.setPageNo(page.getPageNo());
+			ntcIpLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcIpLog.class.getSimpleName(), page.getOrderBy());
@@ -99,9 +102,15 @@ public class LogController extends BaseRestController {
 							NtcIpLog.class);
 					ntcIpLogPage.setList(List);
 					ntcIpLogPage.setCount(List.size());
-
+//					ntcIpLogPage
+//							.setCount(
+//									HiveSqlService.getHivePageCount(ntcIpLog, null,
+//											Configurations.getStringProperty(
+//													NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+//											getCol2Col(), null));
 				} else {
 					ntcIpLogPage.setList(new ArrayList());
+					ntcIpLogPage.setCount(0l);
 				}
 			}
 		} catch (Exception e) {
@@ -127,8 +136,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcHttpLog> ntcHttpLogPage = null;
 		try {
+			resetTime(ntcHttpLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcHttpLog, NtcHttpLog.class, page);
 			ntcHttpLogPage = new Page<NtcHttpLog>();
+			ntcHttpLogPage.setPageNo(page.getPageNo());
+			ntcHttpLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcHttpLog.class.getSimpleName(), page.getOrderBy());
@@ -184,8 +196,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcDnsLog> ntcDnsLogPage = null;
 		try {
+			resetTime(ntcDnsLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcDnsLog, NtcDnsLog.class, page);
 			ntcDnsLogPage = new Page<NtcDnsLog>();
+			ntcDnsLogPage.setPageNo(page.getPageNo());
+			ntcDnsLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcDnsLog.class.getSimpleName(), page.getOrderBy());
@@ -241,8 +256,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcMailLog> ntcMailLogPage = null;
 		try {
+			resetTime(ntcMailLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);
 			ntcMailLogPage = new Page<NtcMailLog>();
+			ntcMailLogPage.setPageNo(page.getPageNo());
+			ntcMailLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcMailLog.class.getSimpleName(), page.getOrderBy());
@@ -298,8 +316,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcSslLog> ntcSslLogPage = null;
 		try {
+			resetTime(ntcSslLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcSslLog, NtcSslLog.class, page);
 			ntcSslLogPage = new Page<NtcSslLog>();
+			ntcSslLogPage.setPageNo(page.getPageNo());
+			ntcSslLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcSslLog.class.getSimpleName(), page.getOrderBy());
@@ -355,8 +376,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcPptpLog> ntcPptpLogPage = null;
 		try {
+			resetTime(ntcPptpLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcPptpLog, NtcPptpLog.class, page);
 			ntcPptpLogPage = new Page<NtcPptpLog>();
+			ntcPptpLogPage.setPageNo(page.getPageNo());
+			ntcPptpLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcPptpLog.class.getSimpleName(), page.getOrderBy());
@@ -411,8 +435,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcL2tpLog> ntcL2tpLogPage = null;
 		try {
+			resetTime(ntcL2tpLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcL2tpLog, NtcL2tpLog.class, page);
 			ntcL2tpLogPage = new Page<NtcL2tpLog>();
+			ntcL2tpLogPage.setPageNo(page.getPageNo());
+			ntcL2tpLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcL2tpLog.class.getSimpleName(), page.getOrderBy());
@@ -468,8 +495,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcOpenvpnLog> ntcOpenvpnLogPage = null;
 		try {
+			resetTime(ntcOpenvpnLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcOpenvpnLog, NtcOpenvpnLog.class, page);
 			ntcOpenvpnLogPage = new Page<NtcOpenvpnLog>();
+			ntcOpenvpnLogPage.setPageNo(page.getPageNo());
+			ntcOpenvpnLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcOpenvpnLog.class.getSimpleName(), page.getOrderBy());
@@ -525,8 +555,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcIpsecLog> ntcIpsecLogPage = null;
 		try {
+			resetTime(ntcIpsecLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcIpsecLog, NtcIpsecLog.class, page);
 			ntcIpsecLogPage = new Page<NtcIpsecLog>();
+			ntcIpsecLogPage.setPageNo(page.getPageNo());
+			ntcIpsecLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcIpsecLog.class.getSimpleName(), page.getOrderBy());
@@ -582,8 +615,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcSshLog> ntcSshLogPage = null;
 		try {
+			resetTime(ntcSshLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcSshLog, NtcSshLog.class, page);
 			ntcSshLogPage = new Page<NtcSshLog>();
+			ntcSshLogPage.setPageNo(page.getPageNo());
+			ntcSshLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcSshLog.class.getSimpleName(), page.getOrderBy());
@@ -639,8 +675,11 @@ public class LogController extends BaseRestController {
 
 		Page<NtcFtpLog> ntcFtpLogPage = null;
 		try {
+			resetTime(ntcFtpLog);
 			testService.queryConditionCheck(auditLogThread, start, ntcFtpLog, NtcFtpLog.class, page);
 			ntcFtpLogPage = new Page<NtcFtpLog>();
+			ntcFtpLogPage.setPageNo(page.getPageNo());
+			ntcFtpLogPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
 				orderBy = Page.getOrderBySql(NtcFtpLog.class.getSimpleName(), page.getOrderBy());

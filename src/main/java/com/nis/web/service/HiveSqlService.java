@@ -21,7 +21,6 @@ import com.nis.domain.Page;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.HiveDataSource;
-import com.nis.util.HiveJDBC;
 import com.nis.util.StringUtil;
 import com.nis.util.redis.SaveRedisThread;
 
@@ -71,10 +70,10 @@ public class HiveSqlService {
 								if (col2col.containsKey(key)) {
 									value = sdf.parse(value.toString().trim()).getTime() / 1000;
 									if (key.toLowerCase().equals("searchfoundstarttime")) {
-										foundTimePartStart = Long.parseLong(value.toString()) / 3600;
+										foundTimePartStart = Long.parseLong(value.toString()) / 3600L/ 24L;
 									}
 									if (key.toLowerCase().equals("searchfoundendtime")) {
-										foundTimePartEnd = Long.parseLong(value.toString()) / 3600;
+										foundTimePartEnd = Long.parseLong(value.toString()) / 3600L/ 24L;
 									}
 									if (col2col.get(key).get("start") != null) {
 										// sql.append(" and " +
@@ -115,15 +114,13 @@ public class HiveSqlService {
 
 					}
 				}
-				if (null != searchActiveSys) {// 添加分区字段
-					if (null != foundTimePartStart) {
-						// sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
-						sql.append(" and found_time_partition>=" + foundTimePartStart);
-					}
-					if (null != foundTimePartEnd) {
-						// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
-						sql.append(" and found_time_partition<" + foundTimePartEnd);
-					}
+				if (null != foundTimePartStart) {
+					// sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
+					sql.append(" and found_time_partition>=" + foundTimePartStart);
+				}
+				if (null != foundTimePartEnd) {
+					// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
+					sql.append(" and found_time_partition<" + foundTimePartEnd);
 				}
 
 			}
@@ -143,10 +140,9 @@ public class HiveSqlService {
 	public static Long getHivePageCount(Object bean, String countKey, String tableName,
 			Map<String, Map<String, String>> col2col, String searchActiveSys) throws Exception {
 		tableName = tableName.toLowerCase();
-		tableName = Configurations.getStringProperty(tableName, "t_" + tableName).trim();
-		StringBuffer countSql = new StringBuffer();
+		StringBuffer sql = new StringBuffer();
 		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
-		countSql.append("select count(1) from " + tableName + " where 1=1 ");
+		sql.append("select count(1) from " + tableName + " where 1=1 ");
 		if (bean != null) {
 			Class<?> clazz = bean.getClass();
 			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
@@ -156,8 +152,10 @@ public class HiveSqlService {
 				Long foundTimePartStart = null;
 				Long foundTimePartEnd = null;
 				for (int i = 0; i < fields.length; i++) {
+					// 现在gwall日志表结构中只有数值和字符串两种类型,数值都是int类型没有bigint所以不需要加L,
 					Field f = fields[i];
 					String key = f.getName();// 获取字段名
+					String typeName = f.getType().getName();
 					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
 						Object value = getFieldValue(bean, key);
 						if (value != null) {
@@ -166,17 +164,27 @@ public class HiveSqlService {
 								if (col2col.containsKey(key)) {
 									value = sdf.parse(value.toString().trim()).getTime() / 1000;
 									if (key.toLowerCase().equals("searchfoundstarttime")) {
-										foundTimePartStart = Long.parseLong(value.toString()) / 3600;
+										foundTimePartStart = Long.parseLong(value.toString()) / 3600L/ 24L;
 									}
 									if (key.toLowerCase().equals("searchfoundendtime")) {
-										foundTimePartEnd = Long.parseLong(value.toString()) / 3600;
+										foundTimePartEnd = Long.parseLong(value.toString()) / 3600L/ 24L;
 									}
 									if (col2col.get(key).get("start") != null) {
-										countSql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("start"))
-												+ ">=" + value + "L");
+										// sql.append(" and " +
+										// filedAndColumnMap.get(col2col.get(key).get("start"))
+										// + ">=to_date('" +
+										// value.toString().trim()
+										// + "','yyyy-mm-dd HH24:mi:ss')");
+										sql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("start")) + ">="
+												+ value);
 									} else {
-										countSql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("end"))
-												+ "<" + value + "L");
+										// sql.append(" and " +
+										// filedAndColumnMap.get(col2col.get(key).get("end"))
+										// + "<=to_date('" +
+										// value.toString().trim()
+										// + "','yyyy-mm-dd HH24:mi:ss')");
+										sql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("end")) + "<"
+												+ value);
 									}
 								}
 							} else {
@@ -185,48 +193,35 @@ public class HiveSqlService {
 									key = key.substring(0, 1).toLowerCase() + key.substring(1);
 								}
 
-								if (!value.toString().trim().equals("") && filedAndColumnMap.containsKey(key)
-										&& (key.toLowerCase().equals("cfgid")
-												|| key.toLowerCase().equals("entranceid"))) {
-									countSql.append(
+								if (typeName.equals("java.lang.String")) {
+									sql.append(" and " + filedAndColumnMap.get(key) + "='" + value.toString().trim()
+											+ "'");
+								} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
+									sql.append(" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
+
+								} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
+									sql.append(
 											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim() + "L");
-								} else if (!value.toString().trim().equals("") && filedAndColumnMap.containsKey(key)
-										&& (key.toLowerCase().equals("protocol") || key.toLowerCase().equals("serverip")
-												|| key.toLowerCase().equals("clientip")
-												|| key.toLowerCase().equals("url")
-												|| key.toLowerCase().equals("mailfrom")
-												|| key.toLowerCase().equals("mailto")
-												|| key.toLowerCase().equals("encryptmode")
-												|| key.toLowerCase().equals("exprotocol")
-												|| key.toLowerCase().equals("cljip"))) {
-									countSql.append(" and " + filedAndColumnMap.get(key) + "='"
-											+ value.toString().trim() + "'");
-								} else if (!value.toString().trim().equals("") && filedAndColumnMap.containsKey(key)
-										&& key.toLowerCase().equals("servicetype")) {
-									countSql.append(
-											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
 								}
 							}
 						}
 
 					}
 				}
-				// if (null != searchActiveSys &&
-				// !searchActiveSys.equals(Constants.ACTIVESYS_A)) {//
-				// B版数据库才有found_time_partition字段,A版毛衣found_time_partition分区字段
-				if (null != searchActiveSys) {
-					if (null != foundTimePartStart) {
-						countSql.append(" and found_time_partition>=" + foundTimePartStart + "L");
-					}
-					if (null != foundTimePartEnd) {
-						countSql.append(" and found_time_partition<" + foundTimePartEnd + "L");
-					}
+				if (null != foundTimePartStart) {
+					// sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
+					sql.append(" and found_time_partition>=" + foundTimePartStart);
 				}
+				if (null != foundTimePartEnd) {
+					// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
+					sql.append(" and found_time_partition<" + foundTimePartEnd);
+				}
+
 			}
 		}
-		logger.info("获取数据中心日志总条数sql==================" + countSql.toString());
+		logger.info("获取数据中心日志总条数sql==================" + sql.toString());
 		// ResultSet countRs = HiveJDBC.query(countSql.toString());
-		ResultSet countRs = HiveDataSource.query(countSql.toString());
+		ResultSet countRs = HiveDataSource.query(sql.toString());
 		String countStr = null;
 		while (countRs.next()) {
 			countStr = countRs.getObject(1).toString();
@@ -248,7 +243,6 @@ public class HiveSqlService {
 	public static ResultSet getResultSet2(Page page, Object bean, String tableName,
 			Map<String, Map<String, String>> col2col, String orderBy, String searchActiveSys) throws Exception {
 		tableName = tableName.toLowerCase();
-		tableName = Configurations.getStringProperty(tableName, "t_" + tableName).trim();
 		String showColmun = getFiledsSql(bean.getClass().getSimpleName(), page.getFields());
 		StringBuffer sql = new StringBuffer();
 		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
@@ -277,8 +271,10 @@ public class HiveSqlService {
 				Long foundTimePartStart = null;
 				Long foundTimePartEnd = null;
 				for (int i = 0; i < fields.length; i++) {
+					// 现在gwall日志表结构中只有数值和字符串两种类型,数值都是int类型没有bigint所以不需要加L,
 					Field f = fields[i];
 					String key = f.getName();// 获取字段名
+					String typeName = f.getType().getName();
 					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
 						Object value = getFieldValue(bean, key);
 						if (value != null) {
@@ -287,10 +283,10 @@ public class HiveSqlService {
 								if (col2col.containsKey(key)) {
 									value = sdf.parse(value.toString().trim()).getTime() / 1000;
 									if (key.toLowerCase().equals("searchfoundstarttime")) {
-										foundTimePartStart = Long.parseLong(value.toString()) / 3600;
+										foundTimePartStart = Long.parseLong(value.toString()) / 3600L/ 24L;
 									}
 									if (key.toLowerCase().equals("searchfoundendtime")) {
-										foundTimePartEnd = Long.parseLong(value.toString()) / 3600;
+										foundTimePartEnd = Long.parseLong(value.toString()) / 3600L/ 24L;
 									}
 									if (col2col.get(key).get("start") != null) {
 										// sql.append(" and " +
@@ -299,7 +295,7 @@ public class HiveSqlService {
 										// value.toString().trim()
 										// + "','yyyy-mm-dd HH24:mi:ss')");
 										sql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("start")) + ">="
-												+ value + "L");
+												+ value);
 									} else {
 										// sql.append(" and " +
 										// filedAndColumnMap.get(col2col.get(key).get("end"))
@@ -307,7 +303,7 @@ public class HiveSqlService {
 										// value.toString().trim()
 										// + "','yyyy-mm-dd HH24:mi:ss')");
 										sql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("end")) + "<"
-												+ value + "L");
+												+ value);
 									}
 								}
 							} else {
@@ -316,43 +312,38 @@ public class HiveSqlService {
 									key = key.substring(0, 1).toLowerCase() + key.substring(1);
 								}
 
-								if (!value.toString().trim().equals("") && filedAndColumnMap.containsKey(key)
-										&& (key.toLowerCase().equals("cfgid")
-												|| key.toLowerCase().equals("entranceid"))) {
-									sql.append(
-											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim() + "L");
-								} else if (!value.toString().trim().equals("") && filedAndColumnMap.containsKey(key)
-										&& (key.toLowerCase().equals("protocol") || key.toLowerCase().equals("serverip")
-												|| key.toLowerCase().equals("clientip")
-												|| key.toLowerCase().equals("cljip"))) {
+								if (typeName.equals("java.lang.String")) {
 									sql.append(" and " + filedAndColumnMap.get(key) + "='" + value.toString().trim()
 											+ "'");
-								} else if (!value.toString().trim().equals("") && filedAndColumnMap.containsKey(key)
-										&& key.toLowerCase().equals("servicetype")) {
+								} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
 									sql.append(" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
+
+								} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
+									sql.append(
+											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim() + "L");
 								}
 							}
 						}
 
 					}
 				}
-				if (null != searchActiveSys && !searchActiveSys.equals(Constants.ACTIVESYS_A)) {// B版数据库才有found_time_partition字段,A版毛衣found_time_partition分区字段
-					if (null != foundTimePartStart) {
-						sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
-					}
-					if (null != foundTimePartEnd) {
-						sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
-					}
+				if (null != foundTimePartStart) {
+					// sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
+					sql.append(" and found_time_partition>=" + foundTimePartStart);
+				}
+				if (null != foundTimePartEnd) {
+					// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
+					sql.append(" and found_time_partition<" + foundTimePartEnd);
 				}
 
 			}
 		}
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;
 		Integer endNum = startNum - 1 + page.getPageSize();
-		sql.append(
-				" order by " + orderBy + " limit 10000) t1) t2 where row_Num between " + startNum + " and " + endNum);
+		//sql.append(" order by " + orderBy + " limit 10000) t1) t2 where row_Num between " + startNum + " and " + endNum);
+		sql.append(" order by " + orderBy + " ) t1) t2 where row_Num between " + startNum + " and " + endNum);
 		logger.info("获取数据中心日志sql===================" + sql);
-		ResultSet query = HiveJDBC.query(sql.toString(), searchActiveSys);
+		ResultSet query = HiveDataSource.query(sql.toString());
 		logger.info("获取数据中心日志成功");
 		return query;
 	}
@@ -434,7 +425,7 @@ public class HiveSqlService {
 			}
 		}
 		logger.info("获取数据中心日志总条数sql==================" + countSql.toString());
-		ResultSet countRs = HiveJDBC.query(countSql.toString(), searchActiveSys);
+		ResultSet countRs = HiveDataSource.query(countSql.toString());
 		String countStr = null;
 		while (countRs.next()) {
 			countStr = countRs.getObject(1).toString();
@@ -446,7 +437,7 @@ public class HiveSqlService {
 		}
 		Long count = Long.valueOf(countStr);
 		logger.info("获取数据中心日志总条数成功总共===================" + count + "条配置");
-		HiveJDBC.closeConn();
+		HiveDataSource.closeConn();
 		return count;
 	}
 

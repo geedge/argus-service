@@ -181,21 +181,23 @@ public class HiveJDBC {
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 		Integer endNum = startNum - 1 + page.getPageSize() + 1;
 		if (listString.size() >= startNum) {
-			if (listString.size() >= endNum) {
-				mapList.put("str", listString.subList(startNum, endNum));
-			} else {
-				mapList.put("str", listString.subList(startNum, listString.size()));
-			}
+//			if (listString.size() >= endNum) {
+//				mapList.put("str", listString.subList(startNum, endNum));
+//			} else {
+//				mapList.put("str", listString.subList(startNum, listString.size()));
+//			}
+			
+			mapList.put("str", listString);
 		} else {
 			mapList.put("str", new ArrayList());
 		}
 		if (listObject.size() >= startNum) {
-			if (listObject.size() >= endNum) {
-				mapList.put("obj", listObject.subList(startNum, endNum));
-			} else {
-				mapList.put("obj", listObject.subList(startNum, listObject.size()));
-			}
-
+//			if (listObject.size() >= endNum) {
+//				mapList.put("obj", listObject.subList(startNum, endNum));
+//			} else {
+//				mapList.put("obj", listObject.subList(startNum, listObject.size()));
+//			}
+			mapList.put("str", listObject);
 		} else {
 			mapList.put("obj", new ArrayList());
 		}
