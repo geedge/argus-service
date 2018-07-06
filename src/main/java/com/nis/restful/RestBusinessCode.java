@@ -316,9 +316,9 @@ public enum RestBusinessCode {
 	 */
 	FatherCfgIdIsWrongRange(20004, "Maat配置的fatherCfgId值不在有效范围"),
 	/**
-	 * 编译配置的service与action不匹配
+	 * 配置的service与action不匹配
 	 */
-	ServiceUnmatchAction(20005, "Maat配置的service与action不匹配"),
+	ServiceUnmatchAction(20005, "配置的service与action不匹配"),
 	/**
 	 * 编译配置的的startTime不能晚于endTime
 	 */

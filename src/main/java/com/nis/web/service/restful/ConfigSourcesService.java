@@ -2947,6 +2947,8 @@ public class ConfigSourcesService extends BaseService {
 				// 获取IP类型
 				Integer ipType = null;
 				String ipTypeName = "";
+				
+				Integer action = null;
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					if (commonSourceFieldCfg.getDstName().equals("ip_type")) {
 						String dstVal = srcMap.get(
@@ -2974,6 +2976,24 @@ public class ConfigSourcesService extends BaseService {
 											.getValue());
 						}
 						ipType = Integer.parseInt(dstVal);
+					}
+					//验证service与action是否匹配
+					if (commonSourceFieldCfg.getDstName().equals("action")) {
+						String dstVal = srcMap.get(
+								commonSourceFieldCfg.getSrcName()).toString().trim();
+						if (Integer.valueOf(dstVal).compareTo(ServiceAndRDBIndexReal.getActionByService(Integer.valueOf(srcMap.get("service")
+								.toString().trim())))!=0) {
+							logger1.error(RestBusinessCode.ServiceUnmatchAction
+									.getErrorReason());
+							thread.setExceptionInfo(RestBusinessCode.ServiceUnmatchAction
+									.getErrorReason());
+							throw new RestServiceException(thread,
+									System.currentTimeMillis() - start,
+									RestBusinessCode.ServiceUnmatchAction
+											.getErrorReason(),
+									RestBusinessCode.ServiceUnmatchAction
+											.getValue());
+						}
 					}
 				}
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {

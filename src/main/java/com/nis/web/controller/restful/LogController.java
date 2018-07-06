@@ -93,11 +93,12 @@ public class LogController extends BaseRestController {
 				ntcIpLogPage.setList(new ArrayList());
 			} else {
 				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcIpLog> List = (java.util.List<NtcIpLog>) JsonMapper.fromJsonList(jsonString,
@@ -157,12 +158,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcHttpLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcHttpLog> List = (java.util.List<NtcHttpLog>) JsonMapper.fromJsonList(jsonString,
@@ -217,12 +218,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcDnsLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcDnsLog> List = (java.util.List<NtcDnsLog>) JsonMapper.fromJsonList(jsonString,
@@ -277,12 +278,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcMailLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcMailLog> List = (java.util.List<NtcMailLog>) JsonMapper.fromJsonList(jsonString,
@@ -337,12 +338,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcSslLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcSslLog> List = (java.util.List<NtcSslLog>) JsonMapper.fromJsonList(jsonString,
@@ -397,12 +398,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcPptpLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcPptpLog> List = (java.util.List<NtcPptpLog>) JsonMapper.fromJsonList(jsonString,
@@ -456,12 +457,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcL2tpLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcL2tpLog> List = (java.util.List<NtcL2tpLog>) JsonMapper.fromJsonList(jsonString,
@@ -516,12 +517,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcOpenvpnLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcOpenvpnLog> List = (java.util.List<NtcOpenvpnLog>) JsonMapper.fromJsonList(jsonString,
@@ -576,12 +577,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcIpsecLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcIpsecLog> List = (java.util.List<NtcIpsecLog>) JsonMapper.fromJsonList(jsonString,
@@ -636,12 +637,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcSshLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcSshLog> List = (java.util.List<NtcSshLog>) JsonMapper.fromJsonList(jsonString,
@@ -696,12 +697,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcFtpLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcFtpLog> List = (java.util.List<NtcFtpLog>) JsonMapper.fromJsonList(jsonString,
@@ -754,12 +755,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcAppLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcAppLog> List = (java.util.List<NtcAppLog>) JsonMapper.fromJsonList(jsonString,
@@ -812,12 +813,12 @@ public class LogController extends BaseRestController {
 			if (tableMapping == null) {
 				ntcDdosLogPage.setList(new ArrayList());
 			} else {
-				List list = new ArrayList();
-				if (tableMapping.get("obj").size() > page.getPageSize()) {
-					list = tableMapping.get("obj").subList(0, page.getPageSize());
-				} else {
-					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-				}
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcDdosLog> List = (java.util.List<NtcDdosLog>) JsonMapper.fromJsonList(jsonString,
@@ -861,6 +862,10 @@ public class LogController extends BaseRestController {
 				ntcPzReportPage, 0);
 	}
 
+	
+	
+	
+	
 	/**
 	 *判断开始和结束时间是否为null,如果为null则初始化时间
 	 * @param entity
