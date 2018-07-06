@@ -306,13 +306,54 @@
 		<result column="ftp_content" jdbcType="VARCHAR" property="ftpContent" />
 	</resultMap>
 
-
-
-
-
-
-
-
+	<resultMap id="NtcAppLogMap" type="com.nis.domain.restful.NtcAppLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+	</resultMap>
+	
+	<resultMap id="NtcDdosLogMap" type="com.nis.domain.restful.NtcDdosLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		
+		<result column="attack_type" jdbcType="INTEGER" property="attackType" />
+		<result column="attack_start_time" jdbcType="TIMESTAMP" property="attackStartTime" />
+		<result column="last_attack_time" jdbcType="TIMESTAMP" property="lastAttackTime" />
+		<result column="attack_max_pps" jdbcType="VARCHAR" property="attackMaxPps" />
+		<result column="attack_max_bps" jdbcType="VARCHAR" property="attackMaxBps" />
+		<result column="attack_total_pkt" jdbcType="VARCHAR" property="attackTotalPkt" />
+		<result column="attack_total_byte" jdbcType="VARCHAR" property="attackTotalByte" />
+		<result column="is_blcok" jdbcType="INTEGER" property="isBlcok" />
+	</resultMap>
 
 
 
