@@ -67,8 +67,9 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 														String maatTableName = ServiceAndRDBIndexReal
 																.getUnMaatTableName(service);
 														if (maatTableName == null) {
-															throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到非maat配置业务类型:"
-																	+ service + "对应的真实表名");
+															throw new RuntimeException(
+																	"后台错误:未从业务类型和表对应关系中,找到非maat配置业务类型:" + service
+																			+ "对应的真实表名");
 														} else {
 															keyBF.append(maatTableName);
 														}
@@ -145,7 +146,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 
 									}
 								} else {
-									throw new RuntimeException("后台错误:无法从maat.xml中获取业务类型" + service + "对应的规则,请检查业务类型是否正确");
+									throw new RuntimeException(
+											"后台错误:无法从maat.xml中获取业务类型" + service + "对应的规则,请检查业务类型是否正确");
 								}
 							}
 							BaseRedisDao.getIncr(redisDBIndex, "MAAT_VERSION");
@@ -283,6 +285,116 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 	}
 
 	/**
+	 * 单独找一个redis-db记录配置信息,方便实时统计程序获取所有配置的分类性质,标签等内容,(为什么实时统计不从配置库redisdb获取呢,
+	 * 因为配置有多分发的情况,会发送到不同的redisdb,每个redisdb的配置条数不一定相同,有的配置所有的redisdb都有,有的只在某一个redisdb中有,实时统计程序不好获取配置这些配置内容,
+	 * 最重要的是,前端机不需要这些属性,所以在配置库有可能不带分类性质,标签等属性,maat.xml如果配置了则有,没有配置则就没有这些属性.所以单独找一个reidsdb存放带分类性质,标签等属性的配置)
+	 * @param configMap
+	 */
+	private void addStatisticsReal(Map<Integer, List<MaatConfig>> configMap) {
+		if (configMap != null && configMap.size() > 0) {
+			for (Integer redisDBIndex : configMap.keySet()) {
+				int redisStatisticsRealDBIndex = Configurations.getIntProperty("redisStatisticsRealDBIndex", 14);
+				if (redisStatisticsRealDBIndex >= 0
+						&& redisStatisticsRealDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 16)) {
+					List<MaatConfig> list = configMap.get(redisDBIndex);
+					if (list != null && list.size() > 0) {
+						RedisTemplate<String, String> redisTemplate = SpringContextHolder
+								.getBean("redisTemplate" + redisStatisticsRealDBIndex);
+						String redisStatisticsReal = Configurations.getStringProperty("redis-statisticsReal",
+								"[COMPILE_ID];\t;[SERVICE];\t;[ACTION];\t;[CONT_TYPE];\t;[ATTR_TYPE];\t;[CONT_LABEL];\t;[TASK_ID];\t;[AFFAIR_ID];\t;[DO_BLACKLIST];\t;[DO_LOG];\t;[EFFECTIVE_RANGE];\t;[START_TIME];\t;[END_TIME];\t;[USER_REGION];\t;[IS_VALID];\t;[GROUP_NUM];\t;[FATHER_CFG_ID];\t;[OP_TIME]");
+						String[] redisStatisticsRealArr = redisStatisticsReal.split(";");
+						String maatVersionStr = BaseRedisDao.getValByKey(redisStatisticsRealDBIndex, "MAAT_VERSION");
+						if (maatVersionStr == null) {
+							maatVersionStr = "0";
+						}
+						if (maatVersionStr != null) {
+							Long maatVersion = Long.valueOf(maatVersionStr) + 1;
+							for (MaatConfig maatConfig : list) {
+								int service = maatConfig.getService();
+								MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
+								Map<String, String> compileMap = maatConfig.getCompileMap();
+								for (MaatXmlExpr maatXmlExpr : maatXmlConfig.getExpressionList()) {
+									if (10 == maatXmlExpr.getType().intValue()) {
+										StringBuffer keyBF = new StringBuffer();
+										String[] keySplit = maatXmlExpr.getKeyExpression().split(";");
+										for (String keyStr : keySplit) {
+											if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("[")) {
+												keyStr = keyStr.trim().replace("[", "").replace("]", "");
+												String keyVal = compileMap.get(keyStr);
+												if (keyVal != null && !keyVal.equals("")) {
+													keyBF.append(keyVal);
+												} else {
+													throw new RuntimeException(
+															"后台错误:未从map中获取到" + keyStr + "的值,无法拼接redisKey,请检查数据是否正确");
+												}
+											} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("{")) {
+												keyStr = keyStr.trim().replace("{", "").replace("}", "");
+												if (keyStr.toLowerCase().contains("table_name")) {
+													String argTableName = compileMap.get("table_name");
+													String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(
+															service, 10, argTableName == null ? null : argTableName);
+													if (maatTableName == null) {
+														throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到业务类型:"
+																+ service + ",配置类型:10,对应的真实表名");
+													} else {
+														keyBF.append(maatTableName);
+													}
+
+												}
+
+											} else {
+												keyBF.append(keyStr.trim());
+											}
+										}
+										StringBuffer valBF = new StringBuffer();
+										for (String valStr : redisStatisticsRealArr) {
+											if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
+												valStr = valStr.trim().replace("[", "").replace("]", "");
+												String val = compileMap.get(valStr.toLowerCase());
+												if (val != null) {
+													valBF.append(val);
+												} else {
+													// 编译配置或分组配置 所有在maat.xml中配置的属性都不可以为空
+													// if (!valStr.toLowerCase().equals("service")&&!
+													// valStr.toLowerCase().equals("action")
+													// &&!valStr.toLowerCase().equals("user_region") &&type==10) {
+													throw new RuntimeException(
+															"后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
+
+												}
+											} else if (valStr.equals("\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
+												valBF.append("\t");
+											} else {
+												valBF.append(valStr.trim());
+											}
+										}
+										String maatKey = keyBF.toString();
+										redisTemplate.opsForValue().set(maatKey.toUpperCase(), valBF.toString());
+										String zset = maatKey.replace("EFFECTIVE_RULE:", "ADD,");
+										redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+										logger.info("向{}号redis数据库添加了一条配置,key是{},value是{}", redisDBIndex,
+												maatKey.toUpperCase(), valBF.toString());
+										break;
+									}
+
+								}
+							}
+							BaseRedisDao.getIncr(redisStatisticsRealDBIndex, "MAAT_VERSION");
+						}
+					} else {
+						throw new RuntimeException(
+								"后台错误:向" + redisStatisticsRealDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
+					}
+
+				} else {
+					throw new RuntimeException("后台错误:redis数据库编号:" + redisStatisticsRealDBIndex + "不正确,请检查数据库编号");
+				}
+				break;// configMap中所有的value都是相同的,在记录配置新增或者取消时只记录一次即可
+			}
+		}
+	}
+
+	/**
 	 * 封装组id与域id对应关系并添加到对象中
 	 * @param regionMapList
 	 * @param compileAndGroupRelations
@@ -309,7 +421,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 									String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 											argTableName == null ? null : argTableName);
 									if (maatTableName == null) {
-										throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + ",对应的真实表名");
+										throw new RuntimeException(
+												"后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + ",对应的真实表名");
 									} else {
 										keyBF.append(maatTableName);
 									}
@@ -367,7 +480,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 									Integer.valueOf(maatVersionStr) + 1);
 							count++;
 						} else {
-							throw new RuntimeException("后台错误:向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
+							throw new RuntimeException(
+									"后台错误:向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确");
 						}
 
 					}
@@ -378,6 +492,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 			}
 			if (count == configMap.size()) {
 				addMaatRelation(configMap);
+				addStatisticsReal(configMap);
 				return true;
 			}
 		} else {
@@ -404,7 +519,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 			setCommonConfig(maatXmlConfig, compileMap, 10, maatVersion.doubleValue(), service, redisTemplate,
 					redisDBIndex, null);// 10代表是编译配置
 		} else {
-			throw new RuntimeException("后台错误:无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确");
+			throw new RuntimeException(
+					"后台错误:无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确");
 		}
 
 		List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
@@ -414,7 +530,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 						compileId);// 11代表是分组配置
 			}
 		} else {
-			throw new RuntimeException("后台错误:无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的分组配置信息,请检查配置参数是否正确");
+			throw new RuntimeException(
+					"后台错误:无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的分组配置信息,请检查配置参数是否正确");
 		}
 
 		List<Map<String, String>> ipRegionMapList = maatConfig.getIpRegionMapList();
@@ -509,7 +626,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 								String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 										argTableName == null ? null : argTableName);
 								if (maatTableName == null) {
-									throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + ",对应的真实表名");
+									throw new RuntimeException(
+											"后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + ",对应的真实表名");
 								} else {
 									keyBF.append(maatTableName);
 								}
@@ -534,13 +652,15 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 											|| valStr.toLowerCase().equals("user_region")) {// 域配置中只有这三个可以为空
 										// 删除前面的\t
 									} else {// 其他不可以为空
-										throw new RuntimeException("后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
+										throw new RuntimeException(
+												"后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
 									}
 								} else {// 编译配置或分组配置 所有在maat.xml中配置的属性都不可以为空
 									// if (!valStr.toLowerCase().equals("service")&&!
 									// valStr.toLowerCase().equals("action")
 									// &&!valStr.toLowerCase().equals("user_region") &&type==10) {
-									throw new RuntimeException("后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
+									throw new RuntimeException(
+											"后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
 								}
 							}
 						} else if (valStr.equals("&nbsp")) {
@@ -655,7 +775,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 															String maatTableName = ServiceAndRDBIndexReal
 																	.getUnMaatTableName(service);
 															if (maatTableName == null) {
-																throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到非maat配置业务类型:" + service
+																throw new RuntimeException(
+																		"后台错误:未从业务类型和表对应关系中,找到非maat配置业务类型:" + service
 																				+ "对应的真实表名");
 															} else {
 																keyBF.append(maatTableName);
@@ -676,8 +797,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 															keyBF.toString().toUpperCase());
 													break;
 												} else {
-													throw new RuntimeException("后台错误:"+redisDBIndex + "号redis库中不存在key=" + oldKey
-															+ "请检查id映射关系是否正确");
+													throw new RuntimeException("后台错误:" + redisDBIndex
+															+ "号redis库中不存在key=" + oldKey + "请检查id映射关系是否正确");
 												}
 											}
 										}
@@ -726,7 +847,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 
 										}
 									} else {
-										throw new RuntimeException("后台错误:无法从maat.xml中获取业务类型" + service + "对应的规则,请检查业务类型是否正确");
+										throw new RuntimeException(
+												"后台错误:无法从maat.xml中获取业务类型" + service + "对应的规则,请检查业务类型是否正确");
 									}
 								}
 								BaseRedisDao.getIncr(redisDBIndex, "MAAT_VERSION");
@@ -735,7 +857,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 										Integer.valueOf(maatVersionStr) + 1);
 								count++;
 							} else {
-								throw new RuntimeException("后台错误:无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的配置id信息,请检查配置参数是否正确");
+								throw new RuntimeException("后台错误:无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service
+										+ "的配置id信息,请检查配置参数是否正确");
 							}
 						}
 
@@ -794,6 +917,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 			}
 			if (count == idMap.size()) {
 				delMaatRelation(idMap);
+				delStatisticsReal(idMap);
 				return true;
 			}
 		} else {
@@ -840,7 +964,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 														redisDBIndex);
 											}
 										} else {
-											throw new RuntimeException("后台错误:从" + idRelaRedisDBIndex + "号redis库中获取" + groupRegionKey
+											throw new RuntimeException(
+													"后台错误:从" + idRelaRedisDBIndex + "号redis库中获取" + groupRegionKey
 															+ "的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
 
 										}
@@ -893,7 +1018,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 							if (keyStr.toLowerCase().contains("table_name")) {
 								String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type, null);
 								if (maatTableName == null) {
-									throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + ",对应的真实表名");
+									throw new RuntimeException(
+											"后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + ",对应的真实表名");
 								} else {
 									keyBF.append(maatTableName);
 								}
@@ -914,7 +1040,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 								maatKey.toUpperCase());
 						break;
 					} else {
-						throw new RuntimeException("后台错误:"+redisDBIndex + "号redis库中不存在key=" + oldKey
+						throw new RuntimeException("后台错误:" + redisDBIndex + "号redis库中不存在key=" + oldKey
 								+ "请检查id映射关系是否正确,或该配置已经被取消,已经被取消的配置不可再次取消,否则将抛出异常");
 					}
 				}
@@ -952,6 +1078,15 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 		}
 	}
 
+	/**
+	 * 删除域配置,重名key,记录相关信息MAAT_UPDATE_STATUS,MAAT_RULE_TIMER等
+	 * @param maatXmlConfig
+	 * @param regionArr
+	 * @param maatVersion
+	 * @param service
+	 * @param redisTemplate
+	 * @param redisDBIndex
+	 */
 	private void removeRegionConfig(MaatXmlConfig maatXmlConfig, String[] regionArr, Double maatVersion, int service,
 			RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
 		if (maatXmlConfig != null && regionArr != null && regionArr.length > 0) {
@@ -964,7 +1099,7 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 					redisTemplate.rename(oldKey, maatKey.toUpperCase());
 					logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}", redisDBIndex, oldKey, maatKey.toUpperCase());
 				} else {
-					throw new RuntimeException("后台错误:"+redisDBIndex + "号redis库中不存在key=" + oldKey + "请检查id映射关系是否正确");
+					throw new RuntimeException("后台错误:" + redisDBIndex + "号redis库中不存在key=" + oldKey + "请检查id映射关系是否正确");
 				}
 
 				for (MaatXmlExpr maatXmlExpr : expressionList) {
@@ -999,6 +1134,75 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 		} else {
 			throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则或传入的配置信息有误,请检查!");
 		}
+	}
+
+	/**
+	 * 取消分类性质,标签等信息
+	 */
+	private void delStatisticsReal(Map<Integer, Map<Integer, List<Long>>> idMap) {
+		if (idMap != null && idMap.size() > 0) {
+			int redisStatisticsRealDBIndex = Configurations.getIntProperty("redisStatisticsRealDBIndex", 14);
+			RedisTemplate<String, String> redisTemplate = SpringContextHolder
+					.getBean("redisTemplate" + redisStatisticsRealDBIndex);
+			String maatVersionStr = BaseRedisDao.getValByKey(redisStatisticsRealDBIndex, "MAAT_VERSION");
+			if (maatVersionStr == null) {
+				throw new RuntimeException("后台错误:从" + redisStatisticsRealDBIndex
+						+ "号redis库中获取MAAT_VERSION的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
+			}
+			double maatVersion = Double.valueOf(maatVersionStr) + 1D;
+			for (Integer redisDBIndex : idMap.keySet()) {
+				if (redisStatisticsRealDBIndex >= 0
+						&& redisStatisticsRealDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 16)) {
+					Map<Integer, List<Long>> map = idMap.get(redisDBIndex);
+					if (map != null && map.size() > 0) {
+						for (Integer service : map.keySet()) {
+							String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, 10, null);
+							List<Long> idList = map.get(service);
+							if (idList != null && idList.size() > 0) {
+								for (Long compileId : idList) {
+									String effectiveRuleKey = "EFFECTIVE_RULE:" + maatTableName + "," + compileId;
+									if (BaseRedisDao.keyIsExist(redisStatisticsRealDBIndex,
+											effectiveRuleKey.toUpperCase())) {
+										redisTemplate.rename(effectiveRuleKey.toUpperCase(), effectiveRuleKey
+												.toUpperCase().replace("EFFECTIVE_RULE", "OBSOLETE_RULE"));
+										logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是:{}",
+												redisStatisticsRealDBIndex, effectiveRuleKey.toUpperCase(), effectiveRuleKey
+												.toUpperCase().replace("EFFECTIVE_RULE", "OBSOLETE_RULE"));
+										
+										String zset = effectiveRuleKey.replace("EFFECTIVE_RULE:", "DEL,");
+										redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
+										logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
+												redisStatisticsRealDBIndex, zset.toUpperCase(), maatVersion);
+									} else {
+										throw new RuntimeException("后台错误:从" + redisStatisticsRealDBIndex + "号redis库中判断"
+												+ effectiveRuleKey.toUpperCase()
+												+ "组和域关系时不存在,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
+
+									}
+
+								}
+							} else {
+								throw new RuntimeException("后台错误:删除配置时,配置id不能为空,请联系开发人员检查删除逻辑是否正确");
+							}
+
+						}
+
+						BaseRedisDao.getIncr(redisStatisticsRealDBIndex, "MAAT_VERSION");
+						logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisStatisticsRealDBIndex,
+								Integer.valueOf(maatVersionStr) + 1);
+
+					} else {
+						throw new RuntimeException("后台错误:删除配置时,配置id不能为空,请联系开发人员检查删除逻辑是否正确");
+					}
+
+				} else {
+					throw new RuntimeException("后台错误:redis数据库编号:" + redisStatisticsRealDBIndex + "不正确,请检查数据库编号");
+				}
+				break;// 因为所有的value都是相同的所以只取消一次就可以了
+			}
+
+		}
+
 	}
 
 	/**
@@ -1085,8 +1289,8 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 										}
 
 									} else {
-										throw new RuntimeException("后台错误:从" + idRelaRedisDBIndex + "号redis库中获取" + compileStr
-												+ "的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
+										throw new RuntimeException("后台错误:从" + idRelaRedisDBIndex + "号redis库中获取"
+												+ compileStr + "的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常");
 
 									}
 								}

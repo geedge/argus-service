@@ -51,53 +51,54 @@ public class MaatTestServiceimpl {
 		if (maatXmlConfig != null && configCompile != null) {
 			Long compileId = configCompile.getCompileId();
 			validData(service, 10, compileId, configCompile.getCompileId(), redisDB, null, maatXmlConfig, redisTemplate,
-					configCompile);
+					configCompile,configCompile);
 
 			List<ConfigGroupRelation> groupRelationList = configCompile.getGroupRelationList();
 			for (ConfigGroupRelation configGroupRelation : groupRelationList) {
 				validData(service, 11, compileId, configGroupRelation.getGroupId(), redisDB, null, maatXmlConfig,
-						redisTemplate, configGroupRelation);
+						redisTemplate, configGroupRelation,configCompile);
 			}
 
 			List<IpRegion> ipRegionList = configCompile.getIpRegionList();
 			for (IpRegion ipRegion : ipRegionList) {
 				validData(service, 12, compileId, ipRegion.getRegionId(), redisDB, null, maatXmlConfig, redisTemplate,
-						ipRegion);
+						ipRegion,configCompile);
 			}
 			List<NumRegion> numRegionList = configCompile.getNumRegionList();
 			for (NumRegion numRegion : numRegionList) {
 				validData(service, 13, compileId, numRegion.getRegionId(), redisDB, null, maatXmlConfig, redisTemplate,
-						numRegion);
+						numRegion,configCompile);
 			}
 
 			List<StrRegion> strRegionList = configCompile.getStrRegionList();
 			for (StrRegion strRegion : strRegionList) {
 				if (strRegion.getDistrict() == null || strRegion.getDistrict().trim().equals("")) {
 					validData(service, 14, compileId, strRegion.getRegionId(), redisDB, null, maatXmlConfig,
-							redisTemplate, strRegion);
+							redisTemplate, strRegion,configCompile);
 				} else {
 					validData(service, 15, compileId, strRegion.getRegionId(), redisDB, null, maatXmlConfig,
-							redisTemplate, strRegion);
+							redisTemplate, strRegion,configCompile);
 				}
 			}
 
 			List<DigestRegion> digestRegionList = configCompile.getDigestRegionList();
 			for (DigestRegion digestRegion : digestRegionList) {
 				validData(service, 16, compileId, digestRegion.getRegionId(), redisDB, null, maatXmlConfig,
-						redisTemplate, digestRegion);
+						redisTemplate, digestRegion,configCompile);
 			}
 
 			List<IpRegion> ipClientRangeList = configCompile.getIpClientRangeList();
 			for (IpRegion ipRegion : ipClientRangeList) {
 				validData(service, 18, compileId, ipRegion.getRegionId(), redisDB, null, maatXmlConfig, redisTemplate,
-						ipRegion);
+						ipRegion,configCompile);
 			}
 
 		}
 	}
 
 	public void validData(Integer service, Integer type, Long compileId, Long id, Integer redisDb, String tableName,
-			MaatXmlConfig maatXmlConfig, RedisTemplate<String, String> redisTemplate, Object obj) {
+			MaatXmlConfig maatXmlConfig, RedisTemplate<String, String> redisTemplate, Object obj,
+			ConfigCompile configCompile) {
 		List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
 		String[] valArr = null;
 		String key = null;
@@ -145,26 +146,33 @@ public class MaatTestServiceimpl {
 				break;
 			}
 		}
-		if (sysoLog(valArr, valList, obj, redisDb, key)) {
+		if (sysoLog(valArr, valList, obj, redisDb, key, configCompile)) {
 			FileUtils
-					.addStrToFile("\t" + 
-							sdf.format(new Date()) + " 编译配置id为" + compileId + "的配置中,在" + redisDb
-									+ "号redis库中key=" + key + "的值与实际插入的值相符\n",
+					.addStrToFile(
+							"\t" + sdf.format(new Date()) + " 编译配置id为" + compileId + "的配置中,在" + redisDb + "号redis库中key="
+									+ key + "的值与实际插入的值相符\n",
 							Configurations.getStringProperty("maatTestLogPath", ""), true);
 		}
 	}
 
-	private boolean sysoLog(String[] valArr, List<String> valList, Object obj, Integer redisDb, String key) {
+	private boolean sysoLog(String[] valArr, List<String> valList, Object obj, Integer redisDb, String key,
+			ConfigCompile configCompile) {
 		boolean bool = true;
 		for (int i = 0; i < valList.size(); i++) {
 			String attrName = valList.get(i);
 			if (!attrName.toLowerCase().equals("op_time")) {
 				String filedName = CamelUnderlineUtil.underlineToCamel(attrName);
-				String beanVal = getFieldValueByFieldName(filedName, obj);
+				String beanVal = null;
+				if (filedName.toLowerCase().equals("service") || filedName.toLowerCase().equals("action")
+						|| filedName.toLowerCase().equals("userregion")) {
+					beanVal=getFieldValueByFieldName(filedName, configCompile);
+				}else {
+					beanVal=getFieldValueByFieldName(filedName, obj);
+				}
 				String redisVal = valArr[i];
 				if (!beanVal.trim().equals(redisVal.trim())) {
-					FileUtils.addStrToFile("\t" + 
-							sdf.format(new Date()) + " error:" + redisDb + "号redis库中key=" + key + "的值第" + i + "位"
+					FileUtils.addStrToFile(
+							"\t" + sdf.format(new Date()) + " error:" + redisDb + "号redis库中key=" + key + "的值第" + i + "位"
 									+ attrName + "的值:" + redisVal + "与实际传的值不一样,实际值是:{}\n",
 							Configurations.getStringProperty("maatTestLogPath", ""), true);
 					bool = false;

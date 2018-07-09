@@ -59,6 +59,9 @@ public class MaatTestController {
 		String[] configArr = null;
 		if (configId.contains(",")) {
 			configArr = configId.split(",");
+		} else {
+			configArr = new String[1];
+			configArr[0] = configId;
 		}
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
 		for (String id : configArr) {
@@ -151,30 +154,31 @@ public class MaatTestController {
 		// + service + "&configId="
 		// + compileIdList.toString().replace("[", "").replace("]", "");
 	}
+
 	@RequestMapping(value = "/cfg/v1/testSaveMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,saveCount:保存几条配置")
 	@ApiParam(value = "测试批量保存maat配置", name = "testSaveMaat", required = true)
 	public String testSaveMaat(@RequestParam(required = true) Integer service,
 			@RequestParam(required = true) Integer saveCount) {
-			long start = System.currentTimeMillis();
-			SaveRequestLogThread thread = new SaveRequestLogThread();
-			StringBuffer sb = new StringBuffer();
-			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
-			for (int i = 0; i < saveCount; i++) {
-				configCompileList.add(getConfigCompile(service));
-			}
-			// 保存测试配置
-			configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
-			List<Long> compileIdList = new ArrayList<Long>();
-			for (ConfigCompile configCompile : configCompileList) {
-				compileIdList.add(configCompile.getCompileId());
-			}
-			FileUtils.addStrToFile(
-					sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
-							+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
-					Configurations.getStringProperty("maatTestLogPath", ""), true);
-			// 验证数据是否在正确
-			maatTestServiceimpl.getKeys(configCompileList);
+		long start = System.currentTimeMillis();
+		SaveRequestLogThread thread = new SaveRequestLogThread();
+		StringBuffer sb = new StringBuffer();
+		List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+		for (int i = 0; i < saveCount; i++) {
+			configCompileList.add(getConfigCompile(service));
+		}
+		// 保存测试配置
+		configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+		List<Long> compileIdList = new ArrayList<Long>();
+		for (ConfigCompile configCompile : configCompileList) {
+			compileIdList.add(configCompile.getCompileId());
+		}
+		FileUtils.addStrToFile(
+				sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
+						+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+				Configurations.getStringProperty("maatTestLogPath", ""), true);
+		// 验证数据是否在正确
+		maatTestServiceimpl.getKeys(configCompileList);
 		return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType=" + service + "&configId="
 				+ compileIdList.toString().replace("[", "").replace("]", "");
 	}
