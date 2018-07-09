@@ -125,7 +125,7 @@ public class ServiceAndRDBIndexReal {
 					String [] fields = regionAndFields[1].split("&");
 					//同一service有不同的域类型，多个之间用“|”分隔
 					if (regionAndFields[0].contains("|")) {
-						String [] regionTypeAry = regionAndFields[0].split("|");
+						String [] regionTypeAry = regionAndFields[0].split("\\|");
 						for (String regionType : regionTypeAry) {
 							fieldMap.put(regionType, fields);
 						}
