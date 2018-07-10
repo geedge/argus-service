@@ -37,7 +37,7 @@ public class ConfigPzIdController extends BaseRestController {
 	public Map configPzIdSources(ConfigPzIdSource configPzIdSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				configPzIdSource);
 		
 		try {

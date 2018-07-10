@@ -371,6 +371,9 @@ public class BaseRestController {
 			thread.setOperator(source.getOperator());
 			thread.setVersion(source.getVersion());
 			thread.setOpTime(source.getOpTime());
+		}else{
+			thread.setOperator("admin");
+			thread.setOpTime(new Date());
 		}
 		logger.info("SaveRequestLogThread初始化结束----" + System.currentTimeMillis());
 		return thread;
