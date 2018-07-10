@@ -707,7 +707,11 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 				}
 			}
 		} else {
-			throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则或传入的配置信息有误,请检查!");
+			if(maatXmlConfig==null) {
+				throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则,请检查maat.xml");
+			}else {
+				throw new RuntimeException("后台错误:后台组装的配置信息有误,请联系管理员检查");
+			}
 		}
 	}
 
@@ -1132,7 +1136,13 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 				}
 			}
 		} else {
-			throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则或传入的配置信息有误,请检查!");
+			if(maatXmlConfig==null) {
+				throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则,请检查maat.xml");
+			}else {
+				int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
+				throw new RuntimeException("后台错误:"+idRelaRedisDBIndex+"号redis库中存储的分组和域关系有误,请联系管理员检查数据");
+			}
+			
 		}
 	}
 
