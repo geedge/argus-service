@@ -178,13 +178,15 @@ public class SaveRequestLogThread implements Runnable {
 
 	public static SaveRequestLogThread getNewSaveRequestLogThread(HttpServletRequest request) {
 		SaveRequestLogThread thread = new SaveRequestLogThread();
-		
 		thread.setRemoteAddr(request.getRemoteAddr());
 		thread.setRequestURI(request.getRequestURI());
 		if (request.getMethod().toLowerCase().equals("get")) {
 			thread.setQueryString(request.getQueryString());
 		} else {
-			thread.setQueryString(getBodyString(request));
+			String contentType = request.getContentType();
+			if(contentType.equals("application/json")) {
+				thread.setQueryString(getBodyString(request));
+			}
 		}
 		thread.setContextPath(request.getContextPath());
 		thread.setRequestTime(new Date());
