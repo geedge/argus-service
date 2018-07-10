@@ -2,6 +2,13 @@
 <t:commonSources xmlns:t="http://www.w3school.com.cn"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.w3school.com.cn commonSourcesSchema.xsd">
+	<!-- 
+		#0x03	IP地址丢弃		3=0:INLINE_IP_CB
+		#0x04	IP地址丢弃		4=0:INLINE_IP_CB
+		#0x19	IPSec丢弃		25=0:INLINE_IP_CB
+		#0x1C	GRE 丢弃		28=0:INLINE_IP_CB
+		#0x1D	IPSEC丢弃		29=0:INLINE_IP_CB 
+	-->
 	<t:commonSource serviceIds="3,4,25,28,29">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
@@ -20,6 +27,16 @@
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
+	<!--
+		#0x105	音频样例阻断	261=0:MM_SAMPLE_AUDIO
+		#0x106	视频样例阻断	262=0:MM_SAMPLE_VIDEO
+		#0x107	图片样例阻断	263=0:MM_SAMPLE_PIC
+		#0x108	VOIP样例阻断	264=0:MM_SAMPLE_VOIP
+		#0x185	音频样例监测	389=0:MM_SAMPLE_AUDIO
+		#0x186	视频样例监测	390=0:MM_SAMPLE_VIDEO
+		#0x187	图片样例监测	391=0:MM_SAMPLE_PIC
+		#0x188	VOIP样例监测	392=0:MM_SAMPLE_VOIP
+	 -->
 	<t:commonSource serviceIds="261,262,263,264,389,390,391,392">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
@@ -31,6 +48,12 @@
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 		<t:field fieldType="String" srcName="dstFile" dstName="file_id" isRequired="true"/>
 	</t:commonSource>
+	<!-- 
+		#0x109	音频色情阻断	265=0:MM_PORN_AUDIO_LEVEL
+		#0x10A	视频色情阻断	266=0:MM_PORN_VIDEO_LEVEL
+		#0x189	音频色情监测	393=0:MM_PORN_AUDIO_LEVEL
+		#0x18A	视频色情监测	394=0:MM_PORN_VIDEO_LEVEL
+	 -->
 	<t:commonSource serviceIds="265,266,393,394">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
@@ -39,6 +62,9 @@
 		<t:field fieldType="Number" srcName="level" dstName="level" range="0-100" defaultVal="0"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
 	</t:commonSource>
+	<!--
+		 #0x340	IP复用地址池配置（回调）	832=0:IR_STATIC_IP_POOL_CB
+	-->
 	<t:commonSource serviceIds="832">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
@@ -52,7 +78,11 @@
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
-	<t:commonSource serviceIds="64">
+	<!-- 
+		 #0x05	DDOS流量丢弃		5=0:DDOS_TARGET_IP_CB
+		 #0x40	DNS欺骗配置(回调)	64=0:NTC_DNS_FAKE_IP_CB
+	-->
+	<t:commonSource serviceIds="64,5">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
@@ -71,6 +101,9 @@
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" range="0-1"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
+	<!-- 
+		#0x41	DNS 响应策略配置（回调）	65=0:NTC_DNS_RES_STRATEGY 
+	-->
 	<t:commonSource serviceIds="65">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
