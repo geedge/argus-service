@@ -9,9 +9,16 @@
 package com.nis.web.service;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Date;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
@@ -27,7 +34,7 @@ import com.nis.datasource.CustomerContextHolder;
  * @version V1.0
  */
 public class SaveRequestLogThread implements Runnable {
-	private Logger logger=Logger.getLogger(SaveRequestLogThread.class);
+	private Logger logger = Logger.getLogger(SaveRequestLogThread.class);
 	private ServicesRequestLogService service;
 	private String remoteAddr;
 	private String requestURI;
@@ -43,26 +50,31 @@ public class SaveRequestLogThread implements Runnable {
 	private int businessCode;
 	private String exceptionInfo;
 	private String traceCode;
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Runnable#run()
 	 */
-	
+
 	@Override
 	public void run() {
 		logger.info("线程开始执行！");
-		//新开线程切换数据源，不影响action中的数据源
-		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);//开启数据源B
+		// 新开线程切换数据源，不影响action中的数据源
+		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);// 开启数据源B
 		// TODO Auto-generated method stub
-		if(service!=null){
-			service.saveRequestLog(remoteAddr,requestURI,queryString,contextPath, operator, version, opAction, opTime, content, requestTime, consumerTime,businessCode,exceptionInfo,traceCode);
-		}else{
+		if (service != null) {
+			service.saveRequestLog(remoteAddr, requestURI, queryString, contextPath, operator, version, opAction,
+					opTime, content, requestTime, consumerTime, businessCode, exceptionInfo, traceCode);
+		} else {
 			logger.error("service 为空！");
 		}
 		CustomerContextHolder.clearCustomerType();
 	}
-	public SaveRequestLogThread(){
+
+	public SaveRequestLogThread() {
 		super();
 	}
+
 	/**
 	 * 创建一个新的实例 SaveRequestLogThread.
 	 *
@@ -80,7 +92,7 @@ public class SaveRequestLogThread implements Runnable {
 	 */
 	public SaveRequestLogThread(ServicesRequestLogService service, String remoteAddr, String requestURI,
 			String queryString, String contextPath, String operator, String version, int opAction, Date opTime,
-			Object content, Date requestTime, long consumerTime,String exceptionInfo) {
+			Object content, Date requestTime, long consumerTime, String exceptionInfo) {
 		super();
 		this.service = service;
 		this.remoteAddr = remoteAddr;
@@ -94,10 +106,11 @@ public class SaveRequestLogThread implements Runnable {
 		this.content = content;
 		this.requestTime = requestTime;
 		this.consumerTime = consumerTime;
-		this.exceptionInfo=exceptionInfo;
+		this.exceptionInfo = exceptionInfo;
 	}
-	public SaveRequestLogThread(ServicesRequestLogService service,String operator, String version, int opAction, Date opTime,
-			Object content, Date requestTime, long consumerTime,String exceptionInfo) {
+
+	public SaveRequestLogThread(ServicesRequestLogService service, String operator, String version, int opAction,
+			Date opTime, Object content, Date requestTime, long consumerTime, String exceptionInfo) {
 		super();
 		this.service = service;
 		this.operator = operator;
@@ -107,30 +120,88 @@ public class SaveRequestLogThread implements Runnable {
 		this.content = content;
 		this.requestTime = requestTime;
 		this.consumerTime = consumerTime;
-		this.exceptionInfo=exceptionInfo;
+		this.exceptionInfo = exceptionInfo;
 	}
-	
-	public static SaveRequestLogThread getNewSaveRequestLogThread(HttpServletRequest request){
-		SaveRequestLogThread thread=new SaveRequestLogThread();
+
+	public static InputStream cloneInputStream(ServletInputStream inputStream) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int len;
+		try {
+			while ((len = inputStream.read(buffer)) > -1) {
+				byteArrayOutputStream.write(buffer, 0, len);
+			}
+			byteArrayOutputStream.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		InputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+		return byteArrayInputStream;
+	}
+
+	/**
+	 * 获取非get请求的参数
+	 * @param request
+	 * @return
+	 */
+	private static String getBodyString(ServletRequest request) {
+		StringBuilder sb = new StringBuilder();
+		InputStream inputStream = null;
+		BufferedReader reader = null;
+		try {
+			inputStream = cloneInputStream(request.getInputStream());
+			reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				sb.append(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (reader != null) {
+				try {
+					reader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return sb.toString();
+	}
+
+	public static SaveRequestLogThread getNewSaveRequestLogThread(HttpServletRequest request) {
+		SaveRequestLogThread thread = new SaveRequestLogThread();
+		
 		thread.setRemoteAddr(request.getRemoteAddr());
 		thread.setRequestURI(request.getRequestURI());
-		thread.setQueryString(request.getQueryString());
+		if (request.getMethod().toLowerCase().equals("get")) {
+			thread.setQueryString(request.getQueryString());
+		} else {
+			thread.setQueryString(getBodyString(request));
+		}
 		thread.setContextPath(request.getContextPath());
 		thread.setRequestTime(new Date());
-		BufferedReader reader=null;
-		String line=null;
-		StringBuilder bulider=new StringBuilder();
+		BufferedReader reader = null;
+		String line = null;
+		StringBuilder bulider = new StringBuilder();
 		try {
-			reader=request.getReader();
-			while((line=reader.readLine())!=null){
-				bulider.append(new String(line.getBytes(),"utf-8"));
+			reader = request.getReader();
+			while ((line = reader.readLine()) != null) {
+				bulider.append(new String(line.getBytes(), "utf-8"));
 				bulider.append("\n");
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
-			if(reader!=null){
+		} finally {
+			if (reader != null) {
 				try {
 					reader.close();
 				} catch (IOException e) {
@@ -139,16 +210,17 @@ public class SaveRequestLogThread implements Runnable {
 				}
 			}
 		}
-		if(bulider.toString().length()>0){
+		if (bulider.toString().length() > 0) {
 			thread.setContent(bulider.toString());
 		}
 		return thread;
 	}
+
 	/**
 	 * service
 	 * @return  service
 	*/
-	
+
 	public ServicesRequestLogService getService() {
 		return service;
 	}
@@ -164,7 +236,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * remoteAddr
 	 * @return  remoteAddr
 	*/
-	
+
 	public String getRemoteAddr() {
 		return remoteAddr;
 	}
@@ -180,7 +252,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * requestURI
 	 * @return  requestURI
 	*/
-	
+
 	public String getRequestURI() {
 		return requestURI;
 	}
@@ -196,7 +268,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * queryString
 	 * @return  queryString
 	*/
-	
+
 	public String getQueryString() {
 		return queryString;
 	}
@@ -212,7 +284,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * contextPath
 	 * @return  contextPath
 	*/
-	
+
 	public String getContextPath() {
 		return contextPath;
 	}
@@ -228,7 +300,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * operator
 	 * @return  operator
 	*/
-	
+
 	public String getOperator() {
 		return operator;
 	}
@@ -244,7 +316,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * version
 	 * @return  version
 	*/
-	
+
 	public String getVersion() {
 		return version;
 	}
@@ -260,7 +332,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * opAction
 	 * @return  opAction
 	*/
-	
+
 	public int getOpAction() {
 		return opAction;
 	}
@@ -276,7 +348,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * opTime
 	 * @return  opTime
 	*/
-	
+
 	public Date getOpTime() {
 		return opTime;
 	}
@@ -292,7 +364,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * content
 	 * @return  content
 	*/
-	
+
 	public Object getContent() {
 		return content;
 	}
@@ -308,7 +380,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * requestTime
 	 * @return  requestTime
 	*/
-	
+
 	public Date getRequestTime() {
 		return requestTime;
 	}
@@ -324,7 +396,7 @@ public class SaveRequestLogThread implements Runnable {
 	 * consumerTime
 	 * @return  consumerTime
 	*/
-	
+
 	public long getConsumerTime() {
 		return consumerTime;
 	}
@@ -335,39 +407,45 @@ public class SaveRequestLogThread implements Runnable {
 	public void setConsumerTime(long consumerTime) {
 		this.consumerTime = consumerTime;
 	}
+
 	/**
 	 * businessCode
 	 * @return  businessCode
 	*/
-	
+
 	public int getBusinessCode() {
 		return businessCode;
 	}
+
 	/**
 	 * @param businessCode the businessCode to set
 	 */
 	public void setBusinessCode(int businessCode) {
 		this.businessCode = businessCode;
 	}
+
 	/**
 	 * exceptionInfo
 	 * @return  exceptionInfo
 	*/
-	
+
 	public String getExceptionInfo() {
 		return exceptionInfo;
 	}
+
 	/**
 	 * @param exceptionInfo the exceptionInfo to set
 	 */
 	public void setExceptionInfo(String exceptionInfo) {
 		this.exceptionInfo = exceptionInfo;
 	}
+
 	public String getTraceCode() {
 		return traceCode;
 	}
+
 	public void setTraceCode(String traceCode) {
 		this.traceCode = traceCode;
 	}
-	
+
 }

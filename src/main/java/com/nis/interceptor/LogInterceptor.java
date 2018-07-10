@@ -1,7 +1,10 @@
 package com.nis.interceptor;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
@@ -24,22 +27,43 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
 	private static final ThreadLocal<Long> timeThreadLocal = new NamedThreadLocal<Long>("ThreadLocal StartTime");
 
 	/**
+	 * 复制输入流
+	 * @param inputStream
+	 * @return
+	 */
+	public static InputStream cloneInputStream(ServletInputStream inputStream) {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int len;
+		try {
+			while ((len = inputStream.read(buffer)) > -1) {
+				byteArrayOutputStream.write(buffer, 0, len);
+			}
+			byteArrayOutputStream.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		InputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+		return byteArrayInputStream;
+	}
+
+	/**
 	 * 获取非get请求的参数
 	 * @param request
 	 * @return
 	 */
 	private static String getBodyString(ServletRequest request) {
-		ServletInputStream inputStream = null;
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
+		InputStream inputStream = null;
 		BufferedReader reader = null;
 		try {
-			inputStream = request.getInputStream();
+			inputStream = cloneInputStream(request.getInputStream());
 			reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
 			String line = "";
 			while ((line = reader.readLine()) != null) {
 				sb.append(line);
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			if (inputStream != null) {
@@ -64,8 +88,8 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		String requestURI = request.getRequestURI();
-		logger.info("请求路径是:" + requestURI);
-		logger.info("请求参数是:" + getBodyString(request));
+//		logger.info("请求路径是:" + requestURI);
+//		logger.info("请求参数是:" + getBodyString(request));
 		long beginTime = System.currentTimeMillis();// 1、开始时间
 		timeThreadLocal.set(beginTime); // 线程绑定变量（该数据只有当前请求的线程可见）
 		if (logger.isDebugEnabled()) {
