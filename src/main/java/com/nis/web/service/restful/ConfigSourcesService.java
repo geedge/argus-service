@@ -1518,7 +1518,7 @@ public class ConfigSourcesService extends BaseService {
 													newMaatConfig);
 										} catch (Exception e) {
 											// TODO Auto-generated catch block
-											CompileVal.setBusinessCode(30000);
+											CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 											e = new RuntimeException(
 													"未找到域列表，请检查域类型是否正确！");
 											msgList.add(e);
@@ -1542,7 +1542,7 @@ public class ConfigSourcesService extends BaseService {
 				} else {
 					RuntimeException e = new RuntimeException(
 							"service与写入数据库序号映射关系不存在");
-					CompileVal.setBusinessCode(30000);
+					CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 					msgList.add(e);
 					return "error";
 				}
@@ -1560,7 +1560,7 @@ public class ConfigSourcesService extends BaseService {
 			// TODO: handle exception
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			}
 			logger1.error(e.getMessage());
 			msgList.add(e);
@@ -1650,7 +1650,7 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				RuntimeException e = new RuntimeException("service值为" + service
 						+ ",与写入数据库序号映射关系不存在");
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 				msgList.add(e);
 				return "error";
 			}
@@ -1658,7 +1658,7 @@ public class ConfigSourcesService extends BaseService {
 		try {
 			if (!configRedisService.delMaatConfig(restMap)) {
 				RuntimeException e = new RuntimeException("不存在映射关系");
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 				msgList.add(e);
 				return "error";
 			}
@@ -1667,7 +1667,7 @@ public class ConfigSourcesService extends BaseService {
 			logger1.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			}
 			msgList.add(e);
 			return "error";
@@ -3196,7 +3196,7 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				RuntimeException e = new RuntimeException(
 						"service与写入数据库序号映射关系不存在");
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 				msgList.add(e);
 				return "error";
 			}
@@ -3209,7 +3209,7 @@ public class ConfigSourcesService extends BaseService {
 			logger1.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			}
 			msgList.add(e);
 			return "error";
@@ -3227,7 +3227,7 @@ public class ConfigSourcesService extends BaseService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger1.error(e.getMessage());
-			CompileVal.setBusinessCode(30000);
+			CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			thread.setExceptionInfo(e.getMessage() + sb.toString());
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- start, e.getMessage() + sb.toString(),
@@ -3278,7 +3278,7 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				RuntimeException e = new RuntimeException(
 						"service与写入数据库序号映射关系不存在");
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 				msgList.add(e);
 				return "error";
 			}
@@ -3290,7 +3290,7 @@ public class ConfigSourcesService extends BaseService {
 			logger1.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(30000);
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			}
 			msgList.add(e);
 			return "error";
