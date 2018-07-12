@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.NtcReportDao">
+	<resultMap id="NtcPzReportMap" type="com.nis.domain.restful.NtcPzReport">
+		<result column="CFG_ID" jdbcType="BIGINT" property="cfgId" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	<sql id="commonPorperty">
+		SERVICE,SUM,REPORT_TIME
+	</sql>
+
+	<select id="findNtcPzReport" parameterType="com.nis.domain.restful.NtcPzReport"
+		resultMap="NtcPzReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				CFG_ID,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT CFG_ID, SERVICE, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_PZ_REPORT 
+		<where>
+			<if test="searchCfgId != null and searchCfgId !=''">
+				<![CDATA[AND CFG_ID in (#{searchCfgId})]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in #{searchService}]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY CFG_ID,SERVICE
+			)
+		</if>
+		<if test="searchBusinessType != null and searchBusinessType ==2">
+			GROUP BY CFG_ID,SERVICE,REPORT_TIME
+			)
+		</if>
+		NTC_PZ_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+
+	
+</mapper>

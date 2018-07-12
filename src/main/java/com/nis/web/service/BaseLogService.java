@@ -22,6 +22,7 @@ import com.nis.domain.DfReportEntity;
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
 import com.nis.domain.StatLogEntity;
+import com.nis.domain.restful.NtcReportEntity;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.StringUtil;
@@ -240,7 +241,105 @@ public abstract class BaseLogService {
 		logger.info("请求参数校验结束----" + System.currentTimeMillis());
 
 	}
+	/**
+	 * 
+	 * @Description:
+	 * @author (zdx)
+	 * @date 2018年7月12日 上午11:43:32
+	 * @param thread
+	 * @param start
+	 * @param entity
+	 * @param clazz
+	 * @param page
+	 */
+	public void queryReportConditionCheck(SaveRequestLogThread thread, long start, NtcReportEntity<?> entity, Class clazz,
+			Page page) {
+		logger.info("实时报表统计查询参数校验开始----" + System.currentTimeMillis());
+		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
+			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
+			thread.setExceptionInfo("searchBusinessType参数格式错误");
+			throw new RestServiceException(thread,
+					System.currentTimeMillis() - start,
+					"searchBusinessType参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		}
+		//searchService
+		checkNumericCondition(thread, start, entity.getSearchService(), "searchService");
+		
+		try {
+			if (!StringUtil.isBlank(entity.getSearchReportStartTime())) {
+				sdf.parse(entity.getSearchReportStartTime());
+			}
+		} catch (ParseException e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数错误");
+		}
+		
+		try {
+			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
+				sdf.parse(entity.getSearchReportEndTime());
+			}
+		} catch (ParseException e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数错误");
+		}
+		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
+			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
+			thread.setExceptionInfo("searchBusinessType参数格式错误");
+			throw new RestServiceException(thread,
+					System.currentTimeMillis() - start,
+					"searchBusinessType参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		}
+		
+		logger.info("实时报表统计查询参数校验结束----" + System.currentTimeMillis());
 
+	}
+	/**
+	 * @Description:用于验证数值类型格式，多个值以","分隔
+	 * @author (zdx)
+	 * @date 2018年7月12日 下午12:47:35
+	 * @param thread
+	 * @param start
+	 * @param condition
+	 * @param condName
+	 */
+	public void checkNumericCondition(SaveRequestLogThread thread, long start,String condition,String condName) {
+		if (!StringUtil.isEmpty(condition)){
+			Boolean flag = false;
+			if (condition.contains(",")) {
+				String services[] =condition.split(",");
+				for (String service : services) {
+					if(!StringUtil.isNumeric(service)) {
+						flag = true;
+						break;
+					}
+				}
+			}else if(!StringUtil.isNumeric(condition)) {
+				flag = true;
+			}
+			if (flag) {
+				logger.error(RestBusinessCode.param_formate_error.getErrorReason()+","+condName+"参数格式错误");
+				thread.setExceptionInfo(condName+"参数格式错误");
+				throw new RestServiceException(thread,
+						System.currentTimeMillis() - start,
+						condName+"参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+		}
+	}
 	/**
 	 * wx 报表查询条件检查
 	 * 

@@ -15,7 +15,7 @@
 	<p:maatType service="261;263;264;389;390;391;392">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[op_time];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[level];\t;[dst_file];\t;[dst_file_md5];\t;[is_valid];\t;[op_time];&amp;nbsp;[file_id];\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -41,7 +41,7 @@
 	<p:maatType service="265;266;393;394">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[level];\t;[description];\t;[is_valid];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[level];\t;[description];\t;[is_valid];\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -63,12 +63,13 @@
 		#0x04	IP地址丢弃		4=0:INLINE_IP_CB
 		#0x19	IPSec丢弃		25=0:INLINE_IP_CB
 		#0x1C	GRE 丢弃		28=0:INLINE_IP_CB
-		#0x1D	IPSEC丢弃		29=0:INLINE_IP_CB 
+		#0x1D	IPSEC丢弃		29=0:INLINE_IP_CB
+		#0x05	DDOS流量丢弃	5=0:DDOS_PROTECT_TARGET_IP_CB
 	-->
-	<p:maatType service="3;4;25;28;29">
+	<p:maatType service="3;4;25;28;29;5">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[action];\t;[service];\t;[op_time];&amp;nbsp;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -86,13 +87,12 @@
 		</p:expressions>
 	</p:maatType>
 	<!-- 
-		 #0x05	DDOS流量丢弃		5=0:DDOS_TARGET_IP_CB
 		 #0x40	DNS欺骗配置(回调)	64=0:NTC_DNS_FAKE_IP_CB
 	-->
-	<p:maatType service="64;5">
+	<p:maatType service="64">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[policyGroup];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[policy_group];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;[service];\t;[action];\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -115,7 +115,7 @@
 	<p:maatType service="65">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[req_strate_id];\t;[strate_name];\t;[res_group_1_id];\t;[res_group_1_num];\t;[res_group_2_id];\t;[res_group_2_num];\t;[res_group_3_id];\t;[res_group_3_num];\t;[res_group_4_id];\t;[res_group_4_num];\t;[res_group_5_id];\t;[res_group_5_num];\t;[min_ttl];\t;[max_ttl];\t;[is_valid];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[req_strate_id];\t;[strate_name];\t;[res_group_1_id];\t;[res_group_1_num];\t;[res_group_2_id];\t;[res_group_2_num];\t;[res_group_3_id];\t;[res_group_3_num];\t;[res_group_4_id];\t;[res_group_4_num];\t;[res_group_5_id];\t;[res_group_5_num];\t;[min_ttl];\t;[max_ttl];\t;[is_valid];\t;[service];\t;[action];\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -138,7 +138,7 @@
 	<p:maatType service="832">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[policy_group];\t;[addr_type];\t;[ip];\t;[port];\t;[user_region];\t;[location];\t;[is_valid];\t;[op_time];&amp;nbsp;\n
+			<p:valueExpression>[cfg_id];\t;[policy_group];\t;[addr_type];\t;[ip];\t;[port];\t;[user_region];\t;[location];\t;[is_valid];\t;[op_time];&amp;nbsp;[service];\t;[action];\n
 		</p:valueExpression>
 		</p:expressions>
 		<p:sequences>

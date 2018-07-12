@@ -30,6 +30,7 @@ import com.nis.domain.restful.NtcMailLog;
 import com.nis.domain.restful.NtcOpenvpnLog;
 import com.nis.domain.restful.NtcPptpLog;
 import com.nis.domain.restful.NtcPzReport;
+import com.nis.domain.restful.NtcReportEntity;
 import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
 import com.nis.restful.RestServiceException;
@@ -43,6 +44,7 @@ import com.nis.web.service.HiveSqlService;
 import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.LogTestService;
+import com.nis.web.service.restful.NtcReportService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -63,6 +65,9 @@ public class LogController extends BaseRestController {
 	public LogTestService testService;
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
+	
+	@Autowired
+	protected NtcReportService ntcReportService;
 
 	@RequestMapping(value = "/ntcIpLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "IP地址日志查询", httpMethod = "GET", notes = "对应配置为IP地址管理，存储动作为阻断与监测的命中日志。对日志功能IP地址提供数据基础查询服务")
@@ -842,28 +847,60 @@ public class LogController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "DDos日志检索成功",
 				ntcDdosLogPage, 0);
 	}
+	
 	@RequestMapping(value = "/ntcPzReport", method = RequestMethod.GET)
 	@ApiOperation(value = "配置日志总量统计", httpMethod = "GET", notes = "配置命中日志数量实时统计报表，对外提供多种数据表现形式，具体可应用于界面配置命中总量业务、配置报表业务等")
 	public Map<String, ?> ntcPzReport(Page page, NtcPzReport ntcPzReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> ntcPzReportPage = null;
 		try {
-			ntcPzReportPage = testService.findNtcPzReport(new Page<NtcPzReport>(request, response, NtcPzReport.class),
+			resetReportTime(ntcPzReport);
+			//验证实时报表
+			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcPzReport, NtcDdosLog.class, page);
+			//验证serachCfgId
+			ntcReportService.checkNumericCondition(saveLogThread,start,ntcPzReport.getSearchCfgId(),"searchCfgId");
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcPzReport.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "report_time";
+			}
+			page.setOrderBy(orderBy);
+			ntcPzReportPage = ntcReportService.findNtcPzReport(new Page<NtcPzReport>(request, response, NtcPzReport.class),
 					ntcPzReport);
 		} catch (Exception e) {
+			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			e.printStackTrace();
+			logger.error(e.getMessage());
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "配置日志总量统计失败");
+			}
+			throw ((RestServiceException) e);
 		}
 
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "配置总量统计成功",
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "配置日志总量统计成功",
 				ntcPzReportPage, 0);
 	}
 
 	
-	
+	/**
+	 * @Description:
+	 * @author (zdx)
+	 * @date 2018年7月12日 上午11:01:30
+	 * @param entity
+	 * @throws Exception
+	 */
+	public void resetReportTime(NtcReportEntity<?> entity) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Map<String, String> map = DateUtils.getLocalTime(entity.getSearchReportStartTime(),
+				entity.getSearchReportEndTime(), Constants.PZ_REPORT_TIME, "minute");
+		entity.setSearchReportStartTime(map.get("startTime"));
+		entity.setSearchReportEndTime(map.get("endTime"));
+	}
 	
 	
 	/**

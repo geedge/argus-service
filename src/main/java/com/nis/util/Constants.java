@@ -158,6 +158,10 @@ public final class Constants {
 	public static final Long REPORT_LOCAL_TIME = Configurations.getLongProperty("reportLocalTime", 1);
 
 	/**
+	 * 实时报表统计默认时间，单位分钟
+	 */
+	public static final Long PZ_REPORT_TIME = Configurations.getLongProperty("pzReportTime", 5);
+	/**
 	 * 日志是否从hive中查询
 	 */
 	public static final boolean SEL_FROM_HIVE = Configurations.getBooleanProperty("selFromHive", true);
