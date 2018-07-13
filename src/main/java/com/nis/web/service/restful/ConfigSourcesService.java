@@ -1246,6 +1246,7 @@ public class ConfigSourcesService extends BaseService {
 				if (!"ok".equals(msg)) {
 					logger1.error(msg);
 					thread.setExceptionInfo(msg + sb.toString());
+					thread.setBusinessCode(CompileVal.getBusinessCode());
 					throw new RestServiceException(thread,
 							System.currentTimeMillis() - start, msg
 									+ sb.toString(),
@@ -1550,7 +1551,7 @@ public class ConfigSourcesService extends BaseService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			msgList.add(e);
-			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
+			//CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			return "error";
 		}
 		try {
@@ -2950,7 +2951,7 @@ public class ConfigSourcesService extends BaseService {
 				
 				Integer action = null;
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
-					if (commonSourceFieldCfg.getDstName().equals("ip_type")) {
+					if (commonSourceFieldCfg.getDstName().equals("addr_type")) {
 						String dstVal = srcMap.get(
 								commonSourceFieldCfg.getSrcName()).toString();
 						ipTypeName = commonSourceFieldCfg.getSrcName();
@@ -2995,6 +2996,9 @@ public class ConfigSourcesService extends BaseService {
 											.getValue());
 						}
 					}
+				}
+				if (ipType==null) {
+					ipType = 4;
 				}
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					// 是否必填
@@ -3055,7 +3059,7 @@ public class ConfigSourcesService extends BaseService {
 											RestBusinessCode.MastDate.getValue());
 						}
 						break;
-					case "Ip":
+					case "IP":
 						if (!BasicProvingUtil.isIpOrIpMask(dstStr, ipType)) {
 							logger1.error(commonSourceFieldCfg.getSrcName()
 									+ "参数格式不正确或与" + ipTypeName + "不一致");

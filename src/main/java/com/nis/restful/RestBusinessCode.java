@@ -347,6 +347,11 @@ public enum RestBusinessCode {
 	CompileIdIsNeq(4002009,"Maat配置分组与编译配置的compileId不一致"),
 	
 	/**
+	 * 配置的service与action关系不存在
+	 */
+	Service2ActionIsNull(4002010, "配置的service与action关系不存在"),
+	
+	/**
 	 * 配置分组中同一groupId出现多次
 	 */
 	GroupIdIsRepeat(4002100,"Maat配置分组中同一groupId不能出现多次"),

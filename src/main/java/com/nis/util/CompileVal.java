@@ -879,6 +879,11 @@ public class CompileVal {
 	public static String serviceConfigCompileVal(ConfigCompile configCompile) {
 		Long compileId = configCompile.getCompileId();
 		Integer action = ServiceAndRDBIndexReal.getActionByService(configCompile.getService());
+		if (StringUtil.isEmpty(action)) {
+			businessCode = RestBusinessCode.Service2ActionIsNull.getValue();
+			return "编译配置id为" + compileId + "的配置中service与action的关系不存在";
+		}
+		
 		if (action.compareTo(configCompile.getAction()) != 0) {
 			businessCode = RestBusinessCode.ServiceUnmatchAction.getValue();
 			return "编译配置id为" + compileId + "的配置中service的值为" + configCompile.getService() + "时action只能为" + action;

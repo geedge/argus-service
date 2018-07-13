@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
+import com.nis.domain.restful.DkBehaviorLog;
 import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcDdosLog;
 import com.nis.domain.restful.NtcDnsLog;
@@ -847,7 +848,64 @@ public class LogController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "DDos日志检索成功",
 				ntcDdosLogPage, 0);
 	}
-	
+	@RequestMapping(value = "/dkBehaviorLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "行为识别日志查询", httpMethod = "GET", notes = "对日志功能“行为识别”提供数据基础查询服务")
+	public Map<String, ?> dkBehaviorLogs(Page page, DkBehaviorLog dkBehaviorLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<DkBehaviorLog> logPage = null;
+		try {
+			resetTime(dkBehaviorLog);
+			testService.queryConditionCheck(auditLogThread, start, dkBehaviorLog, DkBehaviorLog.class, page);
+			logPage = new Page<DkBehaviorLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(DkBehaviorLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, dkBehaviorLog,
+					Configurations.getStringProperty(DkBehaviorLog.class.getSimpleName() + "HiveTable", "DK_BEHAVIOR_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, DkBehaviorLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<DkBehaviorLog> List = (java.util.List<DkBehaviorLog>) JsonMapper.fromJsonList(jsonString,
+							NtcDdosLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "行为识别日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "行为识别日志检索成功",
+				logPage, 0);
+	}
 	@RequestMapping(value = "/ntcPzReport", method = RequestMethod.GET)
 	@ApiOperation(value = "配置日志总量统计", httpMethod = "GET", notes = "配置命中日志数量实时统计报表，对外提供多种数据表现形式，具体可应用于界面配置命中总量业务、配置报表业务等")
 	public Map<String, ?> ntcPzReport(Page page, NtcPzReport ntcPzReport, Model model, HttpServletRequest request,
