@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.dashboard.TrafficHttpStatisticDao">
+  <resultMap id="BaseResultMap" type="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
+    <id column="stat_id" jdbcType="INTEGER" property="statId" />
+    <result column="web_type" jdbcType="INTEGER" property="webType" />
+    <result column="web_id" jdbcType="INTEGER" property="webId" />
+    <result column="c2s_pkt_num" jdbcType="INTEGER" property="c2sPktNum" />
+    <result column="s2c_pkt_num" jdbcType="INTEGER" property="s2cPktNum" />
+    <result column="c2s_byte_len" jdbcType="INTEGER" property="c2sByteLen" />
+    <result column="s2c_byte_len" jdbcType="INTEGER" property="s2cByteLen" />
+    <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    stat_id, web_type, web_id, c2s_pkt_num, s2c_pkt_num, c2s_byte_len, s2c_byte_len, 
+    stat_time
+  </sql>
+    <!--获取网站列表列表  -->
+  <select id="websiteList" resultMap="BaseResultMap">
+  	SELECT web_id webId, count(web_id) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
+	WHERE web_id !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
+	GROUP BY web_id ORDER BY count DESC limit 0,10
+  </select>
+  <!-- 根据网站分类 -->
+  <select id="getTypeBywebsite" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+	SELECT web_type webType, count(web_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
+	WHERE web_type !=0 and web_id=#{webId} and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
+	GROUP BY web_type limit 0,10
+  </select>
+</mapper>

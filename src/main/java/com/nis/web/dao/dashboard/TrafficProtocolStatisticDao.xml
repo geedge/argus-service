@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.dashboard.TrafficProtocolStatisticDao">
+  <resultMap id="BaseResultMap" type="com.nis.domain.restful.dashboard.TrafficProtocolStatistic">
+    <id column="stat_id" jdbcType="INTEGER" property="statId" />
+    <result column="proto_type" jdbcType="INTEGER" property="protoType" />
+    <result column="entrance_id" jdbcType="INTEGER" property="entranceId" />
+    <result column="c2s_pkt_num" jdbcType="INTEGER" property="c2sPktNum" />
+    <result column="s2c_pkt_num" jdbcType="INTEGER" property="s2cPktNum" />
+    <result column="c2s_byte_len" jdbcType="INTEGER" property="c2sByteLen" />
+    <result column="s2c_byte_len" jdbcType="INTEGER" property="s2cByteLen" />
+    <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    stat_id, proto_type, entrance_id, c2s_pkt_num, s2c_pkt_num, c2s_byte_len, s2c_byte_len, 
+    stat_time
+  </sql>
+  <select id="protocolChart" resultType="java.util.HashMap">
+    SELECT proto_type protoType, count(proto_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_protocol_statistic
+	WHERE proto_type!=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
+	GROUP BY proto_type limit 0,10
+  </select>
+</mapper>
