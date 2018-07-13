@@ -13,9 +13,9 @@ public final class Configurations {
 	static {
 		try {
 			prop.load(Configurations.class.getResourceAsStream("/nis.properties"));
-			prop.load(Configurations.class.getResourceAsStream("/table.properties"));
-			prop.load(Configurations.class.getResourceAsStream("/matt.properties"));
-			prop.load(Configurations.class.getResourceAsStream("/serviceTable.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/applicationLog-hive.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-maatOracle.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-rule.properties"));
 			
 		} catch (Exception e) {
 			prop = null;

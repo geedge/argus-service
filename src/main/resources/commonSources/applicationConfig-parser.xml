@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <t:commonSources xmlns:t="http://www.w3school.com.cn"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.w3school.com.cn commonSourcesSchema.xsd">
+	xsi:schemaLocation="http://www.w3school.com.cn applicationConfig-parser.schema.xsd">
+	<!--配置文件用途： 回调配置通过通用接口入redis时，配置属性解析和规则验证 -->
+	
 	<!-- 
 		#0x03	IP地址丢弃		3=0:INLINE_IP_CB
 		#0x04	IP地址丢弃		4=0:INLINE_IP_CB

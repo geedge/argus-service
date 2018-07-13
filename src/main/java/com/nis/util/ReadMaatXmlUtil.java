@@ -38,8 +38,8 @@ import com.nis.domain.MaatXmlSeq;
  */
 public class ReadMaatXmlUtil {
 	private static Logger logger = LoggerFactory.getLogger(ReadMaatXmlUtil.class);
-	private static String XMLPATH = "/maatXml/maat.xml";
-	private static String XSDPATH = "/maatXml/maat.xsd";
+	private static String XMLPATH = "/maatXml/applicationConfig-maatRedis.xml";
+	private static String XSDPATH = "/maatXml/applicationConfig-maatRedis.schema.xsd";
 	public static Map<Integer, MaatXmlConfig> map = new HashMap<Integer, MaatXmlConfig>();
 
 	static {
@@ -159,7 +159,7 @@ public class ReadMaatXmlUtil {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("加载maat.xml失败", e);
+			logger.error("加载applicationConfig-maatRedis.xml失败", e);
 		}
 	}
 

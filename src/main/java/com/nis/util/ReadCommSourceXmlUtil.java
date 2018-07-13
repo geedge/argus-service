@@ -27,7 +27,7 @@ import com.nis.domain.restful.CommonSourceFieldCfg;
  */
 public class ReadCommSourceXmlUtil {
 	private static Logger logger = LoggerFactory.getLogger(ReadCommSourceXmlUtil.class);
-	private static String XMLPATH = "/commonSources/commonSources.xml";
+	private static String XMLPATH = "/commonSources/applicationConfig-parser.xml";
 	public static Map<String, List<CommonSourceFieldCfg>> commonSourceCfgMap = new HashMap<String, List<CommonSourceFieldCfg>>();
 
 	static {
@@ -103,7 +103,7 @@ public class ReadCommSourceXmlUtil {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("加载commonSources.xml失败", e);
+			logger.error("加载applicationConfig-parser.xml失败", e);
 		}
 	}
 	
