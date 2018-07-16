@@ -9,7 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
+import com.nis.domain.restful.NtcAttrTypeReport;
+import com.nis.domain.restful.NtcDestipCountryReport;
+import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
+import com.nis.domain.restful.NtcServiceReport;
+import com.nis.domain.restful.NtcSrcipDomesticReport;
+import com.nis.domain.restful.NtcTagReport;
 import com.nis.web.dao.NtcReportDao;
 import com.nis.web.service.BaseLogService;
 
@@ -49,5 +56,40 @@ public class NtcReportService extends BaseLogService {
 		return null;
 
 	}
-
+	
+	public Page<NtcServiceReport> findNtcServiceReport(Page<NtcServiceReport> page, NtcServiceReport entity)
+			throws Exception {
+		page.setList(dao.findNtcServiceReport(entity));
+		return page;
+	}
+	public Page<NtcTagReport> findNtcTagReport(Page<NtcTagReport> page, NtcTagReport entity)
+			throws Exception {
+		page.setList(dao.findNtcTagReport(entity));
+		return page;
+	}
+	public Page<NtcAttrTypeReport> findNtcAttrTypeReport(Page<NtcAttrTypeReport> page, NtcAttrTypeReport entity)
+			throws Exception {
+		page.setList(dao.findNtcAttrTypeReport(entity));
+		return page;
+	}
+	public Page<NtcLwhhReport> findNtcLwhhReport(Page<NtcLwhhReport> page, NtcLwhhReport entity)
+			throws Exception {
+		page.setList(dao.findNtcLwhhReport(entity));
+		return page;
+	}
+	public Page<NtcSrcipDomesticReport> findNtcSrcipDomesticReport(Page<NtcSrcipDomesticReport> page, NtcSrcipDomesticReport entity)
+			throws Exception {
+		page.setList(dao.findNtcSrcipDomesticReport(entity));
+		return page;
+	}
+	public Page<NtcDestipCountryReport> findNtcDestipCountryReport(Page<NtcDestipCountryReport> page, NtcDestipCountryReport entity)
+			throws Exception {
+		page.setList(dao.findNtcDestipCountryReport(entity));
+		return page;
+	}
+	public Page<NtcEntranceReport> findNtcEntranceReport(Page<NtcEntranceReport> page, NtcEntranceReport entity)
+			throws Exception {
+		page.setList(dao.findNtcEntranceReport(entity));
+		return page;
+	}
 }

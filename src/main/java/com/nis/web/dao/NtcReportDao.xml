@@ -7,6 +7,49 @@
 		<result column="SUM" jdbcType="BIGINT" property="sum" />
 		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
 	</resultMap>
+	<resultMap id="NtcServiceReportMap" type="com.nis.domain.restful.NtcServiceReport">
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	<resultMap id="NtcTagReportMap" type="com.nis.domain.restful.NtcTagReport">
+		<result column="TAG" jdbcType="INTEGER" property="tag" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	<resultMap id="NtcAttrTypeReportMap" type="com.nis.domain.restful.NtcAttrTypeReport">
+		<result column="ATTR_TYPE" jdbcType="INTEGER" property="attrType" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	
+	<resultMap id="NtcLwhhReportMap" type="com.nis.domain.restful.NtcLwhhReport">
+		<result column="LWHH" jdbcType="INTEGER" property="lwhh" />
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	<resultMap id="NtcSrcipDomesticReportMap" type="com.nis.domain.restful.NtcSrcipDomesticReport">
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="SRC_PROVINCE" jdbcType="VARCHAR" property="srcProvince" />
+		<result column="SRC_CITY" jdbcType="VARCHAR" property="srcCity" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	<resultMap id="NtcDestipCountryReportMap" type="com.nis.domain.restful.NtcDestipCountryReport">
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="DEST_COUNTRY" jdbcType="VARCHAR" property="destCountry" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	<resultMap id="NtcEntranceReportMap" type="com.nis.domain.restful.NtcEntranceReport">
+		<result column="SERVICE" jdbcType="INTEGER" property="service" />
+		<result column="ENTRANCE_ID" jdbcType="INTEGER" property="entranceId" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
 	<sql id="commonPorperty">
 		SERVICE,SUM,REPORT_TIME
 	</sql>
@@ -27,10 +70,10 @@
 			FROM NTC_PZ_REPORT 
 		<where>
 			<if test="searchCfgId != null and searchCfgId !=''">
-				<![CDATA[AND CFG_ID in (#{searchCfgId})]]>
+				<![CDATA[AND CFG_ID in (${searchCfgId})]]>
 			</if>
 			<if test="searchService != null and searchService !=''">
-				<![CDATA[AND SERVICE in #{searchService}]]>
+				<![CDATA[AND SERVICE in (${searchService})]]>
 			</if>
 			<if test="searchReportStartTime != null and searchReportStartTime !=''">
 				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
@@ -55,6 +98,280 @@
 			</when>
 		</choose>
 	</select>
-
+	<select id="findNtcServiceReport" parameterType="com.nis.domain.restful.NtcServiceReport"
+		resultMap="NtcServiceReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_SERVICE_REPORT 
+		<where>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,REPORT_TIME
+			)
+		</if>
+		NTC_SERVICE_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	 
+	<select id="findNtcTagReport" parameterType="com.nis.domain.restful.NtcTagReport"
+		resultMap="NtcTagReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				TAG,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE,TAG,SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_TAG_REPORT 
+		<where>
+			<if test="searchTag != null and searchTag !=''">
+				<![CDATA[AND TAG in (${searchTag})]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,TAG,REPORT_TIME
+			)
+		</if>
+		NTC_TAG_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
 	
+	<select id="findNtcAttrTypeReport" parameterType="com.nis.domain.restful.NtcAttrTypeReport"
+		resultMap="NtcAttrTypeReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ATTR_TYPE,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE,ATTR_TYPE, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_ATTR_TYPE_REPORT 
+		<where>
+			<if test="searchAttrType != null and searchAttrType !=''">
+				<![CDATA[AND ATTR_TYPE in (${searchAttrType})]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,ATTR_TYPE,REPORT_TIME
+			)
+		</if>
+		NTC_ATTR_TYPE_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<select id="findNtcLwhhReport" parameterType="com.nis.domain.restful.NtcLwhhReport"
+		resultMap="NtcLwhhReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				LWHH,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE,LWHH, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_LWHH_REPORT 
+		<where>
+			<if test="searchLwhh != null and searchLwhh !=''">
+				<![CDATA[AND LWHH in (${searchLwhh})]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,LWHH,REPORT_TIME
+			)
+		</if>
+		NTC_LWHH_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	<select id="findNtcSrcipDomesticReport" parameterType="com.nis.domain.restful.NtcSrcipDomesticReport"
+		resultMap="NtcSrcipDomesticReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				SRC_PROVINCE,SRC_CITY,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE,SRC_PROVINCE,SRC_CITY, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_SRCIP_DOMESTIC_REPORT 
+		<where>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,SRC_PROVINCE,SRC_CITY,REPORT_TIME
+			)
+		</if>
+		NTC_SRCIP_DOMESTIC_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<select id="findNtcDestipCountryReport" parameterType="com.nis.domain.restful.NtcDestipCountryReport"
+		resultMap="NtcDestipCountryReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				DEST_COUNTRY,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE,DEST_COUNTRY, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_DESTIP_COUNTRY_REPORT 
+		<where>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,DEST_COUNTRY,REPORT_TIME
+			)
+		</if>
+		NTC_DESTIP_COUNTRY_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
+	
+	<select id="findNtcEntranceReport" parameterType="com.nis.domain.restful.NtcEntranceReport"
+		resultMap="NtcEntranceReportMap">
+		SELECT
+		<choose>
+			<when test="page !=null and page.fields != null and page.fields != ''">
+				${page.fields}
+			</when>
+			<otherwise>
+				ENTRANCE_ID,
+				<include refid="commonPorperty" />
+			</otherwise>
+		</choose>
+		FROM (SELECT SERVICE,ENTRANCE_ID, SUM(SUM) SUM ,REPORT_TIME
+			FROM NTC_ENTRANCE_REPORT 
+		<where>
+		
+			<if test="searchEntrance != null and searchEntrance !=''">
+				<![CDATA[AND ENTRANCE_ID in (${searchEntrance})]]>
+			</if>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND SERVICE in (${searchService})]]>
+			</if>
+			<if test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+			<if test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</if>
+		</where>
+			
+		<if test="searchBusinessType != null and searchBusinessType ==1">
+			GROUP BY SERVICE,ENTRANCE_ID,REPORT_TIME
+			)
+		</if>
+		NTC_ENTRANCE_REPORT
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+		</choose>
+	</select>
 </mapper>
