@@ -3025,6 +3025,20 @@ public class ConfigSourcesService extends BaseService {
 								dstStr.substring(1, dstStr.length() - 1))
 								.toString();
 					}
+					
+					if("dstFile".equals(commonSourceFieldCfg
+							.getSrcName())){
+						if ("dst_file".equals(commonSourceFieldCfg
+							.getDstName())) {
+							String maatTableName = ServiceAndRDBIndexReal
+									.getUnMaatTableName(Integer.valueOf(srcMap.get("service")
+											.toString().trim()));
+							dstStr="/home/mesasoft/"+maatTableName.substring(maatTableName.lastIndexOf("_")+1)+"/full/"+dstStr.substring(dstStr.lastIndexOf("/")+1);
+						}else if ("file_id".equals(commonSourceFieldCfg
+							.getDstName())) {
+							dstStr= dstStr.substring(dstStr.indexOf("/group"));
+						}
+					}
 					switch (commonSourceFieldCfg.getFieldType()) {
 					case "Number":
 						if (!StringUtil.isNumeric(dstStr)) {
