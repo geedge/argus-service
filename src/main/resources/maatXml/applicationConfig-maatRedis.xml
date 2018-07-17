@@ -10,7 +10,7 @@
 	<p:maatType service="261;262;263;264;389;390;391;392">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[op_time];\t;[service];\t;[action];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[op_time];\t;[service];\t;[action];&amp;nbsp;0;\t;[file_id];\n</p:valueExpression>
 <!-- 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[time_stamp];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression> -->
 		</p:expressions>
 		<p:sequences>
