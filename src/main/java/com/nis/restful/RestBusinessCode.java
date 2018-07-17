@@ -350,6 +350,10 @@ public enum RestBusinessCode {
 	 * 配置的service与action关系不存在
 	 */
 	Service2ActionIsNull(4002010, "配置的service与action关系不存在"),
+	/**
+	 * 状态更新操作，所有配置的isValid值必须相同
+	 */
+	IsValidNonUniq(4002011, "状态更新操作，所有配置的isValid值必须相同"),
 	
 	/**
 	 * 配置分组中同一groupId出现多次

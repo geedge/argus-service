@@ -3033,7 +3033,8 @@ public class ConfigSourcesService extends BaseService {
 							String maatTableName = ServiceAndRDBIndexReal
 									.getUnMaatTableName(Integer.valueOf(srcMap.get("service")
 											.toString().trim()));
-							dstStr="/home/mesasoft/"+maatTableName.substring(maatTableName.lastIndexOf("_")+1)+"/full/"+dstStr.substring(dstStr.lastIndexOf("/")+1);
+							String dstPath = Constants.MM_SAMPLE_DST_PATH.replace("{tableType}", maatTableName.substring(maatTableName.lastIndexOf("_")+1));
+							dstPath=dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/")+1));
 						}else if ("file_id".equals(commonSourceFieldCfg
 							.getDstName())) {
 							dstStr= dstStr.substring(dstStr.indexOf("/group"));
@@ -3253,6 +3254,8 @@ public class ConfigSourcesService extends BaseService {
 		}
 		// <service,cfgIdList>
 		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
+		//所有状态更新的配置isValid的值必须相同
+		Map<String, String> validIdMap = new HashMap<String, String>();
 		for (int i = 0; i < jsonObjectList.size(); i++) {
 			JsonObject jsonObj = (JsonObject) jsonObjectList.get(i);
 			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject
@@ -3265,6 +3268,7 @@ public class ConfigSourcesService extends BaseService {
 						msg + sb.toString(),
 						CompileVal.getBusinessCode());
 			}
+			validIdMap.put(srcMap.get("isValid").toString(), srcMap.get("isValid").toString());
 			Integer service = Integer.valueOf(srcMap.get("service").toString());
 			Long cfgId = Long.valueOf(srcMap.get("cfgId").toString());
 			if (cfgMap.containsKey(service)) {
@@ -3276,6 +3280,13 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 
+		if (validIdMap.size()>1) {
+			thread.setExceptionInfo(RestBusinessCode.IsValidNonUniq.getErrorReason());
+			throw new RestServiceException(thread,
+					System.currentTimeMillis() - start,
+					RestBusinessCode.IsValidNonUniq.getErrorReason(),
+					RestBusinessCode.IsValidNonUniq.getValue());
+		}
 		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 		Iterator serviceIterator = cfgMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
@@ -3302,7 +3313,8 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		try {
-			configRedisService.delUnMaatConfig(restMap);
+			
+			configRedisService.delUnMaatConfig(restMap,validIdMap.containsKey("0")?true:false);
 		} catch (Exception e) {
 			// TODO: handle exception
 			logger1.error(e.getMessage());
@@ -3343,10 +3355,12 @@ public class ConfigSourcesService extends BaseService {
 			if (!StringUtil.isNumeric(service)) {
 				CompileVal.setBusinessCode(RestBusinessCode.IsValidInWrongRange.getValue());
 				return RestBusinessCode.IsValidInWrongRange.getErrorReason();
-			} else if (!isValid.equals("0")) {
-				CompileVal.setBusinessCode(RestBusinessCode.IsValidIsF.getValue());
-				return RestBusinessCode.IsValidIsF.getErrorReason();
 			}
+			//配置取消改为状态更新（停/启用）
+//			else if (!isValid.equals("0")) {
+//				CompileVal.setBusinessCode(RestBusinessCode.IsValidIsF.getValue());
+//				return RestBusinessCode.IsValidIsF.getErrorReason();
+//			}
 		}
 		return "ok";
 	}
