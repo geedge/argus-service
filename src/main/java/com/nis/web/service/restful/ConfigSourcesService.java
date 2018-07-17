@@ -85,7 +85,6 @@ public class ConfigSourcesService extends BaseService {
 		ConfigSourcesService.msgList = msgList;
 	}
 
-	protected final Logger logger1 = Logger.getLogger(this.getClass());
 	private Map<Integer, Map<String, String>> map;
 	@Autowired
 	private ConfigCompileDao configCompileDao;
@@ -349,7 +348,7 @@ public class ConfigSourcesService extends BaseService {
 	 *            保存异常信息入库对象
 	 * @param start
 	 *            进入controller的时间
-	 * @param compileList
+	 * @param configSource
 	 *            编译配置集合
 	 * @return
 	 * @throws Exception
@@ -383,21 +382,21 @@ public class ConfigSourcesService extends BaseService {
 								+ sb.toString(),
 						CompileVal.getBusinessCode());
 			}
-			logger1.info("数据保存到数据库提交事务开始");
+			logger.info("数据保存到数据库提交事务开始");
 			batchSqlSession.commit();
-			logger1.info("数据保存到数据库成功");
+			logger.info("数据保存到数据库成功");
 		} catch (RestServiceException e) {
-			logger1.error(e);
+			logger.error("RestServiceException", e);
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause()
 					+ sb.toString());
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- start, e.getMessage() + sb.toString(), e.getErrorCode());
 		} catch (Exception e) {
 
-			logger1.error(e);
+			logger.error("Exception", e);
 			String errorCode = OracleErrorCodeUtil.getOraCode(e);
 			if (!StringUtils.isEmpty(errorCode)) {
-				logger1.error("数据更新发生异常！");
+				logger.error("数据更新发生异常！");
 				thread.setExceptionInfo(e.getMessage() + " " + e.getCause()
 						+ sb.toString());
 				OracleErrorCodeUtil.throwExceptionInfo(thread,
@@ -432,8 +431,8 @@ public class ConfigSourcesService extends BaseService {
 	 *            保存异常信息入库对象
 	 * @param start
 	 *            进入controller的时间
-	 * @param compileList
-	 *            编译配置集合
+	 * @param config
+	 *            编译配置
 	 * @return
 	 * @throws Exception
 	 */
@@ -888,22 +887,22 @@ public class ConfigSourcesService extends BaseService {
 				List<ConfigCompile> compileList = configSource.subList(start,
 						end);
 				insertConfigComLileData(thread, _start, compileList, sb);
-				// logger1.info(insertConfigComLile);
+				// logger.info(insertConfigComLile);
 			}
 
-			logger1.info("数据保存到数据库提交事务开始");
+			logger.info("数据保存到数据库提交事务开始");
 			batchSqlSession.commit();
-			logger1.info("数据保存到数据库成功");
+			logger.info("数据保存到数据库成功");
 
 		} catch (RestServiceException e) {
-			logger1.error(e);
+			logger.error("RestServiceException", e);
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause()
 					+ sb.toString());
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- _start, e.getMessage() + sb.toString(), e.getErrorCode());
 
 		} catch (Exception e) {
-			logger1.error(e);
+			logger.error("Exception", e);
 			String errorCode = OracleErrorCodeUtil.getOraCode(e);
 			if (!StringUtils.isEmpty(errorCode)) {
 				thread.setExceptionInfo("数据保存发生异常" + sb.toString());
@@ -929,7 +928,7 @@ public class ConfigSourcesService extends BaseService {
 	 * 验证数据是否符合要求 插入编译配置数据 验证分组配置数据 验证域配置数据 方法二 数据库中循环
 	 * 
 	 * @param configCompileList
-	 * @param batchSqlSession
+	 * @param configCompileList
 	 * @return
 	 * @throws Exception
 	 */
@@ -946,7 +945,7 @@ public class ConfigSourcesService extends BaseService {
 		for (ConfigCompile configCompile : configCompileList) {
 			String msg = CompileVal.compileIsOk(configCompile, false, sb);
 			if (!"ok".equals(msg)) {
-				logger1.error(msg);
+				logger.error(msg);
 				thread.setExceptionInfo(msg + sb.toString());
 				throw new RestServiceException(thread,
 						System.currentTimeMillis() - start,
@@ -957,7 +956,7 @@ public class ConfigSourcesService extends BaseService {
 					&& configCompile.getGroupRelationList().size() > 0) {
 				groupRelationList.addAll(configCompile.getGroupRelationList());
 			} else {
-				logger1.error("配置分组数量不能为空" + sb.toString());
+				logger.error("配置分组数量不能为空" + sb.toString());
 				thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
 				throw new RestServiceException(thread,
 						System.currentTimeMillis() - start, "配置分组数量不能为空"
@@ -972,7 +971,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -993,7 +992,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "增强字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1026,7 +1025,7 @@ public class ConfigSourcesService extends BaseService {
 					if (ipRegion.getRegionId() == null) {
 						String errorMsg = "ip类域配置id不能为空 ,表名---"
 								+ ipRegion.getTableName() + "" + sb.toString();
-						logger1.error(errorMsg);
+						logger.error(errorMsg);
 						thread.setExceptionInfo(errorMsg);
 						throw new RestServiceException(thread,
 								System.currentTimeMillis() - start, errorMsg,
@@ -1049,7 +1048,7 @@ public class ConfigSourcesService extends BaseService {
 					if (numRegion.getRegionId() == null) {
 						String errorMsg = "数值类域配置id不能为空  ,表名---"
 								+ numRegion.getTableName() + "" + sb.toString();
-						logger1.error(errorMsg);
+						logger.error(errorMsg);
 						thread.setExceptionInfo(errorMsg);
 						throw new RestServiceException(thread,
 								System.currentTimeMillis() - start, errorMsg,
@@ -1233,7 +1232,7 @@ public class ConfigSourcesService extends BaseService {
 			List<ConfigCompile> configCompileList, StringBuffer sb) {
 		// List<MaatConfig> maatConfigList = new ArrayList<MaatConfig>();
 		// List<Integer> serviceList = new ArrayList<Integer>();
-		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
+ 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
 		CompileVal.setBusinessCode(null);
 		try {
@@ -1244,7 +1243,7 @@ public class ConfigSourcesService extends BaseService {
 				MaatConfig maatConfig = new MaatConfig();
 				String msg = CompileVal.compileIsOk(configCompile, false, sb);
 				if (!"ok".equals(msg)) {
-					logger1.error(msg);
+					logger.error(msg);
 					thread.setExceptionInfo(msg + sb.toString());
 					thread.setBusinessCode(CompileVal.getBusinessCode());
 					throw new RestServiceException(thread,
@@ -1255,7 +1254,7 @@ public class ConfigSourcesService extends BaseService {
 
 				if (!(null != configCompile.getGroupRelationList() && configCompile
 						.getGroupRelationList().size() > 0)) {
-					logger1.error("配置分组列表不能为空" + sb.toString());
+					logger.error("配置分组列表不能为空" + sb.toString());
 					thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
 					throw new RestServiceException(thread,
 							System.currentTimeMillis() - start, "配置分组列表不能为空"
@@ -1269,7 +1268,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1286,7 +1285,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "ip类域配置id不能为空 ,表名---"
 									+ ipRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1303,7 +1302,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "数值类域配置id不能为空  ,表名---"
 									+ numRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1320,7 +1319,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "摘要类域配置id不能为空  ,表名---"
 									+ digestRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1338,7 +1337,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "生效范围IP域类域配置id不能为空 ,表名---"
 									+ ipRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1555,7 +1554,7 @@ public class ConfigSourcesService extends BaseService {
 			return "error";
 		}
 		try {
-			logger1.info("---------------调用maat配置新增接口---------------------");
+			logger.info("---------------调用maat配置新增接口---------------------");
 			configRedisService.saveMaatConfig(configMap);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -1563,7 +1562,7 @@ public class ConfigSourcesService extends BaseService {
 			if (e.getMessage().startsWith("后台错误:")) {
 				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			}
-			logger1.error(e.getMessage());
+			logger.error(e.getMessage());
 			msgList.add(e);
 			return "error";
 		}
@@ -1665,7 +1664,7 @@ public class ConfigSourcesService extends BaseService {
 			}
 		} catch (RuntimeException e) {
 			// TODO: handle exception
-			logger1.error(e.getMessage());
+			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
 				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
@@ -1688,7 +1687,7 @@ public class ConfigSourcesService extends BaseService {
 		for (ConfigCompile configCompile : configCompileList) {
 			String msg = CompileVal.compileIsOk(configCompile, false, sb);
 			if (!"ok".equals(msg)) {
-				logger1.error(msg);
+				logger.error(msg);
 				thread.setExceptionInfo(msg + sb.toString());
 				throw new RestServiceException(thread,
 						System.currentTimeMillis() - start,
@@ -1699,7 +1698,7 @@ public class ConfigSourcesService extends BaseService {
 					&& configCompile.getGroupRelationList().size() > 0) {
 				groupRelationList.addAll(configCompile.getGroupRelationList());
 			} else {
-				logger1.error("配置分组数量不能为空" + sb.toString());
+				logger.error("配置分组数量不能为空" + sb.toString());
 				thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
 				throw new RestServiceException(thread,
 						System.currentTimeMillis() - start, "配置分组数量不能为空"
@@ -1714,7 +1713,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1735,7 +1734,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "增强字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
 									+ sb.toString();
-							logger1.error(errorMsg);
+							logger.error(errorMsg);
 							thread.setExceptionInfo(errorMsg);
 							throw new RestServiceException(thread,
 									System.currentTimeMillis() - start,
@@ -1768,7 +1767,7 @@ public class ConfigSourcesService extends BaseService {
 					if (ipRegion.getRegionId() == null) {
 						String errorMsg = "ip类域配置id不能为空 ,表名---"
 								+ ipRegion.getTableName() + "" + sb.toString();
-						logger1.error(errorMsg);
+						logger.error(errorMsg);
 						thread.setExceptionInfo(errorMsg);
 						throw new RestServiceException(thread,
 								System.currentTimeMillis() - start, errorMsg,
@@ -1791,7 +1790,7 @@ public class ConfigSourcesService extends BaseService {
 					if (numRegion.getRegionId() == null) {
 						String errorMsg = "数值类域配置id不能为空  ,表名---"
 								+ numRegion.getTableName() + "" + sb.toString();
-						logger1.error(errorMsg);
+						logger.error(errorMsg);
 						thread.setExceptionInfo(errorMsg);
 						throw new RestServiceException(thread,
 								System.currentTimeMillis() - start, errorMsg,
@@ -1818,7 +1817,7 @@ public class ConfigSourcesService extends BaseService {
 						String errorMsg = "摘要类域配置id不能为空  ,表名---"
 								+ digestRegion.getTableName() + ""
 								+ sb.toString();
-						logger1.error(errorMsg);
+						logger.error(errorMsg);
 						thread.setExceptionInfo(errorMsg);
 						throw new RestServiceException(thread,
 								System.currentTimeMillis() - start, errorMsg,
@@ -1950,7 +1949,7 @@ public class ConfigSourcesService extends BaseService {
 			} catch (Exception e) {
 				thread.setExceptionInfo(e.toString());
 				e.printStackTrace();
-				logger1.error(e);
+				logger.error("Exception", e);
 				if (!(e instanceof RestServiceException)) {
 					e = new RestServiceException(thread,
 							System.currentTimeMillis() - start, "编译配置数据插入失败",
@@ -2363,7 +2362,7 @@ public class ConfigSourcesService extends BaseService {
 			} catch (Exception e) {
 				thread.setExceptionInfo(e.toString());
 				e.printStackTrace();
-				logger1.error(e);
+				logger.error("Exception" ,e);
 				if (!(e instanceof RestServiceException)) {
 					e = new RestServiceException(thread,
 							System.currentTimeMillis() - start, "编译配置数据修改失败",
@@ -2612,7 +2611,7 @@ public class ConfigSourcesService extends BaseService {
 			} catch (Exception e) {
 				thread.setExceptionInfo(e.toString());
 				e.printStackTrace();
-				logger1.error(e);
+				logger.error("Exception" ,e);
 				if (!(e instanceof RestServiceException)) {
 					e = new RestServiceException(thread,
 							System.currentTimeMillis() - start, "编译配置数据修改失败",
@@ -2702,7 +2701,7 @@ public class ConfigSourcesService extends BaseService {
 			} catch (Exception e) {
 				thread.setExceptionInfo(e.toString());
 				e.printStackTrace();
-				logger1.error(e);
+				logger.error("Exception" ,e);
 				if (!(e instanceof RestServiceException)) {
 					e = new RestServiceException(thread,
 							System.currentTimeMillis() - start, "编译配置数据修改失败",
@@ -2938,7 +2937,7 @@ public class ConfigSourcesService extends BaseService {
 						.getCommonSourceCfgByService(srcMap.get("service")
 								.toString().trim());
 				if (StringUtil.isEmpty(commonSourceFieldCfgList)) {
-					logger1.error(RestBusinessCode.ServiceIsWrong.getErrorReason()+",请检查service配置是否正确");
+					logger.error(RestBusinessCode.ServiceIsWrong.getErrorReason()+",请检查service配置是否正确");
 					thread.setExceptionInfo("请检查service配置是否正确");
 					throw new RestServiceException(thread,
 							System.currentTimeMillis() - start,
@@ -2965,7 +2964,7 @@ public class ConfigSourcesService extends BaseService {
 							valFlag = valFlag & matcher.matches();
 						}
 						if (!valFlag) {
-							logger1.error(RestBusinessCode.IpTypeIsWrong
+							logger.error(RestBusinessCode.IpTypeIsWrong
 									.getErrorReason());
 							thread.setExceptionInfo(RestBusinessCode.IpTypeIsWrong
 									.getErrorReason());
@@ -2984,7 +2983,7 @@ public class ConfigSourcesService extends BaseService {
 								commonSourceFieldCfg.getSrcName()).toString().trim();
 						if (Integer.valueOf(dstVal).compareTo(ServiceAndRDBIndexReal.getActionByService(Integer.valueOf(srcMap.get("service")
 								.toString().trim())))!=0) {
-							logger1.error(RestBusinessCode.ServiceUnmatchAction
+							logger.error(RestBusinessCode.ServiceUnmatchAction
 									.getErrorReason());
 							thread.setExceptionInfo(RestBusinessCode.ServiceUnmatchAction
 									.getErrorReason());
@@ -3005,7 +3004,7 @@ public class ConfigSourcesService extends BaseService {
 					if (commonSourceFieldCfg.getIsRequired()
 							&& !srcMap.containsKey(commonSourceFieldCfg
 									.getSrcName())) {
-						logger1.error(commonSourceFieldCfg.getSrcName()
+						logger.error(commonSourceFieldCfg.getSrcName()
 								+ "参数不能为空");
 						thread.setExceptionInfo(commonSourceFieldCfg
 								.getSrcName() + "参数不能为空");
@@ -3028,7 +3027,7 @@ public class ConfigSourcesService extends BaseService {
 					switch (commonSourceFieldCfg.getFieldType()) {
 					case "Number":
 						if (!StringUtil.isNumeric(dstStr)) {
-							logger1.error(commonSourceFieldCfg.getSrcName()
+							logger.error(commonSourceFieldCfg.getSrcName()
 									+ "参数不能格式不正确,必需是数值型");
 							thread.setExceptionInfo(commonSourceFieldCfg
 									.getSrcName() + "参数不能格式不正确,必需是数值型");
@@ -3048,7 +3047,7 @@ public class ConfigSourcesService extends BaseService {
 							dstStr = date.getTime() + "000";
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
-							logger1.error(commonSourceFieldCfg.getSrcName()
+							logger.error(commonSourceFieldCfg.getSrcName()
 									+ "参数格式不正确，必须是日期型");
 							thread.setExceptionInfo(commonSourceFieldCfg
 									.getSrcName() + "参数格式不正确，必须是日期型");
@@ -3061,7 +3060,7 @@ public class ConfigSourcesService extends BaseService {
 						break;
 					case "IP":
 						if (!BasicProvingUtil.isIpOrIpMask(dstStr, ipType)) {
-							logger1.error(commonSourceFieldCfg.getSrcName()
+							logger.error(commonSourceFieldCfg.getSrcName()
 									+ "参数格式不正确或与" + ipTypeName + "不一致");
 							thread.setExceptionInfo(commonSourceFieldCfg
 									.getSrcName()
@@ -3077,7 +3076,7 @@ public class ConfigSourcesService extends BaseService {
 						break;
 					case "Port":
 						if (!BasicProvingUtil.isPortOrPortMask(dstStr)) {
-							logger1.error(commonSourceFieldCfg.getSrcName()
+							logger.error(commonSourceFieldCfg.getSrcName()
 									+ "参数格式不正确，不是合法的Port");
 							thread.setExceptionInfo(commonSourceFieldCfg
 									.getSrcName() + "参数格式不正确，不是合法的Port");
@@ -3116,7 +3115,7 @@ public class ConfigSourcesService extends BaseService {
 							}
 						}
 						if (flag) {
-							logger1.error(commonSourceFieldCfg.getSrcName()
+							logger.error(commonSourceFieldCfg.getSrcName()
 									+ "参数不在有效范围("
 									+ commonSourceFieldCfg.getRange() + ")");
 							thread.setExceptionInfo(commonSourceFieldCfg
@@ -3143,7 +3142,7 @@ public class ConfigSourcesService extends BaseService {
 					if (valFlag) {
 						dstMap.put(commonSourceFieldCfg.getDstName(), dstStr);
 					} else {
-						logger1.error(commonSourceFieldCfg.getSrcName()
+						logger.error(commonSourceFieldCfg.getSrcName()
 								+ "参数格式与正则(" + commonSourceFieldCfg.getRegexp()
 								+ ")不匹配");
 						thread.setExceptionInfo(commonSourceFieldCfg
@@ -3178,7 +3177,7 @@ public class ConfigSourcesService extends BaseService {
 						RestBusinessCode.ServiceIsNull.getValue());
 			}
 		}
-		logger1.info("------------------调用非maat配置新增接口-------------------");
+		logger.info("------------------调用非maat配置新增接口-------------------");
 		// 按service分库
 		Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
 		Iterator serviceIterator = dstMaps.keySet().iterator();
@@ -3210,7 +3209,7 @@ public class ConfigSourcesService extends BaseService {
 			configRedisService.saveUnMaatConfig(configMap);
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger1.error(e.getMessage());
+			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
 				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
@@ -3230,7 +3229,7 @@ public class ConfigSourcesService extends BaseService {
 					.getAsJsonArray();
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger1.error(e.getMessage());
+			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			thread.setExceptionInfo(e.getMessage() + sb.toString());
 			throw new RestServiceException(thread, System.currentTimeMillis()
@@ -3291,7 +3290,7 @@ public class ConfigSourcesService extends BaseService {
 			configRedisService.delUnMaatConfig(restMap);
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger1.error(e.getMessage());
+			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
 				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());

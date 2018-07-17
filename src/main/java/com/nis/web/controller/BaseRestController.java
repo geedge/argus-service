@@ -361,7 +361,7 @@ public class BaseRestController {
 
 	protected SaveRequestLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
 			HttpServletRequest request, Object data) {
-		logger.info("SaveRequestLogThread初始化开始----" + System.currentTimeMillis());
+		logger.debug("SaveRequestLogThread初始化开始----" + System.currentTimeMillis());
 		SaveRequestLogThread thread = SaveRequestLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
 		thread.setOpAction(opAction);

@@ -58,7 +58,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 @RequestMapping("${servicePath}")
 @Api(value = "ConfigSourcesController", description = "配置存储服务，包括管控、监测、白名单的控制类")
 public class ConfigSourcesController extends BaseRestController {
-	protected final Logger logger = Logger.getLogger(this.getClass());
+
 	@Autowired
 	protected ConfigSourcesService configSourcesService;
 	@Autowired
@@ -67,258 +67,9 @@ public class ConfigSourcesController extends BaseRestController {
 	@Autowired
 	ConfigRedisService configRedisService;
 
-	@RequestMapping(value = "/cfg/v1/saveUnMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String saveUnMaat(Integer type) {
-		try {
-			List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-			if (type == 1) {
-				Map<String, String> map = new HashMap<String, String>();
-				Integer service = 261;
-				long id = configRedisService.getIncrId("seq_compileid");
-				// int id=2;
-				map.put("cfg_id", id + "");
-				map.put("is_valid", "1");
-				map.put("dst_file", "home");
-				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
-				map.put("op_time", new Date().getTime() + "");
-				map.put("level", "20");
-				map.put("file_id", id + "");
-				map.put("service", service + "");
-				listMap.add(map);
 
-				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
-				configMap.put(1, listMap);
-				configRedisService.saveUnMaatConfig(configMap);
-			} else {
-				Integer service = 265;
-				Map<String, String> map = new HashMap<String, String>();
-				long id = configRedisService.getIncrId("seq_compileid");
-				// int id=2;
-				map.put("cfg_id", id + "");
-				map.put("is_valid", "1");
-				map.put("service", "100");
-				map.put("description", "123" + id);
-				map.put("level", "20");
-				listMap.add(map);
-				map.put("service", service + "");
 
-				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
-				configMap.put(1, listMap);
-				configRedisService.saveUnMaatConfig(configMap);
-			}
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
 
-	@RequestMapping(value = "/cfg/v1/delUnMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String delUnMaat(int redisDB, int service, long id) {
-		try {
-			Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-			ArrayList<Long> arrayList = new ArrayList<Long>();
-			arrayList.add(id);
-			map.put(service, arrayList);
-			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-			idMap.put(redisDB, map);
-			configRedisService.delUnMaatConfig(idMap);
-			// configRedisService.saveMaatConfig(listMap, service);
-			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	@RequestMapping(value = "/cfg/v1/delMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String delMaat(int redisDB, int service, long id) {
-		try {
-			Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-			ArrayList<Long> arrayList = new ArrayList<Long>();
-			arrayList.add(id);
-			map.put(service, arrayList);
-			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-			idMap.put(redisDB, map);
-
-			boolean delMaatConfig = configRedisService.delMaatConfig(idMap);
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	@RequestMapping(value = "/cfg/v1/saveMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String saveMaat(Integer service) {
-		try {
-			Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-			List<Integer> redisDBByService = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
-			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
-			long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
-			listMap.add(getMaatConfig1(service, seq_groupid,seq_regionid2));
-			//listMap.add(getMaatConfig2(service, seq_groupid,seq_regionid2));
-
-			for (Integer db : redisDBByService) {
-				configMap.put(db, listMap);
-			}
-			configRedisService.saveMaatConfig(configMap);
-			// configRedisService.saveMaatConfig(listMap, service);
-			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	public MaatConfig getMaatConfig1(Integer service, long seq_groupid,long seq_regionid2) {
-		String time = new Date().getTime() + "";
-		Map<String, String> configMap1 = new HashMap<String, String>();
-		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
-		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
-		// int id=2;
-		configMap1.put("compile_id", seq_compileid + "");
-		configMap1.put("service", service + "");
-		configMap1.put("action", "0");
-		configMap1.put("do_blacklist", "1");
-		configMap1.put("do_log", "1");
-		configMap1.put("effective_range", "0");
-		configMap1.put("user_region", "0");
-		configMap1.put("is_valid", "1");
-		configMap1.put("group_num", "1");
-		configMap1.put("father_cfg_id", "0");
-		configMap1.put("op_time", time);
-
-		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> groupMap1 = new HashMap<String, String>();
-		groupMap1.put("group_id", seq_groupid + "");
-		groupMap1.put("compile_id", seq_compileid + "");
-		groupMap1.put("is_valid", "1");
-		groupMap1.put("op_time", time);
-		groupMap1.put("service", service + "");
-		groupMapList.add(groupMap1);
-		Long incrId = configRedisService.getIncrId("SEQ_GROUPID");
-		Map<String, String> groupMap2 = new HashMap<String, String>();
-		groupMap2.put("group_id", incrId + "");
-		groupMap2.put("compile_id", seq_compileid + "");
-		groupMap2.put("is_valid", "1");
-		groupMap2.put("op_time", time);
-		groupMap2.put("service", service + "");
-		groupMapList.add(groupMap2);
-		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> strMap = new HashMap<String, String>();
-		strMap.put("group_id", incrId + "");
-		strMap.put("region_id", seq_regionid1 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-
-		ipRegionMapList.add(strMap);
-
-		strMap = new HashMap<String, String>();
-		strMap.put("group_id", seq_groupid + "");
-		strMap.put("region_id", seq_regionid2 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-		ipRegionMapList.add(strMap);
-
-		MaatConfig maatConfig = new MaatConfig();
-		maatConfig.setCompileMap(configMap1);
-		maatConfig.setGroupMapList(groupMapList);
-		maatConfig.setService(service);
-		maatConfig.setIpRegionMapList(ipRegionMapList);
-		return maatConfig;
-	}
-
-	public MaatConfig getMaatConfig2(Integer service, long seq_groupid,long seq_regionid2) {
-		String time = new Date().getTime() + "";
-		Map<String, String> configMap = new HashMap<String, String>();
-		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
-
-		// int id=2;
-		configMap.put("compile_id", seq_compileid + "");
-		configMap.put("service", service + "");
-		configMap.put("action", "0");
-		configMap.put("do_blacklist", "1");
-		configMap.put("do_log", "1");
-		configMap.put("effective_range", "0");
-		configMap.put("user_region", "0");
-		configMap.put("is_valid", "1");
-		configMap.put("group_num", "1");
-		configMap.put("father_cfg_id", "0");
-		configMap.put("op_time", time);
-
-		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> groupMap = new HashMap<String, String>();
-		groupMap.put("group_id", seq_groupid + "");
-		groupMap.put("compile_id", seq_compileid + "");
-		groupMap.put("is_valid", "1");
-		groupMap.put("op_time", time);
-		groupMap.put("service", service + "");
-		groupMapList.add(groupMap);
-
-		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> strMap = new HashMap<String, String>();
-		strMap = new HashMap<String, String>();
-		strMap.put("group_id", seq_groupid + "");
-		strMap.put("region_id", seq_regionid2 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-		ipRegionMapList.add(strMap);
-
-		MaatConfig maatConfig = new MaatConfig();
-		maatConfig.setCompileMap(configMap);
-		maatConfig.setGroupMapList(groupMapList);
-		maatConfig.setService(service);
-		maatConfig.setIpRegionMapList(ipRegionMapList);
-		return maatConfig;
-	}
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.POST)
 	@ApiOperation(value = "业务配置存储", httpMethod = "POST", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
@@ -334,20 +85,19 @@ public class ConfigSourcesController extends BaseRestController {
 		if (null != configSource && null != configSource.getConfigCompileList()
 				&& configSource.getConfigCompileList().size() > 0) {
 			int opAction = configSource.getOpAction();
+
 			checkOpAction(thread, System.currentTimeMillis() - start, opAction, 1);
 			// 验证配置编译数据
 			validateConfigSource(thread, start, configSource);
-			Long benginTime = System.currentTimeMillis();
+
 			String msg = configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
-//			String msg = "";
+
 			if ("error".equals(msg)) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
 						"存储编译配置时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
 			}
-			Long endSaveTime = System.currentTimeMillis();
-			Long time = (endSaveTime - benginTime) / 1000;
-			System.out.println("插入数据成功总共需要" + time + "秒");
+
 		} else {
 			thread.setExceptionInfo("编译配置数据不能为空");
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置数据不能为空",
@@ -357,6 +107,8 @@ public class ConfigSourcesController extends BaseRestController {
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"编译配置数据插入成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
+
+
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.PUT)
 	@ApiOperation(value = "业务配置状态更新", httpMethod = "PUT", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）进行配置失效")

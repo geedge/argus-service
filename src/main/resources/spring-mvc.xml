@@ -191,7 +191,7 @@
 			<mvc:mapping path="/service/cfg/**" />
 			<mvc:mapping path="/service/log/**" />
 			<mvc:mapping path="/log/**"/> 
-			<bean class="com.nis.interceptor.DataSourceBInterceptor"></bean>
+			<bean class="com.nis.interceptor.DataSourceAInterceptor"></bean>
 		</mvc:interceptor>
 
 	</mvc:interceptors>

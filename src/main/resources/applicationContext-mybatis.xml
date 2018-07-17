@@ -31,31 +31,9 @@
 	<bean id="parentDataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource"></bean>
 
-	<!-- 数据源定义，采用BoneCP连接池 ,用户管理数据源 -->
-	<bean id="DevlopDataSource" parent="parentDataSource"
-		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
-		<property name="driverClass" value="${jdbc.devlop.driver}"></property>
-		<property name="jdbcUrl" value="${jdbc.devlop.url}"></property>
-		<property name="username" value="${jdbc.devlop.username}"></property>
-		<property name="password" value="${jdbc.devlop.password}"></property>
-		<!-- 检查数据库连接池中空闲连接的间隔时间，单位是分，默认值：240，如果要取消则设置为0 -->
-		<property name="idleConnectionTestPeriodInMinutes" value="${bonecp.idleConnectionTestPeriodInMinutes}"></property>
-		<!-- 连接池中未使用的链接最大存活时间，单位是分，默认值：60，如果要永远存活设置为0 -->
-		<property name="idleMaxAgeInMinutes" value="${bonecp.idleMaxAgeInMinutes}" />
-		<!-- 每个分区最大的连接数 -->
-		<property name="maxConnectionsPerPartition" value="${bonecp.maxConnectionsPerPartition}" />
-		<!-- 每个分区最小的连接数 -->
-		<property name="minConnectionsPerPartition" value="${bonecp.minConnectionsPerPartition}" />
-		<!-- 分区数 ，默认值2，最小1，推荐3-4，视应用而定 -->
-		<property name="partitionCount" value="${bonecp.partitionCount}" />
-		<!-- 每次去拿数据库连接的时候一次性要拿几个,默认值：2 -->
-		<property name="acquireIncrement" value="${bonecp.acquireIncrement}" />
-		<!-- 缓存prepared statements的大小，默认值：0 -->
-		<property name="statementsCacheSize" value="${bonecp.statementsCacheSize}" />
-	</bean>
 
 	<!--数据源定义，采用BoneCP连接池 ,业务配置服务数据库 -->
-	<bean id="LogDataSource" parent="parentDataSource"
+	<bean id="ProductDataSource" parent="parentDataSource"
 		class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
 		<property name="driverClass" value="${jdbc.log.driver}"></property>
 		<property name="jdbcUrl" value="${jdbc.log.url}"></property>
@@ -106,11 +84,11 @@
 	<bean id="dynamicDataSource" class="com.nis.datasource.DynamicDataSource">
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
-				<entry value-ref="DevlopDataSource" key="dataSourceA"></entry>
-				<entry value-ref="LogDataSource" key="dataSourceB"></entry>
+				<entry value-ref="ProductDataSource" key="dataSourceA"></entry>
+
 			</map>
 		</property>
-		<property name="defaultTargetDataSource" ref="DevlopDataSource"></property>
+		<property name="defaultTargetDataSource" ref="ProductDataSource"></property>
 	</bean>
 
 	<!-- mybatis 配置，扫描相关mapper文件 -->

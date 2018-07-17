@@ -15,9 +15,9 @@ public class DataSourceAInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		logger.info("开启数据源日志操作库---" + System.currentTimeMillis());
+		logger.debug("开启数据源DATA_SOURCE_A---" + System.currentTimeMillis());
 		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_A);// 开启数据源A
-		logger.info("日志数据源开启成功---" + System.currentTimeMillis());
+		logger.debug("数据DATA_SOURCE_A源开启成功---" + System.currentTimeMillis());
 		return true;
 	}
 
