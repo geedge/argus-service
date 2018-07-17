@@ -24,6 +24,7 @@ import com.nis.util.ServiceAndRDBIndexReal;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 @Service()
 public class ConfigJedisServiceimpl implements ConfigRedisService {
@@ -164,8 +165,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				} else {
 					transaction.discard();
 				}
+			} catch (JedisConnectionException e) {
+				// transaction.discard();
+				logger.error("后台错误:连接redis异常,保存非maat类配置失败,{}", e.getMessage());
+				throw new RuntimeException("后台错误:连接redis异常,保存非maat类配置失败", e);
 			} catch (Exception e) {
 				transaction.discard();
+				logger.error("后台错误:保存非maat类配置发生了异常,{}", e.getMessage());
 				throw new RuntimeException("后台错误:保存非maat类配置发生了异常", e);
 			} finally {
 				// 释放连接到连接池
@@ -500,9 +506,12 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					addStatisticsReal(configMap, transaction);
 					transaction.exec();
 					return true;
-				}else {
+				} else {
 					transaction.exec();
 				}
+			} catch (JedisConnectionException e) {
+				// transaction.discard();
+				throw new RuntimeException("后台错误:连接redis异常,保存maat类配置失败", e);
 			} catch (Exception e) {
 				transaction.discard();
 				throw new RuntimeException("后台错误:保存maat类配置发生了异常", e);
@@ -735,7 +744,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	}
 
 	@Override
-	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
+	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap, boolean isInvalid) {
 		if (idMap != null && idMap.size() > 0) {
 			int count = 0;
 			Jedis resource = JedisUtils.getResource(0);
@@ -768,7 +777,14 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 													for (String keyStr : keySplit) {
 														if (!StringUtils.isEmpty(keyStr)
 																&& keyStr.toUpperCase().equals("EFFECTIVE_RULE")) {
-															keyStr = "OBSOLETE_RULE";
+															
+															if(isInvalid) {
+																keyStr = "OBSOLETE_RULE";
+															}else {
+																keyStr = "EFFECTIVE_RULE";
+															}
+															
+														
 															keyBF.append(keyStr.trim());
 														} else if (!StringUtils.isEmpty(keyStr)
 																&& keyStr.trim().startsWith("[")) {
@@ -792,15 +808,22 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 															keyBF.append(keyStr.trim());
 														}
 													}
+													String oldKey = null;
 													maatKey = keyBF.toString();
-													String oldKey = maatKey.replace("OBSOLETE_RULE", "EFFECTIVE_RULE");
+													if (isInvalid) {
+														oldKey = maatKey.replace("OBSOLETE_RULE", "EFFECTIVE_RULE");
+													} else {
+														oldKey = maatKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
+													}
+
+												
 													if (JedisUtils.exists(oldKey.toString().toUpperCase(),
 															redisDBIndex)) {
 														transaction.rename(oldKey.toString().toUpperCase(),
-																keyBF.toString().toUpperCase());
+																maatKey.toString().toUpperCase());
 														logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}",
 																redisDBIndex, oldKey.toString().toUpperCase(),
-																keyBF.toString().toUpperCase());
+																maatKey.toString().toUpperCase());
 														break;
 													} else {
 														throw new RuntimeException("后台错误:" + redisDBIndex
@@ -812,10 +835,17 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												if (maatXmlExpr.getKeyExpression().toUpperCase()
 														.equals("MAAT_UPDATE_STATUS")) {
 													if (maatKey != null) {
-														String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
-														transaction.zadd("MAAT_UPDATE_STATUS", maatVersion, zset);
-														logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
-																redisDBIndex, zset.toUpperCase(), maatVersion);
+														if (isInvalid) {
+															String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
+															transaction.zadd("MAAT_UPDATE_STATUS", maatVersion, zset);
+															logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
+																	redisDBIndex, zset.toUpperCase(), maatVersion);
+														}else {
+															String zset = maatKey.replace("EFFECTIVE_RULE:", "ADD,");
+															transaction.zadd("MAAT_UPDATE_STATUS", maatVersion, zset);
+															logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
+																	redisDBIndex, zset.toUpperCase(), maatVersion);
+														}
 													}
 												} else if (maatXmlExpr.getKeyExpression().toUpperCase()
 														.equals("MAAT_RULE_TIMER")) {
@@ -877,6 +907,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				} else {
 					transaction.discard();
 				}
+			} catch (JedisConnectionException e) {
+				// transaction.discard();
+				throw new RuntimeException("后台错误:连接redis异常,删除非maat类配置失败", e);
 			} catch (Exception e) {
 				transaction.discard();
 				throw new RuntimeException("后台错误:删除非maat类配置发生了异常", e);
@@ -933,6 +966,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					transaction.discard();
 				}
 
+			} catch (JedisConnectionException e) {
+				// transaction.discard();
+				throw new RuntimeException("后台错误:连接redis异常,删除maat类配置失败", e);
 			} catch (Exception e) {
 				transaction.discard();
 				throw new RuntimeException("后台错误:删除maat类配置发生了异常", e);

@@ -44,9 +44,10 @@ public interface ConfigRedisService {
 	/**
 	 * 删除非maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
 	 * @param idMap
+	 * @param isInvalid 是否将配置置为无效
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
+	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap,boolean isInvalid);
 
 	/**
 	 * 删除maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合

@@ -191,4 +191,9 @@ public final class Constants {
 	
 	public static final String DIGEST_GEN_TOOL_PATH = Configurations.getStringProperty("digest.gen.tool.path", "maat-redis/digest_gen");
 
+	/**
+	 * 样例文件存放目录
+	 */
+	public static final String MM_SAMPLE_DST_PATH = Configurations.getStringProperty("mmSampleDstPath", "/home/mesasoft/{tableType}/full/{fileName}");
+	
 }

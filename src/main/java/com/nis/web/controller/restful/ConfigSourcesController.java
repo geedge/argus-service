@@ -85,19 +85,20 @@ public class ConfigSourcesController extends BaseRestController {
 		if (null != configSource && null != configSource.getConfigCompileList()
 				&& configSource.getConfigCompileList().size() > 0) {
 			int opAction = configSource.getOpAction();
-
 			checkOpAction(thread, System.currentTimeMillis() - start, opAction, 1);
 			// 验证配置编译数据
 			validateConfigSource(thread, start, configSource);
-
+			Long benginTime = System.currentTimeMillis();
 			String msg = configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
-
+//			String msg = "";
 			if ("error".equals(msg)) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
 						"存储编译配置时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
 			}
-
+			Long endSaveTime = System.currentTimeMillis();
+			Long time = (endSaveTime - benginTime) / 1000;
+			System.out.println("插入数据成功总共需要" + time + "秒");
 		} else {
 			thread.setExceptionInfo("编译配置数据不能为空");
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置数据不能为空",
@@ -107,8 +108,6 @@ public class ConfigSourcesController extends BaseRestController {
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"编译配置数据插入成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
-
-
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.PUT)
 	@ApiOperation(value = "业务配置状态更新", httpMethod = "PUT", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）进行配置失效")
