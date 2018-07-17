@@ -25,6 +25,15 @@
 		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
 		<property name="testOnReturn" value="${redis.testOnReturn}" />
 	</bean>
+	
+	
+	<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+		<constructor-arg name="poolConfig" ref="poolConfig" />
+		<constructor-arg name="host" value="${redis.host}" />
+		<constructor-arg name="port" value="${redis.port}" type="int" />
+	</bean>
+	
+	
 	<!-- 默认使用数据库0,设置connectionFactory为非单例模式,方便选择redis数据库 -->
 	<bean id="connectionFactory0"
 		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"

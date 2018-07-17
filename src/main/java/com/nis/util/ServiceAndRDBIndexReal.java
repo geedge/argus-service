@@ -2,11 +2,16 @@ package com.nis.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import com.nis.domain.MaatXmlExpr;
 
 /**
  * 
@@ -37,13 +42,13 @@ public class ServiceAndRDBIndexReal {
 	 * key是业务类型,value是业务类型对应的动作(action)
 	 */
 	private static Map<Integer, Integer> serviceActionMap = new HashMap<Integer, Integer>();
-	
+
 	/**
 	 * 保存maat分发到阀门需要添加到域的属性：maat2Valve
 	 * Map<service,Map<regionType,fields>>
 	 */
-	private static Map<Integer,Map<String, String[]>> maatToValveMap = new HashMap<Integer, Map<String,String[]>>();
-	
+	private static Map<Integer, Map<String, String[]>> maatToValveMap = new HashMap<Integer, Map<String, String[]>>();
+
 	/**
 	 * 阀门保存的redis数据库Index，在seriveTable.properties中定义
 	 */
@@ -113,30 +118,116 @@ public class ServiceAndRDBIndexReal {
 				serviceDBIndexmap.put(Integer.parseInt(serviceDBIndex[0]), redisDbList);
 			}
 		}
-		
+
 		String maat2Valve = Configurations.getStringProperty("maat2Valve", "");
-		if (maat2Valve!=null && !maat2Valve.trim().equals("")) {
-			String [] maat2ValveAry= maat2Valve.split(";");
+		if (maat2Valve != null && !maat2Valve.trim().equals("")) {
+			String[] maat2ValveAry = maat2Valve.split(";");
 			for (String maat2ValveStr : maat2ValveAry) {
-				String [] serviceAndRegion = maat2ValveStr.split(":");
-				if (serviceAndRegion!=null&&serviceAndRegion.length==2) {
-					String [] regionAndFields = serviceAndRegion[1].split("@");
-					Map<String,String[]> fieldMap = new HashMap<String, String[]>();
-					String [] fields = regionAndFields[1].split("&");
-					//同一service有不同的域类型，多个之间用“|”分隔
+				String[] serviceAndRegion = maat2ValveStr.split(":");
+				if (serviceAndRegion != null && serviceAndRegion.length == 2) {
+					String[] regionAndFields = serviceAndRegion[1].split("@");
+					Map<String, String[]> fieldMap = new HashMap<String, String[]>();
+					String[] fields = regionAndFields[1].split("&");
+					// 同一service有不同的域类型，多个之间用“|”分隔
 					if (regionAndFields[0].contains("|")) {
-						String [] regionTypeAry = regionAndFields[0].split("\\|");
+						String[] regionTypeAry = regionAndFields[0].split("\\|");
 						for (String regionType : regionTypeAry) {
 							fieldMap.put(regionType, fields);
 						}
-					}else{
+					} else {
 						fieldMap.put(regionAndFields[0], fields);
 					}
-					
+
 					maatToValveMap.put(Integer.parseInt(serviceAndRegion[0]), fieldMap);
-				
+
 				}
 			}
+		}
+	}
+
+	public static void main(String[] args) {
+		getUnMaatTable();
+	}
+
+	public static void getUnMaatTable() {
+		Map<Integer, String> typeTable = new HashMap<Integer, String>();
+
+		String unMaatService = Configurations.getStringProperty("unMaatService", "");
+		if (unMaatService != null && !unMaatService.trim().equals("")) {
+			String[] split = unMaatService.split(";");
+			for (String str : split) {
+				String[] serviceAction = str.split(":");
+				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+				if (serviceType != null && !serviceType.trim().equals("")) {
+					String[] typeArrs = serviceType.split(";");
+					for (String typeStr : typeArrs) {
+						String[] typeArr = typeStr.split(":");
+						String tableNameArr[] = typeArr[1].split(",");
+						for (String tableName : tableNameArr) {
+							if (!typeTable.containsKey(Integer.parseInt(serviceAction[0]))) {
+								typeTable.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
+							} else {
+								System.out.println();
+							}
+
+							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
+						}
+					}
+				}
+			}
+		}
+		for (Integer service : typeTable.keySet()) {
+			List<MaatXmlExpr> expressionList = ReadMaatXmlUtil.getMaatConfigByService(service).getExpressionList();
+			for (MaatXmlExpr maatXmlExpr : expressionList) {
+				if (maatXmlExpr.getValueExpression() != null) {
+					String[] valSplit = maatXmlExpr.getValueExpression().split(";");
+					int a=1;
+					for (int i = 0; i < valSplit.length; i++) {
+						if (valSplit[i].toLowerCase().contains("is_valid")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
+							System.out.println(service+"--"+typeTable.get(service) + "---" + a);
+						}else if (valSplit[i].toLowerCase().contains("[")){
+							a++;
+						}
+					}
+				}
+
+			}
+		}
+
+	}
+
+	public static void getMaatTable() {
+		Map<Integer, Set<String>> typeMap = new HashMap<Integer, Set<String>>();
+		String service = Configurations.getStringProperty("service", "");
+		if (service != null && !service.trim().equals("")) {
+			String[] split = service.split(";");
+			for (String str : split) {
+				String[] serviceAction = str.split(":");
+				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+				String type = Configurations.getStringProperty(serviceAction[0], "");
+				if (type != null && !type.trim().equals("")) {
+
+					String[] typeArrs = type.split(";");
+					for (String typeStr : typeArrs) {
+						String[] typeArr = typeStr.split(":");
+						int tableType = Integer.parseInt(typeArr[0]);
+						String tableNameArr[] = typeArr[1].split(",");
+						for (String tableName : tableNameArr) {
+							if (typeMap.containsKey(tableType)) {
+								typeMap.get(tableType).add(tableName.toUpperCase());
+							} else {
+								Set<String> list = new HashSet<String>();
+								list.add(tableName.toUpperCase());
+								typeMap.put(tableType, list);
+							}
+						}
+					}
+				}
+
+			}
+		}
+		for (Integer type : typeMap.keySet()) {
+			System.out.println(type + "----" + typeMap.get(type));
 		}
 	}
 
@@ -166,26 +257,27 @@ public class ServiceAndRDBIndexReal {
 			if (tableName == null || tableName.trim().equals("")) {
 				if (tableList.size() > 1) {
 					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-					throw new RuntimeException("业务类型:"+service+",配置类型:"+type+"对应多个表,请输入具体的表名");
+					throw new RuntimeException("业务类型:" + service + ",配置类型:" + type + "对应多个表,请输入具体的表名");
 				} else {
 					return tableList.get(0);
 				}
 			} else {
-				//保存tableName在表名列表中的序号
+				// 保存tableName在表名列表中的序号
 				int index = -1;
 				for (int i = 0; i < tableList.size(); i++) {
 					String str = tableList.get(i);
 					if (str.toLowerCase().contains(tableName.toLowerCase())) {
 						index = i;
-					} 
+					}
 				}
-				if (index!=-1&&tableList!=null) {
-						return tableList.get(index);
+				if (index != -1 && tableList != null) {
+					return tableList.get(index);
 				} else {
-						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-						throw new RuntimeException("后台错误:未从业务类型和表对应关系中,找到业务类型:"+service+",配置类型:"+type+"表名:"+tableName+"对应的真实表名");
+					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
+					throw new RuntimeException(
+							"后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + "表名:" + tableName + "对应的真实表名");
 				}
-				
+
 			}
 
 		}
@@ -209,7 +301,6 @@ public class ServiceAndRDBIndexReal {
 		return serviceActionMap.get(service);
 	}
 
-
 	public static Map<Integer, Map<Integer, List<String>>> getSercieNameMap() {
 		return sercieNameMap;
 	}
@@ -230,17 +321,17 @@ public class ServiceAndRDBIndexReal {
 		return maatToValveMap;
 	}
 
-	public static void setMaatToValveMap(
-			Map<Integer, Map<String, String[]>> maatToValveMap) {
+	public static void setMaatToValveMap(Map<Integer, Map<String, String[]>> maatToValveMap) {
 		ServiceAndRDBIndexReal.maatToValveMap = maatToValveMap;
 	}
+
 	/**
 	 * @param valveDBIndex the valveDBIndex to set
 	 */
 	public static void setValveDBIndex(Integer valveDBIndex) {
 		ServiceAndRDBIndexReal.valveDBIndex = valveDBIndex;
 	}
-	
+
 	/**
 	 * @return the valveDBIndex
 	 */

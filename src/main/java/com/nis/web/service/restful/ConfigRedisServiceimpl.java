@@ -26,7 +26,7 @@ import com.nis.web.dao.impl.BaseRedisDao;
 import com.nis.web.service.SpringContextHolder;
 
 @Service()
-public class ConfigRedisServiceimpl implements ConfigRedisService {
+public class ConfigRedisServiceimpl {// implements ConfigRedisService
 	private static Logger logger = LoggerFactory.getLogger(ConfigRedisServiceimpl.class);
 
 	@Transactional
@@ -452,7 +452,6 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 
 	}
 
-	@Override
 	@Transactional
 	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
@@ -707,9 +706,9 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 				}
 			}
 		} else {
-			if(maatXmlConfig==null) {
+			if (maatXmlConfig == null) {
 				throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则,请检查maat.xml");
-			}else {
+			} else {
 				throw new RuntimeException("后台错误:后台组装的配置信息有误,请联系管理员检查");
 			}
 		}
@@ -734,7 +733,6 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 		return id;
 	}
 
-	@Override
 	@Transactional
 	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
@@ -881,7 +879,6 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 		return false;
 	}
 
-	@Override
 	@Transactional
 	public boolean delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap) {
 		if (idMap != null && idMap.size() > 0) {
@@ -1136,13 +1133,13 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 				}
 			}
 		} else {
-			if(maatXmlConfig==null) {
+			if (maatXmlConfig == null) {
 				throw new RuntimeException("后台错误:无法获取业务类型" + service + "对应的maat规则,请检查maat.xml");
-			}else {
+			} else {
 				int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
-				throw new RuntimeException("后台错误:"+idRelaRedisDBIndex+"号redis库中存储的分组和域关系有误,请联系管理员检查数据");
+				throw new RuntimeException("后台错误:" + idRelaRedisDBIndex + "号redis库中存储的分组和域关系有误,请联系管理员检查数据");
 			}
-			
+
 		}
 	}
 
@@ -1176,9 +1173,10 @@ public class ConfigRedisServiceimpl implements ConfigRedisService {
 										redisTemplate.rename(effectiveRuleKey.toUpperCase(), effectiveRuleKey
 												.toUpperCase().replace("EFFECTIVE_RULE", "OBSOLETE_RULE"));
 										logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是:{}",
-												redisStatisticsRealDBIndex, effectiveRuleKey.toUpperCase(), effectiveRuleKey
-												.toUpperCase().replace("EFFECTIVE_RULE", "OBSOLETE_RULE"));
-										
+												redisStatisticsRealDBIndex, effectiveRuleKey.toUpperCase(),
+												effectiveRuleKey.toUpperCase().replace("EFFECTIVE_RULE",
+														"OBSOLETE_RULE"));
+
 										String zset = effectiveRuleKey.replace("EFFECTIVE_RULE:", "DEL,");
 										redisTemplate.boundZSetOps("MAAT_UPDATE_STATUS").add(zset, maatVersion);
 										logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
