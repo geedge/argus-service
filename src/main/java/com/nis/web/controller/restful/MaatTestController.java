@@ -107,7 +107,7 @@ public class MaatTestController {
 			map.put(service, arrayList);
 			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 			idMap.put(redisDB, map);
-			configRedisService.delUnMaatConfig(idMap);
+			configRedisService.delUnMaatConfig(idMap,true);
 			// configRedisService.saveMaatConfig(listMap, service);
 			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
 			return "ok";

@@ -38,7 +38,7 @@ public class JedisUtils {
 				logger.debug("get {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			logger.warn("get {} = {}", key, value, e);
+			throw new RuntimeException("后台错误:从" + redisDb + "号redisDB中获取" + key + "对应的值失败", e);
 		} finally {
 			returnResource(jedis);
 		}
@@ -60,7 +60,7 @@ public class JedisUtils {
 				logger.debug("getObject {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			logger.warn("getObject {} = {}", key, value, e);
+			throw new RuntimeException("后台错误:从" + redisDb + "号redisDB中获取" + key + "对应的值失败", e);
 		} finally {
 			returnResource(jedis);
 		}
@@ -76,7 +76,7 @@ public class JedisUtils {
 	* @param long number 要减去的值
 	* @return long 相加后的值
 	* */
-	public static long incrBy(String key, long number,int redisDb) {
+	public static long incrBy(String key, long number, int redisDb) {
 		Jedis jedis = getResource(redisDb);
 		long len = jedis.incrBy(key, number);
 		returnResource(jedis);
@@ -101,32 +101,7 @@ public class JedisUtils {
 			}
 			logger.debug("set {} = {}", key, value);
 		} catch (Exception e) {
-			logger.warn("set {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 设置缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static String setObject(String key, Object value, int cacheSeconds, int redisDb) {
-		String result = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.set(getBytesKey(key), toBytes(value));
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setObject {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setObject {} = {}", key, value, e);
+			throw new RuntimeException("后台错误:向" + redisDb + "号redisDB中设置zset失败,key=" + key + ",value=" + value, e);
 		} finally {
 			returnResource(jedis);
 		}
@@ -148,7 +123,7 @@ public class JedisUtils {
 				logger.debug("getList {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			logger.warn("getList {} = {}", key, value, e);
+			throw new RuntimeException("后台错误:从" + redisDb + "号redisDB中获取" + key + "对应的值失败", e);
 		} finally {
 			returnResource(jedis);
 		}
@@ -174,557 +149,11 @@ public class JedisUtils {
 				logger.debug("getObjectList {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			logger.warn("getObjectList {} = {}", key, value, e);
+			throw new RuntimeException("后台错误:从" + redisDb + "号redisDB中获取" + key + "对应的值失败", e);
 		} finally {
 			returnResource(jedis);
 		}
 		return value;
-	}
-
-	/**
-	 * 设置List缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static long setList(String key, List<String> value, int cacheSeconds, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(key)) {
-				jedis.del(key);
-			}
-			result = jedis.rpush(key, (String[]) value.toArray());
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setList {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setList {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 设置List缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static long setObjectList(String key, List<Object> value, int cacheSeconds, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(getBytesKey(key))) {
-				jedis.del(key);
-			}
-			List<byte[]> list = Lists.newArrayList();
-			for (Object o : value) {
-				list.add(toBytes(o));
-			}
-			result = jedis.rpush(getBytesKey(key), (byte[][]) list.toArray());
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setObjectList {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setObjectList {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 向List缓存中添加值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static long listAdd(String key, int redisDb, String... value) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.rpush(key, value);
-			logger.debug("listAdd {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("listAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 向List缓存中添加值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static long listObjectAdd(String key, int redisDb, Object... value) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			List<byte[]> list = Lists.newArrayList();
-			for (Object o : value) {
-				list.add(toBytes(o));
-			}
-			result = jedis.rpush(getBytesKey(key), (byte[][]) list.toArray());
-			logger.debug("listObjectAdd {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("listObjectAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 获取缓存
-	 * @param key 键
-	 * @return 值
-	 */
-	public static Set<String> getSet(String key, int redisDb) {
-		Set<String> value = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(key)) {
-				value = jedis.smembers(key);
-				logger.debug("getSet {} = {}", key, value);
-			}
-		} catch (Exception e) {
-			logger.warn("getSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return value;
-	}
-
-	/**
-	 * 获取缓存
-	 * @param key 键
-	 * @return 值
-	 */
-	public static Set<Object> getObjectSet(String key, int redisDb) {
-		Set<Object> value = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(getBytesKey(key))) {
-				value = Sets.newHashSet();
-				Set<byte[]> set = jedis.smembers(getBytesKey(key));
-				for (byte[] bs : set) {
-					value.add(toObject(bs));
-				}
-				logger.debug("getObjectSet {} = {}", key, value);
-			}
-		} catch (Exception e) {
-			logger.warn("getObjectSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return value;
-	}
-
-	/**
-	 * 设置Set缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static long setSet(String key, Set<String> value, int cacheSeconds, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(key)) {
-				jedis.del(key);
-			}
-			result = jedis.sadd(key, (String[]) value.toArray());
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setSet {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 设置Set缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static long setObjectSet(String key, Set<Object> value, int cacheSeconds, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(getBytesKey(key))) {
-				jedis.del(key);
-			}
-			Set<byte[]> set = Sets.newHashSet();
-			for (Object o : value) {
-				set.add(toBytes(o));
-			}
-			result = jedis.sadd(getBytesKey(key), (byte[][]) set.toArray());
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setObjectSet {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setObjectSet {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 向Set缓存中添加值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static long setSetAdd(String key, int redisDb, String... value) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.sadd(key, value);
-			logger.debug("setSetAdd {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setSetAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 向Set缓存中添加值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static long setSetObjectAdd(String key, int redisDb, Object... value) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			Set<byte[]> set = Sets.newHashSet();
-			for (Object o : value) {
-				set.add(toBytes(o));
-			}
-			result = jedis.rpush(getBytesKey(key), (byte[][]) set.toArray());
-			logger.debug("setSetObjectAdd {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setSetObjectAdd {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 获取Map缓存
-	 * @param key 键
-	 * @return 值
-	 */
-	public static Map<String, String> getMap(String key, int redisDb) {
-		Map<String, String> value = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(key)) {
-				value = jedis.hgetAll(key);
-				logger.debug("getMap {} = {}", key, value);
-			}
-		} catch (Exception e) {
-			logger.warn("getMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return value;
-	}
-
-	/**
-	 * 获取Map缓存
-	 * @param key 键
-	 * @return 值
-	 */
-	public static Map<String, Object> getObjectMap(String key, int redisDb) {
-		Map<String, Object> value = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(getBytesKey(key))) {
-				value = Maps.newHashMap();
-				Map<byte[], byte[]> map = jedis.hgetAll(getBytesKey(key));
-				for (Map.Entry<byte[], byte[]> e : map.entrySet()) {
-					value.put(StringUtils.toString(e.getKey()), toObject(e.getValue()));
-				}
-				logger.debug("getObjectMap {} = {}", key, value);
-			}
-		} catch (Exception e) {
-			logger.warn("getObjectMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return value;
-	}
-
-	/**
-	 * 设置Map缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static String setMap(String key, Map<String, String> value, int cacheSeconds, int redisDb) {
-		String result = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(key)) {
-				jedis.del(key);
-			}
-			result = jedis.hmset(key, value);
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setMap {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 设置Map缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
-	 * @return
-	 */
-	public static String setObjectMap(String key, Map<String, Object> value, int cacheSeconds, int redisDb) {
-		String result = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(getBytesKey(key))) {
-				jedis.del(key);
-			}
-			Map<byte[], byte[]> map = Maps.newHashMap();
-			for (Map.Entry<String, Object> e : value.entrySet()) {
-				map.put(getBytesKey(e.getKey()), toBytes(e.getValue()));
-			}
-			result = jedis.hmset(getBytesKey(key), (Map<byte[], byte[]>) map);
-			if (cacheSeconds != 0) {
-				jedis.expire(key, cacheSeconds);
-			}
-			logger.debug("setObjectMap {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("setObjectMap {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 向Map缓存中添加值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static String mapPut(String key, Map<String, String> value, int redisDb) {
-		String result = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.hmset(key, value);
-			logger.debug("mapPut {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("mapPut {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 向Map缓存中添加值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static String mapObjectPut(String key, Map<String, Object> value, int redisDb) {
-		String result = null;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			Map<byte[], byte[]> map = Maps.newHashMap();
-			for (Map.Entry<String, Object> e : value.entrySet()) {
-				map.put(getBytesKey(e.getKey()), toBytes(e.getValue()));
-			}
-			result = jedis.hmset(getBytesKey(key), (Map<byte[], byte[]>) map);
-			logger.debug("mapObjectPut {} = {}", key, value);
-		} catch (Exception e) {
-			logger.warn("mapObjectPut {} = {}", key, value, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 移除Map缓存中的值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static long mapRemove(String key, String mapKey, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.hdel(key, mapKey);
-			logger.debug("mapRemove {}  {}", key, mapKey);
-		} catch (Exception e) {
-			logger.warn("mapRemove {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 移除Map缓存中的值
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static long mapObjectRemove(String key, String mapKey, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.hdel(getBytesKey(key), getBytesKey(mapKey));
-			logger.debug("mapObjectRemove {}  {}", key, mapKey);
-		} catch (Exception e) {
-			logger.warn("mapObjectRemove {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 判断Map缓存中的Key是否存在
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static boolean mapExists(String key, String mapKey, int redisDb) {
-		boolean result = false;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.hexists(key, mapKey);
-			logger.debug("mapExists {}  {}", key, mapKey);
-		} catch (Exception e) {
-			logger.warn("mapExists {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 判断Map缓存中的Key是否存在
-	 * @param key 键
-	 * @param value 值
-	 * @return
-	 */
-	public static boolean mapObjectExists(String key, String mapKey, int redisDb) {
-		boolean result = false;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			result = jedis.hexists(getBytesKey(key), getBytesKey(mapKey));
-			logger.debug("mapObjectExists {}  {}", key, mapKey);
-		} catch (Exception e) {
-			logger.warn("mapObjectExists {}  {}", key, mapKey, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 删除缓存
-	 * @param key 键
-	 * @return
-	 */
-	public static long del(String key, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(key)) {
-				result = jedis.del(key);
-				logger.debug("del {}", key);
-			} else {
-				logger.debug("del {} not exists", key);
-			}
-		} catch (Exception e) {
-			logger.warn("del {}", key, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
-	}
-
-	/**
-	 * 删除缓存
-	 * @param key 键
-	 * @return
-	 */
-	public static long delObject(String key, int redisDb) {
-		long result = 0;
-		Jedis jedis = null;
-		try {
-			jedis = getResource(redisDb);
-			if (jedis.exists(getBytesKey(key))) {
-				result = jedis.del(getBytesKey(key));
-				logger.debug("delObject {}", key);
-			} else {
-				logger.debug("delObject {} not exists", key);
-			}
-		} catch (Exception e) {
-			logger.warn("delObject {}", key, e);
-		} finally {
-			returnResource(jedis);
-		}
-		return result;
 	}
 
 	/**
@@ -740,7 +169,7 @@ public class JedisUtils {
 			result = jedis.exists(key);
 			logger.debug("exists {}", key);
 		} catch (Exception e) {
-			logger.warn("exists {}", key, e);
+			throw new RuntimeException("后台错误:从" + redisDb + "号redisDB中判断" + key + "是否存在失败", e);
 		} finally {
 			returnResource(jedis);
 		}
@@ -760,7 +189,7 @@ public class JedisUtils {
 			result = jedis.exists(getBytesKey(key));
 			logger.debug("existsObject {}", key);
 		} catch (Exception e) {
-			logger.warn("existsObject {}", key, e);
+			throw new RuntimeException("后台错误:从" + redisDb + "号redisDB中判断" + key + "是否存在失败", e);
 		} finally {
 			returnResource(jedis);
 		}
@@ -795,7 +224,6 @@ public class JedisUtils {
 	 */
 	public static void returnBrokenResource(Jedis jedis) {
 		if (jedis != null) {
-			// jedisPool.returnBrokenResource(jedis);
 			jedis.close();
 		}
 	}
