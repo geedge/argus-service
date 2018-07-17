@@ -3034,7 +3034,7 @@ public class ConfigSourcesService extends BaseService {
 									.getUnMaatTableName(Integer.valueOf(srcMap.get("service")
 											.toString().trim()));
 							String dstPath = Constants.MM_SAMPLE_DST_PATH.replace("{tableType}", maatTableName.substring(maatTableName.lastIndexOf("_")+1));
-							dstPath=dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/")+1));
+							dstStr=dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/")+1));
 						}else if ("file_id".equals(commonSourceFieldCfg
 							.getDstName())) {
 							dstStr= dstStr.substring(dstStr.indexOf("/group"));

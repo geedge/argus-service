@@ -92,6 +92,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 														valBF.append("\t");
 													} else if (valStr.equals("\\n")) {
 														valBF.append("\n");
+													}else {
+														valBF.append(valStr);
 													}
 												}
 												maatKey = keyBF.toString();
