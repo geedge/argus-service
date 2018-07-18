@@ -385,7 +385,7 @@ public class BaseRestController {
 			HttpServletRequest request, Object data, Object fileInfo) {
 		SaveRequestLogThread thread = SaveRequestLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
-		thread.setContent(fileInfo);
+	//	thread.setContent(fileInfo);
 		thread.setOpAction(opAction);
 		thread.setTraceCode(sdf.format(new Date())+(Math.round((Math.random()*9+1)*10000)+""));
 		if (data != null && ConfigCommonSource.class.isAssignableFrom(data.getClass())) {
