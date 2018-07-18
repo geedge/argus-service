@@ -104,241 +104,6 @@ public class ConfigSourcesService extends BaseService {
 	@Autowired
 	ConfigRedisService configRedisService;
 
-	public static Map<Integer, Map<String, String>> getTableRelation() {
-		Map<Integer, Map<String, String>> tableMap = new HashMap<Integer, Map<String, String>>();
-		Map<String, String> typeMap = new HashMap<String, String>();
-		typeMap.put("MM_AV_IP", "ip");
-		tableMap.put(80, typeMap);
-		tableMap.put(144, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("MM_AV_URL", "str");
-		tableMap.put(81, typeMap);
-		tableMap.put(145, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("MM_PIC_IP", "ip");
-		tableMap.put(82, typeMap);
-		tableMap.put(146, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("MM_PIC_URL", "str");
-		tableMap.put(83, typeMap);
-		tableMap.put(147, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("MM_VOIP_IP", "ip");
-		tableMap.put(84, typeMap);
-		tableMap.put(148, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("MM_VOIP_ACCOUNT", "str");
-		tableMap.put(85, typeMap);
-		tableMap.put(149, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("REUSE_IP", "ip");
-		typeMap.put("HID_CONTENT", "ip");
-		typeMap.put("GSB_PZ_IP", "ip");
-		typeMap.put("FAKE_REGION_EXTEND", "str");
-		typeMap.put("KEYWORD_RANDOM_REGION", "str");
-		typeMap.put("CTRL_URL_REGION", "str");
-		typeMap.put("CTRL_VOIP_BLACKACCOUNT_REGION", "str");
-		typeMap.put("CTRL_MEDIA_FILE_FP", "digest");
-		tableMap.put(0, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("DF_IP_PORT", "ip");
-		typeMap.put("GSB_PZ_IP", "ip");// IP复用
-		typeMap.put("CTRL_MEDIA_FILE_FP", "digest");
-		tableMap.put(1, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("FX_IP_PORT", "ip");
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("GSB_PZ_IP", "ip");// 网站伪造
-		tableMap.put(2, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("CTRL_VOIP_BLACKACCOUNT_REGION", "str");
-		tableMap.put(118, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_HTTP_REQ_HDR", "str");
-		typeMap.put("DF_HTTP_URL", "str");
-		typeMap.put("GSB_PZ_IP", "ip");// 内容篡改
-		tableMap.put(3, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_HTTP_RES_HDR", "str");
-		typeMap.put("GSB_PZ_IP", "ip");// 随机丢包
-		typeMap.put("CTRL_URL_REGION", "str");
-		tableMap.put(4, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_HTTP_REQ_BODY", "str");
-		typeMap.put("DF_HTTP_RES_BODY", "str");
-		tableMap.put(5, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_MAIL_HDR", "str");
-		typeMap.put("DF_MAIL_BODY", "str");
-		tableMap.put(13, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_DNS_REGION", "str");
-		tableMap.put(6, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_FTP_URL", "str");
-		tableMap.put(14, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		tableMap.put(7, typeMap);
-		tableMap.put(8, typeMap);
-		tableMap.put(9, typeMap);
-		tableMap.put(10, typeMap);
-		tableMap.put(11, typeMap);
-		typeMap.put("DF_SSL_REGION", "str");
-		tableMap.put(12, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("FX_HTTP_REQ_HDR", "str");
-		typeMap.put("FX_HTTP_URL", "str");
-
-		typeMap.put("WHITE_LIST_IP", "ip");
-		tableMap.put(15, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("FX_DNS_REGION", "str");
-		tableMap.put(16, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("DJ_IP_PORT", "ip");
-		typeMap.put("DJ_IP_PKT_BIN", "str");
-		tableMap.put(48, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_HTTP_REQ_HDR", "str");
-		typeMap.put("DJ_HTTP_URL", "str");
-		tableMap.put(49, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_HTTP_RES_HDR", "str");
-		tableMap.put(50, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_HTTP_REQ_BODY", "str");
-		typeMap.put("DJ_HTTP_RES_BODY", "str");
-		tableMap.put(51, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_MAIL_HDR", "str");
-		typeMap.put("DJ_MAIL_BODY", "str");
-		tableMap.put(60, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_DNS_RES_REGION", "str");
-		typeMap.put("DJ_DNS_REQ_REGION", "str");
-		tableMap.put(52, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_FTP_URL", "str");
-		tableMap.put(53, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		tableMap.put(54, typeMap);
-		tableMap.put(55, typeMap);
-		tableMap.put(56, typeMap);
-		tableMap.put(57, typeMap);
-		tableMap.put(58, typeMap);
-		typeMap.put("DJ_SSL_REGION", "str");
-		tableMap.put(59, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_L2TP_URL", "str");
-		tableMap.put(32, typeMap);
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_PPTP_URL", "str");
-		tableMap.put(33, typeMap);
-
-		// 20161109新增业务类型
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_HTTP_REQ_HDR", "str");
-		typeMap.put("DF_HTTP_REQ_BODY", "str");
-		typeMap.put("DF_HTTP_URL", "str");
-		tableMap.put(17, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DF_HTTP_RES_HDR", "str");
-		typeMap.put("DF_HTTP_RES_BODY", "str");
-		typeMap.put("DF_HTTP_URL", "str");
-		tableMap.put(18, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_HTTP_REQ_HDR", "str");
-		typeMap.put("DJ_HTTP_REQ_BODY", "str");
-		typeMap.put("DJ_HTTP_URL", "str");
-		tableMap.put(61, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		typeMap.put("DJ_HTTP_RES_HDR", "str");
-		typeMap.put("DJ_HTTP_RES_BODY", "str");
-		typeMap.put("DJ_HTTP_URL", "str");
-		tableMap.put(62, typeMap);
-
-		typeMap = new HashMap<String, String>();
-		typeMap.put("UNIVERSAL_PROTO_TYPE", "num");
-		typeMap.put("UNIVERSAL_IP", "ip");
-		tableMap.put(35, typeMap);
-		tableMap.put(36, typeMap);
-		tableMap.put(37, typeMap);
-		return tableMap;
-	}
 
 	/**
 	 * 批量(mybatis方式)修改配置业务逻辑-->1:先进行基础配置验证传过来的json串是否符合格式(配置分组关系前端不能设置为无效,
@@ -717,16 +482,36 @@ public class ConfigSourcesService extends BaseService {
 			List<ConfigGroupRelation> queryCompileGroupByPID,
 			SqlSession batchSqlSession, StringBuffer sb) {
 		Map<String, Map<Long, List<Long>>> map = new HashMap<String, Map<Long, List<Long>>>();
-		Map<Integer, Map<String, String>> tableRelationMap = getTableRelation();
-		Map<String, String> updateTableMap = tableRelationMap.get(config
-				.getService().intValue());// 根据service获取需要操作的域配置表
-		if (null == updateTableMap) {
+		Map<String, String> updateTableMap = new HashMap<String, String>();
+		Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(config
+				.getService().intValue());
+		if (sercieNameMap != null && sercieNameMap.size() > 0) {
+			for (Integer type : sercieNameMap.keySet()) {
+				String typeStr="";
+//				12代表是ip类域配置,13代表是数值类配置,14代表是字符串类域配置,15代表是增强字符串类域配置,
+				if ("12".equals(type.toString())) {
+					typeStr="ip";
+				}else if ("13".equals(type.toString())) {
+					typeStr="str";
+				}else if ("14".equals(type.toString())||"15".equals(type.toString())) {
+					typeStr="num";
+				}
+				if (!"".equals(typeStr)) {
+					List<String> tableList = sercieNameMap.get(type);
+					if (tableList != null && tableList.size() > 0) {
+						for (String table : tableList) {
+							updateTableMap.put(table.toUpperCase(),typeStr);
+						}
+					}
+				}
+			}
+		}else{
 			thread.setExceptionInfo("找不到编译对应的service" + sb.toString());
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- start, "找不到编译对应的service" + sb.toString(),
 					RestBusinessCode.missing_args.getValue());
 		}
-
+		
 		Long[] groupId = new Long[queryCompileGroupByPID.size()];
 		for (int i = 0; i < queryCompileGroupByPID.size(); i++) {
 			groupId[i] = queryCompileGroupByPID.get(i).getGroupId();
@@ -966,7 +751,7 @@ public class ConfigSourcesService extends BaseService {
 			if (null != configCompile.getStrRegionList()
 					&& configCompile.getStrRegionList().size() > 0) {
 				for (StrRegion strRegion : configCompile.getStrRegionList()) {
-					if (!isStrStrongRegion(strRegion.getTableName())) {
+					if (!isStrStrongRegion(strRegion.getTableName(),configCompile.getService())) {
 						if (strRegion.getRegionId() == null) {
 							String errorMsg = "字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
@@ -1123,33 +908,33 @@ public class ConfigSourcesService extends BaseService {
 		return configGroupRelationDao.queryCompileGroupByPID(compileId);
 	}
 
-	public List<StrRegion> getStrRegionByGId(List<String> tableList,
-			Long[] groupId) {
-		List<StrRegion> strRegionList = new ArrayList<StrRegion>();
-		if (null != tableList && tableList.size() > 0) {
-			for (String tableName : tableList) {
-				List<StrRegion> queryStrRegionByGroupId = null;
-				if (isStrStrongRegion(tableName)) {
-					queryStrRegionByGroupId = strRegionDao
-							.queryStrStrongRegionByGroupId(tableName, groupId);
-				} else {
-					queryStrRegionByGroupId = strRegionDao
-							.queryStrRegionByGroupId(tableName, groupId);
-				}
-
-				if (null != queryStrRegionByGroupId
-						&& queryStrRegionByGroupId.size() > 0) {
-					for (StrRegion strRegion : queryStrRegionByGroupId) {
-						strRegion.setTableName(tableName);
-						strRegionList.add(strRegion);
-					}
-				}
-
-			}
-		}
-
-		return strRegionList;
-	}
+//	public List<StrRegion> getStrRegionByGId(List<String> tableList,
+//			Long[] groupId) {
+//		List<StrRegion> strRegionList = new ArrayList<StrRegion>();
+//		if (null != tableList && tableList.size() > 0) {
+//			for (String tableName : tableList) {
+//				List<StrRegion> queryStrRegionByGroupId = null;
+//				if (isStrStrongRegion(tableName)) {
+//					queryStrRegionByGroupId = strRegionDao
+//							.queryStrStrongRegionByGroupId(tableName, groupId);
+//				} else {
+//					queryStrRegionByGroupId = strRegionDao
+//							.queryStrRegionByGroupId(tableName, groupId);
+//				}
+//
+//				if (null != queryStrRegionByGroupId
+//						&& queryStrRegionByGroupId.size() > 0) {
+//					for (StrRegion strRegion : queryStrRegionByGroupId) {
+//						strRegion.setTableName(tableName);
+//						strRegionList.add(strRegion);
+//					}
+//				}
+//
+//			}
+//		}
+//
+//		return strRegionList;
+//	}
 
 	public List<IpRegion> getIpRegionByGId(String table, Long[] groupId) {
 		List<IpRegion> queryIpRegionByGroupId = ipRegionDao
@@ -1169,28 +954,24 @@ public class ConfigSourcesService extends BaseService {
 		return queryNumRegionByGroupId;
 	}
 
-	public static boolean isStrStrongRegion(String tableName) {
+	public static boolean isStrStrongRegion(String tableName,Integer service) {
 		if (null != tableName && !tableName.equals("")) {
-			tableName = tableName.toUpperCase();
 			List<String> tableList = new ArrayList<String>();
-			tableList.add("DF_HTTP_REQ_HDR");
-			tableList.add("FX_HTTP_REQ_HDR");
-			tableList.add("DF_HTTP_RES_HDR");
-			tableList.add("DF_DNS_REGION");
-			tableList.add("FX_DNS_REGION");
-			tableList.add("DF_SSL_REGION");
-			tableList.add("DF_MAIL_HDR");
-			tableList.add("DF_MAIL_BODY");
-
-			tableList.add("DJ_HTTP_REQ_HDR");
-			tableList.add("DJ_HTTP_RES_HDR");
-			tableList.add("DJ_DNS_REQ_REGION");
-			tableList.add("DJ_DNS_RES_REGION");
-			tableList.add("DJ_SSL_REGION");
-			tableList.add("DJ_MAIL_HDR");
-			tableList.add("DJ_MAIL_BODY");
-			// tableList.add("DF_L2TP_URL");//20161021数据库中该表改为普通字符串表
-			// tableList.add("DF_PPTP_URL");//20161021数据库中该表改为普通字符串表
+			Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(service);
+			if (sercieNameMap != null && sercieNameMap.size() > 0) {
+				for (Integer type : sercieNameMap.keySet()) {
+					String typeStr="";
+	//					12代表是ip类域配置,13代表是数值类配置,14代表是字符串类域配置,15代表是增强字符串类域配置,
+					if ("15".equals(type.toString())) {
+						List<String> tableNameList = sercieNameMap.get(type);
+						if (tableNameList != null && tableNameList.size() > 0) {
+							for (String table : tableNameList) {
+								tableList.add(table.toUpperCase());
+							}
+						}
+					}
+				}
+			}
 			if (tableList.contains(tableName)) {
 				return true;
 			} else {
@@ -1202,12 +983,12 @@ public class ConfigSourcesService extends BaseService {
 
 	}
 
-	public Map<String, String> getTableMap(Integer service) {
-		if (map == null || map.size() == 0) {
-			map = getTableRelation();
-		}
-		return map.get(service);
-	}
+//	public Map<String, String> getTableMap(Integer service) {
+//		if (map == null || map.size() == 0) {
+//			map = getTableRelation();
+//		}
+//		return map.get(service);
+//	}
 
 	public Map<Integer, Map<String, String>> getMap() {
 		return map;
@@ -1547,10 +1328,13 @@ public class ConfigSourcesService extends BaseService {
 					return "error";
 				}
 			}
-		} catch (Exception e) {
+		}catch (RestServiceException e ){
+			msgList.add(e);
+			return "error";
+		}catch (Exception e) {
 			// TODO: handle exception
 			msgList.add(e);
-			//CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
+			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			return "error";
 		}
 		try {
@@ -1708,7 +1492,7 @@ public class ConfigSourcesService extends BaseService {
 			if (null != configCompile.getStrRegionList()
 					&& configCompile.getStrRegionList().size() > 0) {
 				for (StrRegion strRegion : configCompile.getStrRegionList()) {
-					if (!isStrStrongRegion(strRegion.getTableName())) {
+					if (!isStrStrongRegion(strRegion.getTableName(),configCompile.getService())) {
 						if (strRegion.getRegionId() == null) {
 							String errorMsg = "字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
@@ -2764,11 +2548,30 @@ public class ConfigSourcesService extends BaseService {
 			SaveRequestLogThread thread, long start, ConfigCompile config,
 			List<ConfigGroupRelation> queryCompileGroupByPID, StringBuffer sb) {
 		Map<String, Map<Long, List<Long>>> map = new HashMap<String, Map<Long, List<Long>>>();
-		Map<Integer, Map<String, String>> tableRelationMap = getTableRelation();
-
-		Map<String, String> updateTableMap = tableRelationMap.get(config
-				.getService().intValue());// 根据service获取需要操作的域配置表
-		if (null == updateTableMap || updateTableMap.size() == 0) {
+		Map<String, String> updateTableMap = new HashMap<String, String>();
+		Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(config
+				.getService().intValue());
+		if (sercieNameMap != null && sercieNameMap.size() > 0) {
+			for (Integer type : sercieNameMap.keySet()) {
+				String typeStr="";
+//				12代表是ip类域配置,13代表是数值类配置,14代表是字符串类域配置,15代表是增强字符串类域配置,
+				if ("12".equals(type.toString())) {
+					typeStr="ip";
+				}else if ("13".equals(type.toString())) {
+					typeStr="str";
+				}else if ("14".equals(type.toString())||"15".equals(type.toString())) {
+					typeStr="num";
+				}
+				if (!"".equals(typeStr)) {
+					List<String> tableList = sercieNameMap.get(type);
+					if (tableList != null && tableList.size() > 0) {
+						for (String table : tableList) {
+							updateTableMap.put(table.toUpperCase(),typeStr);
+						}
+					}
+				}
+			}
+		}else{
 			thread.setExceptionInfo("找不到编译对应的service" + sb.toString());
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- start, "找不到编译对应的service" + sb.toString(),
