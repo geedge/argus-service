@@ -42,7 +42,8 @@ public class FileManager extends FileManagerConfig {
 			trackerServer = trackerClient.getConnection();
 			storageClient = new StorageClient(trackerServer, storageServer);
 		} catch (Exception e) {
-			logger.error("创建tracker|storage失败,请检查配置文件或fdfs服务,nginx服务是否正常", e);
+			logger.error("创建tracker|storage失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", e);
+			throw new RuntimeException("后台错误:创建tracker|storage失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", e);
 		}
 	}
 
@@ -66,9 +67,10 @@ public class FileManager extends FileManagerConfig {
 					+ SEPARATOR + groupName + SEPARATOR + remoteFileName;
 			return fileAbsolutePath;
 		} catch (Exception e) {
-			logger.error("上传文件{}到fastfds服务器失败,请检查配置文件或fdfs服务,nginx服务是否正常", file.getName(), e);
+			logger.error("上传文件{}到fastfds服务器失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", file.getName(), e);
+			throw new RuntimeException("后台错误:上传文件" + file.getName() + "到fastfds服务器失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
+					e);
 		}
-		return null;
 	}
 
 	/**
@@ -87,7 +89,9 @@ public class FileManager extends FileManagerConfig {
 					new String(specFileName.getBytes("UTF-8"), "iso-8859-1"));
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		} catch (Exception e) {
-			logger.error("从fastfds服务器下载文件{}失败,请检查配置文件或fdfs服务,nginx服务是否正常", remoteFileName, e);
+			logger.error("从fastfds服务器下载文件{}失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", remoteFileName, e);
+			throw new RuntimeException("后台错误:从fastfds服务器下载文件" + remoteFileName + "失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
+					e);
 		}
 		return new ResponseEntity<byte[]>(content, headers, HttpStatus.CREATED);
 	}
@@ -103,7 +107,10 @@ public class FileManager extends FileManagerConfig {
 		try {
 			result = storageClient.delete_file(group, filePath);
 		} catch (Exception e) {
-			logger.error("删除文件:{}失败,所属组:{},请检查配置文件或fdfs服务,nginx服务是否正常", filePath, group, e);
+			logger.error("删除文件:{}失败,所属组:{},请检查fdfs配置文件或fdfs服务,nginx服务是否正常", filePath, group, e);
+			throw new RuntimeException("后台错误:删除文件:" + filePath + "失败,所属组:" + group + ",请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
+					e);
+
 		}
 		return result;
 	}
