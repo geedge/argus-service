@@ -2,6 +2,8 @@ package com.nis.web.service.fdfs;
 
 import java.io.Serializable;
 
+import com.nis.util.Configurations;
+
 /**
  * <p>Title: FileManagerConfig.java</p>
  * <p>Description: </p>
@@ -21,7 +23,9 @@ public class FileManagerConfig implements Serializable {
 
 	public static final String SEPARATOR = "/";
 	// fdfs-tracker-nginx服务器
-	public static final String TRACKER_NGNIX_ADDR = "10.0.6.249";
+	public static final String TRACKER_NGNIX_ADDR = Configurations.getStringProperty("fastDfsHttpAddr",
+			"192.168.10.205");
+	// public static final String TRACKER_NGNIX_ADDR = "10.0.6.249";
 
 	public static final String TRACKER_NGNIX_PORT = "";
 

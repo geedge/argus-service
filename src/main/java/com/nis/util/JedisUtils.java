@@ -1,15 +1,11 @@
 package com.nis.util;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.nis.web.service.SpringContextHolder;
 
 import redis.clients.jedis.Jedis;
@@ -18,7 +14,6 @@ import redis.clients.jedis.exceptions.JedisException;
 
 public class JedisUtils {
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
-
 	private static JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
 
 	/**
@@ -31,7 +26,6 @@ public class JedisUtils {
 		Jedis jedis = null;
 		try {
 			jedis = getResource(redisDb);
-
 			if (jedis.exists(key)) {
 				value = jedis.get(key);
 				value = StringUtils.isNotBlank(value) && !"nil".equalsIgnoreCase(value) ? value : null;

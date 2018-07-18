@@ -2,7 +2,6 @@ package com.nis.util;
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
-import com.nis.util.StringUtil;
 
 
 
@@ -16,6 +15,7 @@ public final class Configurations {
 			prop.load(Configurations.class.getResourceAsStream("/applicationLog-hive.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-maatOracle.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-rule.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/fastdfs-client.properties"));
 			
 		} catch (Exception e) {
 			prop = null;
