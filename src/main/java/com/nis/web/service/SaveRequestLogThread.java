@@ -182,39 +182,21 @@ public class SaveRequestLogThread implements Runnable {
 		thread.setRequestURI(request.getRequestURI());
 		if (request.getMethod().toLowerCase().equals("get")) {
 			thread.setQueryString(request.getQueryString());
+			thread.setContent(request.getQueryString());
 		} else {
 			String contentType = request.getContentType();
-			if(contentType.equals("application/json")) {
-				thread.setQueryString(getBodyString(request));
+			if(!contentType.contains("multipart/form-data")) {
+				String bodyString = getBodyString(request);
+				thread.setQueryString(bodyString);
+				thread.setContent(bodyString);
+			}else {
+				//String bodyString = getBodyString(request);
+				thread.setQueryString("contentTyp="+contentType+",一般是上传文件,此种请求不记录请求内容");
+				thread.setContent("contentTyp="+contentType+",一般是上传文件,此种请求不记录请求内容");
 			}
 		}
 		thread.setContextPath(request.getContextPath());
 		thread.setRequestTime(new Date());
-		BufferedReader reader = null;
-		String line = null;
-		StringBuilder bulider = new StringBuilder();
-		try {
-			reader = request.getReader();
-			while ((line = reader.readLine()) != null) {
-				bulider.append(new String(line.getBytes(), "utf-8"));
-				bulider.append("\n");
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		if (bulider.toString().length() > 0) {
-			thread.setContent(bulider.toString());
-		}
 		return thread;
 	}
 
