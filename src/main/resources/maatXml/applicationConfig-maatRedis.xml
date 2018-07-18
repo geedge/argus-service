@@ -10,6 +10,7 @@
 	<p:maatType service="261;262;263;264;389;390;391;392">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
+<!-- 			最开始调整的这个,格式不是\t;[op_time];&amp;nbsp;0;\n,后面的要求都改成这个格式,前端不好该代码,所以这个与其他的有区别 -->
 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[op_time];\t;[service];\t;[action];&amp;nbsp;0;\t;[file_id];\n</p:valueExpression>
 <!-- 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[time_stamp];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression> -->
 		</p:expressions>
@@ -76,7 +77,7 @@
 	<p:maatType service="64">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[policy_group];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[service];\t;[action];\t[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[policy_group];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[service];\t;[action];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -97,7 +98,7 @@
 	<p:maatType service="65">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[req_strate_id];\t;[strate_name];\t;[res_group_1_id];\t;[res_group_1_num];\t;[res_group_2_id];\t;[res_group_2_num];\t;[res_group_3_id];\t;[res_group_3_num];\t;[res_group_4_id];\t;[res_group_4_num];\t;[res_group_5_id];\t;[res_group_5_num];\t;[min_ttl];\t;[max_ttl];\t;[is_valid];\t;[service];\t;[action];\t[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[req_strate_id];\t;[strate_name];\t;[res_group_1_id];\t;[res_group_1_num];\t;[res_group_2_id];\t;[res_group_2_num];\t;[res_group_3_id];\t;[res_group_3_num];\t;[res_group_4_id];\t;[res_group_4_num];\t;[res_group_5_id];\t;[res_group_5_num];\t;[min_ttl];\t;[max_ttl];\t;[is_valid];\t;[service];\t;[action];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
