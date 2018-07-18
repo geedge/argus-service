@@ -33,7 +33,7 @@
 	<p:maatType service="265;266;393;394">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[level];\t;[description];\t;[is_valid];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[level];\t;[description];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -55,7 +55,7 @@
 	<p:maatType service="3;4;25;28;5">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[action];\t;[service];\t;[op_time];&amp;nbsp;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[action];\t;[service];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -76,7 +76,7 @@
 	<p:maatType service="64">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[policy_group];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;[service];\t;[action];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[policy_group];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[service];\t;[action];\t[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -97,7 +97,7 @@
 	<p:maatType service="65">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[req_strate_id];\t;[strate_name];\t;[res_group_1_id];\t;[res_group_1_num];\t;[res_group_2_id];\t;[res_group_2_num];\t;[res_group_3_id];\t;[res_group_3_num];\t;[res_group_4_id];\t;[res_group_4_num];\t;[res_group_5_id];\t;[res_group_5_num];\t;[min_ttl];\t;[max_ttl];\t;[is_valid];\t;[service];\t;[action];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[req_strate_id];\t;[strate_name];\t;[res_group_1_id];\t;[res_group_1_num];\t;[res_group_2_id];\t;[res_group_2_num];\t;[res_group_3_id];\t;[res_group_3_num];\t;[res_group_4_id];\t;[res_group_4_num];\t;[res_group_5_id];\t;[res_group_5_num];\t;[min_ttl];\t;[max_ttl];\t;[is_valid];\t;[service];\t;[action];\t[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -118,8 +118,7 @@
 	<p:maatType service="832">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[protocol];\t;[ip];\t;[port];\t;[direction];\t;[user_region];\t;[location];\t;[is_valid];\t;[action];\t;[service];\t;[policy_group];\t;[op_time];&amp;nbsp;\n
-		</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[protocol];\t;[ip];\t;[port];\t;[direction];\t;[user_region];\t;[location];\t;[is_valid];\t;[action];\t;[service];\t;[policy_group];\t[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -149,27 +148,27 @@
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{ip_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\t;[action];\t;[service];\t;[user_region];\n</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[action];\t;[service];\t;[user_region];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{str_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\t;[action];\t;[service];\t;[user_region];\n</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[action];\t;[service];\t;[user_region];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{str_str_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[district];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\t;[action];\t;[service];\t;[user_region];\n</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[keywords];\t;[district];\t;[expr_type];\t;[match_method];\t;[is_hexbin];\t;[is_valid];\t;[action];\t;[service];\t;[user_region];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{num_region_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\t;[action];\t;[service];\t;[user_region];\n</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[low_boundary];\t;[up_boundary];\t;[is_valid];\t;[action];\t;[service];\t;[user_region];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{file_digest_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[raw_len];\t;[digest];\t;[cfds_level];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\t;[action];\t;[service];\t;[user_region];\n</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[raw_len];\t;[digest];\t;[cfds_level];\t;[is_valid];\t;[action];\t;[service];\t;[user_region];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{ip_client_range_table_name};,;[region_id]</p:keyExpression>
-			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\t;[action];\t;[service];\t;[user_region];\n</p:valueExpression>
+			<p:valueExpression>[region_id];\t;[group_id];\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[action];\t;[service];\t;[user_region];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:expressions>
 			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
