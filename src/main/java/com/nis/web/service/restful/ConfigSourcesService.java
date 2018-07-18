@@ -3036,7 +3036,7 @@ public class ConfigSourcesService extends BaseService {
 							dstStr=dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/")+1));
 						}else if ("file_id".equals(commonSourceFieldCfg
 							.getDstName())) {
-							dstStr= dstStr.substring(dstStr.indexOf("/group"));
+							dstStr= dstStr.substring(dstStr.indexOf("group"));
 						}
 					}
 					switch (commonSourceFieldCfg.getFieldType()) {
