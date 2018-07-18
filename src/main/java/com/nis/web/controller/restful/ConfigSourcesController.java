@@ -378,9 +378,22 @@ public class ConfigSourcesController extends BaseRestController {
 				logger.info("-----------------调用接口上传文件---------------");
 				filePath = FileManager.upload(fdsfile, null);
 			}
-		} catch (IOException e) {
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("文件上传异常："+e.getMessage());
+			Exception exception = new RuntimeException(
+					"文件上传异常："+e.getMessage());
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"文件上传异常：" + exception.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e.getMessage());
+			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
+			if (e.getMessage().startsWith("后台错误:")) {
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			}
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), CompileVal.getBusinessCode());
 		}
 		JSONObject jsonObj = new JSONObject();
 		// jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
@@ -431,10 +444,20 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("文件上传过程中出现异常");
-			thread.setExceptionInfo("文件上传过程中出现异常");
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "文件上传过程中出现异常",
-					RestBusinessCode.unknow_error.getValue());
+			logger.error("文件上传异常："+e.getMessage());
+			Exception exception = new RuntimeException(
+					"文件上传异常："+e.getMessage());
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"文件上传异常：" + exception.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e.getMessage());
+			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
+			if (e.getMessage().startsWith("后台错误:")) {
+				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			}
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), CompileVal.getBusinessCode());
 		}
 		try {
 			String tempFilePath = request.getRealPath(File.separator) + "upload" + File.separator

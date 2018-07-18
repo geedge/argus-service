@@ -146,10 +146,6 @@ public class CompileVal {
 				}
 			}
 		}
-//		else {
-//			return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-//					+ CompileJudgeCode.GroupListEQZero.getErrorReason();
-//		}
 
 		List<Long> regionGroupIdList = new ArrayList<Long>();// 所有域配置中groupId的集合,不重复
 		List<NumRegion> numRegionList = configCompile.getNumRegionList();
@@ -244,14 +240,14 @@ public class CompileVal {
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
 					String valStrRegion = valStrRegion(strRegion, compileId,
-							ConfigSourcesService.isStrStrongRegion(strRegion.getTableName()));
+							ConfigSourcesService.isStrStrongRegion(strRegion.getTableName(),configCompile.getService()));
 					if (!valStrRegion.equals("ok")) {
 						return valStrRegion;
 					}
 				}
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
 					String serviceStrRegionVal = serviceStrRegionVal(strRegion, compileId,
-							ConfigSourcesService.isStrStrongRegion(strRegion.getTableName()));
+							ConfigSourcesService.isStrStrongRegion(strRegion.getTableName(),configCompile.getService()));
 					if (!serviceStrRegionVal.equals("ok")) {
 						return serviceStrRegionVal;
 					}
