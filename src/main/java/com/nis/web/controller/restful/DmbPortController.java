@@ -30,7 +30,7 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DmbPortService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -70,7 +70,7 @@ public class DmbPortController extends BaseRestController {
 	@ApiOperation(value = "保存运营商端口信息", httpMethod = "POST", notes = "save provider port info")
 	public Map saveDmbPortBatch(@RequestBody DmbPortSource dmbPortSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dmbPortSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dmbPortSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dmbPortSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			this.chekckData(dmbPortSource);
@@ -108,7 +108,7 @@ public class DmbPortController extends BaseRestController {
 	@ApiOperation(value = "更新运营商端口信息", httpMethod = "PUT", notes = "update provider port info")
 	public Map updateDmbPortBatch(@RequestBody DmbPortSource dmbPortSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dmbPortSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dmbPortSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dmbPortSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			this.chekckData(dmbPortSource);
@@ -146,7 +146,7 @@ public class DmbPortController extends BaseRestController {
 	@ApiOperation(value = "删除运营商端口信息", httpMethod = "DELETE", notes = "delete provider port info")
 	public Map deleteDmbPort(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);	
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 					dmbPortService.removeDmbPort(id);
 //					commonConfigService.saveOrUpdateConfigState("DMB_PORT", new Date());
@@ -183,7 +183,7 @@ public class DmbPortController extends BaseRestController {
 	@ApiOperation(value = "删除运营商端口信息", httpMethod = "DELETE", notes = "delete provider port info")
 	public Map deleteDmbPort(@RequestBody DmbPortSource dmbPortSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dmbPortSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dmbPortSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dmbPortSource.getOpAction(), Constants.OPACTION_DELETE);
 		try{
 			dmbPortService.removeDmbPortBatch(dmbPortSource.getDmbPortList());

@@ -3,19 +3,18 @@ package com.nis.web.service.restful;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
-import com.nis.domain.restful.DfKeyConvertUrl;
 import com.nis.domain.restful.DjFlowControlStop;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.StringUtil;
 import com.nis.web.dao.IntervalTimeSearchDao;
 import com.nis.web.service.BaseLogService;
-import com.nis.web.service.SaveRequestLogThread;
 
 /** 
 * @ClassName: IntervalTimeSearchService 
@@ -51,7 +50,7 @@ public class IntervalTimeSearchService extends BaseLogService {
 	 * wx 
 	 * @param entity
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread,long start,DjFlowControlStop entity,Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, DjFlowControlStop entity, Page page) {
 		/*try {
 			if (!StringUtil.isBlank(entity.getSearchCfgId())) {
 				Long.parseLong(entity.getSearchCfgId());

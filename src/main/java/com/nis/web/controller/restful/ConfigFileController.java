@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ import com.nis.util.Constants;
 import com.nis.util.MD5Utils;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -63,7 +63,7 @@ public class ConfigFileController extends BaseRestController {
 							"opTime:"+configFile.getOpTime()
 							);
 		JSONArray fileArray=new JSONArray();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, configFile,fileArray);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, configFile,fileArray);
 		String serviceDir=request.getRealPath("upload");
         try {
         	MultipartFile[] files=configFile.getFiles();
@@ -116,7 +116,7 @@ public class ConfigFileController extends BaseRestController {
 							HttpServletResponse response){
 			long start=System.currentTimeMillis();
 			JSONObject fileObject=new JSONObject();
-			SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, fileObject);
+			AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, fileObject);
 			BufferedInputStream bis = null;  
 			BufferedOutputStream bos = null; 
 			String downLoadPath=null;

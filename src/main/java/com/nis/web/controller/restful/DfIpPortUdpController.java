@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,6 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DfIpPortUdpService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -70,7 +70,7 @@ public class DfIpPortUdpController extends BaseRestController {
 	@ApiOperation(value = "保存IP+端口Udp协议G设备封堵配置", httpMethod = "POST", notes = "save ip port udp")
 	public Map saveDfIpPortUdpBatch(@RequestBody DfIpPortUdpSource dfIpPortUdpSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dfIpPortUdpSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dfIpPortUdpSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dfIpPortUdpSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			this.chekckData(dfIpPortUdpSource,false);
@@ -108,7 +108,7 @@ public class DfIpPortUdpController extends BaseRestController {
 	@ApiOperation(value = "更新IP+端口Udp协议G设备封堵配置", httpMethod = "PUT", notes = "update ip port udp")
 	public Map updateDfIpPortUdpBatch(@RequestBody DfIpPortUdpSource dfIpPortUdpSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dfIpPortUdpSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dfIpPortUdpSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dfIpPortUdpSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			this.chekckData(dfIpPortUdpSource,true);
@@ -147,7 +147,7 @@ public class DfIpPortUdpController extends BaseRestController {
 	@ApiOperation(value = "删除IP+端口Udp协议G设备封堵配置", httpMethod = "DELETE", notes = "delete ip port udp")
 	public Map deleteDfIpPortUdp(@PathVariable("cfgId") long id, HttpServletRequest request, HttpServletResponse response){	
 			long start=System.currentTimeMillis();
-			SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+			AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 
 			try{
 					dfIpPortUdpService.removeDfIpPortUdp(id);
@@ -185,7 +185,7 @@ public class DfIpPortUdpController extends BaseRestController {
 	@ApiOperation(value = "删除IP+端口Udp协议G设备封堵配置", httpMethod = "DELETE", notes = "delete ip port udp")
 	public Map deleteDfIpPortUdp(@RequestBody DfIpPortUdpSource dfIpPortUdpSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dfIpPortUdpSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dfIpPortUdpSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dfIpPortUdpSource.getOpAction(), Constants.OPACTION_DELETE);
 			try{
 				dfIpPortUdpService.removeDfIpPortUdpBatch(dfIpPortUdpSource.getDfIpPortUdpList());

@@ -11,6 +11,7 @@ import com.nis.util.Constants;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.util.JsonMapper;
-import com.nis.web.controller.BaseController;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DashboardService;
 import com.wordnik.swagger.annotations.Api;
@@ -43,7 +42,7 @@ public class DashboardServiceController extends BaseRestController {
 	@ApiOperation(value = "协议统计", httpMethod = "GET", notes = "对应协议统计实时统计查询服务。")
 	public Map<String,?> trafficProtocol(Model model, HttpServletRequest request, HttpServletResponse response){
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
 			List<Map> ipActiveChart = dashboardService.protocolChart();
@@ -74,7 +73,7 @@ public class DashboardServiceController extends BaseRestController {
 	public Map<String,?> trafficIpActive(Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<LinkedHashMap> list = new ArrayList<LinkedHashMap>();
 		try {
 			List<LinkedHashMap> ipActiveChart = dashboardService.ipActiveChart();
@@ -100,7 +99,7 @@ public class DashboardServiceController extends BaseRestController {
 	public Map<String, ?> trafficApp(Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> appChart = dashboardService.appChart();
@@ -122,7 +121,7 @@ public class DashboardServiceController extends BaseRestController {
 	@ApiOperation(value = "操作系统流量分析统计", httpMethod = "GET", notes = "对应终端用户的操作系统列表显示")
 	public Map<String,?> trafficOsList(Model model, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> osChart = dashboardService.systemList();
@@ -145,7 +144,7 @@ public class DashboardServiceController extends BaseRestController {
 	public Map<String, ?> trafficBrowserChart(Integer osType,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> osChart = dashboardService.getBrowserBySystem(osType);
@@ -167,7 +166,7 @@ public class DashboardServiceController extends BaseRestController {
 	@ApiOperation(value = "浏览器流量分析统计", httpMethod = "GET", notes = "对应终端用户的浏览器列表显示")
 	public Map<String, ?> trafficBsList(Model model, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> bsChart = dashboardService.browserList();
@@ -190,7 +189,7 @@ public class DashboardServiceController extends BaseRestController {
 	public Map<String,?> trafficSystemChart(Integer bsType,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> bsChart = dashboardService.getSystemBybrowser(bsType);
@@ -213,7 +212,7 @@ public class DashboardServiceController extends BaseRestController {
 	public Map<String,?> trafficWebsiteList(Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> websiteChart = dashboardService.websiteList();
@@ -236,7 +235,7 @@ public class DashboardServiceController extends BaseRestController {
 	public Map<String, ?> trafficWebTypeChart(Integer webId,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> websiteChart = dashboardService.getTypeBywebsite(webId);

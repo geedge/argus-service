@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -26,7 +27,6 @@ import com.nis.domain.restful.DfKeyMailAdd;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DfKeyMailAddService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -66,7 +66,7 @@ public class DfKeyMailAddController extends BaseRestController {
 		}
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		// 请求参数校验
 		dfKeyMailAddService.queryConditionCheck(thread, start, dfKeyMailAdd, page);
 

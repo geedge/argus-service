@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -19,7 +20,6 @@ import com.nis.listener.SystemConfigListener;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DataDictionaryService;
 
@@ -36,7 +36,7 @@ public class DataDictionaryController extends BaseRestController {
 	public Map findAllDataDict(DataDictionaryValue dataDictionaryValue, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				dataDictionaryValue);
 		Page page = new Page();
 		int no = dataDictionaryValue.getPagesNo() == null ? 1 : dataDictionaryValue.getPagesNo();
@@ -56,7 +56,7 @@ public class DataDictionaryController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/getAllDictName", method = RequestMethod.GET)
 	public Map getAllDictName(HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		try {
 			return serviceResponse(thread, start, request, response, "编译配置获取成功",
@@ -72,7 +72,7 @@ public class DataDictionaryController extends BaseRestController {
 	public Map addDictName(String dataDictId, String addDictName, String dictVal, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		try {
 			String option = "";
@@ -98,7 +98,7 @@ public class DataDictionaryController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/delDictVal", method = RequestMethod.POST)
 	public Map delDictVal(String dictValId, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		try {
 			String saveDataDict = dataDictionaryService.delDictVal(dictValId);
@@ -116,7 +116,7 @@ public class DataDictionaryController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/delDictName", method = RequestMethod.POST)
 	public Map delDictName(String dictNameId, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		try {
 			String saveDataDict = dataDictionaryService.delDictName(dictNameId);
@@ -133,7 +133,7 @@ public class DataDictionaryController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/getDict", method = RequestMethod.POST)
 	public Map getDict(String dictValId, ModelMap map, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		try {
 			DataDictionaryValue dict = dataDictionaryService.getDict(dictValId);
@@ -156,7 +156,7 @@ public class DataDictionaryController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/updateDictName", method = RequestMethod.POST)
 	public Map updateDictName(String dictVal, String dictId, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		try {
 			String option = "updateVal";
@@ -175,7 +175,7 @@ public class DataDictionaryController extends BaseRestController {
 	@RequestMapping(value = "/cfg/v1/setDataDictEffective", method = RequestMethod.POST)
 	public Map setDataDictEffective(HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		try {
 			Map<String, List<DataDictionaryValue>> allDataDict = dataDictionaryService.getAllDataDict();

@@ -15,7 +15,7 @@ import com.nis.domain.restful.ConfigPzIdSource;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigPzIdService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -37,7 +37,7 @@ public class ConfigPzIdController extends BaseRestController {
 	public Map configPzIdSources(ConfigPzIdSource configPzIdSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				configPzIdSource);
 		
 		try {

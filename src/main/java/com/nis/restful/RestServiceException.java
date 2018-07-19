@@ -1,8 +1,7 @@
 package com.nis.restful;
 
+import com.nis.web.service.AuditLogThread;
 import org.springframework.util.StringUtils;
-
-import com.nis.web.service.SaveRequestLogThread;
 
 public class RestServiceException extends RuntimeException{
 	
@@ -25,7 +24,7 @@ public class RestServiceException extends RuntimeException{
 //        super(message);
 //        this.errorCode = 998; //未知错误
 //    }
-	public RestServiceException(SaveRequestLogThread thread,long time,String message) {  
+	public RestServiceException(AuditLogThread thread, long time, String message) {
 		super(message);
 		this.errorCode = 998; //未知错误
 		this.traceCode = thread.getTraceCode();
@@ -42,7 +41,7 @@ public class RestServiceException extends RuntimeException{
 		super(message);
 		this.errorCode = errorCode;
 	}
-	public RestServiceException(SaveRequestLogThread thread,long time,String message,int errorCode) {
+	public RestServiceException(AuditLogThread thread, long time, String message, int errorCode) {
 		super(message);
 		this.errorCode = errorCode;
 		this.traceCode = thread.getTraceCode();

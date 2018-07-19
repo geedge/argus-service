@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +55,6 @@ import com.nis.util.HiveJDBC;
 import com.nis.util.JsonMapper;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.HiveSqlService;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.LogTestService;
 import com.nis.web.service.restful.NtcReportService;
@@ -87,7 +87,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcIpLogs(Page page, NtcIpLog ntcIpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 		Page<NtcIpLog> ntcIpLogPage = null;
 		try {
@@ -152,7 +152,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcHttpLogs(Page page, NtcHttpLog ntcHttpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcHttpLog> ntcHttpLogPage = null;
@@ -212,7 +212,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcDnsLogs(Page page, NtcDnsLog ntcDnsLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcDnsLog> ntcDnsLogPage = null;
@@ -272,7 +272,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcMailLogs(Page page, NtcMailLog ntcMailLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcMailLog> ntcMailLogPage = null;
@@ -332,7 +332,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcSslLogs(Page page, NtcSslLog ntcSslLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcSslLog> ntcSslLogPage = null;
@@ -392,7 +392,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcPptpLogs(Page page, NtcPptpLog ntcPptpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcPptpLog> ntcPptpLogPage = null;
@@ -451,7 +451,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcL2tpLogs(Page page, NtcL2tpLog ntcL2tpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcL2tpLog> ntcL2tpLogPage = null;
@@ -511,7 +511,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcOpenvpnLogs(Page page, NtcOpenvpnLog ntcOpenvpnLog, Model model,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcOpenvpnLog> ntcOpenvpnLogPage = null;
@@ -571,7 +571,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcIpsecLogs(Page page, NtcIpsecLog ntcIpsecLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcIpsecLog> ntcIpsecLogPage = null;
@@ -631,7 +631,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcSshLogs(Page page, NtcSshLog ntcSshLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcSshLog> ntcSshLogPage = null;
@@ -691,7 +691,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcFtpLogs(Page page, NtcFtpLog ntcFtpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcFtpLog> ntcFtpLogPage = null;
@@ -749,7 +749,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcAppLogs(Page page, NtcAppLog ntcAppLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcAppLog> ntcAppLogPage = null;
@@ -807,7 +807,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcDdosLogs(Page page, NtcDdosLog ntcDdosLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<NtcDdosLog> ntcDdosLogPage = null;
@@ -865,7 +865,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> dkBehaviorLogs(Page page, DkBehaviorLog dkBehaviorLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<DkBehaviorLog> logPage = null;
@@ -918,7 +918,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> mmAvIpLogs(Page page, MmAvIpLog mmAvIpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<MmAvIpLog> logPage = null;
@@ -971,7 +971,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> mmAvUrlLogs(Page page, MmAvUrlLog mmAvUrlLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<MmAvUrlLog> logPage = null;
@@ -1024,7 +1024,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> mmPicIpLogs(Page page, MmPicIpLog mmPicIpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<MmPicIpLog> logPage = null;
@@ -1077,7 +1077,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> mmPicUrlLogs(Page page, MmPicUrlLog mmPicUrlLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<MmPicUrlLog> logPage = null;
@@ -1131,7 +1131,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> mmVoipLogs(Page page, MmVoipLog mmVoipLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<MmVoipLog> logPage = null;
@@ -1184,7 +1184,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcPzReport(Page page, NtcPzReport ntcPzReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> ntcPzReportPage = null;
@@ -1222,7 +1222,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcServiceReport(Page page, NtcServiceReport ntcServiceReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;
@@ -1258,7 +1258,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcTagReport(Page page, NtcTagReport ntcTagReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;
@@ -1294,7 +1294,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcAttrTypeReport(Page page, NtcAttrTypeReport ntcAttrTypeReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;
@@ -1331,7 +1331,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcLwhhReport(Page page, NtcLwhhReport ntcLwhhReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;
@@ -1369,7 +1369,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcSrcipDomesticReport(Page page, NtcSrcipDomesticReport ntcSrcipDomesticReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;
@@ -1405,7 +1405,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcDestipCountryReport(Page page, NtcDestipCountryReport ntcDestipCountryReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;
@@ -1441,7 +1441,7 @@ public class LogController extends BaseRestController {
 	public Map<String, ?> ntcEntranceReport(Page page, NtcEntranceReport ntcEntranceReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
 		Page<?> reportPage = null;

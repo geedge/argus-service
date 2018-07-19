@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 
 public class OracleErrorCodeUtil {
 	/**
@@ -34,7 +34,7 @@ public class OracleErrorCodeUtil {
 	 * 根据错误码抛出对应的异常,case内容为空的时候会按照下个case的异常内容来抛出异常，修改时请注意
 	 */
 
-	public static void throwExceptionInfo(SaveRequestLogThread thread, long time, String errorCode) {
+	public static void throwExceptionInfo(AuditLogThread thread, long time, String errorCode) {
 
 		switch (errorCode) {
 

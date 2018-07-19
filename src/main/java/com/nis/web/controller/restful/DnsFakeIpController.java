@@ -30,7 +30,7 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DnsFakeIpService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -68,7 +68,7 @@ public class DnsFakeIpController extends BaseRestController {
 	@ApiOperation(value = "保存DNS欺骗IP地址", httpMethod = "POST", notes = "save dns fake ip")
 	public Map saveDnsFakeIpBatch(@RequestBody DnsFakeIpSource dnsFakeIpSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dnsFakeIpSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dnsFakeIpSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsFakeIpSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			if(chekckData(dnsFakeIpSource,false)){
@@ -107,7 +107,7 @@ public class DnsFakeIpController extends BaseRestController {
 	@ApiOperation(value = "更新DNS欺骗IP地址", httpMethod = "PUT", notes = "update dns fake ip")
 	public Map updateDnsFakeIpBatch(@RequestBody DnsFakeIpSource dnsFakeIpSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dnsFakeIpSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dnsFakeIpSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsFakeIpSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			if(chekckData(dnsFakeIpSource,true)){
@@ -147,7 +147,7 @@ public class DnsFakeIpController extends BaseRestController {
 	@ApiOperation(value = "删除DNS欺骗IP地址", httpMethod = "DELETE", notes = "delete dns fake ip")
 	public Map deleteDnsFakeIp(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 				boolean isValid=dnsFakeIpService.isValid(id);
 				if(!isValid){
@@ -191,7 +191,7 @@ public class DnsFakeIpController extends BaseRestController {
 	@ApiOperation(value = "删除DNS欺骗IP地址", httpMethod = "DELETE", notes = "delete dns fake ip")
 	public Map deleteDnsFakeIp(@RequestBody DnsFakeIpSource dnsFakeIpSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dnsFakeIpSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dnsFakeIpSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsFakeIpSource.getOpAction(), Constants.OPACTION_DELETE);
 		try{
 			boolean isValid=dnsFakeIpService.isValid(dnsFakeIpSource.getDnsFakeIpList());

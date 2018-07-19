@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,6 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DmbCkService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -70,7 +70,7 @@ public class DmbCkController extends BaseRestController {
 	@ApiOperation(value = "保存运营商信息", httpMethod = "POST", notes = "save provider info")
 	public Map saveDmbCkBatch(@RequestBody DmbCkSource dmbCkSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dmbCkSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dmbCkSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start, dmbCkSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			this.chekckData(dmbCkSource);
@@ -108,7 +108,7 @@ public class DmbCkController extends BaseRestController {
 	@ApiOperation(value = "更新运营商信息", httpMethod = "PUT", notes = "update provider info")
 	public Map updateDmbCkBatch(@RequestBody DmbCkSource dmbCkSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dmbCkSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dmbCkSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dmbCkSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			this.chekckData(dmbCkSource);
@@ -146,7 +146,7 @@ public class DmbCkController extends BaseRestController {
 	@ApiOperation(value = "删除运营商信息", httpMethod = "DELETE", notes = "delete provider info")
 	public Map deleteDmbCk(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 					dmbCkService.removeDmbCk(id);
 //					commonConfigService.saveOrUpdateConfigState("DMB_CK", new Date());
@@ -183,7 +183,7 @@ public class DmbCkController extends BaseRestController {
 	@ApiOperation(value = "删除运营商信息", httpMethod = "DELETE", notes = "delete provider info")
 	public Map deleteDmbCk(@RequestBody DmbCkSource dmbCkSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dmbCkSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dmbCkSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dmbCkSource.getOpAction(), Constants.OPACTION_DELETE);
 			try{
 				dmbCkService.removeDmbCkBatch(dmbCkSource.getDmbCkList());

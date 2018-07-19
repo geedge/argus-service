@@ -9,15 +9,12 @@ import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
 import com.nis.domain.restful.DfKeyConvertUrl;
-import com.nis.domain.restful.DfKeyMailAdd;
-import com.nis.domain.restful.DjFlowControlStop;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.StringUtil;
 import com.nis.web.dao.DfKeyConvertUrlDao;
-import com.nis.web.dao.IntervalTimeSearchDao;
 import com.nis.web.service.BaseLogService;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 
 /** 
 * @ClassName: DfKeyConvertUrlService 
@@ -54,7 +51,7 @@ public class DfKeyConvertUrlService extends BaseLogService {
 	 * wx
 	 * @param entity
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread,long start,DfKeyConvertUrl entity,Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, DfKeyConvertUrl entity, Page page) {
 		
 		try {
 			if (!StringUtil.isBlank(entity.getSearchId())) {

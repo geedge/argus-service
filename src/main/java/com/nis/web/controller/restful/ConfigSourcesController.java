@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,6 @@ import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.fdfs.FastDFSFile;
 import com.nis.web.service.fdfs.FileManager;
@@ -52,7 +52,7 @@ import net.sf.json.JSONObject;
 // @Scope("prototype")
 @RestController
 @RequestMapping("${servicePath}")
-@Api(value = "ConfigSourcesController", description = "配置存储服务，包括管控、监测、白名单的控制类")
+@Api(value = "ConfigSourcesController", description = "配置规则服务，主要对MAAT规则和回调规则做解析、存储与更新操作")
 public class ConfigSourcesController extends BaseRestController {
 
 	@Autowired
@@ -65,55 +65,49 @@ public class ConfigSourcesController extends BaseRestController {
 
 
 
-
-
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.POST)
-	@ApiOperation(value = "业务配置存储", httpMethod = "POST", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
-	@ApiParam(value = "业务配置数据源", name = "configSource", required = true)
-	public Map createConfigSource(@RequestBody ConfigSource configSource, HttpServletRequest request,
+	@ApiOperation(value = "MAAT规则存储接口", httpMethod = "POST", response = Map.class, notes = "接收MAAT规则数据，存储到流量处理平台配置线中")
+	@ApiParam(value = "MAAT规则对象", name = "configSource", required = true)
+	public Map createMaatConfigSource(@RequestBody ConfigSource configSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				configSource);
+
 		StringBuffer sb = new StringBuffer();
 		if (null != configSource && null != configSource.getConfigCompileList()
 				&& configSource.getConfigCompileList().size() > 0) {
-			int opAction = configSource.getOpAction();
-			checkOpAction(thread, System.currentTimeMillis() - start, opAction, 1);
+            checkOpAction(thread, System.currentTimeMillis() - start, configSource.getOpAction(), Constants.OPACTION_POST);
 			// 验证配置编译数据
 			validateConfigSource(thread, start, configSource);
-			Long benginTime = System.currentTimeMillis();
 			String msg = configSourcesService.saveMaatConfig(thread, start, configSource.getConfigCompileList(), sb);
-//			String msg = "";
-			if ("error".equals(msg)) {
+
+            if ("error".equals(msg)) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"存储编译配置时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
+						"Maat 规则存储异常" + exception.getMessage(), CompileVal.getBusinessCode());
 			}
-			Long endSaveTime = System.currentTimeMillis();
-			Long time = (endSaveTime - benginTime) / 1000;
-			System.out.println("插入数据成功总共需要" + time + "秒");
 		} else {
-			thread.setExceptionInfo("编译配置数据不能为空");
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置数据不能为空",
+			thread.setExceptionInfo("Maat规则不能为空");
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "Maat规则不能为空",
 					RestBusinessCode.missing_args.getValue());
 		}
 
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"编译配置数据插入成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
+				"Maat规则下发成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.PUT)
-	@ApiOperation(value = "业务配置状态更新", httpMethod = "PUT", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）进行配置失效")
-	@ApiParam(value = "业务配置数据源", name = "configSource", required = true)
+	@ApiOperation(value = "MAAT规则状态更新接口", httpMethod = "PUT", response = Map.class, notes = "接收Maat规则,对其状态置为失效")
+	@ApiParam(value = "MAAT规则对象", name = "configSource", required = true)
 	public Map updateConfigSource(@RequestBody ConfigSource configSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
 				configSource);
 		StringBuffer sb = new StringBuffer();
 		if (null == configSource.getOpTime()) {
@@ -132,29 +126,29 @@ public class ConfigSourcesController extends BaseRestController {
 			if (msg.equals("error")) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"修改编译配置状态时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
+						"MAAT规则状态更新时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
 			}
 			// configSourcesService.updateConfigSource(thread, start,
 			// configSource.getConfigCompileList(),
 			// configSource.getOpTime(), sb);
 
 		} else {
-			thread.setExceptionInfo("编译配置数据不能为空");
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "编译配置数据不能为空" + sb.toString(),
+			thread.setExceptionInfo("Maat规则不能为空");
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "Maat规则不能为空" + sb.toString(),
 					RestBusinessCode.missing_args.getValue());
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"编译配置修改成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
+				"Maat规则状态更新成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/configModifySources", method = RequestMethod.PUT)
-	@ApiOperation(value = "编译配置修改", httpMethod = "PUT", response = Map.class, notes = "对有效的配置（封堵|监测|白名单）存储")
-	@ApiParam(value = "编译配置修改", name = "configSource", required = true)
+	@ApiOperation(value = "MAAT规则修改接口", httpMethod = "PUT", response = Map.class, notes = "接收Maat规则,对其规则内容进行修改")
+	@ApiParam(value = "MAAT规则对象", name = "configSource", required = true)
 	public Map configModifySources(@RequestBody ConfigSource configSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
 				configSource);
 		StringBuffer sb = new StringBuffer();
 		if (null != configSource && null != configSource.getConfigCompileList()
@@ -269,7 +263,7 @@ public class ConfigSourcesController extends BaseRestController {
 				"修改编译配置数据成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
-	private void validateConfigSource(SaveRequestLogThread thread, long start, ConfigSource configSource) {
+	private void validateConfigSource(AuditLogThread thread, long start, ConfigSource configSource) {
 		String errorInfo = "";
 
 		List<ConfigCompile> configCompileList = configSource.getConfigCompileList();
@@ -286,8 +280,8 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 
 		if (configCompileList.size() <= 0) {
-			errorInfo = "编译配置不能为空";
-		}
+			errorInfo = "Maat规则不能为空";
+    }
 		if (!errorInfo.equals("")) {
 			thread.setExceptionInfo(errorInfo);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, errorInfo,
@@ -297,54 +291,54 @@ public class ConfigSourcesController extends BaseRestController {
 	}
 
 	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.POST, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
-	@ApiOperation(value = "回调配置存储", httpMethod = "POST", response = Map.class, notes = "回调配置存储服务")
+	@ApiOperation(value = "回调（通用）规则存储接口", httpMethod = "POST", response = Map.class, notes = "接收回调规则数据,格式为结构化行列式JSON,存储到流量处理平台配置线中")
 	public Map createCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
 		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
-		StringBuffer sb = new StringBuffer();
-		String msg = configSourcesService.saveCommonSources(thread, start, jsonString, sb);
+
+		String msg = configSourcesService.saveCommonSources(thread, start, jsonString);
 		if (msg.equals("error")) {
 			Exception exception = ConfigSourcesService.getMsgList().get(0);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"存储回调配置时出现异常" + exception.getMessage(), CompileVal.getBusinessCode());
+					"回调规则存储异常" + exception.getMessage(), CompileVal.getBusinessCode());
 		}
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置数据插入成功",
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "回调规则下发成功",
 				Constants.IS_DEBUG ? jsonString : null);
 	}
 
+
 	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PUT)
-	@ApiOperation(value = "回调配置状态修改", httpMethod = "PUT", response = Map.class, notes = "回调配置状态修改服务")
-	@ApiParam(value = "回调配置状态修改", name = "updateStatConfigSource", required = true)
+	@ApiOperation(value = "回调规则状态更新接口", httpMethod = "PUT", response = Map.class, notes = "接收回调规则,对其状态置为失效")
 	public Map updateCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
 		CompileVal.setBusinessCode(null);
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
 				jsonString);
 		StringBuffer sb = new StringBuffer();
 		String msg = configSourcesService.updateCommonSources(thread, start, jsonString, new Date(), sb);
 		if (msg.equals("error")) {
 			Exception exception = ConfigSourcesService.getMsgList().get(0);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"修改回调配置状态时出现异常" + exception.getMessage(), CompileVal.getBusinessCode());
+					"回调规则状态更新异常" + exception.getMessage(), CompileVal.getBusinessCode());
 		}
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置状态修改成功",
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "回调规则状态更新成功",
 				Constants.IS_DEBUG ? jsonString : null);
 	}
 
 	@RequestMapping(value = "/cfg/v1/fileUploadSources", method = RequestMethod.POST)
-	@ApiOperation(value = "样例文件上传服务", httpMethod = "POST", response = Map.class, notes = "样例文件上传服务")
+	@ApiOperation(value = "样例文件上传服务接口", httpMethod = "POST", response = Map.class, notes = "样例文件上传服务")
 	@ApiParam(value = "样例文件上传服务", name = "MultipartFile", required = true)
 	public Map fileUploadSource(@RequestBody MultipartFile file, HttpServletRequest request,
 			HttpServletResponse response) {
 		ConfigSourcesService.setMsgList(new ArrayList<Exception>());// 清除上次记录的日志信息
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
 		String filePath = "";
 		try {
@@ -402,12 +396,12 @@ public class ConfigSourcesController extends BaseRestController {
 	}
 
 	@RequestMapping(value = "/cfg/v1/fileDigestSources", method = RequestMethod.POST)
-	@ApiOperation(value = "文件摘要获取", httpMethod = "POST", response = Map.class, notes = "文件摘要获取")
+	@ApiOperation(value = "文件摘要获取接口", httpMethod = "POST", response = Map.class, notes = "文件摘要获取")
 	@ApiParam(value = "摘要文件", name = "MultipartFile", required = true)
 	public Map fileDigestSources(@RequestBody MultipartFile file, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				file, null);
 		if (file == null) {
 			thread.setExceptionInfo("请上传获取摘要的文件到file");

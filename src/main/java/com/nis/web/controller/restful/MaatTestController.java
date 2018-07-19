@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.nis.domain.restful.*;
+import com.nis.web.service.AuditLogThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,7 +22,6 @@ import com.nis.util.ExceptionUtil;
 import com.nis.util.FileUtils;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigRedisService;
 import com.nis.web.service.restful.ConfigSourcesService;
@@ -381,7 +381,7 @@ public class MaatTestController {
 		List<String> list = new ArrayList<String>();
 		for (int a = 0; a < forCount; a++) {
 			long start = System.currentTimeMillis();
-			SaveRequestLogThread thread = new SaveRequestLogThread();
+			AuditLogThread thread = new AuditLogThread();
 			StringBuffer sb = new StringBuffer();
 			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
 			for (int i = 0; i < saveCount; i++) {
@@ -413,7 +413,7 @@ public class MaatTestController {
 	public String testSaveMaat(@RequestParam(required = true) Integer service,
 			@RequestParam(required = true) Integer saveCount) {
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = new SaveRequestLogThread();
+		AuditLogThread thread = new AuditLogThread();
 		StringBuffer sb = new StringBuffer();
 		List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
 		for (int i = 0; i < saveCount; i++) {

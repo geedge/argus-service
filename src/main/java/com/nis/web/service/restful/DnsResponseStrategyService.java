@@ -9,7 +9,6 @@
 package com.nis.web.service.restful;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.dao.DnsResponseStrategyDao;
 import com.nis.web.service.CrudService;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 
 /**
  * @ClassName: DnsResponseStrategy.java 
@@ -64,7 +63,7 @@ public class DnsResponseStrategyService extends CrudService<DnsResponseStrategyD
 	 * @exception 
 	 * @since  1.0.0
 	 */
-	public void saveDnsResponseStrategyBatch(SaveRequestLogThread thread,long start,List<DnsResponseStrategy> entity) {
+	public void saveDnsResponseStrategyBatch(AuditLogThread thread, long start, List<DnsResponseStrategy> entity) {
 		// TODO Auto-generated method stub
 		List idsList=new ArrayList<>();
 		for(DnsResponseStrategy e:entity){
@@ -103,7 +102,7 @@ public class DnsResponseStrategyService extends CrudService<DnsResponseStrategyD
 	 * @exception 
 	 * @since  1.0.0
 	 */
-	public void updateDnsResponseStrategyBatch(SaveRequestLogThread thread,long start,List<DnsResponseStrategy> entity) {
+	public void updateDnsResponseStrategyBatch(AuditLogThread thread, long start, List<DnsResponseStrategy> entity) {
 //		List idsList=new ArrayList<>();
 //		for(DnsResponseStrategy e:entity){
 //			if(e.getReqStrateId()!=null)

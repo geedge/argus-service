@@ -11,12 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.Page;
-import com.nis.domain.ServicesRequestLog;
 import com.nis.domain.restful.ServicesRequestLogBean;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 
 @RestController
@@ -31,7 +30,7 @@ public class ServicesRequestLogController extends BaseRestController {
 		Page<ServicesRequestLogBean> queryAllCompile = null;
 
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				log);
 		try {
 			queryAllCompile = servicesRequestLogService

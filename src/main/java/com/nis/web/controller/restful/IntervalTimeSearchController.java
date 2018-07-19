@@ -26,7 +26,7 @@ import com.nis.domain.restful.DjFlowControlStop;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.IntervalTimeSearchService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -67,7 +67,7 @@ public class IntervalTimeSearchController  extends BaseRestController{
 		}
 		
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_GET,request, null);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_GET,request, null);
 		//请求参数校验
 		timeSearchService.queryConditionCheck(thread,start,flowControlStop,page);
 		

@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +30,6 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DnsGroupTypeService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -70,7 +70,7 @@ public class DnsGroupTypeController extends BaseRestController {
 	@ApiOperation(value = "保存DNS分组类型", httpMethod = "POST", notes = "save dns group type")
 	public Map saveDnsGroupTypeBatch(@RequestBody DnsGroupTypeSource dnsGroupTypeSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dnsGroupTypeSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dnsGroupTypeSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsGroupTypeSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 //				if(chekckData(dnsGroupTypeSource/*,false*/))
@@ -112,7 +112,7 @@ public class DnsGroupTypeController extends BaseRestController {
 	@ApiOperation(value = "更新DNS分组类型", httpMethod = "PUT", notes = "update dns group type")
 	public Map updateDnsGroupTypeBatch(@RequestBody DnsGroupTypeSource dnsGroupTypeSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dnsGroupTypeSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dnsGroupTypeSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsGroupTypeSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 //					if(chekckData(dnsGroupTypeSource/*,true*/))
@@ -154,7 +154,7 @@ public class DnsGroupTypeController extends BaseRestController {
 	@ApiOperation(value = "删除DNS分组类型", httpMethod = "DELETE", notes = "delete dns group type")
 	public Map deleteDnsGroupType(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 				boolean isValid=dnsGroupTypeService.isValid(id);
 				if(!isValid){
@@ -198,7 +198,7 @@ public class DnsGroupTypeController extends BaseRestController {
 	@ApiOperation(value = "删除DNS分组类型", httpMethod = "DELETE", notes = "delete dns group type")
 	public Map deleteDnsGroupType(@RequestBody DnsGroupTypeSource dnsGroupTypeSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dnsGroupTypeSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dnsGroupTypeSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsGroupTypeSource.getOpAction(), Constants.OPACTION_DELETE);
 		try{
 			boolean isValid=dnsGroupTypeService.isValid(dnsGroupTypeSource.getDnsGroupTypeList());
@@ -234,7 +234,7 @@ public class DnsGroupTypeController extends BaseRestController {
 	 * @exception 
 	 * @since  1.0.0
 	 */
-	private void chekckData(SaveRequestLogThread thread,long start,DnsGroupTypeSource entity,int opAction){
+	private void chekckData(AuditLogThread thread, long start, DnsGroupTypeSource entity, int opAction){
 		for(DnsGroupType dnsGroupType :entity.getDnsGroupTypeList()){
 			if(dnsGroupType.getOpTime()==null)
 				dnsGroupType.setOpTime(entity.getOpTime());

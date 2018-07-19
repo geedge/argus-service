@@ -34,7 +34,7 @@ public  class ConfigSource extends ConfigCommonSource{
 	/**  
 	* @Title:  
 	* @Description: TODO  
-	* @param     入参   
+	* @param
 	*/
 	public ConfigSource() {
 		this.version = DEFAULT_VERSION;

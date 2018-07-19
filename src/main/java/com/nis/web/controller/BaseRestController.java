@@ -17,6 +17,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,6 @@ import com.nis.restful.RestResult;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 
 /**
@@ -63,8 +63,8 @@ public class BaseRestController {
 	 * @version V1.0
 	 */
 
-	public Map serviceResponse(SaveRequestLogThread thread, long time, HttpServletRequest request,
-			HttpServletResponse response, String msg) {
+	public Map serviceResponse(AuditLogThread thread, long time, HttpServletRequest request,
+                               HttpServletResponse response, String msg) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -109,8 +109,8 @@ public class BaseRestController {
 	 *             2016年8月24日 下午8:40:44
 	 * @version V1.0
 	 */
-	public Map serviceResponse(SaveRequestLogThread thread, long time, HttpServletRequest request,
-			HttpServletResponse response, String msg, Object data) {
+	public Map serviceResponse(AuditLogThread thread, long time, HttpServletRequest request,
+                               HttpServletResponse response, String msg, Object data) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -191,8 +191,8 @@ public class BaseRestController {
 	 *             2016年8月24日 下午8:40:44
 	 * @version V1.0
 	 */
-	public Map compileServiceResponse(SaveRequestLogThread thread, long time, HttpServletRequest request,
-			HttpServletResponse response, String msg, Object data) {
+	public Map compileServiceResponse(AuditLogThread thread, long time, HttpServletRequest request,
+                                      HttpServletResponse response, String msg, Object data) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -229,7 +229,7 @@ public class BaseRestController {
      * @param logSource
      * @return
      */
-	public Map serviceLogResponse(SaveRequestLogThread auditLogThread, long executedTime, HttpServletRequest request,
+	public Map serviceLogResponse(AuditLogThread auditLogThread, long executedTime, HttpServletRequest request,
                                   String msg, Object data, Integer logSource) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
@@ -314,7 +314,7 @@ public class BaseRestController {
 	 * @exception @since
 	 *                1.0.0
 	 */
-	public void checkOpAction(SaveRequestLogThread thread, long time, int opAction, int need) {
+	public void checkOpAction(AuditLogThread thread, long time, int opAction, int need) {
 		if (need != opAction) {
 			switch (need) {
 			case Constants.OPACTION_POST:
@@ -338,7 +338,7 @@ public class BaseRestController {
 								+ ",对应的请求方式为" + convertOpAction(opAction) + "!",
 						RestBusinessCode.op_action_error.getValue());
 			default:
-				throw new RestServiceException(thread, time, "操作行为错误,未找到对应的服务！",
+				throw new RestServiceException(thread, time, "操作行为错误,未找到属性opAction对应业务！",
 						RestBusinessCode.op_action_error.getValue());
 			}
 		}
@@ -359,10 +359,10 @@ public class BaseRestController {
 		}
 	}
 
-	protected SaveRequestLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
-			HttpServletRequest request, Object data) {
+	protected AuditLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
+                                            HttpServletRequest request, Object data) {
 		logger.debug("SaveRequestLogThread初始化开始----" + System.currentTimeMillis());
-		SaveRequestLogThread thread = SaveRequestLogThread.getNewSaveRequestLogThread(request);
+		AuditLogThread thread = AuditLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
 		thread.setOpAction(opAction);
 		thread.setTraceCode(sdf.format(new Date())+(Math.round((Math.random()*9+1)*10000)+""));
@@ -381,9 +381,9 @@ public class BaseRestController {
 	}
 
 	// 文件上传用
-	protected SaveRequestLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
-			HttpServletRequest request, Object data, Object fileInfo) {
-		SaveRequestLogThread thread = SaveRequestLogThread.getNewSaveRequestLogThread(request);
+	protected AuditLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
+                                            HttpServletRequest request, Object data, Object fileInfo) {
+		AuditLogThread thread = AuditLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
 	//	thread.setContent(fileInfo);
 		thread.setOpAction(opAction);

@@ -19,12 +19,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.nis.web.service.AuditLogThread;
 import net.sf.json.JSONObject;
 
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +60,6 @@ import com.nis.web.dao.IpRegionDao;
 import com.nis.web.dao.NumRegionDao;
 import com.nis.web.dao.StrRegionDao;
 import com.nis.web.service.BaseService;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.SpringContextHolder;
 
 /**
@@ -118,8 +117,8 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	public void updateConfigSource(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> configSource, Date opTime, StringBuffer sb) {
+	public void updateConfigSource(AuditLogThread thread, long start,
+								   List<ConfigCompile> configSource, Date opTime, StringBuffer sb) {
 		SqlSessionFactory sqlSessionFactory = SpringContextHolder
 				.getBean(SqlSessionFactory.class);
 		SqlSession batchSqlSession = null;
@@ -202,9 +201,9 @@ public class ConfigSourcesService extends BaseService {
 	 * @throws Exception
 	 */
 
-	public void updateConfigCompile(SaveRequestLogThread thread, long start,
-			ConfigCompile config, SqlSession batchSqlSession, Date opTime,
-			StringBuffer sb) throws Exception {
+	public void updateConfigCompile(AuditLogThread thread, long start,
+									ConfigCompile config, SqlSession batchSqlSession, Date opTime,
+									StringBuffer sb) throws Exception {
 		List<IpRegion> ipRegionList = config.getIpRegionList();
 		List<StrRegion> strRegionList = config.getStrRegionList();
 		List<NumRegion> numRegionList = config.getNumRegionList();
@@ -295,10 +294,10 @@ public class ConfigSourcesService extends BaseService {
 	 *            当前编译下所有的配置分组关系
 	 * @return
 	 */
-	public void regionUpdate(SaveRequestLogThread thread, long start,
-			ConfigCompile config,
-			List<ConfigGroupRelation> queryCompileGroupByPID,
-			SqlSession batchSqlSession, Date opTime, StringBuffer sb)
+	public void regionUpdate(AuditLogThread thread, long start,
+							 ConfigCompile config,
+							 List<ConfigGroupRelation> queryCompileGroupByPID,
+							 SqlSession batchSqlSession, Date opTime, StringBuffer sb)
 			throws Exception {
 		Map<String, Map<Long, List<Long>>> regionMap = getRegionList(thread,
 				System.currentTimeMillis() - start, config,
@@ -478,7 +477,7 @@ public class ConfigSourcesService extends BaseService {
 	}
 
 	public Map<String, Map<Long, List<Long>>> getRegionList(
-			SaveRequestLogThread thread, long start, ConfigCompile config,
+			AuditLogThread thread, long start, ConfigCompile config,
 			List<ConfigGroupRelation> queryCompileGroupByPID,
 			SqlSession batchSqlSession, StringBuffer sb) {
 		Map<String, Map<Long, List<Long>>> map = new HashMap<String, Map<Long, List<Long>>>();
@@ -651,7 +650,7 @@ public class ConfigSourcesService extends BaseService {
 	 * @param configSource
 	 * @throws Exception
 	 */
-	public void insertConfigSourceData(SaveRequestLogThread thread,
+	public void insertConfigSourceData(AuditLogThread thread,
 			long _start, List<ConfigCompile> configSource, StringBuffer sb) {
 		SqlSessionFactory sqlSessionFactory = SpringContextHolder
 				.getBean(SqlSessionFactory.class);
@@ -717,7 +716,7 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	private String insertConfigComLileData(SaveRequestLogThread thread,
+	private String insertConfigComLileData(AuditLogThread thread,
 			long start, List<ConfigCompile> configCompileList, StringBuffer sb)
 			throws Exception {
 
@@ -1009,8 +1008,8 @@ public class ConfigSourcesService extends BaseService {
 	 * @param sb
 	 * @return
 	 */
-	public String saveMaatConfig(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> configCompileList, StringBuffer sb) {
+	public String saveMaatConfig(AuditLogThread thread, long start,
+								 List<ConfigCompile> configCompileList, StringBuffer sb) {
 		// List<MaatConfig> maatConfigList = new ArrayList<MaatConfig>();
 		// List<Integer> serviceList = new ArrayList<Integer>();
  		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
@@ -1379,8 +1378,8 @@ public class ConfigSourcesService extends BaseService {
 		return dstMap;
 	}
 
-	public String updateConfigSources(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
+	public String updateConfigSources(AuditLogThread thread, long start,
+									  List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
@@ -1459,8 +1458,8 @@ public class ConfigSourcesService extends BaseService {
 		return "ok";
 	}
 
-	public String saveByJDBCThread(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> configCompileList, StringBuffer sb) {
+	public String saveByJDBCThread(AuditLogThread thread, long start,
+								   List<ConfigCompile> configCompileList, StringBuffer sb) {
 		List<ConfigGroupRelation> groupRelationList = new ArrayList<ConfigGroupRelation>();
 		Map<String, List<StrRegion>> strRegionMap = new HashMap<String, List<StrRegion>>();
 		Map<String, List<StrRegion>> strStongRegionMap = new HashMap<String, List<StrRegion>>();
@@ -1774,8 +1773,8 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	public String updateByJDBCThread(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
+	public String updateByJDBCThread(AuditLogThread thread, long start,
+									 List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
 		List<ConfigCompile> compileAllList = new ArrayList<ConfigCompile>();
 		List<ConfigGroupRelation> groupRelationAllList = new ArrayList<ConfigGroupRelation>();
 		Map<String, List<StrRegion>> strRegionMap = new HashMap<String, List<StrRegion>>();
@@ -2193,8 +2192,8 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	public String updateByJDBCThread12(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
+	public String updateByJDBCThread12(AuditLogThread thread, long start,
+									   List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
 		List<ConfigCompile> compileAllList = new ArrayList<ConfigCompile>();
 		List<ConfigGroupRelation> groupRelationAllList = new ArrayList<ConfigGroupRelation>();
 		Map<String, List<StrRegion>> strRegionMap = new HashMap<String, List<StrRegion>>();
@@ -2420,8 +2419,8 @@ public class ConfigSourcesService extends BaseService {
 	 * @param sb
 	 * @return
 	 */
-	public String updateByJDBCThread3(SaveRequestLogThread thread, long start,
-			List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
+	public String updateByJDBCThread3(AuditLogThread thread, long start,
+									  List<ConfigCompile> compileList, Date opTime, StringBuffer sb) {
 		List<ConfigCompile> compileAllList = new ArrayList<ConfigCompile>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
@@ -2545,7 +2544,7 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 */
 	public Map<String, Map<Long, List<Long>>> getRegionList(
-			SaveRequestLogThread thread, long start, ConfigCompile config,
+			AuditLogThread thread, long start, ConfigCompile config,
 			List<ConfigGroupRelation> queryCompileGroupByPID, StringBuffer sb) {
 		Map<String, Map<Long, List<Long>>> map = new HashMap<String, Map<Long, List<Long>>>();
 		Map<String, String> updateTableMap = new HashMap<String, String>();
@@ -2724,8 +2723,8 @@ public class ConfigSourcesService extends BaseService {
 		return "ok";
 	}
 
-	public String saveCommonSources(SaveRequestLogThread thread, long start,
-			String jsonString, StringBuffer sb) {
+	public String saveCommonSources(AuditLogThread thread, long start,
+									String jsonString) {
 		CompileVal.setBusinessCode(null);
 		JsonArray jsonObjectList = new JsonParser().parse(jsonString)
 				.getAsJsonArray();
@@ -3026,7 +3025,6 @@ public class ConfigSourcesService extends BaseService {
 		try {
 			configRedisService.saveUnMaatConfig(configMap);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
 			if (e.getMessage().startsWith("后台错误:")) {
@@ -3039,8 +3037,8 @@ public class ConfigSourcesService extends BaseService {
 		return "ok";
 	}
 
-	public String updateCommonSources(SaveRequestLogThread thread, long start,
-			String jsonString, Date opTime, StringBuffer sb) {
+	public String updateCommonSources(AuditLogThread thread, long start,
+									  String jsonString, Date opTime, StringBuffer sb) {
 		JsonArray jsonObjectList = null;
 		try {
 			jsonObjectList = new JsonParser().parse(jsonString)

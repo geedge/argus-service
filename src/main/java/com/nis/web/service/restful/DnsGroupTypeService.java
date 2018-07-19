@@ -11,6 +11,7 @@ package com.nis.web.service.restful;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nis.web.service.AuditLogThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,6 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.dao.DnsGroupTypeDao;
 import com.nis.web.service.CrudService;
-import com.nis.web.service.SaveRequestLogThread;
 
 /**
  * @ClassName: DnsGroupTypeService.java 
@@ -41,7 +41,7 @@ public class DnsGroupTypeService extends CrudService<DnsGroupTypeDao, DnsGroupTy
 	public DnsGroupType findById(long id) {
 		return get(id);
 	}
-	public void saveDnsGroupTypeBatch(SaveRequestLogThread thread,long start,List<DnsGroupType> entity) {
+	public void saveDnsGroupTypeBatch(AuditLogThread thread, long start, List<DnsGroupType> entity) {
 		// TODO Auto-generated method stub
 		List<Integer> idsList=new ArrayList<>();
 		for(DnsGroupType e:entity){
@@ -55,7 +55,7 @@ public class DnsGroupTypeService extends CrudService<DnsGroupTypeDao, DnsGroupTy
 		}
 		super.saveBatch(entity,DnsGroupTypeDao.class);
 	}
-	public void updateDnsGroupTypeBatch(SaveRequestLogThread thread,long start,List<DnsGroupType> entity) {
+	public void updateDnsGroupTypeBatch(AuditLogThread thread, long start, List<DnsGroupType> entity) {
 		// TODO Auto-generated method stub
 //		List<Integer> idsList=new ArrayList<>();
 //		for(DnsGroupType e:entity){

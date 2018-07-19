@@ -30,7 +30,7 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.FwqInfoService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -70,7 +70,7 @@ public class FwqInfoController extends BaseRestController {
 	@ApiOperation(value = "保存服务器信息", httpMethod = "POST", notes = "save server info")
 	public Map saveFwqInfoBatch(@RequestBody FwqInfoSource fwqInfoSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, fwqInfoSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, fwqInfoSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,fwqInfoSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			chekckData(fwqInfoSource);
@@ -108,7 +108,7 @@ public class FwqInfoController extends BaseRestController {
 	@ApiOperation(value = "更新服务器信息", httpMethod = "PUT", notes = "update server info")
 	public Map updateFwqInfoBatch(@RequestBody FwqInfoSource fwqInfoSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, fwqInfoSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, fwqInfoSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,fwqInfoSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			chekckData(fwqInfoSource);
@@ -146,7 +146,7 @@ public class FwqInfoController extends BaseRestController {
 	@ApiOperation(value = "删除服务器信息", httpMethod = "DELETE", notes = "delete server info")
 	public Map deleteFwqInfo(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 				fwqInfoService.removeFwqInfo(id);
 //				commonConfigService.saveOrUpdateConfigState("FWQ_INFO", new Date());
@@ -183,7 +183,7 @@ public class FwqInfoController extends BaseRestController {
 	@ApiOperation(value = "删除服务器信息", httpMethod = "DELETE", notes = "delete server info")
 	public Map deleteFwqInfo(@RequestBody FwqInfoSource fwqInfoSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, fwqInfoSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, fwqInfoSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,fwqInfoSource.getOpAction(), Constants.OPACTION_DELETE);
 		try{
 			fwqInfoService.removeFwqInfoBatch(fwqInfoSource.getFwqInfoList());

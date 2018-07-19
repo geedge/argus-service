@@ -30,7 +30,7 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DnsResponseStrategyService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -69,7 +69,7 @@ public class DnsResponseStrategyController extends BaseRestController {
 	@ApiOperation(value = "保存DNS响应策略", httpMethod = "POST", notes = "save dns response strategy")
 	public Map saveDnsResponseStrategyBatch(@RequestBody DnsResponseStrategySource dnsResponseStrategySource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dnsResponseStrategySource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, dnsResponseStrategySource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsResponseStrategySource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			chekckData(thread,start,dnsResponseStrategySource,Constants.OPACTION_POST);
@@ -109,7 +109,7 @@ public class DnsResponseStrategyController extends BaseRestController {
 	@ApiOperation(value = "更新DNS响应策略", httpMethod = "PUT", notes = "update dns response strategy")
 	public Map updateDnsResponseStrategyBatch(@RequestBody DnsResponseStrategySource dnsResponseStrategySource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dnsResponseStrategySource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, dnsResponseStrategySource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsResponseStrategySource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			chekckData(thread,start,dnsResponseStrategySource,Constants.OPACTION_PUT);
@@ -149,7 +149,7 @@ public class DnsResponseStrategyController extends BaseRestController {
 	@ApiOperation(value = "删除DNS响应策略", httpMethod = "DELETE", notes = "delete dns response strategy")
 	public Map deleteDnsResponseStrategy(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();	
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 				boolean isValid=dnsResponseStrategyService.isValid(id);
 				if(!isValid){
@@ -192,7 +192,7 @@ public class DnsResponseStrategyController extends BaseRestController {
 	@ApiOperation(value = "删除DNS响应策略", httpMethod = "DELETE", notes = "delete dns response strategy")
 	public Map deleteDnsResponseStrategy(@RequestBody DnsResponseStrategySource dnsResponseStrategySource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();	
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dnsResponseStrategySource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, dnsResponseStrategySource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,dnsResponseStrategySource.getOpAction(), Constants.OPACTION_DELETE);
 		try{
 			boolean isValid=dnsResponseStrategyService.isValid(dnsResponseStrategySource.getDnsResponseStrategyList());
@@ -225,7 +225,7 @@ public class DnsResponseStrategyController extends BaseRestController {
 	 * @exception 
 	 * @since  1.0.0
 	 */
-	private void chekckData(SaveRequestLogThread thread,long start,DnsResponseStrategySource entity,int opAction){
+	private void chekckData(AuditLogThread thread, long start, DnsResponseStrategySource entity, int opAction){
 		Date now =new Date();
 		
 		for(DnsResponseStrategy dnsResponseStrategy :entity.getDnsResponseStrategyList()){
@@ -250,7 +250,7 @@ public class DnsResponseStrategyController extends BaseRestController {
 		}
 		
 	}
-	private void checkReqStrateId(SaveRequestLogThread thread,long start,DnsResponseStrategy dnsResponseStrategy,int opAction){
+	private void checkReqStrateId(AuditLogThread thread, long start, DnsResponseStrategy dnsResponseStrategy, int opAction){
 			//update时可以为空
 			if(opAction==Constants.OPACTION_PUT&&dnsResponseStrategy.getReqStrateId()==null)return;
 			if(dnsResponseStrategy.getReqStrateId()==null){

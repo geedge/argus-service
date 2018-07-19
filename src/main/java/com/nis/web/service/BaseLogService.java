@@ -52,7 +52,7 @@ public abstract class BaseLogService {
 	 * @exception @since
 	 *                1.0.0
 	 */
-	public void checkCloumnIsExist(SaveRequestLogThread thread, long start, Class clazz, Page page) throws Exception {
+	public void checkCloumnIsExist(AuditLogThread thread, long start, Class clazz, Page page) throws Exception {
 		String[] fieldsColoumn = null;
 		String[] orderByColoumn = null;
 		String notExistColumn = "";
@@ -136,8 +136,8 @@ public abstract class BaseLogService {
 	 * @param clazz
 	 * @param page
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread, long start, LogEntity<?> entity, Class clazz,
-			Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, LogEntity<?> entity, Class clazz,
+									Page page) {
 		logger.info("请求参数校验开始----" + System.currentTimeMillis());
 		try {
 			if (!StringUtil.isBlank(entity.getSearchCfgId())) {
@@ -252,8 +252,8 @@ public abstract class BaseLogService {
 	 * @param clazz
 	 * @param page
 	 */
-	public void queryReportConditionCheck(SaveRequestLogThread thread, long start, NtcReportEntity<?> entity, Class clazz,
-			Page page) {
+	public void queryReportConditionCheck(AuditLogThread thread, long start, NtcReportEntity<?> entity, Class clazz,
+										  Page page) {
 		logger.info("实时报表统计查询参数校验开始----" + System.currentTimeMillis());
 		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
 			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
@@ -316,7 +316,7 @@ public abstract class BaseLogService {
 	 * @param condition
 	 * @param condName
 	 */
-	public void checkNumericCondition(SaveRequestLogThread thread, long start,String condition,String condName) {
+	public void checkNumericCondition(AuditLogThread thread, long start, String condition, String condName) {
 		if (!StringUtil.isEmpty(condition)){
 			Boolean flag = false;
 			if (condition.contains(",")) {
@@ -348,8 +348,8 @@ public abstract class BaseLogService {
 	 * @param page
 	 *            需要校验的page对象
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread, long start, StatLogEntity entity, Class clazz,
-			Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, StatLogEntity entity, Class clazz,
+									Page page) {
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchStatStartTime())) {
@@ -413,8 +413,8 @@ public abstract class BaseLogService {
 	 * 
 	 * @param entity
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread, long start, DfJitLogEntity<?> entity, Class clazz,
-			Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, DfJitLogEntity<?> entity, Class clazz,
+									Page page) {
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
 				sdf.parse(entity.getSearchReportEndTime());
@@ -498,8 +498,8 @@ public abstract class BaseLogService {
 	 * 
 	 * @param entity
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread, long start, DfReportEntity entity, Class clazz,
-			Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, DfReportEntity entity, Class clazz,
+									Page page) {
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
 				sdf.parse(entity.getSearchReportEndTime());

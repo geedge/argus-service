@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,6 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.SystemFunStatusService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -59,7 +59,7 @@ public class SystemFunStatusController  extends BaseRestController {
 			HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
-		SaveRequestLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request, systemFunStatusSource);
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request, systemFunStatusSource);
 		super.checkOpAction(thread, System.currentTimeMillis() - start, systemFunStatusSource.getOpAction(), Constants.OPACTION_POST);
 		
 		try{
@@ -100,7 +100,7 @@ public class SystemFunStatusController  extends BaseRestController {
 			HttpServletRequest request, HttpServletResponse response){
 		
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, systemFunStatusSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, systemFunStatusSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,systemFunStatusSource.getOpAction(), Constants.OPACTION_PUT);
 		
 		try{

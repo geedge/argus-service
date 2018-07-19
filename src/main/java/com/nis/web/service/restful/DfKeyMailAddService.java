@@ -14,7 +14,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.StringUtil;
 import com.nis.web.dao.DfKeyMailAddDao;
 import com.nis.web.service.BaseLogService;
-import com.nis.web.service.SaveRequestLogThread;
+import com.nis.web.service.AuditLogThread;
 
 /**
  * @ClassName: DfKeyMailAddService
@@ -43,7 +43,7 @@ public class DfKeyMailAddService  extends BaseLogService {
 	/**
 	 * 查询条件检查
 	 */
-	public void queryConditionCheck(SaveRequestLogThread thread, long start, DfKeyMailAdd entity, Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, DfKeyMailAdd entity, Page page) {
 		try {
 			if (!StringUtil.isBlank(entity.getSearchId())) {
 				Long.parseLong(entity.getSearchId());

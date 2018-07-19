@@ -14,6 +14,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nis.web.service.AuditLogThread;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,6 @@ import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.SaveRequestLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.EncryptProtoRandomService;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -70,7 +70,7 @@ public class EncryptProtoRandomController extends BaseRestController {
 	@ApiOperation(value = "保存加密类协议随机封堵配置", httpMethod = "POST", notes = "save encrypt_proto_random")
 	public Map saveEncryptProtoRandomBatch(@RequestBody EncryptProtoRandomSource encryptProtoRandomSource, HttpServletRequest request, HttpServletResponse response) {
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, encryptProtoRandomSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_POST,request, encryptProtoRandomSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,encryptProtoRandomSource.getOpAction(), Constants.OPACTION_POST);
 		try{
 			this.chekckData(encryptProtoRandomSource);
@@ -108,7 +108,7 @@ public class EncryptProtoRandomController extends BaseRestController {
 	@ApiOperation(value = "更新加密类协议随机封堵配置", httpMethod = "PUT", notes = "update encrypt_proto_random")
 	public Map updateEncryptProtoRandomBatch(@RequestBody EncryptProtoRandomSource encryptProtoRandomSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, encryptProtoRandomSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_PUT,request, encryptProtoRandomSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,encryptProtoRandomSource.getOpAction(), Constants.OPACTION_PUT);
 		try{
 			this.chekckData(encryptProtoRandomSource);
@@ -146,7 +146,7 @@ public class EncryptProtoRandomController extends BaseRestController {
 	@ApiOperation(value = "删除加密类协议随机封堵配置", httpMethod = "DELETE", notes = "delete encrypt_proto_random")
 	public Map deleteEncryptProtoRandom(@PathVariable("id") long id, HttpServletRequest request, HttpServletResponse response){	
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, id);
 		try{
 					encryptProtoRandomService.removeEncryptProtoRandom(id);
 //					commonConfigService.saveOrUpdateConfigState("DMB_CK", new Date());
@@ -183,7 +183,7 @@ public class EncryptProtoRandomController extends BaseRestController {
 	@ApiOperation(value = "删除加密类协议随机封堵配置", httpMethod = "DELETE", notes = "delete encrypt_proto_random")
 	public Map deleteEncryptProtoRandom(@RequestBody EncryptProtoRandomSource encryptProtoRandomSource, HttpServletRequest request, HttpServletResponse response){
 		long start=System.currentTimeMillis();
-		SaveRequestLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, encryptProtoRandomSource);
+		AuditLogThread thread=super.saveRequestLog(servicesRequestLogService,Constants.OPACTION_DELETE,request, encryptProtoRandomSource);
 		super.checkOpAction(thread,System.currentTimeMillis()-start,encryptProtoRandomSource.getOpAction(), Constants.OPACTION_DELETE);
 			try{
 				encryptProtoRandomService.removeEncryptProtoRandomBatch(encryptProtoRandomSource.getEncryptProtoRandomList());
