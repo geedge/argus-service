@@ -511,20 +511,18 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
 		<result column="calling_account" jdbcType="VARCHAR" property="callingAccount" />
 		<result column="called_account" jdbcType="VARCHAR" property="calledAccount" />
 		<result column="calling_number" jdbcType="VARCHAR" property="callingNumber" />
 		<result column="called_number" jdbcType="VARCHAR" property="calledNumber" />
 		<result column="from_to_store_ip" jdbcType="VARCHAR" property="fromToStoreIp" />
 		<result column="from_to_store_url" jdbcType="VARCHAR" property="fromToStoreUrl" />
-		<result column="to_store_from_ip" jdbcType="VARCHAR" property="toFromStoreIp" />
-		<result column="to_store_from_url" jdbcType="VARCHAR" property="toFromStoreUrl" />
-		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
-		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="to_from_store_ip" jdbcType="VARCHAR" property="toFromStoreIp" />
+		<result column="to_from_store_url" jdbcType="VARCHAR" property="toFromStoreUrl" />
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
-		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
+		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 	</resultMap>
 
