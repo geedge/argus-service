@@ -34,6 +34,7 @@ public class NtcReportService extends BaseLogService {
 
 	public Page<?> findNtcPzReport(Page<NtcPzReport> page, NtcPzReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcPzReport(entity));
 		if ("1".equals(entity.getSearchBusinessType())) {
 			Page<Map> pageTotal = new Page<Map>();
@@ -59,36 +60,43 @@ public class NtcReportService extends BaseLogService {
 	
 	public Page<NtcServiceReport> findNtcServiceReport(Page<NtcServiceReport> page, NtcServiceReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcServiceReport(entity));
 		return page;
 	}
 	public Page<NtcTagReport> findNtcTagReport(Page<NtcTagReport> page, NtcTagReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcTagReport(entity));
 		return page;
 	}
 	public Page<NtcAttrTypeReport> findNtcAttrTypeReport(Page<NtcAttrTypeReport> page, NtcAttrTypeReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcAttrTypeReport(entity));
 		return page;
 	}
 	public Page<NtcLwhhReport> findNtcLwhhReport(Page<NtcLwhhReport> page, NtcLwhhReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcLwhhReport(entity));
 		return page;
 	}
 	public Page<NtcSrcipDomesticReport> findNtcSrcipDomesticReport(Page<NtcSrcipDomesticReport> page, NtcSrcipDomesticReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcSrcipDomesticReport(entity));
 		return page;
 	}
 	public Page<NtcDestipCountryReport> findNtcDestipCountryReport(Page<NtcDestipCountryReport> page, NtcDestipCountryReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcDestipCountryReport(entity));
 		return page;
 	}
 	public Page<NtcEntranceReport> findNtcEntranceReport(Page<NtcEntranceReport> page, NtcEntranceReport entity)
 			throws Exception {
+		entity.setPage(page);
 		page.setList(dao.findNtcEntranceReport(entity));
 		return page;
 	}

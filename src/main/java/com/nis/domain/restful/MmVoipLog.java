@@ -37,10 +37,10 @@ public class MmVoipLog  extends LogEntity<MmVoipLog> {
     protected String toFromStoreUrl;
     @ApiModelProperty(value="节目ID", required=true)
     protected String pid;
-    @ApiModelProperty(value="节目访问地址", required=true)
-    protected String url;
     @ApiModelProperty(value="封堵现场片段路径", required=true)
     protected String logUri;
+    @ApiModelProperty(value="封堵类型", required=true)
+    protected Integer level;
     @ApiModelProperty(value="封堵类型", required=true)
     protected Integer fdType;
     
@@ -49,12 +49,6 @@ public class MmVoipLog  extends LogEntity<MmVoipLog> {
 	}
 	public void setPid(String pid) {
 		this.pid = pid;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
 	}
 	public String getLogUri() {
 		return logUri;
@@ -128,4 +122,11 @@ public class MmVoipLog  extends LogEntity<MmVoipLog> {
 	public void setToFromStoreUrl(String toFromStoreUrl) {
 		this.toFromStoreUrl = toFromStoreUrl;
 	}
+	public Integer getLevel() {
+		return level;
+	}
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
+	
 }
