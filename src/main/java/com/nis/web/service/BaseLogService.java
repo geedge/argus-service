@@ -221,12 +221,12 @@ public abstract class BaseLogService {
 		} catch (NumberFormatException e) {
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchServiceType参数格式错误",
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchServiceType参数错误");
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数错误");
 		}
 		try {
 			checkCloumnIsExist(thread, start, clazz, page);

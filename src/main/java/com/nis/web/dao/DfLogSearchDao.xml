@@ -525,6 +525,38 @@
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 	</resultMap>
-
+	<resultMap id="PxyHttpLogMap" type="com.nis.domain.restful.PxyHttpLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="req_line" jdbcType="VARCHAR" property="reqLine" />
+		<result column="res_line" jdbcType="VARCHAR" property="resLine" />
+		<result column="cookie" jdbcType="VARCHAR" property="cookie" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
+		<result column="user_agent" jdbcType="VARCHAR" property="userAgent" />
+		<result column="content_len" jdbcType="VARCHAR" property="contentLen" />
+		<result column="content_type" jdbcType="VARCHAR" property="contentType" />
+		<result column="set_cookie" jdbcType="VARCHAR" property="setCookie" />
+		<result column="req_header" jdbcType="VARCHAR" property="reqHeader" />
+		<result column="resp_header" jdbcType="VARCHAR" property="respHeader" />
+		<result column="req_body" jdbcType="VARCHAR" property="reqBody" />
+		<result column="resp_body" jdbcType="VARCHAR" property="respBody" />
+	</resultMap>
 
 </mapper>
