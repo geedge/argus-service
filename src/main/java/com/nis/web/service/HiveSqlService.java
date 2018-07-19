@@ -120,7 +120,7 @@ public class HiveSqlService {
 				}
 				if (null != foundTimePartEnd) {
 					// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
-					sql.append(" and found_time_partition<" + foundTimePartEnd);
+					sql.append(" and found_time_partition<=" + foundTimePartEnd);
 				}
 
 			}
