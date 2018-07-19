@@ -90,7 +90,7 @@ public enum RestBusinessCode {
 	/**
 	 * 编译配置的的doLog不能为空
 	 */
-	DoLogIsNull(4001007, "Maat配置的doLog不能为空"),
+	DoLogIsNull(4001007, "Maat编译配置的doLog不能为空"),
 	/**
 	 * 编译配置的的doLog不能为空
 	 */
@@ -117,7 +117,7 @@ public enum RestBusinessCode {
 	/**
 	 * 编译配置的groupNum不能为空
 	 */
-	GroupNumIsNull(4001016, "Maat配置groupNum属性，不能为空"),
+	GroupNumIsNull(4001016, "Maat配置groupNum属性不能为空"),
 	/**
 	 * 编译配置的的fatherCfgId不能为空
 	 */
@@ -125,7 +125,7 @@ public enum RestBusinessCode {
 	/**
 	 * 编译配置的缺少配置分组信息
 	 */
-	CompileGroupIsNull(4001018, "Maat配置的缺少groupRelationList"),
+	CompileGroupIsNull(4001018, "Maat配置缺少groupRelationList"),
 	
 	/**
 	 * 编译配置的opTime不能为空
@@ -137,17 +137,17 @@ public enum RestBusinessCode {
 	/**
 	 * 编译配置的的配置分组的CompileId不能为空
 	 */
-	GroupsCompileIdIsNull(4001100, "Maat配置的配置分组的compileId不能为空"),
+	GroupsCompileIdIsNull(4001100, "MAAT配置分组关系中compileId不能为空"),
 	
 	/**
 	 * 编译配置的的配置分组的groupId不能为空
 	 */
-	GroupIdIsNull(4001101, "Maat配置的的配置分组的groupId不能为空"),
+	GroupIdIsNull(4001101, "MAAT配置分组关系中groupId不能为空"),
 	
 	/**
 	 * 编译配置的的配置分组的isValid不能为空
 	 */
-	GroupsIsValidIsNull(4001102, "编译配置的的配置分组的isValid不能为空"),
+	GroupsIsValidIsNull(4001102, "MAAT配置分组关系中isValid不能为空"),
 	
 //	/**
 //	 * 编译配置的的配置分组的opTime不能为空
@@ -301,16 +301,16 @@ public enum RestBusinessCode {
 	/**
 	 * 编译配置的groupNum属性值等于0
 	 */
-	GroupNumIsZero(4002001, "Maat配置groupNum属性值，不能等于0"),
+	GroupNumIsZero(4002001, "Maat配置groupNum不能等于0"),
 	/**
 	 * 编译配置的groupNum属性值大于8
 	 */
-	GroupNumGtEight(4002002, "Maat配置的groupNum属性值大于8"),
+	GroupNumGtEight(4002002, "Maat配置的groupNum不能大于8"),
 	
 	/**
 	 * 编译配置的groupNum属性值与groupRelationList长度不相等
 	 */
-	GroupNumNEQGroupList(4002003, "Maat配置的groupNum属性值与groupRelationList长度不等"),
+	GroupNumNEQGroupList(4002003, "Maat配置的groupNum数量与groupRelationList大小需一致"),
 	/**
 	 * 编译配置的的fatherCfgId不能为空
 	 */
@@ -349,7 +349,7 @@ public enum RestBusinessCode {
 	/**
 	 * 配置的service与action关系不存在
 	 */
-	Service2ActionIsNull(4002010, "配置的service与action关系不存在"),
+	Service2ActionIsNull(4002010, "当前service与action关系不存在"),
 	/**
 	 * 状态更新操作，所有配置的isValid值必须相同
 	 */
@@ -358,62 +358,62 @@ public enum RestBusinessCode {
 	/**
 	 * 配置分组中同一groupId出现多次
 	 */
-	GroupIdIsRepeat(4002100,"Maat配置分组中同一groupId不能出现多次"),
+	GroupIdIsRepeat(4002100,"Maat配置分组groupId不能重复"),
 	
 	/**
 	 * tableName与编译配置业务类型不一致
 	 */
-	TableNameUnmatchService(4002101, "tableName与编译配置业务类型不匹配"),
+	TableNameUnmatchService(4002101, "当前编译配置service与域配置tableName的关系不存在"),
 	
 	/**
 	 *数值域配置的lowBoundary值不在有效范围内
 	 */
-	LowBoundaryIsWrongRange(4002200, "数值域配置的lowBoundary值不在有效范围内"),
+	LowBoundaryIsWrongRange(4002200, "数值域-配置lowBoundary值不在有效范围内"),
 	/**
 	 *数值域配置的upBoundary值不在有效范围内
 	 */
-	UpBoundaryIsWrongRange(4002201, "数值域配置的upBoundary值不在有效范围内"),
+	UpBoundaryIsWrongRange(4002201, "数值域-配置upBoundary值不在有效范围内"),
 	/**
 	 *数值域配置的lowBoundary大于upBoundary值
 	 */
-	LowBoundaryGTUpBoundary(4002202, "数值域配置的lowBoundary大于upBoundary值"),
+	LowBoundaryGTUpBoundary(4002202, "数值域-配置lowBoundary必须小于upBoundary"),
 	
 	/**
 	 * IP类域配置的direction的值不在有效范围
 	 */
-	DirectionIsWrongRange(4002300,"Maat配置的direction的值只能是0或1"),
+	DirectionIsWrongRange(4002300,"IP类域-direction的值只能是0或1"),
 	
 	/**
 	 * IP类域配置的IP或IpMask与addrType不一致
 	 */
-	IPUnMatchAddrType(4002301,"Maat配置IP或IpMask与addrType不一致"),
+	IPUnMatchAddrType(4002301,"IP类域-IP地址或掩码与addrType不一致"),
 	/**
 	 * IP类域配置的port格式不正确
 	 */
-	PortIsNotVal(4002302,"配置port或portMask格式不正确"),
+	PortIsNotVal(4002302,"IP类域-端口或端口掩码格式不正确"),
 	/**
 	 * IP类域配置的srcIp和dstIp不能相同
 	 */
-	SrcIpEQDstIp(4002303,"Maat配置的srcIp和dstIp不能相同"),
+	SrcIpEQDstIp(4002303,"IP类域-srcIp和dstIp不能相同"),
 	
 	/**
 	 * 字符串域配置的exprType的值只能是0(无表达式)或者1(与表达式)
 	 */
-	ExprTypeIsWrongRange(4002400,"Maat配置的exprType的值只能是0(无表达式)或者1(与表达式)"),
+	ExprTypeIsWrongRange(4002400,"字符域-exprType的值只能是0(无表达式)或1(与表达式)"),
 
 	/**
 	 * 字符串域配置的matchMethod的值只能是0(无表达式)或者1(与表达式)
 	 */
-	MatchMethodIsWrongRange(4002401,"Maat配置的matchMethod的值只能是0(子串匹配),1(右匹配),2(左匹配),3(完全匹配)"),
+	MatchMethodIsWrongRange(4002401,"字符域-matchMethod的值只能是0(子串匹配),1(右匹配),2(左匹配),3(完全匹配)"),
 	
 	/**
 	 * 字符串域配置的isHexbin的值只能是0(大小写不敏感，且非HEX)或者1(HEX)或者2(大小写敏感，且非HEX)
 	 */
-	IsHexbinIsWrongRange(4002402,"Maat配置的isHexbin的值只能是0(大小写不敏感，且非HEX)或者1(HEX)或者2(大小写敏感，且非HEX)"),
+	IsHexbinIsWrongRange(4002402,"字符域-isHexbin的值只能是0(大小写不敏感，且非HEX)或者1(HEX)或者2(大小写敏感，且非HEX)"),
 	/**
 	 * 摘要类域配置的cfdsLevel的值只能是1到10
 	 */
-	CfdsLevelIsWrongRange(4002500,"Maat配置cfdsLevel的值只能是1到10"),
+	CfdsLevelIsWrongRange(4002500,"摘要域-cfdsLevel的值只能是1到10"),
 	
 	
 	//回调类
