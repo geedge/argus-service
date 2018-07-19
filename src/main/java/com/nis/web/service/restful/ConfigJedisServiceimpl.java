@@ -29,6 +29,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 @Service()
 public class ConfigJedisServiceimpl implements ConfigRedisService {
 	private static Logger logger = LoggerFactory.getLogger(ConfigJedisServiceimpl.class);
+	private static final int TAPREDISDB = Configurations.getIntProperty("tapRedisDb", 7);
 
 	public boolean saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
@@ -92,7 +93,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 														valBF.append("\t");
 													} else if (valStr.equals("\\n")) {
 														valBF.append("\n");
-													}else {
+													} else {
 														valBF.append(valStr);
 													}
 												}
@@ -671,23 +672,38 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 							valStr = valStr.trim().replace("[", "").replace("]", "");
 							String val = map.get(valStr);
 							if (val != null) {
+								if (TAPREDISDB == redisDBIndex && type != 10 && type != 11
+										&& valStr.toLowerCase().equals("op_time")) {// 域配置并且是op_time时在op_time前面添加如下内容
+									Map<String, String[]> map2 = ServiceAndRDBIndexReal.getMaatToValveMap()
+											.get(service);
+									if (map2 != null && map2.size() > 0) {
+										String[] arr = null;
+										if (type == 12) {// IP类
+											arr = map2.get("ipRegion");
+										} else if (type == 13) {// 数值类
+											arr = map2.get("numRegion");
+										} else if (type == 14) {// 字符串类
+											arr = map2.get("strRegion");
+										} else if (type == 15) {// 增强字符串类
+											arr = map2.get("strStrRegion");
+										} else if (type == 16) {// 文件摘要类
+											arr = map2.get("fileDigestRegion");
+										} else if (type == 17) {// 文件摘要类
+											arr = map2.get("fileLikeRegion");
+										} else if (type == 18) {// 文件摘要类
+											arr = map2.get("ipClientRange");
+										}
+										if (arr != null && arr.length > 0) {
+											for (String str : arr) {
+												valBF.append(map.get(str.toLowerCase()) + "\t");
+											}
+										}
+									}
+								}
 								valBF.append(val);
 							} else {
-								if (type != 10 && type != 11) {// 域配置
-									if (valStr.toLowerCase().equals("service") || valStr.toLowerCase().equals("action")
-											|| valStr.toLowerCase().equals("user_region")) {// 域配置中只有这三个可以为空
-										// 删除前面的\t
-									} else {// 其他不可以为空
-										throw new RuntimeException(
-												"后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
-									}
-								} else {// 编译配置或分组配置 所有在maat.xml中配置的属性都不可以为空
-									// if (!valStr.toLowerCase().equals("service")&&!
-									// valStr.toLowerCase().equals("action")
-									// &&!valStr.toLowerCase().equals("user_region") &&type==10) {
-									throw new RuntimeException(
-											"后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
-								}
+								// 所有在maat.xml中配置的属性都不可以为空
+								throw new RuntimeException("后台错误:未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据是否正确");
 							}
 						} else if (valStr.equals("&nbsp")) {
 							valBF.append(" ");
@@ -779,14 +795,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 													for (String keyStr : keySplit) {
 														if (!StringUtils.isEmpty(keyStr)
 																&& keyStr.toUpperCase().equals("EFFECTIVE_RULE")) {
-															
-															if(isInvalid) {
+
+															if (isInvalid) {
 																keyStr = "OBSOLETE_RULE";
-															}else {
+															} else {
 																keyStr = "EFFECTIVE_RULE";
 															}
-															
-														
+
 															keyBF.append(keyStr.trim());
 														} else if (!StringUtils.isEmpty(keyStr)
 																&& keyStr.trim().startsWith("[")) {
@@ -818,7 +833,6 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 														oldKey = maatKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
 													}
 
-												
 													if (JedisUtils.exists(oldKey.toString().toUpperCase(),
 															redisDBIndex)) {
 														transaction.rename(oldKey.toString().toUpperCase(),
@@ -840,12 +854,14 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 														if (isInvalid) {
 															String zset = maatKey.replace("OBSOLETE_RULE:", "DEL,");
 															transaction.zadd("MAAT_UPDATE_STATUS", maatVersion, zset);
-															logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
+															logger.info(
+																	"向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
 																	redisDBIndex, zset.toUpperCase(), maatVersion);
-														}else {
+														} else {
 															String zset = maatKey.replace("EFFECTIVE_RULE:", "ADD,");
 															transaction.zadd("MAAT_UPDATE_STATUS", maatVersion, zset);
-															logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
+															logger.info(
+																	"向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
 																	redisDBIndex, zset.toUpperCase(), maatVersion);
 														}
 													}
