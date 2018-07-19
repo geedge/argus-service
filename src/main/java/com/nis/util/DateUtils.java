@@ -225,13 +225,13 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		//实时报表统计，默认查询最近5分钟
 		if("minute".equals(type) && startTime == null && endTime == null){
 			Calendar cal=Calendar.getInstance();
-			timeMap.put("startTime", sdf.format(cal.getTime()));
+			timeMap.put("endTime", sdf.format(cal.getTime()));
 			if(localLen != null){
 				cal.add(Calendar.MINUTE, -localLen.intValue());
 			}else{
 				cal.add(Calendar.MINUTE, -5);
 			}
-			timeMap.put("endTime", sdf.format(cal.getTime()));
+			timeMap.put("startTime", sdf.format(cal.getTime()));
 			logger.info("实时报表统计默认开始时间条件："+timeMap.get("startTime"));
 			logger.info("默认结束时间条件："+timeMap.get("endTime"));
 			return timeMap;
