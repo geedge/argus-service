@@ -39,24 +39,24 @@ public class DefaultRestErrorResolver implements RestErrorResolver,InitializingB
 	private RestResult buildError(Exception ex, HttpServletRequest request) {
 		RestResult error = new RestResult();
 		error.setStatus(this.getHttpStatusByEx(ex));// 设置http状态
-		//获取日志源[只有日志需要返回日志源和ActiveSys]
-		int logSource = ((RestServiceException) ex).getLogSource();
 		
 		//RestServiceException 包含有错误code
 		if(ex instanceof RestServiceException){
+			//获取日志源[只有日志需要返回日志源和ActiveSys]
+			int logSource = ((RestServiceException) ex).getLogSource();
+			error.setTraceCode(((RestServiceException) ex).getTraceCode());
 			int errorCode = ((RestServiceException) ex).getErrorCode();
 			error.setBusinessCode(RestBusinessCode.valueOf(errorCode));
 		} else {
 			error.setBusinessCode(RestBusinessCode.valueOf(998));
 		}
-		
 		error.setMsg(ex.getMessage());
 		if(null != request){
 			error.setFromUri(request.getRequestURI());
 		}else {
 			error.setFromUri("unknow url");
 		}
-		error.setTraceCode(((RestServiceException) ex).getTraceCode());
+	
 		return error;
 	}
 	
