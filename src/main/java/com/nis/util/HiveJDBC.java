@@ -135,13 +135,15 @@ public class HiveJDBC {
 		Map<String, String> filedAndColumnMap = getColumn2FiledMap(entityClass);
 		List<String> listString = new ArrayList<String>();
 		List listObject = new ArrayList();
-		List<String> columnList = null;
-		if (null != obj && obj.length > 0) {
-			columnList = new ArrayList<String>();
-			for (int i = 0; i < obj.length; i++) {
-				columnList.add(obj[i].toString().toLowerCase());
-			}
-		}
+		//不从Object... obj中获取需要date类型的字段了,调用的时候容易漏写,改为反射获取date类型的字段
+		List<String> columnList =getDateColumn(entityClass); 
+//		List<String> columnList =null; 
+//		if (null != obj && obj.length > 0) {
+//			columnList = new ArrayList<String>();
+//			for (int i = 0; i < obj.length; i++) {
+//				columnList.add(obj[i].toString().toLowerCase());
+//			}
+//		}
 		// ResultSet rs = HiveJDBC.query(sql.toString());
 		ResultSetMetaData metaData = rs.getMetaData();
 		while (rs.next()) {
@@ -186,7 +188,7 @@ public class HiveJDBC {
 			} else {
 				mapList.put("str", listString.subList(startNum, listString.size()));
 			}
-			
+
 		} else {
 			mapList.put("str", new ArrayList());
 		}
@@ -201,6 +203,27 @@ public class HiveJDBC {
 		}
 		System.out.println(mapList.get("obj").size());
 		return mapList;
+	}
+
+	/**
+	 * 反射获取类中date类型的字段名称
+	 * @param type
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<String> getDateColumn(Class type) throws Exception {
+		List<String> columnList = new ArrayList<String>();
+		BeanInfo beanInfo = Introspector.getBeanInfo(type);
+		PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+		for (int i = 0; i < propertyDescriptors.length; i++) {
+			PropertyDescriptor propertyDescriptor = propertyDescriptors[i];
+			String name = propertyDescriptor.getName();
+			String fieldTypeName = propertyDescriptor.getPropertyType().getName();
+			if (fieldTypeName.equals("java.util.Date")) {
+				columnList.add(name.toLowerCase());
+			}
+		}
+		return columnList;
 	}
 
 	public static Object map2Obj(Map map, Class type) throws Exception {
