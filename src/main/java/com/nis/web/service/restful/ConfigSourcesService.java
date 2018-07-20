@@ -2876,7 +2876,16 @@ public class ConfigSourcesService extends BaseService {
 						}
 						break;
 					case "IP":
-						if (!BasicProvingUtil.isIpOrIpMask(dstStr, ipType)) {
+						Boolean isSrcInfo = commonSourceFieldCfg.getIsSrcInfo();
+						Integer valAddrType = ipType;
+						if (ipType.intValue()==46) {
+							valAddrType=isSrcInfo?4:6;
+						}else if (ipType.intValue()==64) {
+							valAddrType=isSrcInfo?6:4;
+						}else if (ipType.intValue()==10) {
+							valAddrType=null;
+						}
+						if (!BasicProvingUtil.isIpOrIpMask(dstStr, valAddrType)) {
 							logger.error(commonSourceFieldCfg.getSrcName()
 									+ "参数格式不正确或与" + ipTypeName + "不一致");
 							thread.setExceptionInfo(commonSourceFieldCfg

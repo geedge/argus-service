@@ -39,6 +39,8 @@
 												<xs:enumeration value="Date"></xs:enumeration>
 												<xs:enumeration value="Number"></xs:enumeration>
 												<xs:enumeration value="IP">
+													<![CDATA[IP类型数据，如果格式可能为4OVER6或6OVER4,需要添加isSrcInfo="true"
+													]]>
 												</xs:enumeration>
 												<xs:enumeration value="Port"></xs:enumeration>
 											</xs:restriction>
@@ -65,6 +67,12 @@
 									<xs:attribute name="regexp">
 										<xs:annotation>
 											<xs:documentation><![CDATA[其他类型字段格式验证，正则表达式]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="isSrcInfo" type="xs:boolean">
+										<xs:annotation>
+											<xs:documentation><![CDATA[IP类型数据，如果格式可能为4OVER6或6OVER4,通过isSrcInfo="true"指定源IP信息]]>
 											</xs:documentation>
 										</xs:annotation>
 									</xs:attribute>

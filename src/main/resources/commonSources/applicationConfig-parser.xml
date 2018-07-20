@@ -15,9 +15,9 @@
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
-		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
-		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true"/>
-		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true"/>
+		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="^([4|6]{1})|46|64|10$"/>
+		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true" isSrcInfo="true"/>
+		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true" isSrcInfo="true"/>
 		<t:field fieldType="Port" srcName="srcPort" dstName="src_port" isRequired="true" range="0-65535"/>
 		<t:field fieldType="Port" srcName="maskSrcPort" dstName="mask_src_port" isRequired="true" range="0-65535"/>
 		<t:field fieldType="IP" srcName="dstIp" dstName="dst_ip" isRequired="true"/>
@@ -90,9 +90,9 @@
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
 		<t:field fieldType="Number" srcName="policyGroup" dstName="policy_group" isRequired="true" defaultVal="0"/>
-		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
-		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true"/>
-		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true"/>
+		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="^([4|6]{1})|46|64|10$"/>
+		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true" isSrcInfo="true"/>
+		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true" isSrcInfo="true"/>
 		<t:field fieldType="Port" srcName="srcPort" dstName="src_port" isRequired="true" range="0-65535"/>
 		<t:field fieldType="Port" srcName="maskSrcPort" dstName="mask_src_port" isRequired="true" range="0-65535"/>
 		<t:field fieldType="IP" srcName="dstIp" dstName="dst_ip" isRequired="true"/>

@@ -702,25 +702,91 @@ public class CompileVal {
 	}
 
 	public static String serviceIpClientRegionVal(IpRegion ipRegion, Long compileId) {
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置srcIp的格式不正确或与addrType不一致";
-		}
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
-		}
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置dstIp的格式不正确或与addrType不一致";
-		}
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+		//源IP信息和目的IP信息格式为IPV4或IPV6
+		if (ipRegion.getAddrType().intValue()==4||ipRegion.getAddrType().intValue()==6) {
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
+		}else if (ipRegion.getAddrType().intValue()==46) {//4OVER6:源IP信息格式为IPV4、目的IP信息格式IPV6
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
+		}else if (ipRegion.getAddrType().intValue()==64) {//6OVER4:源IP信息格式为IPV6、目的IP信息格式IPV4
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
+		}else if (ipRegion.getAddrType().intValue()==10) {//all:符合IP格式即可
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
 		}
 
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {
@@ -776,25 +842,91 @@ public class CompileVal {
 	}
 	
 	public static String serviceIpRegionVal(IpRegion ipRegion, Long compileId) {
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置srcIp的格式不正确或与addrType不一致";
-		}
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
-		}
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置dstIp的格式不正确或与addrType不一致";
-		}
-		if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
-			businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+		//源IP信息和目的IP信息格式为IPV4或IPV6
+		if (ipRegion.getAddrType().intValue()==4||ipRegion.getAddrType().intValue()==6) {
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
+		}else if (ipRegion.getAddrType().intValue()==46) {//4OVER6:源IP信息格式为IPV4、目的IP信息格式IPV6
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
+		}else if (ipRegion.getAddrType().intValue()==64) {//6OVER4:源IP信息格式为IPV6、目的IP信息格式IPV4
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 6)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 4)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
+		}else if (ipRegion.getAddrType().intValue()==10) {//all:符合IP格式即可
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置srcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置dstIp的格式不正确或与addrType不一致";
+			}
+			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), null)) {
+				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
+				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
+				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+			}
 		}
 		
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {

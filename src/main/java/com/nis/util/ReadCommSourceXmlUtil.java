@@ -91,6 +91,9 @@ public class ReadCommSourceXmlUtil {
 									if (!StringUtil.isEmpty(field.attribute("regexp"))) {
 										fieldCfg.setRegexp(field.attribute("regexp").getValue());
 									}
+									if (!StringUtil.isEmpty(field.attribute("isSrcInfo"))) {
+										fieldCfg.setIsSrcInfo(Boolean.valueOf(field.attribute("isSrcInfo").getValue()));
+									}
 									cfgList.add(fieldCfg);
 								}
 								commonSourceCfgMap.put(serviceId.trim(), cfgList);
