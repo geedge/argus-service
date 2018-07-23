@@ -16,28 +16,65 @@
     stat_id, bs_type,os_type, entrance_id, c2s_pkt_num, s2c_pkt_num, c2s_byte_len, s2c_byte_len, 
     stat_time
   </sql>
-  <!--获取操作系统列表  -->
+  <!--获取操作系统列表TOP10  -->
   <select id="systemList" resultMap="BaseResultMap">
-    SELECT os_type osType, count(os_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
-	WHERE os_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
+    SELECT os_type osType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
+	WHERE os_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
-  <!-- 根据操作系统获取浏览器分类 -->
-  <select id="getBrowserBySystem" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    SELECT bs_type bsType, count(bs_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
-	WHERE bs_type !=0 and os_type=#{osType} and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
-	GROUP BY bs_type limit 0,10
+  <!--获取上个时间段操作系统的数据量  -->
+  <select id="preSystemListCount" resultType="java.lang.Integer">
+    SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count FROM galaxy.traffic_ua_statistic
+	WHERE os_type !=0 and os_type=#{osType}
+	and stat_time between DATE_SUB(NOW(),INTERVAL 10 MINUTE) and DATE_SUB(NOW(),INTERVAL 5 MINUTE)
   </select>
-  <!--获取浏览器列表  -->
-  <select id="browserList" resultMap="BaseResultMap">
-    SELECT bs_type bsType, count(bs_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
-	WHERE bs_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
+  <!-- 根据操作系统获取浏览器分类 -->
+  <select id="getBrowserBySystem" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+    SELECT bs_type bsType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
+	WHERE bs_type !=0 and os_type=#{osType} and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
+    <!--浏览器TOP10后所有为others -->
+  <select id="systemOthers" resultType="java.util.HashMap">
+  	SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
+	WHERE bs_type !=0 and os_type=#{osType}
+		<if test="bsType!=null and bsType.size()>0">
+		and os_type not in
+		<foreach collection="bsType" item="singleType" index="index" open="(" close=")" separator=",">
+				 #{singleType}
+		</foreach>
+		</if>
+	and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+  </select>
+  
+  <!--获取浏览器列表TOP10  -->
+  <select id="browserList" resultMap="BaseResultMap">
+    SELECT bs_type bsType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
+	WHERE bs_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+	GROUP BY bs_type ORDER BY count DESC limit 0,10
+  </select>
+    <!--获取上个时间段浏览器的数据量  -->
+  <select id="preBrowserListCount" resultType="java.lang.Integer">
+    SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count FROM galaxy.traffic_ua_statistic
+	WHERE bs_type !=0 and bs_type=#{bsType}
+	and stat_time between DATE_SUB(NOW(),INTERVAL 10 MINUTE) and DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+  </select>
   <!-- 根据浏览器获取操作系统分类 -->
-  <select id="getSystemBybrowser" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    SELECT os_type osType, count(os_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
-	WHERE os_type !=0 and bs_type=#{bsType} and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
-	GROUP BY os_type limit 0,10
+  <select id="getSystemBybrowser" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+    SELECT os_type osType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
+	WHERE os_type !=0 and bs_type=#{bsType} and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+	GROUP BY os_type ORDER BY count DESC limit 0,10
+  </select>
+  <!--操作系统TOP10后所有为others -->
+  <select id="browserOthers" parameterType="java.util.List" resultType="java.util.HashMap">
+  	SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
+	WHERE os_type !=0 and bs_type=#{bsType}
+		<if test="osType!=null and osType.size()>0">
+		and bs_type not in
+		<foreach collection="osType" item="singleType" index="index" open="(" close=")" separator=",">
+				 #{singleType}
+		</foreach>
+		</if>
+	and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
   </select>
 </mapper>

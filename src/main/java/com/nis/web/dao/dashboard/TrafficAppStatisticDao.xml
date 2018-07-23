@@ -16,8 +16,8 @@
     stat_time
   </sql>
  <select id="appChart" resultType="java.util.HashMap">
-    SELECT app_type appType, count(app_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_app_statistic
-	WHERE app_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
-	GROUP BY app_type limit 0,10
+    SELECT app_type appType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_app_statistic
+	WHERE app_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+	GROUP BY app_type order by count desc limit 0,10
   </select>
 </mapper>

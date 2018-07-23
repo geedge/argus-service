@@ -16,8 +16,6 @@
     stat_time
   </sql>
   <select id="protocolChart" resultType="java.util.HashMap">
-    SELECT proto_type protoType, count(proto_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_protocol_statistic
-	WHERE proto_type!=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
-	GROUP BY proto_type limit 0,10
+	SELECT proto_type protoType, ( SUM(c2s_pkt_num) + SUM(s2c_pkt_num) + SUM(c2s_byte_len) + SUM(s2c_byte_len)) count, ( SUM(c2s_pkt_num) + SUM(s2c_pkt_num)) pktNum, ( SUM(c2s_byte_len) + SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_protocol_statistic WHERE proto_type != 0 AND stat_time >= DATE_SUB(NOW(), INTERVAL 5 MINUTE) GROUP BY proto_type ORDER BY count DESC LIMIT 0, 10
   </select>
 </mapper>

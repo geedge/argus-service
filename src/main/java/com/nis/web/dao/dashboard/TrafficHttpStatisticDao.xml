@@ -17,14 +17,32 @@
   </sql>
     <!--获取网站列表列表  -->
   <select id="websiteList" resultMap="BaseResultMap">
-  	SELECT web_id webId, count(web_id) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
-	WHERE web_id !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
+  	SELECT web_id webId, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
+	WHERE web_id !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
 	GROUP BY web_id ORDER BY count DESC limit 0,10
   </select>
   <!-- 根据网站分类 -->
-  <select id="getTypeBywebsite" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-	SELECT web_type webType, count(web_type) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
-	WHERE web_type !=0 and web_id=#{webId} and stat_time >= DATE_SUB(NOW(),INTERVAL 555 HOUR)
-	GROUP BY web_type limit 0,10
+  <select id="getTypeBywebsite" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+	SELECT web_type webType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
+	WHERE web_type !=0 and web_id=#{webId} and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+	GROUP BY web_type ORDER BY count limit 0,10
+  </select>
+      <!--获取上个时间段网站流量的数据量  -->
+  <select id="preWebsiteListCount" resultType="java.lang.Integer">
+    SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count FROM galaxy.traffic_http_statistic
+	WHERE web_type !=0 and web_id=#{webId}
+	and stat_time between DATE_SUB(NOW(),INTERVAL 10 MINUTE) and DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+  </select>
+  <!-- 指定网站下的TOP10之外为others -->
+    <select id="websiteTypeOthers" resultType="java.util.HashMap">
+  	SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
+	WHERE web_type !=0 and web_id=#{webId}
+		<if test="webType!=null and webType.size()>0">
+		and bs_type not in
+		<foreach collection="webType" item="singleType" index="index" open="(" close=")" separator=",">
+				 #{singleType}
+		</foreach>
+		</if>
+	and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
   </select>
 </mapper>

@@ -12,4 +12,8 @@ public interface TrafficHttpStatisticDao {
     List<TrafficHttpStatistic> websiteList();
 
 	List<Map> getTypeBywebsite(@Param("webId") Integer webId);
+	
+	Map websiteTypeOthers(@Param("webType") List webType,@Param("webId") Integer webId);
+
+	Integer preWebsiteListCount(@Param("webId") Integer webId);
 }
