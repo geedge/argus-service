@@ -15,7 +15,7 @@ public class MmSampleVoipLog extends LogEntity<MmSampleVoipLog> {
 	@ApiModelProperty(value = "VOIP通话时长（秒）", required = true)
 	protected String duation;
 	@ApiModelProperty(value = "VOIP协议", required = true)
-	protected String protocol;
+	protected String voipProtocol;
 	@ApiModelProperty(value = "主叫VOIP账号", required = true)
 	protected String callingAccount;
 	@ApiModelProperty(value = "被叫VOIP账号", required = true)
@@ -64,13 +64,17 @@ public class MmSampleVoipLog extends LogEntity<MmSampleVoipLog> {
 	public void setFdType(Integer fdType) {
 		this.fdType = fdType;
 	}
-
-	public String getProtocol() {
-		return protocol;
+	/**
+	 * @return the voipProtocol
+	 */
+	public String getVoipProtocol() {
+		return voipProtocol;
 	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
+	/**
+	 * @param voipProtocol the voipProtocol to set
+	 */
+	public void setVoipProtocol(String voipProtocol) {
+		this.voipProtocol = voipProtocol;
 	}
 
 	public String getDuation() {

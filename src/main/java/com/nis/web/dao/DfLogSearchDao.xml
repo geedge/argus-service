@@ -549,7 +549,7 @@
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
-		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
 		<result column="calling_account" jdbcType="VARCHAR" property="callingAccount" />
 		<result column="called_account" jdbcType="VARCHAR" property="calledAccount" />
 		<result column="calling_number" jdbcType="VARCHAR" property="callingNumber" />
@@ -585,7 +585,7 @@
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
-		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
 		<result column="calling_account" jdbcType="VARCHAR" property="callingAccount" />
 		<result column="called_account" jdbcType="VARCHAR" property="calledAccount" />
 		<result column="calling_number" jdbcType="VARCHAR" property="callingNumber" />
@@ -769,7 +769,7 @@
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
-		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
 		<result column="calling_account" jdbcType="VARCHAR" property="callingAccount" />
 		<result column="called_account" jdbcType="VARCHAR" property="calledAccount" />
 		<result column="calling_number" jdbcType="VARCHAR" property="callingNumber" />
