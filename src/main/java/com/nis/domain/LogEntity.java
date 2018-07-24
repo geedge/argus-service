@@ -55,9 +55,9 @@ public abstract class LogEntity<T> implements Serializable {
 	@ApiModelProperty(value = "客户端ip地址", required = true)
 	protected String sIp;
 	@ApiModelProperty(value = "服务端端口", required = true)
-	protected String dPort;
+	protected Integer dPort;
 	@ApiModelProperty(value = "客户端端口", required = true)
-	protected String sPort;
+	protected Integer sPort;
 	@ApiModelProperty(value = "业务类型", required = true)
 	protected Integer service;
 	@ApiModelProperty(value = "出入口编号", required = true)
@@ -211,19 +211,19 @@ public abstract class LogEntity<T> implements Serializable {
 		this.sIp = sIp;
 	}
 
-	public String getdPort() {
+	public Integer getdPort() {
 		return dPort;
 	}
 
-	public void setdPort(String dPort) {
+	public void setdPort(Integer dPort) {
 		this.dPort = dPort;
 	}
 
-	public String getsPort() {
+	public Integer getsPort() {
 		return sPort;
 	}
 
-	public void setsPort(String sPort) {
+	public void setsPort(Integer sPort) {
 		this.sPort = sPort;
 	}
 
