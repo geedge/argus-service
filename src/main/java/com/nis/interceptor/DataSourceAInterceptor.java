@@ -32,7 +32,7 @@ public class DataSourceAInterceptor implements HandlerInterceptor {
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
 		CustomerContextHolder.clearCustomerType();
-		logger.info("释放数据源日志操作库---");
+		logger.info("释放数据源操作库---");
 	}
 
 }
