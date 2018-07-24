@@ -23,7 +23,14 @@ import com.nis.domain.restful.MmAvIpLog;
 import com.nis.domain.restful.MmAvUrlLog;
 import com.nis.domain.restful.MmPicIpLog;
 import com.nis.domain.restful.MmPicUrlLog;
-import com.nis.domain.restful.MmVoipLog;
+import com.nis.domain.restful.MmPornAudioLevelLog;
+import com.nis.domain.restful.MmPornVideoLevelLog;
+import com.nis.domain.restful.MmSampleAudioLog;
+import com.nis.domain.restful.MmSamplePicLog;
+import com.nis.domain.restful.MmSampleVideoLog;
+import com.nis.domain.restful.MmSampleVoipLog;
+import com.nis.domain.restful.MmVoipAccountLog;
+import com.nis.domain.restful.MmVoipIpLog;
 import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDdosLog;
@@ -984,14 +991,14 @@ public class LogController extends BaseRestController {
 			logPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(MmAvIpLog.class.getSimpleName(), page.getOrderBy());
+				orderBy = Page.getOrderBySql(MmAvUrlLog.class.getSimpleName(), page.getOrderBy());
 			} else {
 				orderBy = "found_Time";
 			}
 			ResultSet rs = HiveSqlService.getResultSet(page, mmAvUrlLog,
 					Configurations.getStringProperty(MmAvUrlLog.class.getSimpleName() + "HiveTable", "MM_AV_URL_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmAvIpLog.class, "foundTime",
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmAvUrlLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -1127,31 +1134,31 @@ public class LogController extends BaseRestController {
 				logPage, 0);
 	}
 	
-	@RequestMapping(value = "/mmVoipLogs", method = RequestMethod.GET)
-	@ApiOperation(value = "VOIP日志查询", httpMethod = "GET", notes = "对日志功能“VOIP日志”提供数据基础查询服务")
-	public Map<String, ?> mmVoipLogs(Page page, MmVoipLog mmVoipLog, Model model, HttpServletRequest request,
+	@RequestMapping(value = "/mmVoipIpLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "VOIP IP日志查询", httpMethod = "GET", notes = "对日志功能“VOIP IP日志”提供数据基础查询服务")
+	public Map<String, ?> mmVoipIpLogs(Page page, MmVoipIpLog mmVoipIpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<MmVoipLog> logPage = null;
+		Page<MmVoipIpLog> logPage = null;
 		try {
-			resetTime(mmVoipLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmVoipLog, MmAvIpLog.class, page);
-			logPage = new Page<MmVoipLog>();
+			resetTime(mmVoipIpLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmVoipIpLog, MmVoipIpLog.class, page);
+			logPage = new Page<MmVoipIpLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(MmVoipLog.class.getSimpleName(), page.getOrderBy());
+				orderBy = Page.getOrderBySql(MmVoipIpLog.class.getSimpleName(), page.getOrderBy());
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmVoipLog,
-					Configurations.getStringProperty(MmVoipLog.class.getSimpleName() + "HiveTable", "MM_VOIP_LOG"),
+			ResultSet rs = HiveSqlService.getResultSet(page, mmVoipIpLog,
+					Configurations.getStringProperty(MmVoipIpLog.class.getSimpleName() + "HiveTable", "MM_VOIP_IP_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmVoipLog.class, "foundTime",
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmVoipIpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -1159,8 +1166,61 @@ public class LogController extends BaseRestController {
 				List list = tableMapping.get("obj");
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
-					List<MmVoipLog> List = (java.util.List<MmVoipLog>) JsonMapper.fromJsonList(jsonString,
-							MmVoipLog.class);
+					List<MmVoipIpLog> List = (java.util.List<MmVoipIpLog>) JsonMapper.fromJsonList(jsonString,
+							MmVoipIpLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP IP日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP IP日志检索成功",
+				logPage, 0);
+	}
+	@RequestMapping(value = "/mmVoipAccountLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "VOIP Account日志查询", httpMethod = "GET", notes = "对日志功能“VOIP Account日志”提供数据基础查询服务")
+	public Map<String, ?> mmVoipAccountLogs(Page page, MmVoipAccountLog mmVoipLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmVoipAccountLog> logPage = null;
+		try {
+			resetTime(mmVoipLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmVoipLog, MmVoipAccountLog.class, page);
+			logPage = new Page<MmVoipAccountLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmVoipAccountLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmVoipLog,
+					Configurations.getStringProperty(MmVoipAccountLog.class.getSimpleName() + "HiveTable", "MM_VOIP_ACCOUNT_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmVoipAccountLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmVoipAccountLog> List = (java.util.List<MmVoipAccountLog>) JsonMapper.fromJsonList(jsonString,
+							MmVoipAccountLog.class);
 					logPage.setList(List);
 					logPage.setCount(List.size());
 
@@ -1180,6 +1240,327 @@ public class LogController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP日志检索成功",
 				logPage, 0);
 	}
+	
+	@RequestMapping(value = "/mmSampleAudioLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "音频样例日志查询", httpMethod = "GET", notes = "对日志功能“音频样例日志”提供数据基础查询服务")
+	public Map<String, ?> mmSampleAudioLogs(Page page, MmSampleAudioLog mmSampleAudioLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmSampleAudioLog> logPage = null;
+		try {
+			resetTime(mmSampleAudioLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmSampleAudioLog, MmSampleAudioLog.class, page);
+			logPage = new Page<MmSampleAudioLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmSampleAudioLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmSampleAudioLog,
+					Configurations.getStringProperty(MmSampleAudioLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_AUDIO_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSampleAudioLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmSampleAudioLog> List = (java.util.List<MmSampleAudioLog>) JsonMapper.fromJsonList(jsonString,
+							MmSampleAudioLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "音频样例日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "音频样例日志检索成功",
+				logPage, 0);
+	}
+	@RequestMapping(value = "/mmSampleVideoLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "视频样例日志查询", httpMethod = "GET", notes = "对日志功能“视频样例日志”提供数据基础查询服务")
+	public Map<String, ?> mmSampleVideoLogs(Page page, MmSampleVideoLog mmSampleVideoLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmSampleVideoLog> logPage = null;
+		try {
+			resetTime(mmSampleVideoLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmSampleVideoLog, MmSampleVideoLog.class, page);
+			logPage = new Page<MmSampleVideoLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmSampleVideoLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmSampleVideoLog,
+					Configurations.getStringProperty(MmSampleVideoLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_VIDEO_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSampleVideoLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmSampleVideoLog> List = (java.util.List<MmSampleVideoLog>) JsonMapper.fromJsonList(jsonString,
+							MmSampleVideoLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "视频样例日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "视频样例日志检索成功",
+				logPage, 0);
+	}
+	@RequestMapping(value = "/mmPornAudioLevelLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "音频色情日志查询", httpMethod = "GET", notes = "对日志功能“音频色情日志”提供数据基础查询服务")
+	public Map<String, ?> mmPornAudioLevelLogs(Page page, MmPornAudioLevelLog mmPornAudioLevelLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmPornAudioLevelLog> logPage = null;
+		try {
+			resetTime(mmPornAudioLevelLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmPornAudioLevelLog, MmPornAudioLevelLog.class, page);
+			logPage = new Page<MmPornAudioLevelLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmPornAudioLevelLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmPornAudioLevelLog,
+					Configurations.getStringProperty(MmPornAudioLevelLog.class.getSimpleName() + "HiveTable", "MM_PORN_AUDIO_LEVEL_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmPornAudioLevelLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmPornAudioLevelLog> List = (java.util.List<MmPornAudioLevelLog>) JsonMapper.fromJsonList(jsonString,
+							MmPornAudioLevelLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "音频色情日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "音频色情日志检索成功",
+				logPage, 0);
+	}
+	@RequestMapping(value = "/mmPornVideoLevelLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "视频色情日志查询", httpMethod = "GET", notes = "对日志功能“视频色情日志”提供数据基础查询服务")
+	public Map<String, ?> mmPornVideoLevelLogs(Page page, MmPornVideoLevelLog mmPornVideoLevelLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmPornVideoLevelLog> logPage = null;
+		try {
+			resetTime(mmPornVideoLevelLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmPornVideoLevelLog, MmPornVideoLevelLog.class, page);
+			logPage = new Page<MmPornVideoLevelLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmPornVideoLevelLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmPornVideoLevelLog,
+					Configurations.getStringProperty(MmPornVideoLevelLog.class.getSimpleName() + "HiveTable", "MM_PRON_VIDEO_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmPornVideoLevelLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmPornVideoLevelLog> List = (java.util.List<MmPornVideoLevelLog>) JsonMapper.fromJsonList(jsonString,
+							MmPornVideoLevelLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "视频色情日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "视频色情日志检索成功",
+				logPage, 0);
+	}
+	
+	@RequestMapping(value = "/mmSamplePicLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "图片样例日志查询", httpMethod = "GET", notes = "对日志功能“图片样例日志”提供数据基础查询服务")
+	public Map<String, ?> mmSamplePicLogs(Page page, MmSamplePicLog mmSamplePicLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmSamplePicLog> logPage = null;
+		try {
+			resetTime(mmSamplePicLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmSamplePicLog, MmSamplePicLog.class, page);
+			logPage = new Page<MmSamplePicLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmSamplePicLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmSamplePicLog,
+					Configurations.getStringProperty(MmSamplePicLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_PIC_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSamplePicLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmSamplePicLog> List = (java.util.List<MmSamplePicLog>) JsonMapper.fromJsonList(jsonString,
+							MmSamplePicLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "图片样例日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "图片样例日志检索成功",
+				logPage, 0);
+	}
+	@RequestMapping(value = "/mmSampleVoipLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "VOIP样例日志查询", httpMethod = "GET", notes = "对日志功能“VOIP样例日志”提供数据基础查询服务")
+	public Map<String, ?> mmSampleVoipLogs(Page page, MmSampleVoipLog mmSampleVoipLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmSampleVoipLog> logPage = null;
+		try {
+			resetTime(mmSampleVoipLog);
+			ntcReportService.queryConditionCheck(auditLogThread, start, mmSampleVoipLog, MmSampleVoipLog.class, page);
+			logPage = new Page<MmSampleVoipLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmSampleVoipLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, mmSampleVoipLog,
+					Configurations.getStringProperty(MmSampleVoipLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_VOIP_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSampleVoipLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmSampleVoipLog> List = (java.util.List<MmSampleVoipLog>) JsonMapper.fromJsonList(jsonString,
+							MmSampleVoipLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP样例日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP样例日志检索成功",
+				logPage, 0);
+	}
+	
 	@RequestMapping(value = "/pxyHttpLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "PXY HTTP日志查询", httpMethod = "GET", notes = "对日志功能“控制策略”-“HTTP日志”提供数据基础查询服务")
 	public Map<String, ?> pxyHttpLogs(Page page, PxyHttpLog pxyHttpLog, Model model, HttpServletRequest request,

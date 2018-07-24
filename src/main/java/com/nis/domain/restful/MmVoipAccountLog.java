@@ -10,7 +10,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * @date 2018年7月16日 下午2:57:12
  * @version V1.0
  */
-public class MmVoipLog  extends LogEntity<MmVoipLog> {
+public class MmVoipAccountLog  extends LogEntity<MmVoipAccountLog> {
 
 	private static final long serialVersionUID = -6131067803206270492L;
 //	@ApiModelProperty(value="VOIP接收时间", required=true)
