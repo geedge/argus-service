@@ -32,27 +32,18 @@ import com.nis.domain.restful.MmSampleVoipLog;
 import com.nis.domain.restful.MmVoipAccountLog;
 import com.nis.domain.restful.MmVoipIpLog;
 import com.nis.domain.restful.NtcAppLog;
-import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDdosLog;
-import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcDnsLog;
-import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.NtcFtpLog;
 import com.nis.domain.restful.NtcHttpLog;
 import com.nis.domain.restful.NtcIpLog;
 import com.nis.domain.restful.NtcIpsecLog;
 import com.nis.domain.restful.NtcL2tpLog;
-import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcMailLog;
 import com.nis.domain.restful.NtcOpenvpnLog;
 import com.nis.domain.restful.NtcPptpLog;
-import com.nis.domain.restful.NtcPzReport;
-import com.nis.domain.restful.NtcReportEntity;
-import com.nis.domain.restful.NtcServiceReport;
-import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
-import com.nis.domain.restful.NtcTagReport;
 import com.nis.domain.restful.PxyHttpLog;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
@@ -64,8 +55,7 @@ import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.HiveSqlService;
 import com.nis.web.service.ServicesRequestLogService;
-import com.nis.web.service.restful.LogTestService;
-import com.nis.web.service.restful.NtcReportService;
+import com.nis.web.service.restful.NtcLogService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
@@ -83,12 +73,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Api(value = "LogController", description = "配置命中日志基本服务接口")
 public class LogController extends BaseRestController {
 	@Autowired
-	public LogTestService testService;
-	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
 	
 	@Autowired
-	protected NtcReportService ntcReportService;
+	protected NtcLogService ntcLogService;
 
 	@RequestMapping(value = "/ntcIpLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "IP地址日志查询", httpMethod = "GET", notes = "对应配置为IP地址管理，存储动作为阻断与监测的命中日志。对日志功能IP地址提供数据基础查询服务")
@@ -100,7 +88,7 @@ public class LogController extends BaseRestController {
 		Page<NtcIpLog> ntcIpLogPage = null;
 		try {
 			resetTime(ntcIpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcIpLog, NtcIpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcIpLog, NtcIpLog.class, page);
 			ntcIpLogPage = new Page<NtcIpLog>();
 			ntcIpLogPage.setPageNo(page.getPageNo());
 			ntcIpLogPage.setPageSize(page.getPageSize());
@@ -166,7 +154,7 @@ public class LogController extends BaseRestController {
 		Page<NtcHttpLog> ntcHttpLogPage = null;
 		try {
 			resetTime(ntcHttpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcHttpLog, NtcHttpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcHttpLog, NtcHttpLog.class, page);
 			ntcHttpLogPage = new Page<NtcHttpLog>();
 			ntcHttpLogPage.setPageNo(page.getPageNo());
 			ntcHttpLogPage.setPageSize(page.getPageSize());
@@ -226,7 +214,7 @@ public class LogController extends BaseRestController {
 		Page<NtcDnsLog> ntcDnsLogPage = null;
 		try {
 			resetTime(ntcDnsLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcDnsLog, NtcDnsLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcDnsLog, NtcDnsLog.class, page);
 			ntcDnsLogPage = new Page<NtcDnsLog>();
 			ntcDnsLogPage.setPageNo(page.getPageNo());
 			ntcDnsLogPage.setPageSize(page.getPageSize());
@@ -286,7 +274,7 @@ public class LogController extends BaseRestController {
 		Page<NtcMailLog> ntcMailLogPage = null;
 		try {
 			resetTime(ntcMailLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);
 			ntcMailLogPage = new Page<NtcMailLog>();
 			ntcMailLogPage.setPageNo(page.getPageNo());
 			ntcMailLogPage.setPageSize(page.getPageSize());
@@ -346,7 +334,7 @@ public class LogController extends BaseRestController {
 		Page<NtcSslLog> ntcSslLogPage = null;
 		try {
 			resetTime(ntcSslLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcSslLog, NtcSslLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSslLog, NtcSslLog.class, page);
 			ntcSslLogPage = new Page<NtcSslLog>();
 			ntcSslLogPage.setPageNo(page.getPageNo());
 			ntcSslLogPage.setPageSize(page.getPageSize());
@@ -406,7 +394,7 @@ public class LogController extends BaseRestController {
 		Page<NtcPptpLog> ntcPptpLogPage = null;
 		try {
 			resetTime(ntcPptpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcPptpLog, NtcPptpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcPptpLog, NtcPptpLog.class, page);
 			ntcPptpLogPage = new Page<NtcPptpLog>();
 			ntcPptpLogPage.setPageNo(page.getPageNo());
 			ntcPptpLogPage.setPageSize(page.getPageSize());
@@ -465,7 +453,7 @@ public class LogController extends BaseRestController {
 		Page<NtcL2tpLog> ntcL2tpLogPage = null;
 		try {
 			resetTime(ntcL2tpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcL2tpLog, NtcL2tpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcL2tpLog, NtcL2tpLog.class, page);
 			ntcL2tpLogPage = new Page<NtcL2tpLog>();
 			ntcL2tpLogPage.setPageNo(page.getPageNo());
 			ntcL2tpLogPage.setPageSize(page.getPageSize());
@@ -525,7 +513,7 @@ public class LogController extends BaseRestController {
 		Page<NtcOpenvpnLog> ntcOpenvpnLogPage = null;
 		try {
 			resetTime(ntcOpenvpnLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcOpenvpnLog, NtcOpenvpnLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcOpenvpnLog, NtcOpenvpnLog.class, page);
 			ntcOpenvpnLogPage = new Page<NtcOpenvpnLog>();
 			ntcOpenvpnLogPage.setPageNo(page.getPageNo());
 			ntcOpenvpnLogPage.setPageSize(page.getPageSize());
@@ -585,7 +573,7 @@ public class LogController extends BaseRestController {
 		Page<NtcIpsecLog> ntcIpsecLogPage = null;
 		try {
 			resetTime(ntcIpsecLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcIpsecLog, NtcIpsecLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcIpsecLog, NtcIpsecLog.class, page);
 			ntcIpsecLogPage = new Page<NtcIpsecLog>();
 			ntcIpsecLogPage.setPageNo(page.getPageNo());
 			ntcIpsecLogPage.setPageSize(page.getPageSize());
@@ -645,7 +633,7 @@ public class LogController extends BaseRestController {
 		Page<NtcSshLog> ntcSshLogPage = null;
 		try {
 			resetTime(ntcSshLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcSshLog, NtcSshLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSshLog, NtcSshLog.class, page);
 			ntcSshLogPage = new Page<NtcSshLog>();
 			ntcSshLogPage.setPageNo(page.getPageNo());
 			ntcSshLogPage.setPageSize(page.getPageSize());
@@ -705,7 +693,7 @@ public class LogController extends BaseRestController {
 		Page<NtcFtpLog> ntcFtpLogPage = null;
 		try {
 			resetTime(ntcFtpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcFtpLog, NtcFtpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcFtpLog, NtcFtpLog.class, page);
 			ntcFtpLogPage = new Page<NtcFtpLog>();
 			ntcFtpLogPage.setPageNo(page.getPageNo());
 			ntcFtpLogPage.setPageSize(page.getPageSize());
@@ -763,7 +751,7 @@ public class LogController extends BaseRestController {
 		Page<NtcAppLog> ntcAppLogPage = null;
 		try {
 			resetTime(ntcAppLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcAppLog, NtcAppLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcAppLog, NtcAppLog.class, page);
 			ntcAppLogPage = new Page<NtcAppLog>();
 			ntcAppLogPage.setPageNo(page.getPageNo());
 			ntcAppLogPage.setPageSize(page.getPageSize());
@@ -821,7 +809,7 @@ public class LogController extends BaseRestController {
 		Page<NtcDdosLog> ntcDdosLogPage = null;
 		try {
 			resetTime(ntcDdosLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, ntcDdosLog, NtcDdosLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcDdosLog, NtcDdosLog.class, page);
 			ntcDdosLogPage = new Page<NtcDdosLog>();
 			ntcDdosLogPage.setPageNo(page.getPageNo());
 			ntcDdosLogPage.setPageSize(page.getPageSize());
@@ -879,7 +867,7 @@ public class LogController extends BaseRestController {
 		Page<DkBehaviorLog> logPage = null;
 		try {
 			resetTime(dkBehaviorLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, dkBehaviorLog, DkBehaviorLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, dkBehaviorLog, DkBehaviorLog.class, page);
 			logPage = new Page<DkBehaviorLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -932,7 +920,7 @@ public class LogController extends BaseRestController {
 		Page<MmAvIpLog> logPage = null;
 		try {
 			resetTime(mmAvIpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmAvIpLog, MmAvIpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmAvIpLog, MmAvIpLog.class, page);
 			logPage = new Page<MmAvIpLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -985,7 +973,7 @@ public class LogController extends BaseRestController {
 		Page<MmAvUrlLog> logPage = null;
 		try {
 			resetTime(mmAvUrlLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmAvUrlLog, MmAvUrlLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmAvUrlLog, MmAvUrlLog.class, page);
 			logPage = new Page<MmAvUrlLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1038,7 +1026,7 @@ public class LogController extends BaseRestController {
 		Page<MmPicIpLog> logPage = null;
 		try {
 			resetTime(mmPicIpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmPicIpLog, MmPicIpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmPicIpLog, MmPicIpLog.class, page);
 			logPage = new Page<MmPicIpLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1091,7 +1079,7 @@ public class LogController extends BaseRestController {
 		Page<MmPicUrlLog> logPage = null;
 		try {
 			resetTime(mmPicUrlLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmPicUrlLog, MmPicUrlLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmPicUrlLog, MmPicUrlLog.class, page);
 			logPage = new Page<MmPicUrlLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1145,7 +1133,7 @@ public class LogController extends BaseRestController {
 		Page<MmVoipIpLog> logPage = null;
 		try {
 			resetTime(mmVoipIpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmVoipIpLog, MmVoipIpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmVoipIpLog, MmVoipIpLog.class, page);
 			logPage = new Page<MmVoipIpLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1198,7 +1186,7 @@ public class LogController extends BaseRestController {
 		Page<MmVoipAccountLog> logPage = null;
 		try {
 			resetTime(mmVoipLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmVoipLog, MmVoipAccountLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmVoipLog, MmVoipAccountLog.class, page);
 			logPage = new Page<MmVoipAccountLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1252,7 +1240,7 @@ public class LogController extends BaseRestController {
 		Page<MmSampleAudioLog> logPage = null;
 		try {
 			resetTime(mmSampleAudioLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmSampleAudioLog, MmSampleAudioLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmSampleAudioLog, MmSampleAudioLog.class, page);
 			logPage = new Page<MmSampleAudioLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1305,7 +1293,7 @@ public class LogController extends BaseRestController {
 		Page<MmSampleVideoLog> logPage = null;
 		try {
 			resetTime(mmSampleVideoLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmSampleVideoLog, MmSampleVideoLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmSampleVideoLog, MmSampleVideoLog.class, page);
 			logPage = new Page<MmSampleVideoLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1358,7 +1346,7 @@ public class LogController extends BaseRestController {
 		Page<MmPornAudioLevelLog> logPage = null;
 		try {
 			resetTime(mmPornAudioLevelLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmPornAudioLevelLog, MmPornAudioLevelLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmPornAudioLevelLog, MmPornAudioLevelLog.class, page);
 			logPage = new Page<MmPornAudioLevelLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1411,7 +1399,7 @@ public class LogController extends BaseRestController {
 		Page<MmPornVideoLevelLog> logPage = null;
 		try {
 			resetTime(mmPornVideoLevelLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmPornVideoLevelLog, MmPornVideoLevelLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmPornVideoLevelLog, MmPornVideoLevelLog.class, page);
 			logPage = new Page<MmPornVideoLevelLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1465,7 +1453,7 @@ public class LogController extends BaseRestController {
 		Page<MmSamplePicLog> logPage = null;
 		try {
 			resetTime(mmSamplePicLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmSamplePicLog, MmSamplePicLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmSamplePicLog, MmSamplePicLog.class, page);
 			logPage = new Page<MmSamplePicLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1518,7 +1506,7 @@ public class LogController extends BaseRestController {
 		Page<MmSampleVoipLog> logPage = null;
 		try {
 			resetTime(mmSampleVoipLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, mmSampleVoipLog, MmSampleVoipLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmSampleVoipLog, MmSampleVoipLog.class, page);
 			logPage = new Page<MmSampleVoipLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1572,7 +1560,7 @@ public class LogController extends BaseRestController {
 		Page<PxyHttpLog> logPage = null;
 		try {
 			resetTime(pxyHttpLog);
-			ntcReportService.queryConditionCheck(auditLogThread, start, pxyHttpLog, PxyHttpLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, pxyHttpLog, PxyHttpLog.class, page);
 			logPage = new Page<PxyHttpLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1614,313 +1602,8 @@ public class LogController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "PXY HTTP日志检索成功",
 				logPage, 0);
 	}
-	@RequestMapping(value = "/ntcPzReport", method = RequestMethod.GET)
-	@ApiOperation(value = "配置日志总量统计", httpMethod = "GET", notes = "配置命中日志数量实时统计报表，对外提供多种数据表现形式，具体可应用于界面配置命中总量业务、配置报表业务等")
-	public Map<String, ?> ntcPzReport(Page page, NtcPzReport ntcPzReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> ntcPzReportPage = null;
-		try {
-			resetReportTime(ntcPzReport);
-			//验证实时报表
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcPzReport, NtcPzReport.class, page);
-			//验证serachCfgId
-			ntcReportService.checkNumericCondition(saveLogThread,start,ntcPzReport.getSearchCfgId(),"searchCfgId");
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcPzReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			ntcPzReportPage = ntcReportService.findNtcPzReport(new Page<NtcPzReport>(request, response, NtcPzReport.class),
-					ntcPzReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "配置日志总量统计失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "配置日志总量统计成功",
-				ntcPzReportPage, 0);
-	}
-
-	@RequestMapping(value = "/ntcServiceReport", method = RequestMethod.GET)
-	@ApiOperation(value = "业务类型统计查询服务", httpMethod = "GET", notes = "业务类型统计查询服务，基于业务类型（service）维度聚合")
-	public Map<String, ?> ntcServiceReport(Page page, NtcServiceReport ntcServiceReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcServiceReport);
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcServiceReport, NtcServiceReport.class, page);
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcServiceReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcServiceReport(new Page<NtcServiceReport>(request, response, NtcServiceReport.class),
-					ntcServiceReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "业务类型统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "业务类型统计查询成功",
-				reportPage, 0);
-	}
 	
-	
-	@RequestMapping(value = "/ntcTagReport", method = RequestMethod.GET)
-	@ApiOperation(value = "标签统计查询服务", httpMethod = "GET", notes = "标签统计查询服务，基于标签与业务类型（service）维度聚合")
-	public Map<String, ?> ntcTagReport(Page page, NtcTagReport ntcTagReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
 
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcTagReport);
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcTagReport, NtcTagReport.class, page);
-			//验证serachTag
-			ntcReportService.checkNumericCondition(saveLogThread,start,ntcTagReport.getSearchTag(),"searchTag");
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcTagReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcTagReport(new Page<NtcTagReport>(request, response, NtcTagReport.class),
-					ntcTagReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "标签统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "标签统计查询成功",
-				reportPage, 0);
-	}
-	@RequestMapping(value = "/ntcAttrTypeReport", method = RequestMethod.GET)
-	@ApiOperation(value = "性质统计查询服务", httpMethod = "GET", notes = "性质统计查询服务，基于性质与业务类型（service）维度聚合")
-	public Map<String, ?> ntcAttrTypeReport(Page page, NtcAttrTypeReport ntcAttrTypeReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcAttrTypeReport);
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcAttrTypeReport, NtcAttrTypeReport.class, page);
-			//验证searchAttrType
-			ntcReportService.checkNumericCondition(saveLogThread,start,ntcAttrTypeReport.getSearchAttrType(),"searchAttrType");
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcAttrTypeReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcAttrTypeReport(new Page<NtcAttrTypeReport>(request, response, NtcAttrTypeReport.class),
-					ntcAttrTypeReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "性质统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "性质统计查询成功",
-				reportPage, 0);
-	}
-	
-	@RequestMapping(value = "/ntcLwhhReport", method = RequestMethod.GET)
-	@ApiOperation(value = "来文函号统计查询服务", httpMethod = "GET", notes = "来文函号统计查询服务，基于来文函号与业务类型（service）维度聚合")
-	public Map<String, ?> ntcLwhhReport(Page page, NtcLwhhReport ntcLwhhReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcLwhhReport);
-			//验证实时报表
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcLwhhReport, NtcLwhhReport.class, page);
-			//验证serachCfgId
-			ntcReportService.checkNumericCondition(saveLogThread,start,ntcLwhhReport.getSearchLwhh(),"searchLwhh");
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcLwhhReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcLwhhReport(new Page<NtcLwhhReport>(request, response, NtcLwhhReport.class),
-					ntcLwhhReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "来文函号统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "来文函号统计查询成功",
-				reportPage, 0);
-	}
-	
-	@RequestMapping(value = "/ntcSrcipDomesticReport", method = RequestMethod.GET)
-	@ApiOperation(value = "境内源IP统计查询服务", httpMethod = "GET", notes = "境内源IP统计查询服务，基于源IP所属省、市与业务类型（service）维度聚合")
-	public Map<String, ?> ntcSrcipDomesticReport(Page page, NtcSrcipDomesticReport ntcSrcipDomesticReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcSrcipDomesticReport);
-			//验证实时报表
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcSrcipDomesticReport, NtcSrcipDomesticReport.class, page);
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcSrcipDomesticReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcSrcipDomesticReport(new Page<NtcSrcipDomesticReport>(request, response, NtcSrcipDomesticReport.class),
-					ntcSrcipDomesticReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "境内源IP统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "境内源IP统计查询成功",
-				reportPage, 0);
-	}
-	
-	@RequestMapping(value = "/ntcDestipCountryReport", method = RequestMethod.GET)
-	@ApiOperation(value = "各国家目的IP统计查询服务", httpMethod = "GET", notes = "各国家目的IP统计查询服务，基于目的IP所属国家与业务类型（service）维度聚合")
-	public Map<String, ?> ntcDestipCountryReport(Page page, NtcDestipCountryReport ntcDestipCountryReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcDestipCountryReport);
-			//验证实时报表
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcDestipCountryReport, NtcDestipCountryReport.class, page);
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcDestipCountryReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcDestipCountryReport(new Page<NtcDestipCountryReport>(request, response, NtcDestipCountryReport.class),
-					ntcDestipCountryReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "各国家目的IP统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "各国家目的IP统计查询成功",
-				reportPage, 0);
-	}
-	
-	@RequestMapping(value = "/ntcEntranceReport", method = RequestMethod.GET)
-	@ApiOperation(value = "运营商局点统计查询服务", httpMethod = "GET", notes = "运营商局点统计查询服务，基于出入口与业务类型（service）维度聚合")
-	public Map<String, ?> ntcEntranceReport(Page page, NtcEntranceReport ntcEntranceReport, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
-		long start = System.currentTimeMillis();
-		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-
-		Page<?> reportPage = null;
-		try {
-			resetReportTime(ntcEntranceReport);
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcEntranceReport, NtcEntranceReport.class, page);
-			//验证searchEntrance
-			ntcReportService.checkNumericCondition(saveLogThread,start,ntcEntranceReport.getSearchEntrance(),"searchEntrance");
-			String orderBy = "";
-			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcEntranceReport.class.getSimpleName(), page.getOrderBy());
-			} else {
-				orderBy = "report_time";
-			}
-			page.setOrderBy(orderBy);
-			reportPage = ntcReportService.findNtcEntranceReport(new Page<NtcEntranceReport>(request, response, NtcEntranceReport.class),
-					ntcEntranceReport);
-		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "运营商局点统计查询失败");
-			}
-			throw ((RestServiceException) e);
-		}
-
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "运营商局点统计查询成功",
-				reportPage, 0);
-	}
-	/**
-	 * @Description:
-	 * @author (zdx)
-	 * @date 2018年7月12日 上午11:01:30
-	 * @param entity
-	 * @throws Exception
-	 */
-	public void resetReportTime(NtcReportEntity<?> entity) throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Map<String, String> map = DateUtils.getLocalTime(entity.getSearchReportStartTime(),
-				entity.getSearchReportEndTime(), Constants.PZ_REPORT_TIME, "minute");
-		entity.setSearchReportStartTime(map.get("startTime"));
-		entity.setSearchReportEndTime(map.get("endTime"));
-	}
 	
 	
 	/**
