@@ -15,7 +15,7 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 public class DkBehaviorLog  extends LogEntity<DkBehaviorLog> {
 	private static final long serialVersionUID = -589390375816690510L;
 	@ApiModelProperty(value = "协议标签", required = true)
-    protected Integer appLabel;
+    protected String appLabel;
     @ApiModelProperty(value = "发送c2s包数", required = true)
     protected String c2sSendPktNum;
     @ApiModelProperty(value = "发送s2c包数", required = true)
@@ -25,17 +25,17 @@ public class DkBehaviorLog  extends LogEntity<DkBehaviorLog> {
     @ApiModelProperty(value = "发送s2c字节数", required = true)
     protected String s2cSendByteNum;
     @ApiModelProperty(value = "接收c2s包数", required = true)
-    protected String c2sRecvSendPktNum;
+    protected String c2sRecvPktNum;
     @ApiModelProperty(value = "接收s2c包数", required = true)
-    protected String s2cRecvSendPktNum;
+    protected String s2cRecvPktNum;
     @ApiModelProperty(value = "接收c2s字节数", required = true)
     protected String c2sRecvByteNum;
     @ApiModelProperty(value = "接收s2c字节数", required = true)
     protected String s2cRecvByteNum;
-	public Integer getAppLabel() {
+	public String getAppLabel() {
 		return appLabel;
 	}
-	public void setAppLabel(Integer appLabel) {
+	public void setAppLabel(String appLabel) {
 		this.appLabel = appLabel;
 	}
 	public String getC2sSendPktNum() {
@@ -62,17 +62,17 @@ public class DkBehaviorLog  extends LogEntity<DkBehaviorLog> {
 	public void setS2cSendByteNum(String s2cSendByteNum) {
 		this.s2cSendByteNum = s2cSendByteNum;
 	}
-	public String getC2sRecvSendPktNum() {
-		return c2sRecvSendPktNum;
+	public String getC2sRecvPktNum() {
+		return c2sRecvPktNum;
 	}
-	public void setC2sRecvSendPktNum(String c2sRecvSendPktNum) {
-		this.c2sRecvSendPktNum = c2sRecvSendPktNum;
+	public void setC2sRecvPktNum(String c2sRecvPktNum) {
+		this.c2sRecvPktNum = c2sRecvPktNum;
 	}
-	public String getS2cRecvSendPktNum() {
-		return s2cRecvSendPktNum;
+	public String getS2cRecvPktNum() {
+		return s2cRecvPktNum;
 	}
-	public void setS2cRecvSendPktNum(String s2cRecvSendPktNum) {
-		this.s2cRecvSendPktNum = s2cRecvSendPktNum;
+	public void setS2cRecvPktNum(String s2cRecvPktNum) {
+		this.s2cRecvPktNum = s2cRecvPktNum;
 	}
 	public String getC2sRecvByteNum() {
 		return c2sRecvByteNum;

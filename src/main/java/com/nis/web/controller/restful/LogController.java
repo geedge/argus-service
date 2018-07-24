@@ -1233,11 +1233,11 @@ public class LogController extends BaseRestController {
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP日志检索失败");
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP Account日志检索失败");
 			}
 			throw ((RestServiceException) e);
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP日志检索成功",
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP Account日志检索成功",
 				logPage, 0);
 	}
 	

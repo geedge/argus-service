@@ -39,6 +39,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 	</resultMap>
 
 	<resultMap id="NtcHttpLogMap" type="com.nis.domain.restful.NtcHttpLog">
@@ -59,7 +61,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
-
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="req_hdr_file" jdbcType="VARCHAR" property="reqHdrFile" />
@@ -86,7 +89,9 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
-
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		
 		<result column="rd" jdbcType="INTEGER" property="rd" />
 		<result column="qr" jdbcType="INTEGER" property="qr" />
 		<result column="ra" jdbcType="INTEGER" property="ra" />
@@ -120,6 +125,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="mail_proto" jdbcType="VARCHAR" property="mailProto" />
 		<result column="mail_from" jdbcType="VARCHAR" property="mailFrom" />
@@ -148,6 +155,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="sni" jdbcType="VARCHAR" property="sni" />
@@ -175,6 +184,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
 		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
@@ -200,6 +211,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
 		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
@@ -224,6 +237,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="encrypt_mode" jdbcType="VARCHAR" property="encryptMode" />
@@ -250,6 +265,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="ex_protocol" jdbcType="INTEGER" property="exProtocol" />
 		<result column="isakmp_mode" jdbcType="INTEGER" property="isakmpMode" />
@@ -274,6 +291,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="host_key" jdbcType="VARCHAR" property="hostKey" />
@@ -301,6 +320,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 
 		<result column="ftp_url" jdbcType="VARCHAR" property="ftpUrl" />
 		<result column="ftp_content" jdbcType="VARCHAR" property="ftpContent" />
@@ -324,6 +345,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 	</resultMap>
 	
 	<resultMap id="NtcDdosLogMap" type="com.nis.domain.restful.NtcDdosLog">
@@ -344,6 +367,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="attack_type" jdbcType="INTEGER" property="attackType" />
 		<result column="attack_start_time" jdbcType="TIMESTAMP" property="attackStartTime" />
@@ -372,7 +397,10 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
+		<result column="app_label" jdbcType="VARCHAR" property="appLabel" />
 		<result column="c2s_send_pkt_num" jdbcType="VARCHAR" property="c2sSendPktNum" />
 		<result column="s2c_send_pkt_num" jdbcType="VARCHAR" property="s2cSendPktNum" />
 		<result column="c2s_send_byte_num" jdbcType="VARCHAR" property="c2sSendByteNum" />
@@ -400,6 +428,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -427,6 +457,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -454,6 +486,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -481,6 +515,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -509,6 +545,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -543,6 +581,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -578,6 +618,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -606,6 +648,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -633,6 +677,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -660,6 +706,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -687,6 +735,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -715,6 +765,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -749,6 +801,8 @@
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
 		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="req_line" jdbcType="VARCHAR" property="reqLine" />

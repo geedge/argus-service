@@ -74,6 +74,10 @@ public abstract class LogEntity<T> implements Serializable {
 	protected String addrList;
 	@ApiModelProperty(value = "用户自定义域", required = true)
 	private String userRegion;
+	@ApiModelProperty(value = "服务端地址定位信息", required = true)
+	protected String serverLocate;
+	@ApiModelProperty(value = "客户端地址定位信息", required = true)
+	private String clientLocate;
 
 	protected String searchCfgId;//配置id
 	protected String searchTransProto;//协议类型
@@ -430,6 +434,22 @@ public abstract class LogEntity<T> implements Serializable {
 
 	public void setSearchFoundEndTime(String searchFoundEndTime) {
 		this.searchFoundEndTime = searchFoundEndTime;
+	}
+
+	public String getServerLocate() {
+		return serverLocate;
+	}
+
+	public void setServerLocate(String serverLocate) {
+		this.serverLocate = serverLocate;
+	}
+
+	public String getClientLocate() {
+		return clientLocate;
+	}
+
+	public void setClientLocate(String clientLocate) {
+		this.clientLocate = clientLocate;
 	}
 
 }
