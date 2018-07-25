@@ -401,14 +401,10 @@
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
 		<result column="app_label" jdbcType="VARCHAR" property="appLabel" />
-		<result column="c2s_send_pkt_num" jdbcType="VARCHAR" property="c2sSendPktNum" />
-		<result column="s2c_send_pkt_num" jdbcType="VARCHAR" property="s2cSendPktNum" />
-		<result column="c2s_send_byte_num" jdbcType="VARCHAR" property="c2sSendByteNum" />
-		<result column="s2c_send_byte_num" jdbcType="VARCHAR" property="s2cSendByteNum" />
-		<result column="c2s_recv_pkt_num" jdbcType="VARCHAR" property="c2sRecvPktNum" />
-		<result column="s2c_recv_pkt_num" jdbcType="VARCHAR" property="s2cRecvPktNum" />
-		<result column="c2s_recv_byte_num" jdbcType="VARCHAR" property="c2sRecvByteNum" />
-		<result column="s2c_recv_byte_num" jdbcType="VARCHAR" property="s2cRecvByteNum" />
+		<result column="c2s_pkt_num" jdbcType="VARCHAR" property="c2sPktNum" />
+		<result column="s2c_pkt_num" jdbcType="VARCHAR" property="s2cPktNum" />
+		<result column="c2s_byte_num" jdbcType="VARCHAR" property="c2sByteNum" />
+		<result column="s2c_byte_num" jdbcType="VARCHAR" property="s2cByteNum" />
 	</resultMap>
 	<resultMap id="MmAvIpLogMap" type="com.nis.domain.restful.MmAvIpLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
