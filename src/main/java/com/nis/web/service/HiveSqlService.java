@@ -27,7 +27,7 @@ import com.nis.util.redis.SaveRedisThread;
 public class HiveSqlService {
 	private final static Logger logger = LoggerFactory.getLogger(HiveSqlService.class);
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
 	public static ResultSet getResultSet(Page page, Object bean, String tableName,
 			Map<String, Map<String, String>> col2col, String orderBy, String searchActiveSys) throws Exception {
 		tableName = tableName.toLowerCase();
@@ -68,12 +68,13 @@ public class HiveSqlService {
 							setFieldValue(bean, key, value.toString().trim());
 							if (key.endsWith("Time")) {// 日期开始或结束的字段
 								if (col2col.containsKey(key)) {
+									Long partition = Long.parseLong(sdf2.format(sdf.parse(value.toString().trim())));
 									value = sdf.parse(value.toString().trim()).getTime() / 1000;
 									if (key.toLowerCase().equals("searchfoundstarttime")) {
-										foundTimePartStart = Long.parseLong(value.toString()) / 3600L/ 24L;
+										foundTimePartStart = partition;
 									}
 									if (key.toLowerCase().equals("searchfoundendtime")) {
-										foundTimePartEnd = Long.parseLong(value.toString()) / 3600L/ 24L;
+										foundTimePartEnd = partition;
 									}
 									if (col2col.get(key).get("start") != null) {
 										// sql.append(" and " +
