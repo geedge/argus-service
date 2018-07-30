@@ -1,11 +1,14 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 
 public class NtcDestipCountryReport extends NtcReportEntity<NtcDestipCountryReport>{
 
 	private static final long serialVersionUID = 7911364106357601141L;
+	@JsonInclude(value=Include.NON_NULL)
 	@ApiModelProperty(value="所属国家", required=true)
 	protected String destCountry;
 	

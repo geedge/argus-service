@@ -7,21 +7,26 @@ import java.util.Map;
 import javax.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Maps;
 import com.nis.domain.Page;
 import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
-public abstract class NtcReportEntity<T> implements Serializable{
-	
-	@ApiModelProperty(value="业务类型", required=true)
+public abstract class NtcReportEntity<T> implements Serializable {
+
+	@JsonInclude(value = Include.NON_NULL)
+	@ApiModelProperty(value = "业务类型", required = true)
 	protected Integer service;
-	@ApiModelProperty(value="日志数量", required=true)
+	@JsonInclude(value = Include.NON_NULL)
+	@ApiModelProperty(value = "日志数量", required = true)
 	protected Long sum;
-	@ApiModelProperty(value="统计时间", required=true)
+	@JsonInclude(value = Include.NON_NULL)
+	@ApiModelProperty(value = "统计时间", required = true)
 	protected Date reportTime;
-	
+
 	/**
 	 * 业务类型：1:配置命中总量业务  2:配置报表业务
 	 */
@@ -31,9 +36,9 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	protected Long searchReportStartTimeCluster;
 	protected Long searchReportEndTimeCluster;
 	protected String searchService;
-	
-    protected Page<T> page;
-	
+
+	protected Page<T> page;
+
 	/**
 	 * 自定义SQL（SQL标识，SQL内容）
 	 */
@@ -46,7 +51,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	/**
 	 * @param cfgId
 	 * @param service
@@ -72,7 +77,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 		this.sum = sum;
 	}
 
-	@JsonSerialize(using=JsonDateSerializer.class)
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getReportTime() {
 		return reportTime;
 	}
@@ -80,6 +85,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setReportTime(Date reportTime) {
 		this.reportTime = reportTime;
 	}
+
 	@JsonIgnore
 	public String getSearchBusinessType() {
 		return searchBusinessType;
@@ -88,6 +94,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setSearchBusinessType(String searchBusinessType) {
 		this.searchBusinessType = searchBusinessType;
 	}
+
 	@JsonIgnore
 	public String getSearchReportStartTime() {
 		return searchReportStartTime;
@@ -96,6 +103,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setSearchReportStartTime(String searchReportStartTime) {
 		this.searchReportStartTime = searchReportStartTime;
 	}
+
 	@JsonIgnore
 	public String getSearchReportEndTime() {
 		return searchReportEndTime;
@@ -104,6 +112,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setSearchReportEndTime(String searchReportEndTime) {
 		this.searchReportEndTime = searchReportEndTime;
 	}
+
 	@JsonIgnore
 	public Long getSearchReportStartTimeCluster() {
 		return searchReportStartTimeCluster;
@@ -112,6 +121,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setSearchReportStartTimeCluster(Long searchReportStartTimeCluster) {
 		this.searchReportStartTimeCluster = searchReportStartTimeCluster;
 	}
+
 	@JsonIgnore
 	public Long getSearchReportEndTimeCluster() {
 		return searchReportEndTimeCluster;
@@ -120,6 +130,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setSearchReportEndTimeCluster(Long searchReportEndTimeCluster) {
 		this.searchReportEndTimeCluster = searchReportEndTimeCluster;
 	}
+
 	@JsonIgnore
 	public String getSearchService() {
 		return searchService;
@@ -132,12 +143,12 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	@JsonIgnore
 	@XmlTransient
 	public Page<T> getPage() {
-		if (page == null){
+		if (page == null) {
 			page = new Page<T>();
 		}
 		return page;
 	}
-	
+
 	public Page<T> setPage(Page<T> page) {
 		this.page = page;
 		return page;
@@ -146,7 +157,7 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	@JsonIgnore
 	@XmlTransient
 	public Map<String, String> getSqlMap() {
-		if (sqlMap == null){
+		if (sqlMap == null) {
 			sqlMap = Maps.newHashMap();
 		}
 		return sqlMap;
@@ -155,6 +166,5 @@ public abstract class NtcReportEntity<T> implements Serializable{
 	public void setSqlMap(Map<String, String> sqlMap) {
 		this.sqlMap = sqlMap;
 	}
-	
-	
+
 }

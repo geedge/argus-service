@@ -1,12 +1,14 @@
 package com.nis.domain.restful;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class NtcEntranceReport extends NtcReportEntity<NtcEntranceReport> {
 
 	private static final long serialVersionUID = -3973713578165502900L;
-
+	@JsonInclude(value=Include.NON_NULL)
 	@ApiModelProperty(value = "局点（出入口）", required = true)
 	protected Integer entranceId;
 
