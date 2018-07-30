@@ -119,7 +119,7 @@
 	<p:maatType service="832">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[protocol];\t;[ip];\t;[port];\t;[direction];\t;[user_region];\t;[location];\t;[is_valid];\t;[action];\t;[service];\t;[policy_group];\t[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[protocol];\t;[ip];\t;[port];\t;[direction];\t;[user_region];\t;[location];\t;[is_valid];\t;[action];\t;[service];\t;[policy_group];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
