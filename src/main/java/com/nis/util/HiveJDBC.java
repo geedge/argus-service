@@ -157,7 +157,7 @@ public class HiveJDBC {
 						if (null != value && !value.toString().equals("")) {
 							time = Long.parseLong(value.toString());
 						}
-						map.put(filedName, new Date(time * 1000));
+						map.put(filedName, time==0l?null:new Date(time * 1000));
 						// map.put(filedName, new
 						// Date(Long.parseLong("1476583810000")));
 					} else {
