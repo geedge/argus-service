@@ -21,7 +21,7 @@ public class NtcSslLog extends LogEntity {
     protected String san;
 
     @ApiModelProperty(value="证书授权机构", required=true)
-    protected String ca;
+    protected String cn;
 
     public String getVersion() {
         return version;
@@ -47,11 +47,11 @@ public class NtcSslLog extends LogEntity {
         this.san = san;
     }
 
-    public String getCa() {
-        return ca;
+    public String getCn() {
+        return cn;
     }
 
-    public void setCa(String ca) {
-        this.ca = ca;
+    public void setCn(String cn) {
+        this.cn = cn;
     }
 }

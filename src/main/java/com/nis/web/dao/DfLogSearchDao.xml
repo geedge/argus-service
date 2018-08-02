@@ -161,7 +161,7 @@
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="sni" jdbcType="VARCHAR" property="sni" />
 		<result column="san" jdbcType="VARCHAR" property="san" />
-		<result column="ca" jdbcType="VARCHAR" property="ca" />
+		<result column="cn" jdbcType="VARCHAR" property="cn" />
 	</resultMap>
 
 
