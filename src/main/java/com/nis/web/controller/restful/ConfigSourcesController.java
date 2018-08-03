@@ -24,6 +24,7 @@ import com.nis.domain.restful.ConfigSource;
 import com.nis.domain.restful.FileDesc;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.CompileVal;
 import com.nis.util.Constants;
 import com.nis.util.FileUtils;
@@ -86,8 +87,14 @@ public class ConfigSourcesController extends BaseRestController {
 
             if ("error".equals(msg)) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
-				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"Maat 规则存储异常" + exception.getMessage(), CompileVal.getBusinessCode());
+				if (exception instanceof RestServiceException) {
+					throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"Maat 规则存储异常:" + exception.getMessage(), CompileVal.getBusinessCode());
+				}else{
+					throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						"Maat 规则存储异常:" + exception.getMessage(), CompileVal.getBusinessCode());
+				}
+				
 			}
 		} else {
 			thread.setExceptionInfo("Maat规则不能为空");
@@ -125,8 +132,14 @@ public class ConfigSourcesController extends BaseRestController {
 
 			if (msg.equals("error")) {
 				Exception exception = ConfigSourcesService.getMsgList().get(0);
-				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"MAAT规则状态更新时出现异常" + exception.getMessage(),CompileVal.getBusinessCode());
+				if (exception instanceof RestServiceException) {
+					throw new RestServiceException(thread, System.currentTimeMillis() - start,
+							"MAAT规则状态更新时出现异常:" + exception.getMessage(),CompileVal.getBusinessCode());
+				}else {
+					throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+							"MAAT规则状态更新时出现异常:" + exception.getMessage(),CompileVal.getBusinessCode());
+				}
+				
 			}
 			// configSourcesService.updateConfigSource(thread, start,
 			// configSource.getConfigCompileList(),
@@ -248,7 +261,7 @@ public class ConfigSourcesController extends BaseRestController {
 					} else {
 						thread.setExceptionInfo(throwExceptionInfo.get(errorNum));
 					}
-					throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
 							throwExceptionInfo.get(errorNum), errorNum);
 
 				}
@@ -303,8 +316,14 @@ public class ConfigSourcesController extends BaseRestController {
 		String msg = configSourcesService.saveCommonSources(thread, start, jsonString);
 		if (msg.equals("error")) {
 			Exception exception = ConfigSourcesService.getMsgList().get(0);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"回调规则存储异常" + exception.getMessage(), CompileVal.getBusinessCode());
+			if (exception instanceof RestServiceException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"回调规则存储异常:" + exception.getMessage(), CompileVal.getBusinessCode());
+			}else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					"回调规则存储异常:" + exception.getMessage(), CompileVal.getBusinessCode());
+			}
+			
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "回调规则下发成功",
 				Constants.IS_DEBUG ? jsonString : null);
@@ -312,7 +331,7 @@ public class ConfigSourcesController extends BaseRestController {
 
 
 	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PUT)
-	@ApiOperation(value = "回调规则状态更新接口", httpMethod = "PUT", response = Map.class, notes = "接收回调规则,对其状态置为失效")
+	@ApiOperation(value = "回调（通用）规则状态更新接口", httpMethod = "PUT", response = Map.class, notes = "接收回调规则,对其状态置为失效")
 	public Map updateCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
 			HttpServletResponse response) {
 		CompileVal.setBusinessCode(null);
@@ -324,8 +343,13 @@ public class ConfigSourcesController extends BaseRestController {
 		String msg = configSourcesService.updateCommonSources(thread, start, jsonString, new Date(), sb);
 		if (msg.equals("error")) {
 			Exception exception = ConfigSourcesService.getMsgList().get(0);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"回调规则状态更新异常" + exception.getMessage(), CompileVal.getBusinessCode());
+			if (exception instanceof RestServiceException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"回调规则状态更新异常:" + exception.getMessage(), CompileVal.getBusinessCode());
+			}else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						"回调规则状态更新异常:" + exception.getMessage(), CompileVal.getBusinessCode());
+			}
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "回调规则状态更新成功",
 				Constants.IS_DEBUG ? jsonString : null);
@@ -374,20 +398,23 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		}catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("文件上传异常："+e.getMessage());
-			Exception exception = new RuntimeException(
-					"文件上传异常："+e.getMessage());
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"文件上传异常：" + exception.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason()+":"+e.getMessage());
+			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					RestBusinessCode.FileUploadFailure.getErrorReason()+":"+ e.getMessage(), RestBusinessCode.FileUploadFailure.getValue());
 		}catch (Exception e) {
 			// TODO: handle exception
 			logger.error(e.getMessage());
-			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
-			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), ((RestServiceException) e).getErrorCode());
+			}else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			}else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), RestBusinessCode.FileUploadFailure.getValue());
 			}
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					e.getMessage(), CompileVal.getBusinessCode());
+			
 		}
 		JSONObject jsonObj = new JSONObject();
 		// jsonObj.put("accessUrl", filePath.substring(filePath.indexOf("group")));
@@ -436,22 +463,25 @@ public class ConfigSourcesController extends BaseRestController {
 				// resultObject.put("path", filePath.substring(filePath.indexOf("group")));
 				resultObject.put("accessUrl", filePath);
 			}
-		} catch (IOException e) {
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error("文件上传异常："+e.getMessage());
-			Exception exception = new RuntimeException(
-					"文件上传异常："+e.getMessage());
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					"文件上传异常：" + exception.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason()+":"+e.getMessage());
+			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					RestBusinessCode.FileUploadFailure.getErrorReason()+":"+ e.getMessage(), RestBusinessCode.FileUploadFailure.getValue());
 		}catch (Exception e) {
 			// TODO: handle exception
 			logger.error(e.getMessage());
-			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
-			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), ((RestServiceException) e).getErrorCode());
+			}else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			}else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					e.getMessage(), RestBusinessCode.FileUploadFailure.getValue());
 			}
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
-					e.getMessage(), CompileVal.getBusinessCode());
+			
 		}
 		try {
 			String tempFilePath = request.getRealPath(File.separator) + "upload" + File.separator
@@ -467,10 +497,10 @@ public class ConfigSourcesController extends BaseRestController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			logger.error("摘要获取过程中出现异常");
-			thread.setExceptionInfo("摘要获取过程中出现异常");
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "摘要获取过程中出现异常",
-					RestBusinessCode.unknow_error.getValue());
+			logger.error(RestBusinessCode.GetFileDigestFailure.getValue()+":"+e.getMessage()+",请检查摘要获取工具是否安装成功");
+//			thread.setExceptionInfo("摘要获取过程中出现异常");
+			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, RestBusinessCode.GetFileDigestFailure.getValue()+":"+e.getMessage()+",请检查摘要获取工具是否安装成功",
+					RestBusinessCode.GetFileDigestFailure.getValue());
 		}
 		return serviceResponse(thread, System.currentTimeMillis() - start, request, response, "摘要获取成功", resultObject);
 	}

@@ -9,9 +9,10 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.nis.domain.MaatXmlExpr;
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.ServiceRuntimeException;
 
 /**
  * 
@@ -257,7 +258,7 @@ public class ServiceAndRDBIndexReal {
 			if (tableName == null || tableName.trim().equals("")) {
 				if (tableList.size() > 1) {
 					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-					throw new RuntimeException("业务类型:" + service + ",配置类型:" + type + "对应多个表,请输入具体的表名");
+					throw new ServiceRuntimeException("在applicationConfig-rule.properties配置文件中，业务类型:" + service + ",配置类型:" + type + "对应多个表,请输入具体的表名",RestBusinessCode.NotFoundTableName.getValue());
 				} else {
 					return tableList.get(0);
 				}
@@ -274,8 +275,10 @@ public class ServiceAndRDBIndexReal {
 					return tableList.get(index);
 				} else {
 					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-					throw new RuntimeException(
-							"后台错误:未从业务类型和表对应关系中,找到业务类型:" + service + ",配置类型:" + type + "表名:" + tableName + "对应的真实表名");
+					throw new ServiceRuntimeException(
+							"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service+ ",配置类型:" + type 
+									+ "对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+
 				}
 
 			}

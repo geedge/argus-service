@@ -47,6 +47,12 @@ public class DefaultRestErrorResolver implements RestErrorResolver,InitializingB
 			error.setTraceCode(((RestServiceException) ex).getTraceCode());
 			int errorCode = ((RestServiceException) ex).getErrorCode();
 			error.setBusinessCode(RestBusinessCode.valueOf(errorCode));
+		} else if(ex instanceof ServiceRuntimeException){
+			//获取日志源[只有日志需要返回日志源和ActiveSys]
+			int logSource = ((ServiceRuntimeException) ex).getLogSource();
+			error.setTraceCode(((ServiceRuntimeException) ex).getTraceCode());
+			int errorCode = ((ServiceRuntimeException) ex).getErrorCode();
+			error.setBusinessCode(RestBusinessCode.valueOf(errorCode));
 		} else {
 			error.setBusinessCode(RestBusinessCode.valueOf(998));
 		}

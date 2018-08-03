@@ -234,7 +234,8 @@
 			<bean class="com.nis.restful.DefaultRestErrorResolver">
 				<property name="exceptionMappingDefinitions">
 					<map>
-						<entry key="com.nis.restful.RestServiceException" value="404" />
+						<entry key="com.nis.restful.RestServiceException" value="400" />
+						<entry key="com.nis.restful.ServiceRuntimeException" value="500" />
 						<entry key="Throwable" value="500" />
 					</map>
 				</property>

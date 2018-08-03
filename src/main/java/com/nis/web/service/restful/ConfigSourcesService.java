@@ -19,7 +19,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.nis.web.service.AuditLogThread;
 import net.sf.json.JSONObject;
 
 import org.apache.ibatis.session.ExecutorType;
@@ -43,6 +42,7 @@ import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.BasicProvingUtil;
 import com.nis.util.CamelUnderlineUtil;
 import com.nis.util.CompileVal;
@@ -59,6 +59,7 @@ import com.nis.web.dao.ConfigGroupRelationDao;
 import com.nis.web.dao.IpRegionDao;
 import com.nis.web.dao.NumRegionDao;
 import com.nis.web.dao.StrRegionDao;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.BaseService;
 import com.nis.web.service.SpringContextHolder;
 
@@ -129,9 +130,7 @@ public class ConfigSourcesService extends BaseService {
 				for (ConfigCompile config : configSource) {
 					String msg = CompileVal.compileIsOk(config, true, sb);
 					if (!"ok".equals(msg)) {
-						thread.setExceptionInfo(msg + sb.toString());
-						throw new RestServiceException(thread,
-								System.currentTimeMillis() - start, msg
+						throw new RestServiceException(msg
 										+ sb.toString(),
 										CompileVal.getBusinessCode());
 					}
@@ -140,9 +139,7 @@ public class ConfigSourcesService extends BaseService {
 				}
 
 			} else {
-				thread.setExceptionInfo("编译配置不能为空" + sb.toString());
-				throw new RestServiceException(thread,
-						System.currentTimeMillis() - start, "编译配置不能为空"
+				throw new RestServiceException("编译配置不能为空"
 								+ sb.toString(),
 						CompileVal.getBusinessCode());
 			}
@@ -156,7 +153,6 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- start, e.getMessage() + sb.toString(), e.getErrorCode());
 		} catch (Exception e) {
-
 			logger.error("Exception", e);
 			String errorCode = OracleErrorCodeUtil.getOraCode(e);
 			if (!StringUtils.isEmpty(errorCode)) {
@@ -244,7 +240,7 @@ public class ConfigSourcesService extends BaseService {
 				|| queryCompileGroupByPID.size() == 0) {
 			throw new RestServiceException(thread, System.currentTimeMillis()
 					- start, "配置id为" + config.getCompileId()
-					+ "的配置在数据库中找不到对应的配置分组关系,请检查json串是否正确" + sb.toString(),
+					+ "的配置,在数据库中找不到对应的配置分组关系,请检查json串是否正确。" + sb.toString(),
 					RestBusinessCode.config_integrity_error.getValue());
 		}
 		if (config.getIsValid() == 0) {// 编译配置修改为无效,需要将所有的配置分组置为无效
@@ -1023,21 +1019,14 @@ public class ConfigSourcesService extends BaseService {
 				MaatConfig maatConfig = new MaatConfig();
 				String msg = CompileVal.compileIsOk(configCompile, false, sb);
 				if (!"ok".equals(msg)) {
-					logger.error(msg);
-					thread.setExceptionInfo(msg + sb.toString());
-					thread.setBusinessCode(CompileVal.getBusinessCode());
-					throw new RestServiceException(thread,
-							System.currentTimeMillis() - start, msg
+					throw new RestServiceException(msg
 									+ sb.toString(),
 									CompileVal.getBusinessCode());
 				}
 
 				if (!(null != configCompile.getGroupRelationList() && configCompile
 						.getGroupRelationList().size() > 0)) {
-					logger.error("配置分组列表不能为空" + sb.toString());
-					thread.setExceptionInfo("配置分组数量不能为空" + sb.toString());
-					throw new RestServiceException(thread,
-							System.currentTimeMillis() - start, "配置分组列表不能为空"
+					throw new RestServiceException("配置分组列表不能为空"
 									+ sb.toString(),
 							RestBusinessCode.CompileGroupIsNull.getValue());
 				}
@@ -1048,11 +1037,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "字符类域配置id不能为空 ,表名---"
 									+ strRegion.getTableName() + ""
 									+ sb.toString();
-							logger.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread,
-									System.currentTimeMillis() - start,
-									errorMsg,
+							throw new RestServiceException(errorMsg,
 									RestBusinessCode.RegionIdIsNull.getValue());
 						}
 					}
@@ -1065,10 +1050,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "ip类域配置id不能为空 ,表名---"
 									+ ipRegion.getTableName() + ""
 									+ sb.toString();
-							logger.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread,
-									System.currentTimeMillis() - start,
+							throw new RestServiceException(
 									errorMsg,
 									RestBusinessCode.RegionIdIsNull.getValue());
 						}
@@ -1082,11 +1064,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "数值类域配置id不能为空  ,表名---"
 									+ numRegion.getTableName() + ""
 									+ sb.toString();
-							logger.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread,
-									System.currentTimeMillis() - start,
-									errorMsg,
+							throw new RestServiceException(errorMsg,
 									RestBusinessCode.RegionIdIsNull.getValue());
 						}
 					}
@@ -1099,11 +1077,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "摘要类域配置id不能为空  ,表名---"
 									+ digestRegion.getTableName() + ""
 									+ sb.toString();
-							logger.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread,
-									System.currentTimeMillis() - start,
-									errorMsg,
+							throw new RestServiceException(errorMsg,
 									RestBusinessCode.RegionIdIsNull.getValue());
 						}
 					}
@@ -1117,11 +1091,7 @@ public class ConfigSourcesService extends BaseService {
 							String errorMsg = "生效范围IP域类域配置id不能为空 ,表名---"
 									+ ipRegion.getTableName() + ""
 									+ sb.toString();
-							logger.error(errorMsg);
-							thread.setExceptionInfo(errorMsg);
-							throw new RestServiceException(thread,
-									System.currentTimeMillis() - start,
-									errorMsg,
+							throw new RestServiceException(errorMsg,
 									RestBusinessCode.RegionIdIsNull.getValue());
 						}
 					}
@@ -1298,9 +1268,9 @@ public class ConfigSourcesService extends BaseService {
 													newMaatConfig);
 										} catch (Exception e) {
 											// TODO Auto-generated catch block
+											logger.error("未找到域列表，请检查配置文件中域类型是否正确！");
 											CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
-											e = new RuntimeException(
-													"未找到域列表，请检查域类型是否正确！");
+											e = new ServiceRuntimeException("未找到域列表，请检查域类型是否正确！",RestBusinessCode.service_runtime_error.getValue());
 											msgList.add(e);
 											return "error";
 										}
@@ -1320,20 +1290,21 @@ public class ConfigSourcesService extends BaseService {
 
 					}
 				} else {
-					RuntimeException e = new RuntimeException(
-							"service与写入数据库序号映射关系不存在");
-					CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+					ServiceRuntimeException e = new ServiceRuntimeException(RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),RestBusinessCode.ServiceNoFoundDBIndex.getValue());
+					CompileVal.setBusinessCode(RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 					msgList.add(e);
 					return "error";
 				}
 			}
-		}catch (RestServiceException e ){
+		}catch (RuntimeException e){
+			logger.error(e.getMessage());
 			msgList.add(e);
 			return "error";
 		}catch (Exception e) {
 			// TODO: handle exception
+			e = new ServiceRuntimeException("服务器内部异常："+e.getMessage(),RestBusinessCode.service_runtime_error.getValue());
 			msgList.add(e);
-			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
+			CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
 			return "error";
 		}
 		try {
@@ -1342,8 +1313,10 @@ public class ConfigSourcesService extends BaseService {
 		} catch (Exception e) {
 			// TODO: handle exception
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
-			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				CompileVal.setBusinessCode(((RestServiceException)e).getErrorCode());
+			}else if (e instanceof ServiceRuntimeException ) {
+				CompileVal.setBusinessCode(((ServiceRuntimeException)e).getErrorCode());
 			}
 			logger.error(e.getMessage());
 			msgList.add(e);
@@ -1412,6 +1385,7 @@ public class ConfigSourcesService extends BaseService {
 					- start, "编译配置不能为空" + sb.toString(),
 					RestBusinessCode.CompileIsNull.getValue());
 		}
+		//Map<DBIndex,Map<Service,List<CompileId>>
 		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 		Iterator serviceIterator = compileMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
@@ -1431,17 +1405,17 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			} else {
-				RuntimeException e = new RuntimeException("service值为" + service
-						+ ",与写入数据库序号映射关系不存在");
-				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+				ServiceRuntimeException e = new ServiceRuntimeException("service值为" + service
+						+ ",与写入数据库序号映射关系不存在",RestBusinessCode.ServiceNoFoundDBIndex.getValue());
+				CompileVal.setBusinessCode(RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 				msgList.add(e);
 				return "error";
 			}
 		}
 		try {
 			if (!configRedisService.delMaatConfig(restMap)) {
-				RuntimeException e = new RuntimeException("不存在映射关系");
 				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+				ServiceRuntimeException e = new ServiceRuntimeException("取消MAAT配置时出现异常，具体原因不详，请联系管理员",RestBusinessCode.service_runtime_error.getValue());
 				msgList.add(e);
 				return "error";
 			}
@@ -1449,8 +1423,10 @@ public class ConfigSourcesService extends BaseService {
 			// TODO: handle exception
 			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
-			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				CompileVal.setBusinessCode(((RestServiceException) e).getErrorCode());
+			}else if (e instanceof ServiceRuntimeException) {
+				CompileVal.setBusinessCode(((ServiceRuntimeException) e).getErrorCode());
 			}
 			msgList.add(e);
 			return "error";
@@ -2726,8 +2702,19 @@ public class ConfigSourcesService extends BaseService {
 	public String saveCommonSources(AuditLogThread thread, long start,
 									String jsonString) {
 		CompileVal.setBusinessCode(null);
-		JsonArray jsonObjectList = new JsonParser().parse(jsonString)
+		JsonArray jsonObjectList = null;
+		try {
+			jsonObjectList = new JsonParser().parse(jsonString)
 				.getAsJsonArray();
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error(RestBusinessCode.CBParamFormateError.getErrorReason()+","+e.getMessage());
+			CompileVal.setBusinessCode(RestBusinessCode.CBParamFormateError.getValue());
+			e =new RestServiceException (RestBusinessCode.CBParamFormateError.getErrorReason()+","+e.getMessage(),RestBusinessCode.CBParamFormateError.getValue());
+			msgList.add(e);
+			return "error";
+		}
+		
 		Map<Integer, List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String, String>>>();
 		for (int i = 0; i < jsonObjectList.size(); i++) {
 			JsonObject jsonObj = (JsonObject) jsonObjectList.get(i);
@@ -3036,8 +3023,8 @@ public class ConfigSourcesService extends BaseService {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			CompileVal.setBusinessCode(RestBusinessCode.unknow_error.getValue());
-			if (e.getMessage().startsWith("后台错误:")) {
-				CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof ServiceRuntimeException) {
+				CompileVal.setBusinessCode(((ServiceRuntimeException) e).getErrorCode());
 			}
 			msgList.add(e);
 			return "error";
@@ -3054,12 +3041,11 @@ public class ConfigSourcesService extends BaseService {
 					.getAsJsonArray();
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error(e.getMessage());
-			CompileVal.setBusinessCode(RestBusinessCode.service_runtime_error.getValue());
-			thread.setExceptionInfo(e.getMessage() + sb.toString());
-			throw new RestServiceException(thread, System.currentTimeMillis()
-					- start, e.getMessage() + sb.toString(),
-					CompileVal.getBusinessCode());
+			logger.error(RestBusinessCode.CBParamFormateError.getErrorReason()+","+e.getMessage());
+			CompileVal.setBusinessCode(RestBusinessCode.CBParamFormateError.getValue());
+			e =new RestServiceException (RestBusinessCode.CBParamFormateError.getErrorReason()+","+e.getMessage(),RestBusinessCode.CBParamFormateError.getValue());
+			msgList.add(e);
+			return "error";
 		}
 		// <service,cfgIdList>
 		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();

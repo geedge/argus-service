@@ -448,15 +448,136 @@ public enum RestBusinessCode {
 	 */
 	ValueInWrongRegexp(4002605,"属性值与正则表达式不匹配"),
 	
+	/**
+	 * isValid属性格式不正确
+	 */
 	IsValidInWrongRange(4002606,"isValid属性格式不正确"),
+	
+	/**
+	 * 回调类配置请求参数格式不正确
+	 */
+	CBParamFormateError(4002607,"回调类配置请求参数格式不正确"),
+	
+	//服务内部异常业务码
+	/**
+	 * 回调类配置Service不存在或未配置tableName
+	 */
+	CBServiceOrTableNameNotFound(5001001,"回调类配置Service不存在或未配置tableName"),
+	/**
+	 * service与写入数据库序号映射关系不存在
+	 */
+	ServiceNoFoundDBIndex(5001002,"service与写入数据库序号映射关系不存在"),
+	
+	/**
+	 * 向服务器上传文件失败
+	 */
+	FileUploadFailure(5001003,"向服务器上传文件失败"),
+	
+	/**
+	 * FastDfs文件服务器出现异常
+	 */
+	FastDfsServerException(5001004,"FastDfs文件服务器出现异常"),
+	/**
+	 * 摘要获取失败
+	 */
+	GetFileDigestFailure(5001005,"摘要获取失败"),
+	
+	/**
+	 * Redis数据库编号不在有效范围内
+	 */
+	DbIndexNotInRange(5002001,"Redis数据库编号不在有效范围内"),
+	
+	/**
+	 * 配置信息不能为空
+	 */
+	ConfigSourceIsNull(5002002,"配置信息不能为空"),
+	
+	/**
+	 * 无法连接Redis数据库
+	 */
+	CannotConnectionRedis(5002003,"无法连接Redis数据库"),
+	
+	/**
+	 * 向Redis数据库保存配置时发生错误
+	 */
+	SaveDataInError(5002004,"向Redis数据库保存配置时发生错误"),
+	
+	/**
+	 * key在Redis中不存在
+	 */
+	KeyNotExistsInRedis(5002005,"key在Redis中不存在"),
+	
+	/**
+	 * 删除Redis数据库中配置时发生错误
+	 */
+	DeleteDataInError(5002006,"删除Redis数据库中配置时发生错误"),
+	
+	/**
+	 * 向Redis数据库中设置值失败
+	 */
+	ZsetFailed(5002007,"向Redis数据库中设置值失败"),
+	
+	/**
+	 * redisTemplate为空
+	 */
+	RedisTemplateIsNull(5002008,"redisTemplate为空"),
+	
+	/**
+	 * 判断key是否存在失败
+	 */
+	ExistsKeyFailed(5002008,"判断key是否存在失败"),
+	
+	/**
+	 * 无法从Map中获取配置的属性值
+	 */
+	GetMaatVersionFailure(5003001,"无法从Map中获取配置的属性值"),
+	
+	/**
+	 * 在配置文件中未找到service对应的表名
+	 */
+	NotFoundTableName(5003002,"未找到service对应的表名"),
+	
+	/**
+	 * 在配置文件中未找到service对应的Redis入库规则
+	 */
+	NotFoundRedisRule(5003003,"未找到service对应的Redis入库规则"),
+	/**
+	 * Redis数据库中MAAT配置的对应关系不存在
+	 */
+	RelationNotExistsInRedis(5003004,"Redis数据库中MAAT配置的对应关系不存在"),
+	
+	/**
+	 * Map中缺少编译配置信息
+	 */
+	NotFoundCompileInfo(5004001,"Map中缺少编译配置信息"),
+	
+	/**
+	 * Map中缺少分组配置信息
+	 */
+	NotFoundGroupInfo(5004002,"Map中缺少分组配置信息"),
+	
+	/**
+	 * 无法从Map中获取配置的属性值
+	 */
+	NotFoundValueByKey(5004003,"无法从Map中获取配置的属性值"),
+	
+	/**
+	 * 状态更新操作中service与配置ID的应对关系不能为空
+	 */
+	ServiceAndCompileMapIsNull(5004004,"状态更新操作中service与配置Id的应对关系不能为空"),
+	
+	/**
+	 * 状态更新操作中与service对应的配置Id列表不能为空
+	 */
+	CompileIdListIsNull(5004005,"状态更新操作中与service对应的配置Id列表不能为空"),
+	
+	/**
+	 * 状态更新操作中更新内容Map不能为空
+	 */
+	ConfigInfoMapIsNull(5004005,"状态更新操作中更新内容Map不能为空"),
+	
+	
 	;
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

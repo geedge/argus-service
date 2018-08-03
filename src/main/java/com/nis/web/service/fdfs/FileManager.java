@@ -15,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.ServiceRuntimeException;
+
 /**
  * <p>Title: FileManager.java</p>
 // * <p>Description: 上传文件到fdfs的工具类</p>
@@ -43,7 +46,7 @@ public class FileManager extends FileManagerConfig {
 			storageClient = new StorageClient(trackerServer, storageServer);
 		} catch (Exception e) {
 			logger.error("创建tracker|storage失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", e);
-			throw new RuntimeException("后台错误:创建tracker|storage失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", e);
+			throw new ServiceRuntimeException("创建tracker|storage失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",RestBusinessCode.FastDfsServerException.getValue());
 		}
 	}
 
@@ -67,9 +70,9 @@ public class FileManager extends FileManagerConfig {
 					+ SEPARATOR + groupName + SEPARATOR + remoteFileName;
 			return fileAbsolutePath;
 		} catch (Exception e) {
-			logger.error("上传文件{}到fastfds服务器失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", file.getName(), e);
-			throw new RuntimeException("后台错误:上传文件" + file.getName() + "到fastfds服务器失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
-					e);
+			logger.error("上传文件到fastfds服务器失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", file.getName(), e);
+			throw new ServiceRuntimeException("上传文件" + file.getName() + "到fastfds服务器失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
+					RestBusinessCode.FastDfsServerException.getValue());
 		}
 	}
 
@@ -90,8 +93,8 @@ public class FileManager extends FileManagerConfig {
 			headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		} catch (Exception e) {
 			logger.error("从fastfds服务器下载文件{}失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常", remoteFileName, e);
-			throw new RuntimeException("后台错误:从fastfds服务器下载文件" + remoteFileName + "失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
-					e);
+			throw new ServiceRuntimeException("从fastfds服务器下载文件" + remoteFileName + "失败,请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
+					RestBusinessCode.FastDfsServerException.getValue());
 		}
 		return new ResponseEntity<byte[]>(content, headers, HttpStatus.CREATED);
 	}
@@ -108,8 +111,8 @@ public class FileManager extends FileManagerConfig {
 			result = storageClient.delete_file(group, filePath);
 		} catch (Exception e) {
 			logger.error("删除文件:{}失败,所属组:{},请检查fdfs配置文件或fdfs服务,nginx服务是否正常", filePath, group, e);
-			throw new RuntimeException("后台错误:删除文件:" + filePath + "失败,所属组:" + group + ",请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
-					e);
+			throw new ServiceRuntimeException("删除文件:" + filePath + "失败,所属组:" + group + ",请检查fdfs配置文件或fdfs服务,nginx服务是否正常",
+					RestBusinessCode.FastDfsServerException.getValue());
 
 		}
 		return result;
