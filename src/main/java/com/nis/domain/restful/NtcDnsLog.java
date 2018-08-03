@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -41,6 +42,10 @@ public class NtcDnsLog extends LogEntity {
 
     @ApiModelProperty(value="DNS_SUB", required=true)
     protected Integer dnsSub ;
+    
+    @ApiModelProperty(value="查询内容", required=true)
+    protected String searchQname ;
+    
 
     public Integer getRd() {
         return rd;
@@ -121,4 +126,19 @@ public class NtcDnsLog extends LogEntity {
     public void setDnsSub(Integer dnsSub) {
         this.dnsSub = dnsSub;
     }
+    
+    /**
+	 * @param searchQName the searchQName to set
+	 */
+	public void setSearchQname(String searchQname) {
+		this.searchQname = searchQname;
+	}
+	
+	/**
+	 * @return the searchQName
+	 */
+	@JsonIgnore
+	public String getSearchQname() {
+		return searchQname;
+	}
 }

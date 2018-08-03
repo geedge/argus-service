@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -23,6 +24,9 @@ public class NtcSslLog extends LogEntity {
     @ApiModelProperty(value="证书授权机构", required=true)
     protected String cn;
 
+    @ApiModelProperty(value="SNI", required=true)
+    protected String searchSni ;
+    
     public String getVersion() {
         return version;
     }
@@ -54,4 +58,19 @@ public class NtcSslLog extends LogEntity {
     public void setCn(String cn) {
         this.cn = cn;
     }
+    
+    /**
+	 * @param searchSni the searchSni to set
+	 */
+	public void setSearchSni(String searchSni) {
+		this.searchSni = searchSni;
+	}
+	
+	/**
+	 * @return the searchSni
+	 */
+	@JsonIgnore
+	public String getSearchSni() {
+		return searchSni;
+	}
 }
