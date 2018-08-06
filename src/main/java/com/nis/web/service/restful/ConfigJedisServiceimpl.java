@@ -1,5 +1,6 @@
 package com.nis.web.service.restful;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 public class ConfigJedisServiceimpl implements ConfigRedisService {
 	private static Logger logger = LoggerFactory.getLogger(ConfigJedisServiceimpl.class);
 	private static final int TAPREDISDB = Configurations.getIntProperty("tapRedisDb", 7);
+	// 用于在实时统计配置后面添加时间,方便读取入库时间
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
 	public boolean saveUnMaatConfig(Map<Integer, List<Map<String, String>>> configMap) {
 		if (configMap != null && configMap.size() > 0) {
@@ -382,6 +385,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												valBF.append(valStr.trim());
 											}
 										}
+										//向实时统计库中添加时间标识,方便人眼直观识别入库时间
+										valBF.append("\t");
+										valBF.append(sdf.format(new Date()));
 										String maatKey = keyBF.toString();
 										transaction.set(maatKey.toUpperCase(), valBF.toString());
 										String zset = maatKey.replace("EFFECTIVE_RULE:", "ADD,");
