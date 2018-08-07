@@ -151,12 +151,11 @@ public class HiveJDBC {
 			for (int i = 1; i <= metaData.getColumnCount(); i++) {
 				Object value = rs.getObject(i);
 				String filedName = filedAndColumnMap.get(metaData.getColumnName(i).toString().toLowerCase());
-				if (null != value) {
+				if (!StringUtil.isEmpty(value)) {
+					//如果是日期类型的属性需要把时间戳转换成日期，如果时间戳为0直接把值设置为null
 					if (null != columnList && columnList.contains(filedName.toLowerCase())) {
 						long time = 0l;
-						if (null != value && !value.toString().equals("")) {
-							time = Long.parseLong(value.toString());
-						}
+						time = Long.parseLong(value.toString());
 						map.put(filedName, time==0l?null:new Date(time * 1000));
 						// map.put(filedName, new
 						// Date(Long.parseLong("1476583810000")));
@@ -236,7 +235,7 @@ public class HiveJDBC {
 			String fieldTypeName = propertyDescriptor.getPropertyType().getName();
 			if (map.containsKey(name)) {
 				Object value = map.get(name);
-				if (null != value && !value.equals("")) {
+				if (!StringUtil.isEmpty(value)) {
 					if (fieldTypeName.equals("java.lang.String")) {
 						propertyDescriptor.getWriteMethod().invoke(obj, new String[] { value.toString() });
 					} else if (fieldTypeName.equals("java.lang.Integer")) {

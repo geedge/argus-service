@@ -49,7 +49,7 @@ public class HiveSqlService {
 		}
 		sql.setLength(0);
 		sql.append(" select " + sqlTrim + "  from " + tableName + " t where 1=1  ");
-		if (bean != null) {
+		if (!StringUtil.isEmpty(bean)) {
 			Class<?> clazz = bean.getClass();
 			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
 				// 获取所有的字段包括public,private,protected,private
@@ -64,7 +64,7 @@ public class HiveSqlService {
 					String typeName = f.getType().getName();
 					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
 						Object value = getFieldValue(bean, key);
-						if (value != null) {
+						if (!StringUtil.isEmpty(value)) {
 							setFieldValue(bean, key, value.toString().trim());
 							if (key.endsWith("Time")) {// 日期开始或结束的字段
 								if (col2col.containsKey(key)) {
@@ -159,7 +159,7 @@ public class HiveSqlService {
 					String typeName = f.getType().getName();
 					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
 						Object value = getFieldValue(bean, key);
-						if (value != null) {
+						if (!StringUtil.isEmpty(value)) {
 							setFieldValue(bean, key, value.toString().trim());
 							if (key.endsWith("Time")) {// 日期开始或结束的字段
 								if (col2col.containsKey(key)) {

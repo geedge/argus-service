@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.SwaggerLogDao">
+
+	<select id="findList" resultType="swaggerLog">
+		SELECT
+		a.*
+		FROM services_request_log a
+		WHERE a.request_time BETWEEN
+		#{beginDate} AND #{endDate}
+
+		<if test="requestContent != null and requestContent != ''">
+			AND a.request_Content LIKE
+			<if test="dbName == 'oracle'">'%'||#{requestContent}||'%'</if>
+			<if test="dbName == 'mssql'">'%'+#{requestContent}+'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{requestContent}, '%')</if>
+		</if>
+		<if test="traceCode != null and traceCode != ''">
+			AND a.trace_Code=#{traceCode}
+		</if>
+
+		<if test="exceptionInfo != null and exceptionInfo != ''">
+			AND a.exception_Info LIKE
+			<if test="dbName == 'oracle'">'%'||#{exceptionInfo}||'%'</if>
+			<if test="dbName == 'mssql'">'%'+#{exceptionInfo}+'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{exceptionInfo}, '%')</if>
+		</if>
+
+		<if test="requestIp != null and requestIp != ''">
+			AND a.request_ip like
+			<if test="dbName == 'oracle'">'%'||#{requestIp}||'%'</if>
+			<if test="dbName == 'mssql'">'%'+#{requestIp}+'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{requestIp}, '%')</if>
+		</if>
+		<if test="serverIp != null and serverIp != ''">
+			AND a.server_Ip like
+			<if test="dbName == 'oracle'">'%'||#{serverIp}||'%'</if>
+			<if test="dbName == 'mssql'">'%'+#{serverIp}+'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{serverIp}, '%')</if>
+		</if>
+		<if test="exception != null and exception != ''">
+			AND a.exception_Info!=''
+		</if>
+		ORDER BY a.request_time DESC
+	</select>
+
+
+
+</mapper>

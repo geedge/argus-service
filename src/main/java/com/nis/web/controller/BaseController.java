@@ -24,6 +24,7 @@ import com.nis.web.service.LogService;
 import com.nis.web.service.MenuService;
 import com.nis.web.service.OfficeService;
 import com.nis.web.service.RoleService;
+import com.nis.web.service.SwaggerLogService;
 import com.nis.web.service.SystemService;
 import com.nis.web.service.UserService;
 
@@ -49,6 +50,9 @@ public class BaseController {
 	
 	@Autowired
 	protected LogService logService;
+	
+	@Autowired
+	protected SwaggerLogService swaggerLogService;
 	
 	@Autowired 
 	protected ArchiveServcie archiveServcie;
