@@ -23,7 +23,7 @@
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<div>
-			<label>请求内容：</label><input id="requestContent" name="requestContent" type="text" maxlength="500" class="input-mini" value="${swaggerLog.requestContent}"/>
+			<label>traceCode：</label><input id="traceCode" name="traceCode" type="text" maxlength="30" class="input-mini" value="${swaggerLog.traceCode}"/>
 			<label>异常信息：</label><input id="exceptionInfo" name="exceptionInfo" type="text" maxlength="500" class="input-mini" value="${swaggerLog.exceptionInfo}"/>
 			<label>请求ip：</label><input id="requestIp" name="requestIp" type="text" maxlength="50" class="input-mini" value="${swaggerLog.requestIp}"/>
 			<label>服务端ip：</label><input id="serverIp" name="serverIp" type="text" maxlength="50" class="input-mini" value="${swaggerLog.serverIp}"/>

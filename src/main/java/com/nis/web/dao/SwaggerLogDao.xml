@@ -15,6 +15,9 @@
 			<if test="dbName == 'mssql'">'%'+#{requestContent}+'%'</if>
 			<if test="dbName == 'mysql'">CONCAT('%', #{requestContent}, '%')</if>
 		</if>
+		<if test="traceCode != null and traceCode != ''">
+			AND a.trace_Code=#{traceCode}
+		</if>
 
 		<if test="exceptionInfo != null and exceptionInfo != ''">
 			AND a.exception_Info LIKE

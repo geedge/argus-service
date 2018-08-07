@@ -73,9 +73,7 @@ public class Page<T> {
 	 * @param response 用于设置 Cookie，记住页码
 	 */
 	public Page(HttpServletRequest request, HttpServletResponse response){
-		
-		//this(request, response,Integer.valueOf(Configurations.getIntProperty("page.pageSize", 30)));
-		
+		this(request, response,Integer.valueOf(Configurations.getIntProperty("page.pageSize", 30)));
 	}
 	/**
 	 * 构造方法
