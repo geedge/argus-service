@@ -1,3 +1,0 @@
-GK_PZ¿â
---ÐÞ¸Ä×Ö¶ÎÀàÐÍ£»
-alter table DJ_IPSEC_LOG MODIFY ISAKMP_MODE NUMBER;
