@@ -22,7 +22,15 @@
 	<form:form id="searchForm" action="${ctx}/sys/log/swaggerLogList" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-		<div>
+		<div>		
+			<label>操作行为：</label>
+			<select name="opAction"  class="input-medium">
+				<option value="" selected="selected">请选择</option>
+				<option value="1">插入</option>
+				<option value="2">更新</option>
+				<option value="3">删除</option>
+				<option value="4">查询</option>
+			</select>
 			<label>traceCode：</label><input id="traceCode" name="traceCode" type="text" maxlength="30" class="input-mini" value="${swaggerLog.traceCode}"/>
 			<label>异常信息：</label><input id="exceptionInfo" name="exceptionInfo" type="text" maxlength="500" class="input-mini" value="${swaggerLog.exceptionInfo}"/>
 			<label>请求ip：</label><input id="requestIp" name="requestIp" type="text" maxlength="50" class="input-mini" value="${swaggerLog.requestIp}"/>
@@ -41,26 +49,30 @@
 	</form:form>
 	<sys:message content="${message}"/>
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
-		<thead><tr><th>请求内容</th><th>traceCode</th><th>请求方式</th><th>请求ip</th><th>服务端ip</th><th>请求时间</th></thead>
+		<thead><tr><th>请求内容</th><th>traceCode</th><th>操作行为</th><th>请求ip</th><th>服务端ip</th><th>请求时间</th></thead>
 		<tbody><%request.setAttribute("strEnter", "\n");request.setAttribute("strTab", "\t");%>
-		<c:forEach items="${page.list}" var="log">
+		<c:forEach items="${page.list}" var="swaggerLog">
 			<tr>
 				<td>
-					<a data-original-title="${fn:escapeXml(log.requestContent) }" class="tooltips" data-flag="false"
-					 data-html="true" data-placement="top">	${fn:substring(log.requestContent,0,20) }</a>	
+					<a data-original-title="${fn:escapeXml(swaggerLog.requestContent) }" class="tooltips" data-flag="false"
+					 data-html="true" data-placement="top">	${fn:substring(swaggerLog.requestContent,0,20) }</a>	
 				</td>
-				<td>${log.traceCode}</td>
-				<td>${log.opAction}</td>
-				<td><strong>${log.requestIp}</strong></td>
-				<td>${log.serverIp}</td>
-				<td><fmt:formatDate value="${log.requestTime}" type="both"/></td>
+				<td>${swaggerLog.traceCode}</td>
+				<td>
+					<c:if test="${swaggerLog.opAction eq 1}">插入</c:if>
+					<c:if test="${swaggerLog.opAction eq 2}">更新</c:if>
+					<c:if test="${swaggerLog.opAction eq 3}">删除</c:if>
+					<c:if test="${swaggerLog.opAction eq 4}">查询</c:if>
+				
+				</td>
+				<td><strong>${swaggerLog.requestIp}</strong></td>
+				<td>${swaggerLog.serverIp}</td>
+				<td><fmt:formatDate value="${swaggerLog.requestTime}" type="both"/></td>
 			</tr>
-			<c:if test="${not empty log.exceptionInfo}"><tr>
+			<c:if test="${not empty swaggerLog.exceptionInfo}"><tr>
 				<td colspan="8" style="word-wrap:break-word;word-break:break-all;">
-<%-- 					用户代理: ${log.userAgent}<br/> --%>
-<%-- 					提交参数: ${fns:escapeHtml(log.params)} <br/> --%>
 					异常信息: <br/>
-					${fn:replace(fn:replace(fns:escapeHtml(log.exceptionInfo), strEnter, '<br/>'), strTab, '&nbsp; &nbsp; ')}</td>
+					${fn:replace(fn:replace(fns:escapeHtml(swaggerLog.exceptionInfo), strEnter, '<br/>'), strTab, '&nbsp; &nbsp; ')}</td>
 			</tr></c:if>
 		</c:forEach>
 		</tbody>

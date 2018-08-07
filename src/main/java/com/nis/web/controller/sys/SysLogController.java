@@ -27,8 +27,8 @@ public class SysLogController extends BaseController {
 
 	@RequiresPermissions("sys:swaggerLogList:view")
 	@RequestMapping(value = "swaggerLogList")
-	public String swaggerLogList(SwaggerLog sysLog, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<SwaggerLog> page = swaggerLogService.findSwaggerLogPage(new Page<SwaggerLog>(request, response), sysLog);
+	public String swaggerLogList(SwaggerLog swaggerLog, HttpServletRequest request, HttpServletResponse response, Model model) {
+		Page<SwaggerLog> page = swaggerLogService.findSwaggerLogPage(new Page<SwaggerLog>(request, response), swaggerLog);
 		model.addAttribute("page", page);
 		return "/sys/swaggerLogList";
 	}
