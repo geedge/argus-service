@@ -153,7 +153,7 @@ public class SQLHelper {
 	 */
 	public static Long getCount(final String sql, final Connection connection, final MappedStatement mappedStatement,
 			final Object parameterObject, final BoundSql boundSql, Log log) throws SQLException {
-		logger.info("oracle查询count开始----"+System.currentTimeMillis());
+		logger.info("count查询开始----"+System.currentTimeMillis());
 		String dbName = getDBType();
 		final String countSql;
 		if ("oracle".equals(dbName)) {
