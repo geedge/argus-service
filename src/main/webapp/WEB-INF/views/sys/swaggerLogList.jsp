@@ -2,8 +2,11 @@
 <%@ include file="/WEB-INF/include/taglib.jsp"%>
 <html>
 <head>
-	<title>swagger日志管理</title>
+	<title>swagger日志管理</title>	
 	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".tooltips").tooltip();
+		});
 		function page(n,s){
 			$("#pageNo").val(n);
 			$("#pageSize").val(s);
@@ -43,7 +46,7 @@
 		<c:forEach items="${page.list}" var="log">
 			<tr>
 				<td>
-					<a data-original-title="${log.requestContent }" class="tooltips" data-flag="false"
+					<a data-original-title="${fn:escapeXml(log.requestContent) }" class="tooltips" data-flag="false"
 					 data-html="true" data-placement="top">	${fn:substring(log.requestContent,0,20) }</a>	
 				</td>
 				<td>${log.traceCode}</td>
