@@ -41,6 +41,9 @@
 		<if test="exception != null and exception != ''">
 			AND a.exception_Info!=''
 		</if>
+		<if test="opAction != null and opAction != ''">
+			AND a.opAction=#{opAction}
+		</if>
 		ORDER BY a.request_time DESC
 	</select>
 

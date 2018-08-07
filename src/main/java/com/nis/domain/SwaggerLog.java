@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class SwaggerLog extends BaseEntity<SwaggerLog> {
 	private static final long serialVersionUID = 5351369774420087482L;
-	private Long id;
 	private String operator;
 	private String version;
 	private Integer opAction;
@@ -23,13 +22,6 @@ public class SwaggerLog extends BaseEntity<SwaggerLog> {
 	private Date beginDate; // 开始日期
 	private Date endDate; // 结束日期
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getOperator() {
 		return operator;
