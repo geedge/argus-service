@@ -28,6 +28,7 @@ import com.nis.domain.restful.NtcIpsecLog;
 import com.nis.domain.restful.NtcL2tpLog;
 import com.nis.domain.restful.NtcMailLog;
 import com.nis.domain.restful.NtcOpenvpnLog;
+import com.nis.domain.restful.NtcP2pLog;
 import com.nis.domain.restful.NtcPptpLog;
 import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
@@ -839,6 +840,65 @@ public class NtcLogSearchController extends BaseRestController {
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "DDos日志检索成功",
 				ntcDdosLogPage, 0);
+	}
+	
+	@RequestMapping(value = "/ntcP2pLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "P2P日志查询", httpMethod = "GET", notes = "对应配置为“文件传输管理-P2P”，存储动作为阻断的命中日志。对日志功能“文件传输管理-P2P日志”提供数据基础查询服务")
+	public Map<String, ?> ntcP2pLogs(Page page, NtcP2pLog ntcP2pLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<NtcP2pLog> ntcP2pLogPage = null;
+		try {
+			resetTime(ntcP2pLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcP2pLog, NtcP2pLog.class, page);
+			ntcP2pLogPage = new Page<NtcP2pLog>();
+			ntcP2pLogPage.setPageNo(page.getPageNo());
+			ntcP2pLogPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcP2pLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			ResultSet rs = HiveSqlService.getResultSet(page, ntcP2pLog,
+					Configurations.getStringProperty(NtcP2pLog.class.getSimpleName() + "HiveTable", "ntc_p2p_log"),
+					getCol2Col(), orderBy, null);
+			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcP2pLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcP2pLogPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcP2pLog> List = (java.util.List<NtcP2pLog>) JsonMapper.fromJsonList(jsonString,
+							NtcP2pLog.class);
+					ntcP2pLogPage.setList(List);
+					ntcP2pLogPage.setCount(List.size());
+
+				} else {
+					ntcP2pLogPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "P2P日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "P2P日志检索成功",
+				ntcP2pLogPage, 0);
 	}
 		
 	/**
