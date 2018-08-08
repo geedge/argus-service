@@ -252,6 +252,22 @@
 		$(document).ready(function(){
 			App.init();
 			
+			//隐藏待办事项快捷菜单
+			var disp = $("#quickMenu").css("display");
+			if(!disp || disp == "block"  ) {
+				$("#quickMenu").slideUp(200,function(){
+					$("#show-hide-option").removeClass().addClass("icon-eye-close");
+					wSize();
+				});
+				
+			}else {
+				$("#quickMenu").slideDown(200,function(){
+					$("#show-hide-option").removeClass().addClass("icon-eye-open");
+					wSize();
+				});
+				
+			}
+			
 		});
 		
 		
