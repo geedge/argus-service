@@ -42,6 +42,7 @@ public class ServicesRequestLog implements Serializable {
 	private String exceptionInfo;
 	private String serverIp;
 	private String traceCode;
+	private String requestURI;
 	
 	/**
 	 * serverIp
@@ -224,4 +225,17 @@ public class ServicesRequestLog implements Serializable {
 		this.traceCode = traceCode;
 	}
 	
+	/**
+	 * @param requestURI the requestURI to set
+	 */
+	public void setRequestURI(String requestURI) {
+		this.requestURI = requestURI;
+	}
+	
+	/**
+	 * @return the requestURI
+	 */
+	public String getRequestURI() {
+		return requestURI;
+	}
 }

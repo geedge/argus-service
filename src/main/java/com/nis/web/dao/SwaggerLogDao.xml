@@ -10,7 +10,7 @@
 		#{beginDate} AND #{endDate}
 
 		<if test="requestContent != null and requestContent != ''">
-			AND a.request_Content LIKE
+			AND a.request_Content LIKE 
 			<if test="dbName == 'oracle'">'%'||#{requestContent}||'%'</if>
 			<if test="dbName == 'mssql'">'%'+#{requestContent}+'%'</if>
 			<if test="dbName == 'mysql'">CONCAT('%', #{requestContent}, '%')</if>
@@ -18,22 +18,31 @@
 		<if test="traceCode != null and traceCode != ''">
 			AND a.trace_Code=#{traceCode}
 		</if>
+		<if test="businessCode != null and businessCode != ''">
+			AND a.business_Code=#{businessCode}
+		</if>
+		<if test="requestUri != null and requestUri != ''">
+			AND a.REQUEST_URI LIKE 
+			<if test="dbName == 'oracle'">'%'||#{requestUri}||'%'</if>
+			<if test="dbName == 'mssql'">'%'+#{requestUri}+'%'</if>
+			<if test="dbName == 'mysql'">CONCAT('%', #{requestUri}, '%')</if>
+		</if>
 
 		<if test="exceptionInfo != null and exceptionInfo != ''">
-			AND a.exception_Info LIKE
+			AND a.exception_Info LIKE 
 			<if test="dbName == 'oracle'">'%'||#{exceptionInfo}||'%'</if>
 			<if test="dbName == 'mssql'">'%'+#{exceptionInfo}+'%'</if>
 			<if test="dbName == 'mysql'">CONCAT('%', #{exceptionInfo}, '%')</if>
 		</if>
 
 		<if test="requestIp != null and requestIp != ''">
-			AND a.request_ip like
+			AND a.request_ip like 
 			<if test="dbName == 'oracle'">'%'||#{requestIp}||'%'</if>
 			<if test="dbName == 'mssql'">'%'+#{requestIp}+'%'</if>
 			<if test="dbName == 'mysql'">CONCAT('%', #{requestIp}, '%')</if>
 		</if>
 		<if test="serverIp != null and serverIp != ''">
-			AND a.server_Ip like
+			AND a.server_Ip like 
 			<if test="dbName == 'oracle'">'%'||#{serverIp}||'%'</if>
 			<if test="dbName == 'mssql'">'%'+#{serverIp}+'%'</if>
 			<if test="dbName == 'mysql'">CONCAT('%', #{serverIp}, '%')</if>
@@ -41,6 +50,11 @@
 		<if test="exception != null and exception != ''">
 			AND a.exception_Info!=''
 		</if>
+<!-- 		默认不显示查询类日志,日志量太大,如果显示在界面选择操作行为即可 -->
+		<if test="opAction == null or opAction == ''">
+			AND a.opAction!=4
+		</if>
+		
 		<if test="opAction != null and opAction != ''">
 			AND a.opAction=#{opAction}
 		</if>
