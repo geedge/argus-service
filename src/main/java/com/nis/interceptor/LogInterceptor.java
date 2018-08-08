@@ -88,8 +88,8 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		String requestURI = request.getRequestURI();
-//		logger.info("请求路径是:" + requestURI);
-//		logger.info("请求参数是:" + getBodyString(request));
+		// logger.info("请求路径是:" + requestURI);
+		// logger.info("请求参数是:" + getBodyString(request));
 		long beginTime = System.currentTimeMillis();// 1、开始时间
 		timeThreadLocal.set(beginTime); // 线程绑定变量（该数据只有当前请求的线程可见）
 		if (logger.isDebugEnabled()) {
@@ -128,9 +128,13 @@ public class LogInterceptor extends BaseService implements HandlerInterceptor {
 
 		}
 
-		// 保存日志
-		LogUtils.saveLog(request, handler, ex, null, consumerTime);
-
+		String requestURI = request.getRequestURI();
+		// swagger日志请求和行为日志请求不记录请求日志
+		if (!requestURI.equals("/galaxy/nis/sys/log/swaggerLogList")
+				&& !requestURI.equals("/galaxy/nis/sys/log/list")) {
+			// 保存日志
+			LogUtils.saveLog(request, handler, ex, null, consumerTime);
+		}
 	}
 
 }

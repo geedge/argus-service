@@ -3,7 +3,7 @@ package com.nis.domain;
 import java.util.Date;
 
 public class SwaggerLog extends BaseEntity<SwaggerLog> {
-	private static final long serialVersionUID = 5351369774420087482L;
+	private static final long serialVersionUID = 1L;
 	private String operator;
 	private String version;
 	private Integer opAction;
@@ -16,12 +16,12 @@ public class SwaggerLog extends BaseEntity<SwaggerLog> {
 	private String exceptionInfo;
 	private String serverIp;
 	private String traceCode;
+	private String requestUri;
 
 	private String exception;// 界面的异常信息框
 
 	private Date beginDate; // 开始日期
 	private Date endDate; // 结束日期
-
 
 	public String getOperator() {
 		return operator;
@@ -141,6 +141,14 @@ public class SwaggerLog extends BaseEntity<SwaggerLog> {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getRequestUri() {
+		return requestUri;
+	}
+
+	public void setRequestUri(String requestUri) {
+		this.requestUri = requestUri;
 	}
 
 }
