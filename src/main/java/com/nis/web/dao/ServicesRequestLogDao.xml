@@ -15,11 +15,12 @@
 		<result column="EXCEPTION_INFO" jdbcType="BLOB" property="exceptionInfo" typeHandler="com.nis.util.BlobTypeHandler"/>
 		<result column="SERVER_IP" jdbcType="VARCHAR" property="serverIp" />
 		<result column="TRACE_CODE" jdbcType="VARCHAR" property="traceCode" />
+		<result column="REQUEST_URI" jdbcType="VARCHAR" property="requestURI" />
 	</resultMap>
 	<sql id="Base_Column_List">
 		ID, OPERATOR, VERSION, OPACTION,OPTIME, REQUEST_CONTENT,
 		REQUEST_TIME,REQUEST_IP,
-		CONSUMER_TIME,BUSINESS_CODE,EXCEPTION_INFO,SERVER_IP,TRACE_CODE
+		CONSUMER_TIME,BUSINESS_CODE,EXCEPTION_INFO,SERVER_IP,TRACE_CODE,REQUEST_URI
 	</sql>
 	<select id="getAllLog" parameterType="com.nis.domain.restful.ServicesRequestLogBean"
 		resultMap="ServicesRequestLogMap">
@@ -127,6 +128,10 @@
 			<if test="traceCode != null">
 				TRACE_CODE,
 			</if>
+			<if test="requestURI != null">
+				REQUEST_URI,
+			</if>
+			
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			
@@ -165,6 +170,9 @@
 			</if>
 			<if test="traceCode != null">
 				#{traceCode,jdbcType=VARCHAR},
+			</if>
+			<if test="requestURI != null">
+				#{requestURI,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>

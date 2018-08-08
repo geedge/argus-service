@@ -186,6 +186,7 @@ public abstract class BaseLogService {
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundEndTime())) {
+				sdf.setLenient(false);
 				sdf.parse(entity.getSearchFoundEndTime());
 			}
 		} catch (ParseException e) {
@@ -201,6 +202,7 @@ public abstract class BaseLogService {
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundStartTime())) {
+				sdf.setLenient(false);
 				sdf.parse(entity.getSearchFoundStartTime());
 			}
 		} catch (ParseException e) {

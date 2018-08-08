@@ -105,6 +105,7 @@ public class ServicesRequestLogService {
 		log.setBusinessCode(businessCode);
 		log.setExceptionInfo(exceptionInfo);
 		log.setTraceCode(traceCode);
+		log.setRequestURI(requestURI);
 		try {
 			if(Constants.SERVCER_HOST!=null){
 				log.setServerIp(Constants.SERVCER_HOST);
