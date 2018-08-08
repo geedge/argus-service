@@ -56,7 +56,7 @@
 			
 			<input id="exception" name="exception" type="checkbox"${swaggerLog.exception eq '1'?' checked':''} value="1"/>只查询异常信息</label>
 			
-			&nbsp;&nbsp;&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>&nbsp;&nbsp;
+			&nbsp;&nbsp;&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>&nbsp;&nbsp;<label style="color: red">默认<strong style="font-size: 20px;">不显示查询类</strong>日志,如需显示请选择操作行为</label>
 		</div>
 	</form:form>
 	<sys:message content="${message}"/>

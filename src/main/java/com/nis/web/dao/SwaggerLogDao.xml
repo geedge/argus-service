@@ -50,6 +50,11 @@
 		<if test="exception != null and exception != ''">
 			AND a.exception_Info!=''
 		</if>
+<!-- 		默认不显示查询类日志,日志量太大,如果显示在界面选择操作行为即可 -->
+		<if test="opAction == null or opAction == ''">
+			AND a.opAction!=4
+		</if>
+		
 		<if test="opAction != null and opAction != ''">
 			AND a.opAction=#{opAction}
 		</if>
