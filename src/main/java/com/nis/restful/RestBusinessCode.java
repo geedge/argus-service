@@ -34,26 +34,26 @@ public enum RestBusinessCode {
 	 */
 	
 	op_action_error (1003,"不正确的操作行为"),
-	
+
 	config_integrity_error (1004,"配置完整性错误或数据格式错误"),
-	
+
 	param_formate_error (1005,"服务器请求参数格式错误"),
-	
+
 	insert_data_repeat (1006,"新增数据重复"),
-	
+
 	log_range_undefined (1007,"服务器请求日志范围不明确"),
-	
+
 	not_unique (1008,"数据违反唯一性"),
-	
+
 	wrong_range (1009,"数据不在有效范围"),
 	
-	query_success(2000, "数据获取操作成功"),
+	query_success(2001000, "数据获取操作成功"),
 	
-	add_success(2001, "数据添加操作成功"),
+	add_success(2011000, "数据添加操作成功"),
 	
-	update_success(2002, "数据更新操作成功"),
+	update_success(2042000, "数据更新操作成功"),
 	
-	delete_success(2003, "数据删除操作成功"),
+	delete_success(2041000, "数据删除操作成功"),
 	/**
 	 * 完整性异常 4001000 	 编译:4001000 	分组:4001100 	数值类:4001200	IP类:4001300	字符串类:4001400		摘要类:4001500		回调类:4001600
 	 * 业务格式异常 4002000	 编译:4002000 	分组:4002100 	数值类:4002200	IP类:4002300	字符串类:4002400		摘要类:4002500		回调类:4002600
