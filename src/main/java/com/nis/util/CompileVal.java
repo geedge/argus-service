@@ -14,23 +14,11 @@ import com.nis.domain.restful.NumRegion;
 import com.nis.domain.restful.StrRegion;
 import com.nis.listener.SystemConfigListener;
 import com.nis.restful.RestBusinessCode;
+import com.nis.restful.RestServiceException;
 import com.nis.web.service.restful.ConfigSourcesService;
 
 public class CompileVal {
 
-	private static Integer businessCode = null;
-	/**
-	 * @param businessCode the businessCode to set
-	 */
-	public static void setBusinessCode(Integer businessCode) {
-		CompileVal.businessCode = businessCode;
-	}
-	/**
-	 * @return the businessCode
-	 */
-	public static Integer getBusinessCode() {
-		return businessCode;
-	}
 	/**
 	 * 判断当前编译配置中的groupNum属性值与配置分组groupList大小是否小于等于8且大于0
 	 * 
@@ -42,52 +30,40 @@ public class CompileVal {
 	 * 
 	 */
 	@SuppressWarnings("null")
-	public static String groupNumAndListIsOk(ConfigCompile configCompile, boolean isUpdate) {
+	public static void groupNumAndListIsOk(ConfigCompile configCompile, boolean isUpdate) throws Exception{
 		if (null != configCompile) {
 			if (!isUpdate && Constants.BASE_VALIDATE) {
-				String valCompile = valCompile(configCompile);
-				if (!valCompile.equals("ok")) {
-					return valCompile;
-				}
+				valCompile(configCompile);
 			}
 			if (null != configCompile.getGroupNum() && configCompile.getGroupNum() <= 0) {
-				businessCode = RestBusinessCode.GroupNumIsZero.getValue();
-				return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-						+ RestBusinessCode.GroupNumIsZero.getErrorReason();
+				throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+						+ RestBusinessCode.GroupNumIsZero.getErrorReason(),RestBusinessCode.GroupNumIsZero.getValue());
 			}
 			if (null != configCompile.getGroupNum() && configCompile.getGroupNum() > 8) {
-				businessCode = RestBusinessCode.GroupNumGtEight.getValue();
-				return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-						+ RestBusinessCode.GroupNumGtEight.getErrorReason();
+				throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+						+ RestBusinessCode.GroupNumGtEight.getErrorReason(),RestBusinessCode.GroupNumGtEight.getValue());
 			}
 			
 
 			if (null == configCompile.getGroupRelationList()||configCompile.getGroupRelationList().size()==0) {
-				businessCode = RestBusinessCode.CompileGroupIsNull.getValue();
-				return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-						+ RestBusinessCode.CompileGroupIsNull.getErrorReason();
+				throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+						+ RestBusinessCode.CompileGroupIsNull.getErrorReason(),RestBusinessCode.CompileGroupIsNull.getValue());
 			}
 
 			if (configCompile.getGroupRelationList().size() != configCompile.getGroupNum()) {
-				businessCode = RestBusinessCode.GroupNumNEQGroupList.getValue();
-				return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-						+ RestBusinessCode.GroupNumNEQGroupList.getErrorReason();
+				throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+						+ RestBusinessCode.GroupNumNEQGroupList.getErrorReason(),RestBusinessCode.GroupNumNEQGroupList.getValue());
 			}
 
 			if (!isUpdate) {
-				if (configCompile.getIsValid() != 1) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "编译配置id为" + configCompile.getCompileId() + "的配置在添加时不能为无效";
+				if (configCompile.getIsValid() != 1) 
+					throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());{
 				}
 			} else {
-				businessCode = RestBusinessCode.IsValidIsF.getValue();
-				if (configCompile.getIsValid() != 0) {
-					return "编译配置id为" + configCompile.getCompileId() + "的配置在修改时不能为有效";
-				}
+				throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 			}
-			return "ok";
 		} else {
-			return RestBusinessCode.CompileIsNull.getErrorReason();
+			throw new RestServiceException(RestBusinessCode.CompileIsNull.getErrorReason(),RestBusinessCode.CompileIsNull.getValue());
 		}
 
 	}
@@ -100,14 +76,11 @@ public class CompileVal {
 	 * @return CompileGroupSizeGtZero CompileGroupSizeEqZero
 	 *         CompileGroupIdNotExist CompileGroupIdIsRepeat GroupListEQZero
 	 */
-	public static String compileGroupSizeIsGtZero(ConfigCompile configCompile, boolean isUpdate, StringBuffer sb) {
+	public static void compileGroupSizeIsGtZero(ConfigCompile configCompile, boolean isUpdate, StringBuffer sb) throws Exception {
 		Long compileId = configCompile.getCompileId();
 
 		if (!isUpdate && Constants.SERVICE_VALIDATE) {
-			String serviceConfigCompileVal = serviceConfigCompileVal(configCompile);
-			if (!serviceConfigCompileVal.equals("ok")) {
-				return serviceConfigCompileVal;
-			}
+			serviceConfigCompileVal(configCompile);
 		}
 
 		List<Long> groupList = new ArrayList<Long>();// 配置分组中groupId集合
@@ -115,34 +88,27 @@ public class CompileVal {
 		if (groupRelationList.size() > 0) {
 			for (ConfigGroupRelation configGroupRelation : groupRelationList) {
 				if (!isUpdate && (null == configGroupRelation.getIsValid() || configGroupRelation.getIsValid() != 1)) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "编译配置id为" + configCompile.getCompileId() + "的配置groupRelationList字段中的groupId为"
-							+ configGroupRelation.getGroupId() + "的配置在添加时不能为无效";
+					throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置groupRelationList字段中的groupId为"
+							+ configGroupRelation.getGroupId() + "的配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());
 				}
 				if (isUpdate && (null == configGroupRelation.getIsValid() || configGroupRelation.getIsValid() != 0)) {
-					businessCode = RestBusinessCode.IsValidIsF.getValue();
-					return "编译配置id为" + configCompile.getCompileId() + "的配置groupRelationList字段中的groupId为"
-							+ configGroupRelation.getGroupId() + "的配置在修改时不能为有效";
+					throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置groupRelationList字段中的groupId为"
+							+ configGroupRelation.getGroupId() + "的配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 				}
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
-					String valCompileGroup = valCompileGroup(configGroupRelation, compileId);
-					if (!valCompileGroup.equals("ok")) {
-						return valCompileGroup;
-					}
+					valCompileGroup(configGroupRelation, compileId);
 				}
 
 				if (!configGroupRelation.getCompileId().equals(compileId)) {
-					businessCode = RestBusinessCode.CompileIdIsNeq.getValue();
-					return "编译配置id为" + configCompile.getCompileId() + "的配置中groupRelationList字段中的groupId为"
-							+ configGroupRelation.getGroupId() + "的配置分组与编译配置id不一致";
+					throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中groupRelationList字段中的groupId为"
+							+ configGroupRelation.getGroupId() + "的配置分组与编译配置id不一致", RestBusinessCode.CompileIdIsNeq.getValue());
 				}
 				if (!groupList.contains(configGroupRelation.getGroupId())) {
 					groupList.add(configGroupRelation.getGroupId());
 				} else {
-					businessCode = RestBusinessCode.GroupIdIsRepeat.getValue();
-					return "编译配置id为" + configCompile.getCompileId() + "的配置中groupRelationList存在多个groupId为"
-							+ configGroupRelation.getGroupId() + "的配置分组";
+					throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中groupRelationList存在多个groupId为"
+							+ configGroupRelation.getGroupId() + "的配置分组",RestBusinessCode.GroupIdIsRepeat.getValue());
 				}
 			}
 		}
@@ -150,9 +116,8 @@ public class CompileVal {
 		List<Long> regionGroupIdList = new ArrayList<Long>();// 所有域配置中groupId的集合,不重复
 		List<NumRegion> numRegionList = configCompile.getNumRegionList();
 		if (numRegionList == null) {
-			businessCode = RestBusinessCode.NumRegionIsNull.getValue();
-			return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-					+ RestBusinessCode.NumRegionIsNull.getErrorReason();
+			throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+					+ RestBusinessCode.NumRegionIsNull.getErrorReason(),RestBusinessCode.NumRegionIsNull.getValue());
 		}
 		if (numRegionList.size() > 0) {
 			for (NumRegion numRegion : numRegionList) {
@@ -161,25 +126,21 @@ public class CompileVal {
 
 				if (!StringUtil.isEmpty(numRegion.getTableName())
 						&& !type2TableNameIsOk(configCompile.getService(), numRegion.getTableName())) {
-					businessCode = RestBusinessCode.TableNameUnmatchService.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionid为"
-							+ numRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionId为"
+							+ numRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致",RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 				if (!isUpdate && numRegion.getIsValid() != 1) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionid为"
-							+ numRegion.getRegionId() + "的域配置在添加时不能为无效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionId为"
+							+ numRegion.getRegionId() + "的域配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());
 				}
 				if (isUpdate && numRegion.getIsValid() != 0) {
-					businessCode = RestBusinessCode.IsValidIsF.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionid为"
-							+ numRegion.getRegionId() + "的域配置在修改时不能为有效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionId为"
+							+ numRegion.getRegionId() + "的域配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 				}
 
 				if (groupList.size() > 0 && !groupList.contains(numRegion.getGroupId())) {
-					businessCode = RestBusinessCode.RegionsGroupIdIsNotFound.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionid为"
-							+ numRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中numRegionList中的regionId为"
+							+ numRegion.getRegionId() + "的配置的groupId在配置分组关系中不存在",RestBusinessCode.RegionsGroupIdIsNotFound.getValue());
 				}
 
 				if (!regionGroupIdList.contains(numRegion.getGroupId())) {
@@ -187,25 +148,18 @@ public class CompileVal {
 				}
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
-					String valNumRegion = valNumRegion(numRegion, compileId);
-					if (!valNumRegion.equals("ok")) {
-						return valNumRegion;
-					}
+					valNumRegion(numRegion, compileId);
 				}
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
-					String serviceNumRegionVal = serviceNumRegionVal(numRegion, compileId);
-					if (!serviceNumRegionVal.equals("ok")) {
-						return serviceNumRegionVal;
-					}
+					serviceNumRegionVal(numRegion, compileId);
 				}
 			}
 		}
 
 		List<StrRegion> strRegionList = configCompile.getStrRegionList();
 		if (strRegionList == null) {
-			businessCode = RestBusinessCode.StrRegionIsNull.getValue();
-			return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-					+ RestBusinessCode.StrRegionIsNull.getErrorReason();
+			throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+					+ RestBusinessCode.StrRegionIsNull.getErrorReason(),RestBusinessCode.StrRegionIsNull.getValue());
 		}
 		if (strRegionList != null && strRegionList.size() > 0) {
 			for (StrRegion strRegion : strRegionList) {
@@ -213,25 +167,21 @@ public class CompileVal {
 				// !regionGroupIdList.contains(strRegion.getGroupId())) {
 				if (!StringUtil.isEmpty(strRegion.getTableName())
 						&& !type2TableNameIsOk(configCompile.getService(), strRegion.getTableName())) {
-					businessCode = RestBusinessCode.TableNameUnmatchService.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionid为"
-							+ strRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionId为"
+							+ strRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致",RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 				if (!isUpdate && strRegion.getIsValid() != 1) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionid为"
-							+ strRegion.getRegionId() + "的域配置在添加时不能为无效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionId为"
+							+ strRegion.getRegionId() + "的域配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());
 				}
 				if (isUpdate && strRegion.getIsValid() != 0) {
-					businessCode = RestBusinessCode.IsValidIsF.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionid为"
-							+ strRegion.getRegionId() + "的域配置在修改时不能为有效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionId为"
+							+ strRegion.getRegionId() + "的域配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 				}
 
 				if (groupList.size() > 0 && !groupList.contains(strRegion.getGroupId())) {
-					businessCode = RestBusinessCode.RegionsGroupIdIsNotFound.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionid为"
-							+ strRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中strRegionList中的regionId为"
+							+ strRegion.getRegionId() + "的配置的groupId在配置分组关系中不存在",RestBusinessCode.RegionsGroupIdIsNotFound.getValue());
 				}
 
 				if (!regionGroupIdList.contains(strRegion.getGroupId())) {
@@ -239,72 +189,54 @@ public class CompileVal {
 				}
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
-					String valStrRegion = valStrRegion(strRegion, compileId,
+					valStrRegion(strRegion, compileId,
 							ConfigSourcesService.isStrStrongRegion(strRegion.getTableName(),configCompile.getService()));
-					if (!valStrRegion.equals("ok")) {
-						return valStrRegion;
-					}
 				}
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
-					String serviceStrRegionVal = serviceStrRegionVal(strRegion, compileId,
+					serviceStrRegionVal(strRegion, compileId,
 							ConfigSourcesService.isStrStrongRegion(strRegion.getTableName(),configCompile.getService()));
-					if (!serviceStrRegionVal.equals("ok")) {
-						return serviceStrRegionVal;
-					}
 				}
 			}
 		}
 
 		List<IpRegion> ipRegionList = configCompile.getIpRegionList();
 
-		if (ipRegionList == null) {
-			businessCode = RestBusinessCode.IpRegionIsNull.getValue();
-			return "编译配置id为" + configCompile.getCompileId() + "的配置中"
-					+ RestBusinessCode.IpRegionIsNull.getErrorReason();
-		}
-		if (ipRegionList != null && ipRegionList.size() > 0) {
+		if (ipRegionList == null || ipRegionList.size() == 0) {
+			throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置中"
+					+ RestBusinessCode.IpRegionIsNull.getErrorReason(),RestBusinessCode.IpRegionIsNull.getValue());
+		} else {
 			for (IpRegion ipRegion : ipRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
 				if (!StringUtil.isEmpty(ipRegion.getTableName())
 						&& !type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
-					businessCode = RestBusinessCode.TableNameUnmatchService.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionid为"
-							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致",RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 
 				if (!isUpdate && (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 1)) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionid为"
-							+ ipRegion.getRegionId() + "的域配置在添加时不能为无效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());
 				}
 				if (isUpdate && (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 0)) {
-					businessCode = RestBusinessCode.IsValidIsF.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionid为"
-							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 				}
 
 				if (groupList.size() > 0 && !groupList.contains(ipRegion.getGroupId())) {
-					businessCode = RestBusinessCode.RegionsGroupIdIsNotFound.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionid为"
-							+ ipRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+					throw new RestServiceException( "配置id为" + configCompile.getCompileId() + "的配置中ipRegionList中的regionId为"
+							+ ipRegion.getRegionId() + "的配置的groupId在配置分组关系中不存在",RestBusinessCode.RegionsGroupIdIsNotFound.getValue());
 				}
 				if (!regionGroupIdList.contains(ipRegion.getGroupId())) {
 					regionGroupIdList.add(ipRegion.getGroupId());
 				}
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
-					String valIpRegion = valIpRegion(ipRegion, compileId);
-					if (!valIpRegion.equals("ok")) {
-						return valIpRegion;
-					}
+					valIpRegion(ipRegion, compileId);
 				}
 
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
-					String serviceIpRegionVal = serviceIpRegionVal(ipRegion, compileId);
-					if (!serviceIpRegionVal.equals("ok")) {
-						return serviceIpRegionVal;
-					}
+					serviceIpRegionVal(ipRegion, compileId,"ipRegionList");
 				}
 			}
 		}
@@ -319,37 +251,28 @@ public class CompileVal {
 				// 不验证表名和业务类型是否对应
 
 				if (!isUpdate && digestRegion.getIsValid() != 1) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionid为"
-							+ digestRegion.getRegionId() + "的域配置在添加时不能为无效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionId为"
+							+ digestRegion.getRegionId() + "的域配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());
 				}
 				if (isUpdate && digestRegion.getIsValid() != 0) {
-					businessCode = RestBusinessCode.IsValidIsF.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionid为"
-							+ digestRegion.getRegionId() + "的域配置在修改时不能为有效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中digestRegionList中的regionId为"
+							+ digestRegion.getRegionId() + "的域配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 				}
 
 				if (groupList.size() > 0 && !groupList.contains(digestRegion.getGroupId())) {
-					businessCode = RestBusinessCode.RegionsGroupIdIsNotFound.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中digestRegion中的regionid为"
-							+ digestRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中digestRegion中的regionId为"
+							+ digestRegion.getRegionId() + "的配置的groupId在配置分组关系中不存在",RestBusinessCode.RegionsGroupIdIsNotFound.getValue());
 				}
 				if (!regionGroupIdList.contains(digestRegion.getGroupId())) {
 					regionGroupIdList.add(digestRegion.getGroupId());
 				}
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
-					String valDigestRegion = valDigestRegion(digestRegion, compileId);
-					if (!valDigestRegion.equals("ok")) {
-						return valDigestRegion;
-					}
+					valDigestRegion(digestRegion, compileId);
 				}
 
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
-					String serviceDigestRegionVal = serviceDigestRegionVal(digestRegion, compileId);
-					if (!serviceDigestRegionVal.equals("ok")) {
-						return serviceDigestRegionVal;
-					}
+					serviceDigestRegionVal(digestRegion, compileId);
 				}
 			}
 		}
@@ -362,47 +285,36 @@ public class CompileVal {
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
 				if (!StringUtil.isEmpty(ipRegion.getTableName())
 						&& !type2TableNameIsOk(configCompile.getService(), ipRegion.getTableName())) {
-					businessCode = RestBusinessCode.TableNameUnmatchService.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
-							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置tableName与编译配置业务类型不一致",RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 
 				if (!isUpdate && (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 1)) {
-					businessCode = RestBusinessCode.IsValidIsT.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
-							+ ipRegion.getRegionId() + "的域配置在添加时不能为无效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置在添加时不能为无效",RestBusinessCode.IsValidIsT.getValue());
 				}
 				if (isUpdate && (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 0)) {
-					businessCode = RestBusinessCode.IsValidIsF.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
-							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效",RestBusinessCode.IsValidIsF.getValue());
 				}
 
 				if (groupList.size() > 0 && !groupList.contains(ipRegion.getGroupId())) {
-					businessCode = RestBusinessCode.RegionsGroupIdIsNotFound.getValue();
-					return "配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionid为"
-							+ ipRegion.getRegionId() + "的配置的groupid在配置分组关系中不存在";
+					throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的配置中ipClientRangeList中的regionId为"
+							+ ipRegion.getRegionId() + "的配置的groupId在配置分组关系中不存在",RestBusinessCode.RegionsGroupIdIsNotFound.getValue());
 				}
 				if (!regionGroupIdList.contains(ipRegion.getGroupId())) {
 					regionGroupIdList.add(ipRegion.getGroupId());
 				}
 
 				if (!isUpdate && Constants.BASE_VALIDATE) {
-					String valIpRegion = valIpRegion(ipRegion, compileId);
-					if (!valIpRegion.equals("ok")) {
-						return valIpRegion;
-					}
+					valIpRegion(ipRegion, compileId);
 				}
 
 				if (!isUpdate && Constants.SERVICE_VALIDATE) {
-					String serviceIpRegionVal = serviceIpClientRegionVal(ipRegion, compileId);
-					if (!serviceIpRegionVal.equals("ok")) {
-						return serviceIpRegionVal;
-					}
+					serviceIpRegionVal(ipRegion, compileId,"ipClientRangeList");
 				}
 			}
 		}
-		return "ok";
 	}
 
 	/**
@@ -450,25 +362,19 @@ public class CompileVal {
 	 *         GroupNumEQZero GroupListEQZero CompileGroupSizeEqZero
 	 *         CompileGroupIdNotExist CompileGroupIdIsRepeat CompileIsOk
 	 *         只有返回CompileIsOk才说明该条配置正常否则该条配置不正常,可根据枚举中成员的注释具体在返回错误信息
+	 * @throws Exception 
 	 */
-	public static String compileIsOk(ConfigCompile configCompile, boolean isUpdate, StringBuffer sb) {
+	public static void compileIsOk(ConfigCompile configCompile, boolean isUpdate, StringBuffer sb) throws Exception {
 
-		String msg1 = groupNumAndListIsOk(configCompile, isUpdate);
-		if (!"ok".equals(msg1)) {
-			return msg1;
-		}
-
-		String msg2 = compileGroupSizeIsGtZero(configCompile, isUpdate, sb);
-		if (!"ok".equals(msg2)) {
-			return msg2;
-		}
+		groupNumAndListIsOk(configCompile, isUpdate);
+		compileGroupSizeIsGtZero(configCompile, isUpdate, sb);
 		String latentMsg = ",数据中可能存在的问题:";
 		if (sb.length() > 0 && !sb.toString().contains(latentMsg)) {
 			latentMsg = latentMsg + sb.toString();
 			sb.setLength(0);
 			sb.append(latentMsg);
 		}
-		return "ok";
+		
 	}
 
 	public static void setSbStr(String str, StringBuffer sb) {
@@ -477,601 +383,376 @@ public class CompileVal {
 		}
 	}
 
-	public static String valCompile(ConfigCompile configCompile) {
+	public static void valCompile(ConfigCompile configCompile) throws Exception {
 		Long compileId = configCompile.getCompileId();
 		if (null == compileId) {
-			businessCode = RestBusinessCode.CompileIdIsNull.getValue();
-			return RestBusinessCode.CompileIdIsNull.getErrorReason();
+			throw new RestServiceException(RestBusinessCode.CompileIdIsNull.getErrorReason(),RestBusinessCode.CompileIdIsNull.getValue());
 		}
 		if (null == configCompile.getService()) {
-			businessCode = RestBusinessCode.ServiceIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中service不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中service不能为空",RestBusinessCode.ServiceIsNull.getValue());
 		}
 
 		if (null == configCompile.getAction()) {
-			businessCode = RestBusinessCode.ActionIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中action不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中action不能为空",RestBusinessCode.ActionIsNull.getValue());
 		}
 		if (null == configCompile.getDoBlacklist()) {
-			businessCode = RestBusinessCode.DoBlacklistIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中doBlacklist不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中doBlacklist不能为空",RestBusinessCode.DoBlacklistIsNull.getValue());
 		}
 		if (null == configCompile.getDoLog()) {
-			businessCode = RestBusinessCode.DoLogIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中doLog不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中doLog不能为空",RestBusinessCode.DoLogIsNull.getValue());
 		}
 		if (null == configCompile.getEffectiveRange() || configCompile.getEffectiveRange().equals("")) {
-			businessCode = RestBusinessCode.EffectiveRangeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中effectiveRange不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中effectiveRange不能为空",RestBusinessCode.EffectiveRangeIsNull.getValue());
 		}
 		if (null == configCompile.getStartTime()) {
-			businessCode = RestBusinessCode.StartTimeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中startTime不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中startTime不能为空",RestBusinessCode.StartTimeIsNull.getValue());
 		}
 		if (null == configCompile.getEndTime()) {
-			businessCode = RestBusinessCode.EndTimeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中endTime不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中endTime不能为空",RestBusinessCode.EndTimeIsNull.getValue());
 		}
 //		if (null == configCompile.getUserRegion() || configCompile.getUserRegion().equals("")) {
 //			return "编译配置id为" + compileId + "的编译配置中userRegion不能为空";
 //		}
 		if (null == configCompile.getIsValid()) {
-			businessCode = RestBusinessCode.IsValidIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中isValid不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中isValid不能为空", RestBusinessCode.IsValidIsNull.getValue());
 		}
 		if (null == configCompile.getGroupNum()) {
-			businessCode = RestBusinessCode.GroupNumIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中groupNum不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中groupNum不能为空",RestBusinessCode.GroupNumIsNull.getValue());
 		}
 		if (null == configCompile.getFatherCfgId()) {
-			businessCode = RestBusinessCode.FatherCfgIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中fatherCfgId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中fatherCfgId不能为空",RestBusinessCode.FatherCfgIdIsNull.getValue());
 		}
 		if (null == configCompile.getOpTime()) {
-			businessCode = RestBusinessCode.OpTimeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中opTime不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中opTime不能为空",RestBusinessCode.OpTimeIsNull.getValue());
 		}
-		return "ok";
 	}
 
-	public static String valCompileGroup(ConfigGroupRelation configGroupRelation, Long compileId) {
+	public static void valCompileGroup(ConfigGroupRelation configGroupRelation, Long compileId)  throws Exception{
 		Long groupId = configGroupRelation.getGroupId();
 		if (null == groupId) {
-			businessCode = RestBusinessCode.GroupIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的配置分组的groupId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的配置分组的groupId不能为空",RestBusinessCode.GroupIdIsNull.getValue());
 		}
 
 		if (null == configGroupRelation.getCompileId()) {
-			businessCode = RestBusinessCode.GroupsCompileIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的配置分组id为" + groupId + "的配置compileId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的配置分组id为" + groupId + "的配置compileId不能为空",RestBusinessCode.GroupsCompileIdIsNull.getValue());
 		}
 		if (null == configGroupRelation.getIsValid()) {
-			businessCode = RestBusinessCode.GroupsIsValidIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的配置分组id为" + groupId + "的配置isValid不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的配置分组id为" + groupId + "的配置isValid不能为空",RestBusinessCode.GroupsIsValidIsNull.getValue());
 		}
 
 		if (null == configGroupRelation.getOpTime()) {
-			businessCode = RestBusinessCode.OpTimeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的配置分组id为" + groupId + "的配置opTime不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的配置分组id为" + groupId + "的配置opTime不能为空",RestBusinessCode.OpTimeIsNull.getValue());
 		}
-		return "ok";
 	}
 
-	public static String valIpRegion(IpRegion ipRegion, Long compileId) {
+	public static void valIpRegion(IpRegion ipRegion, Long compileId) {
 		Long regionId = ipRegion.getRegionId();
 		if (null == regionId) {
-			businessCode = RestBusinessCode.RegionIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置的regionId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置的regionId不能为空",RestBusinessCode.RegionIdIsNull.getValue());
 		}
 		if (null == ipRegion.getGroupId()) {
-			businessCode = RestBusinessCode.RegionsGroupIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置groupId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置groupId不能为空",RestBusinessCode.RegionsGroupIdIsNull.getValue());
 		}
 		if (null == ipRegion.getAddrType()) {
-			businessCode = RestBusinessCode.AddrTypeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置addrType不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置addrType不能为空",RestBusinessCode.AddrTypeIsNull.getValue());
 		}
 		if (null == ipRegion.getSrcIp() || ipRegion.getSrcIp().equals("")) {
-			businessCode = RestBusinessCode.SrcIpIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置srcIp不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置srcIp不能为空",RestBusinessCode.SrcIpIsNull.getValue());
 		}
 
 		if (null == ipRegion.getMaskSrcIp() || ipRegion.getMaskSrcIp().equals("")) {
-			businessCode = RestBusinessCode.MaskSrcIpIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskSrcIp不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskSrcIp不能为空",RestBusinessCode.MaskSrcIpIsNull.getValue());
 		}
 		if (null == ipRegion.getSrcPort() || ipRegion.getSrcPort().equals("")) {
-			businessCode = RestBusinessCode.SrcPortIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置srcPort不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置srcPort不能为空",RestBusinessCode.SrcPortIsNull.getValue());
 		}
 		if (null == ipRegion.getMaskSrcPort() || ipRegion.getMaskSrcPort().equals("")) {
-			businessCode = RestBusinessCode.MaskSrcPortIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskSrcPort不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskSrcPort不能为空",RestBusinessCode.MaskSrcPortIsNull.getValue());
 		}
 		if (null == ipRegion.getDstIp() || ipRegion.getDstIp().equals("")) {
-			businessCode = RestBusinessCode.DstIpIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置dstIp不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置dstIp不能为空",RestBusinessCode.DstIpIsNull.getValue());
 		}
 		if (null == ipRegion.getMaskDstIp() || ipRegion.getMaskDstIp().equals("")) {
-			businessCode = RestBusinessCode.MaskDstIpIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskDstIp不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskDstIp不能为空",RestBusinessCode.MaskDstIpIsNull.getValue());
 		}
 		if (null == ipRegion.getDstPort() || ipRegion.getDstPort().equals("")) {
-			businessCode = RestBusinessCode.DstPortIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置dstPort不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置dstPort不能为空",RestBusinessCode.DstPortIsNull.getValue());
 		}
 		if (null == ipRegion.getMaskDstPort() || ipRegion.getMaskDstPort().equals("")) {
-			businessCode = RestBusinessCode.MaskDstPortIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskDstPort不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置maskDstPort不能为空",RestBusinessCode.MaskDstPortIsNull.getValue());
 		}
 		if (null == ipRegion.getProtocol()) {
-			businessCode = RestBusinessCode.ProtocolIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置protocol不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置protocol不能为空",RestBusinessCode.ProtocolIsNull.getValue());
 		}
 		if (null == ipRegion.getDirection()) {
-			businessCode = RestBusinessCode.DirectionIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置direction不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置direction不能为空",RestBusinessCode.DirectionIsNull.getValue());
 		}
 		if (null == ipRegion.getIsValid()) {
-			businessCode = RestBusinessCode.IsValidIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置isValid不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置isValid不能为空",RestBusinessCode.IsValidIsNull.getValue());
 		}
-		return "ok";
 	}
 
-	public static String valNumRegion(NumRegion numRegion, Long compileId) {
+	public static void valNumRegion(NumRegion numRegion, Long compileId) throws Exception{
 		Long regionId = numRegion.getRegionId();
 		if (null == regionId) {
-			businessCode = RestBusinessCode.RegionIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的数值类域配置的regionId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的数值类域配置的regionId不能为空",RestBusinessCode.RegionIdIsNull.getValue());
 		}
 		if (null == numRegion.getGroupId()) {
-			businessCode = RestBusinessCode.RegionsGroupIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置groupId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置groupId不能为空",RestBusinessCode.RegionsGroupIdIsNull.getValue());
 		}
 		if (null == numRegion.getLowBoundary()) {
-			businessCode = RestBusinessCode.LowBoundaryIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置lowBoundary不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置lowBoundary不能为空",RestBusinessCode.LowBoundaryIsNull.getValue());
 		}
 		if (null == numRegion.getUpBoundary()) {
-			businessCode = RestBusinessCode.UpBoundaryIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置upBoundary不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置upBoundary不能为空",RestBusinessCode.UpBoundaryIsNull.getValue());
 		}
-		return "ok";
 	}
 
-	public static String valStrRegion(StrRegion strRegion, Long compileId, boolean isDirtrict) {
+	public static void valStrRegion(StrRegion strRegion, Long compileId, boolean isDirtrict) throws Exception{
 		Long regionId = strRegion.getRegionId();
 		if (null == regionId) {
-			businessCode = RestBusinessCode.RegionIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置的regionId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置的regionId不能为空",RestBusinessCode.RegionIdIsNull.getValue());
 		}
 		if (null == strRegion.getGroupId()) {
-			businessCode = RestBusinessCode.RegionsGroupIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置groupId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置groupId不能为空",RestBusinessCode.RegionsGroupIdIsNull.getValue());
 		}
 		if (isDirtrict && (null == strRegion.getDistrict() || strRegion.getDistrict().equals(""))) {
-			businessCode = RestBusinessCode.DistrictIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置district不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置district不能为空",RestBusinessCode.DistrictIsNull.getValue());
 		}
 
 		if (null == strRegion.getKeywords() || strRegion.getKeywords().equals("")) {
-			businessCode = RestBusinessCode.KeywordsIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置keywords不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置keywords不能为空",RestBusinessCode.KeywordsIsNull.getValue());
 		}
 
 		if (null == strRegion.getExprType()) {
-			businessCode = RestBusinessCode.ExprTypeIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置exprType不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置exprType不能为空", RestBusinessCode.ExprTypeIsNull.getValue());
 		}
 
 		if (null == strRegion.getMatchMethod()) {
-			businessCode = RestBusinessCode.MatchMethodIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置matchMethod不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置matchMethod不能为空",RestBusinessCode.MatchMethodIsNull.getValue());
 		}
 		if (null == strRegion.getIsHexbin()) {
-			businessCode = RestBusinessCode.MatchMethodIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置isHexbin不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置isHexbin不能为空",RestBusinessCode.MatchMethodIsNull.getValue());
 		}
-		return "ok";
 	}
 
-	public static String valDigestRegion(DigestRegion digestRegion, Long compileId) {
+	public static void valDigestRegion(DigestRegion digestRegion, Long compileId) throws Exception {
 		Long regionId = digestRegion.getRegionId();
 		if (null == regionId) {
-			businessCode = RestBusinessCode.RegionIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的摘要类域配置的regionId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的摘要类域配置的regionId不能为空",RestBusinessCode.RegionIdIsNull.getValue());
 		}
 		if (null == digestRegion.getGroupId()) {
-			businessCode = RestBusinessCode.RegionsGroupIdIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置groupId不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置groupId不能为空",RestBusinessCode.RegionsGroupIdIsNull.getValue());
 		}
 		if (null == digestRegion.getRawLen()) {
-			businessCode = RestBusinessCode.RawLenIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置rawLen不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置rawLen不能为空",RestBusinessCode.RawLenIsNull.getValue());
 		}
 		if (null == digestRegion.getDigest() || digestRegion.getDigest().equals("")) {
-			businessCode = RestBusinessCode.DigestIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置digest不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置digest不能为空",RestBusinessCode.DigestIsNull.getValue());
 		}
 		if (null == digestRegion.getCfdsLevel()) {
-			businessCode = RestBusinessCode.CfdsLevelIsNull.getValue();
-			return "编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置cfdsLevel不能为空";
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置cfdsLevel不能为空",RestBusinessCode.CfdsLevelIsNull.getValue());
 		}
-		return "ok";
 	}
 
-	public static String serviceIpClientRegionVal(IpRegion ipRegion, Long compileId) {
+	
+	private static void validateIpAndMask(IpRegion ipRegion, Long compileId,String listName) throws Exception{
 		//源IP信息和目的IP信息格式为IPV4或IPV6
 		if (ipRegion.getAddrType().intValue()==4||ipRegion.getAddrType().intValue()==6) {
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置srcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskSrcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置dstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskDstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 		}else if (ipRegion.getAddrType().intValue()==46) {//4OVER6:源IP信息格式为IPV4、目的IP信息格式IPV6
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置srcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskSrcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置dstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskDstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 		}else if (ipRegion.getAddrType().intValue()==64) {//6OVER4:源IP信息格式为IPV6、目的IP信息格式IPV4
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置srcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskSrcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置dstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskDstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 		}else if (ipRegion.getAddrType().intValue()==10) {//all:符合IP格式即可
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置srcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskSrcIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置dstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+						+ "的域配置maskDstIp的格式不正确或与addrType不一致",RestBusinessCode.IPUnMatchAddrType.getValue());
 			}
 		}
-
-		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId() + "的域配置srcPort的格式不正确";
-		}
-
-		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskSrcPort())) {
-			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskSrcPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置maskSrcPort的格式不正确";
-		}
-		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getDstPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId() + "的域配置dstPort的格式不正确";
-		}
-
-		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskDstPort())) {
-			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskDstPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置maskDstPort的格式不正确";
-		}
-
-		if (ipRegion.getSrcIp().equals(ipRegion.getDstIp())) {
-			businessCode = RestBusinessCode.SrcIpEQDstIp.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置srcIp和dstIp不能相同";
-		}
-		if (ipRegion.getDirection() != 1 && ipRegion.getDirection() != 0) {
-			businessCode = RestBusinessCode.DirectionIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" + ipRegion.getRegionId()
-					+ "的域配置direction的值不正确,只能是0或1";
-		}
-
-		// zdx protocol验证？
-		// if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
-		// if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
-		// return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" +
-		// ipRegion.getRegionId()
-		// + "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
-		// }
-		// } else {
-		// if (ipRegion.getProtocol() != 0) {
-		// return "编译配置id为" + compileId + "的配置中ipClientRangeList中regionId为" +
-		// ipRegion.getRegionId() + "的域配置tableName为"
-		// + ipRegion.getTableName() + "时,protocol的值只能是0";
-		// }
-		//
-		// }
-		return "ok";
+		
 	}
 	
-	public static String serviceIpRegionVal(IpRegion ipRegion, Long compileId) {
-		//源IP信息和目的IP信息格式为IPV4或IPV6
-		if (ipRegion.getAddrType().intValue()==4||ipRegion.getAddrType().intValue()==6) {
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), ipRegion.getAddrType())) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
-			}
-		}else if (ipRegion.getAddrType().intValue()==46) {//4OVER6:源IP信息格式为IPV4、目的IP信息格式IPV6
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
-			}
-		}else if (ipRegion.getAddrType().intValue()==64) {//6OVER4:源IP信息格式为IPV6、目的IP信息格式IPV4
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), 6)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), 4)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
-			}
-		}else if (ipRegion.getAddrType().intValue()==10) {//all:符合IP格式即可
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getSrcIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置srcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskSrcIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskSrcIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getDstIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置dstIp的格式不正确或与addrType不一致";
-			}
-			if (!BasicProvingUtil.isIpOrIpMask(ipRegion.getMaskDstIp(), null)) {
-				businessCode = RestBusinessCode.IPUnMatchAddrType.getValue();
-				return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-				+ "的域配置maskDstIp的格式不正确或与addrType不一致";
-			}
-		}
+	public static void serviceIpRegionVal(IpRegion ipRegion, Long compileId,String listName) throws Exception {
+		
+		
+		validateIpAndMask(ipRegion, compileId,listName);
+
 		
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置srcPort的格式不正确";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId() + "的域配置srcPort的格式不正确",RestBusinessCode.PortIsNotVal.getValue());
 		}
 		
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskSrcPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskSrcPort())) {
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置maskSrcPort的格式不正确";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+					+ "的域配置maskSrcPort的格式不正确",RestBusinessCode.PortIsNotVal.getValue());
 		}
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getDstPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId() + "的域配置dstPort的格式不正确";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId() + "的域配置dstPort的格式不正确",RestBusinessCode.PortIsNotVal.getValue());
 		}
 		
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getMaskDstPort())) {
 			// if (!BasicProvingUtil.isIntType(ipRegion.getMaskDstPort())) {
-			businessCode = RestBusinessCode.PortIsNotVal.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置maskDstPort的格式不正确";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+					+ "的域配置maskDstPort的格式不正确",RestBusinessCode.PortIsNotVal.getValue());
 		}
 		
 		if (ipRegion.getSrcIp().equals(ipRegion.getDstIp())) {
-			businessCode = RestBusinessCode.SrcIpEQDstIp.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置srcIp和dstIp不能相同";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+					+ "的域配置srcIp和dstIp不能相同",RestBusinessCode.SrcIpEQDstIp.getValue());
 		}
 		if (ipRegion.getDirection() != 1 && ipRegion.getDirection() != 0) {
-			businessCode = RestBusinessCode.DirectionIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" + ipRegion.getRegionId()
-			+ "的域配置direction的值不正确,只能是0或1";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中"+listName+"中regionId为" + ipRegion.getRegionId()
+					+ "的域配置direction的值不正确,只能是0或1",RestBusinessCode.DirectionIsWrongRange.getValue());
 		}
 		
 		// zdx protocol验证？
 		// if (ipRegion.getTableName().toLowerCase().equals("dj_ip_port")) {
 		// if (ipRegion.getProtocol() < 0 || ipRegion.getProtocol() > 255) {
-		// return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" +
+		// return "编译配置id为" + compileId + "的配置中"+listName+"中regionId为" +
 		// ipRegion.getRegionId()
 		// + "的域配置tableName为dj_ip_port时,protocol的取值范围只能是0-255";
 		// }
 		// } else {
 		// if (ipRegion.getProtocol() != 0) {
-		// return "编译配置id为" + compileId + "的配置中ipRegionList中regionId为" +
+		// return "编译配置id为" + compileId + "的配置中"+listName+"中regionId为" +
 		// ipRegion.getRegionId() + "的域配置tableName为"
 		// + ipRegion.getTableName() + "时,protocol的值只能是0";
 		// }
 		//
 		// }
-		return "ok";
 	}
 
-	public static String serviceNumRegionVal(NumRegion numRegion, Long compileId) {
+	public static void serviceNumRegionVal(NumRegion numRegion, Long compileId) throws Exception {
 		Long lowBoundary = numRegion.getLowBoundary();
 		Long upBoundary = numRegion.getUpBoundary();
 		if (lowBoundary <= upBoundary) {
 			if (lowBoundary > 4294967295l || lowBoundary < 0l) {
-				businessCode = RestBusinessCode.LowBoundaryIsWrongRange.getValue();
-				return "编译配置id为" + compileId + "的配置中numRegionList中regionId为" + numRegion.getRegionId()
-						+ "的域配置lowBoundary的值不能大于2的32次方减一(4294967295)或者小于0";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中numRegionList中regionId为" + numRegion.getRegionId()
+						+ "的域配置lowBoundary的值不能大于2的32次方减一(4294967295)或者小于0", RestBusinessCode.LowBoundaryIsWrongRange.getValue());
 			}
 			if (upBoundary > 4294967295l || upBoundary < 0l) {
-				businessCode = RestBusinessCode.UpBoundaryIsWrongRange.getValue();
-				return "编译配置id为" + compileId + "的配置中numRegionList中regionId为" + numRegion.getRegionId()
-						+ "的域配置upBoundary的值不能大于2的32次方减一(4294967295)或者小于0";
+				throw new RestServiceException("编译配置id为" + compileId + "的配置中numRegionList中regionId为" + numRegion.getRegionId()
+						+ "的域配置upBoundary的值不能大于2的32次方减一(4294967295)或者小于0",RestBusinessCode.UpBoundaryIsWrongRange.getValue());
 			}
 		} else {
-			businessCode = RestBusinessCode.LowBoundaryGTUpBoundary.getValue();
-			return "编译配置id为" + compileId + "的配置中numRegionList中regionId为" + numRegion.getRegionId()
-					+ "的域配置lowBoundary的值大于upBoundary,应该是小于或等于";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中numRegionList中regionId为" + numRegion.getRegionId()
+					+ "的域配置lowBoundary的值大于upBoundary,应该是小于或等于",RestBusinessCode.LowBoundaryGTUpBoundary.getValue());
 		}
-
-		return "ok";
 	}
 
-	public static String serviceConfigCompileVal(ConfigCompile configCompile) {
+	public static void serviceConfigCompileVal(ConfigCompile configCompile) throws Exception {
 		Long compileId = configCompile.getCompileId();
 		Integer action = ServiceAndRDBIndexReal.getActionByService(configCompile.getService());
 		if (StringUtil.isEmpty(action)) {
-			businessCode = RestBusinessCode.Service2ActionIsNull.getValue();
-			return "编译配置id为" + compileId + "的配置中service与action的关系不存在";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中service与action的关系不存在",RestBusinessCode.Service2ActionIsNull.getValue());
 		}
 		
 		if (action.compareTo(configCompile.getAction()) != 0) {
-			businessCode = RestBusinessCode.ServiceUnmatchAction.getValue();
-			return "编译配置id为" + compileId + "的配置中service的值为" + configCompile.getService() + "时action只能为" + action;
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中service的值为" + configCompile.getService() + "时action只能为" + action,RestBusinessCode.ServiceUnmatchAction.getValue());
 		}
 		if (configCompile.getDoBlacklist() != 1) {
-			businessCode = RestBusinessCode.DoBlacklistIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中doBlacklist的值只能是1";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中doBlacklist的值只能是1",RestBusinessCode.DoBlacklistIsWrongRange.getValue());
 		}
 
 		if (configCompile.getDoLog() != 0 && configCompile.getDoLog() != 1 && configCompile.getDoLog() != 2) {
-			businessCode = RestBusinessCode.DoLogIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中doLog的值只能是0(不需要),1(需要),2(只记录结构化日志，不记录非结构化日志)";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中doLog的值只能是0(不需要),1(需要),2(只记录结构化日志，不记录非结构化日志)",RestBusinessCode.DoLogIsWrongRange.getValue());
 		}
 
 		if (configCompile.getFatherCfgId() != 0) {
-			businessCode = RestBusinessCode.FatherCfgIdIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中fatherCfgId的值只能是0";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中fatherCfgId的值只能是0",RestBusinessCode.FatherCfgIdIsWrongRange.getValue());
 		}
 		if (configCompile.getStartTime().getTime() > configCompile.getEndTime().getTime()) {
-			businessCode = RestBusinessCode.EndTimeGTStartTime.getValue();
-			return "编译配置id为" + compileId + "的配置中startTime不能比endTime晚";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中startTime不能比endTime晚",RestBusinessCode.EndTimeGTStartTime.getValue());
 		}
-		return "ok";
 	}
 
-	public static String serviceStrRegionVal(StrRegion strRegion, Long compileId, boolean isDirtrict) {
+	public static void serviceStrRegionVal(StrRegion strRegion, Long compileId, boolean isDirtrict) throws Exception {
 
 		Integer exprType = strRegion.getExprType();
 		Integer matchMethod = strRegion.getMatchMethod();
 		Integer isHexbin = strRegion.getIsHexbin();
 		if (exprType != 0 && exprType != 1) {
-			businessCode = RestBusinessCode.ExprTypeIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中strRegionList中regionId为" + strRegion.getRegionId()
-					+ "的域配置exprType的值只能是0(无表达式)或者1(与表达式)";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中strRegionList中regionId为" + strRegion.getRegionId()
+					+ "的域配置exprType的值只能是0(无表达式)或者1(与表达式)",RestBusinessCode.ExprTypeIsWrongRange.getValue());
 		}
 		if (matchMethod != 0 && matchMethod != 1 && matchMethod != 2 && matchMethod != 3) {
-			businessCode = RestBusinessCode.MatchMethodIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中strRegionList中regionId为" + strRegion.getRegionId()
-					+ "的域配置matchMethod的值只能是0(子串匹配),1(右匹配),2(左匹配),3(完全匹配)";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中strRegionList中regionId为" + strRegion.getRegionId()
+					+ "的域配置matchMethod的值只能是0(子串匹配),1(右匹配),2(左匹配),3(完全匹配)",RestBusinessCode.MatchMethodIsWrongRange.getValue());
 		}
 
 		if (isHexbin != 0 && isHexbin != 1 && isHexbin != 2) {
-			businessCode = RestBusinessCode.IsHexbinIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中strRegionList中regionId为" + strRegion.getRegionId()
-					+ "的域配置isHexbin的值只能是0(大小写不敏感，且非HEX)或者1(HEX)或者2(大小写敏感，且非HEX)";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中strRegionList中regionId为" + strRegion.getRegionId()
+					+ "的域配置isHexbin的值只能是0(大小写不敏感，且非HEX)或者1(HEX)或者2(大小写敏感，且非HEX)",RestBusinessCode.IsHexbinIsWrongRange.getValue());
 		}
 		// strRegProhibitConfigWord(strRegion,compileId);
-		return "ok";
 
 	}
 
-	public static String serviceDigestRegionVal(DigestRegion digestRegion, Long compileId) {
+	public static void serviceDigestRegionVal(DigestRegion digestRegion, Long compileId) throws Exception {
 
 		Integer cfdsLevel = digestRegion.getCfdsLevel();
 		if (!(cfdsLevel >= 1 && cfdsLevel <= 10)) {
-			businessCode = RestBusinessCode.CfdsLevelIsWrongRange.getValue();
-			return "编译配置id为" + compileId + "的配置中digestRegionList中regionId为" + digestRegion.getRegionId()
-					+ "的域配置cfdsLevel的值只能是1到10";
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中digestRegionList中regionId为" + digestRegion.getRegionId()
+					+ "的域配置cfdsLevel的值只能是1到10",RestBusinessCode.CfdsLevelIsWrongRange.getValue());
 		}
-		return "ok";
 
 	}
 

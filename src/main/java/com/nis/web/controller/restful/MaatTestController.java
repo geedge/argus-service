@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import com.nis.domain.restful.*;
 import com.nis.web.service.AuditLogThread;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -379,32 +380,39 @@ public class MaatTestController {
 	public String testSaveMaatMore(@RequestParam(required = true) Integer service,
 			@RequestParam(required = true) Integer saveCount, Integer forCount) {
 		List<String> list = new ArrayList<String>();
-		for (int a = 0; a < forCount; a++) {
-			long start = System.currentTimeMillis();
-			AuditLogThread thread = new AuditLogThread();
-			StringBuffer sb = new StringBuffer();
-			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
-			for (int i = 0; i < saveCount; i++) {
-				configCompileList.add(getConfigCompile(service));
+		try {
+			
+			for (int a = 0; a < forCount; a++) {
+				long start = System.currentTimeMillis();
+				AuditLogThread thread = new AuditLogThread();
+				StringBuffer sb = new StringBuffer();
+				List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+				for (int i = 0; i < saveCount; i++) {
+					configCompileList.add(getConfigCompile(service));
+				}
+				// 保存测试配置
+				configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+				List<Long> compileIdList = new ArrayList<Long>();
+				for (ConfigCompile configCompile : configCompileList) {
+					compileIdList.add(configCompile.getCompileId());
+				}
+				FileUtils.addStrToFile(
+						sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
+								+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+				// 验证数据是否在正确
+				maatTestServiceimpl.getKeys(configCompileList);
+				list.add(testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service));
 			}
-			// 保存测试配置
-			configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
-			List<Long> compileIdList = new ArrayList<Long>();
-			for (ConfigCompile configCompile : configCompileList) {
-				compileIdList.add(configCompile.getCompileId());
-			}
-			FileUtils.addStrToFile(
-					sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
-							+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
-					Configurations.getStringProperty("maatTestLogPath", ""), true);
-			// 验证数据是否在正确
-			maatTestServiceimpl.getKeys(configCompileList);
-			list.add(testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service));
+			
+			// return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
+			// + service + "&configId="
+			// + compileIdList.toString().replace("[", "").replace("]", "");
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return list.toString();
-		// return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
-		// + service + "&configId="
-		// + compileIdList.toString().replace("[", "").replace("]", "");
 	}
 
 	@RequestMapping(value = "/cfg/v1/testSaveMaat", method = RequestMethod.GET)
@@ -415,22 +423,30 @@ public class MaatTestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = new AuditLogThread();
 		StringBuffer sb = new StringBuffer();
-		List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
-		for (int i = 0; i < saveCount; i++) {
-			configCompileList.add(getConfigCompile(service));
-		}
-		// 保存测试配置
-		configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 		List<Long> compileIdList = new ArrayList<Long>();
-		for (ConfigCompile configCompile : configCompileList) {
-			compileIdList.add(configCompile.getCompileId());
+		try {
+			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+			for (int i = 0; i < saveCount; i++) {
+				configCompileList.add(getConfigCompile(service));
+			}
+			// 保存测试配置
+		
+			configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+		
+			
+			for (ConfigCompile configCompile : configCompileList) {
+				compileIdList.add(configCompile.getCompileId());
+			}
+			FileUtils.addStrToFile(
+					sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
+							+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			// 验证数据是否在正确
+			maatTestServiceimpl.getKeys(configCompileList);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		FileUtils.addStrToFile(
-				sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
-						+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
-				Configurations.getStringProperty("maatTestLogPath", ""), true);
-		// 验证数据是否在正确
-		maatTestServiceimpl.getKeys(configCompileList);
 		return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType=" + service + "&configId="
 				+ compileIdList.toString().replace("[", "").replace("]", "");
 	}

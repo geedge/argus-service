@@ -32,8 +32,7 @@ public enum RestBusinessCode {
 	/**
 	 * 操作行为错误,1-插入2-更新 3-删除4-查询 ，插入时选择了删除这种错误返回该异常代码
 	 */
-	
-	op_action_error (1003,"不正确的操作行为"),
+	op_action_error (4002000,"不正确的操作行为"),
 
 	config_integrity_error (1004,"配置完整性错误或数据格式错误"),
 
@@ -79,11 +78,11 @@ public enum RestBusinessCode {
 	ActionIsNull(4001004, "Maat配置的action不能为空"),
 
 	/**
-	 * 编译配置的的compileId不能为空
+	 * 编译配置的doBlacklist不能为空
 	 */
 	DoBlacklistIsNull(4001005, "Maat配置的doBlacklist不能为空"),
 	/**
-	 * 编译配置的的compileId不能为空
+	 * 编译配置的的doBlacklist不在有效范围
 	 */
 	DoBlacklistIsWrongRange(4001006, "Maat配置的doBlacklist的值不在有效范围"),
 	
@@ -92,7 +91,7 @@ public enum RestBusinessCode {
 	 */
 	DoLogIsNull(4001007, "Maat编译配置的doLog不能为空"),
 	/**
-	 * 编译配置的的doLog不能为空
+	 * 编译配置的的doLog不在有效范围
 	 */
 	DoLogIsWrongRange(4001008, "Maat配置的doLog的值不在有效范围"),
 	/**
@@ -155,9 +154,9 @@ public enum RestBusinessCode {
 //	GroupsOpTimeIsNull(400137, "编译配置的的配置分组的opTime不能为空"),
 	
 	/**
-	 * 域配置的groupid在配置分组关系中不存在
+	 * 域配置的groupId在配置分组关系中不存在
 	 */
-	RegionsGroupIdIsNotFound(4001103, "域配置的groupid在配置分组关系中不存在"),
+	RegionsGroupIdIsNotFound(4001103, "域配置的groupId在配置分组关系中不存在"),
 	/**
 	 *域配置的regionId不能为空
 	 */
@@ -252,7 +251,7 @@ public enum RestBusinessCode {
 	/**
 	 * 字符串类域配置的exprType不能为空
 	 */
-	ExprTypeIsNull(4001403,"字符串类域配置的keywords不能为空"),
+	ExprTypeIsNull(4001403,"字符串类域配置的exprType不能为空"),
 	
 	/**
 	 * 字符串类域配置的matchMethod不能为空
@@ -356,12 +355,12 @@ public enum RestBusinessCode {
 	IsValidNonUniq(4002011, "状态更新操作，所有配置的isValid值必须相同"),
 	
 	/**
-	 * 配置分组中同一groupId出现多次
+	 * 配置分组中同一groupId不能重复出现多次
 	 */
-	GroupIdIsRepeat(4002100,"Maat配置分组groupId不能重复"),
+	GroupIdIsRepeat(4002100,"Maat配置分组中groupId不能重复出现多次"),
 	
 	/**
-	 * tableName与编译配置业务类型不一致
+	 * 当前编译配置service与域配置tableName的关系不存在
 	 */
 	TableNameUnmatchService(4002101, "当前编译配置service与域配置tableName的关系不存在"),
 	
@@ -374,14 +373,14 @@ public enum RestBusinessCode {
 	 */
 	UpBoundaryIsWrongRange(4002201, "数值域-配置upBoundary值不在有效范围内"),
 	/**
-	 *数值域配置的lowBoundary大于upBoundary值
+	 *数值域-配置lowBoundary必须小于upBoundary
 	 */
 	LowBoundaryGTUpBoundary(4002202, "数值域-配置lowBoundary必须小于upBoundary"),
 	
 	/**
-	 * IP类域配置的direction的值不在有效范围
+	 * IP类域配置的direction的值不在有效范围，只能是0或1
 	 */
-	DirectionIsWrongRange(4002300,"IP类域-direction的值只能是0或1"),
+	DirectionIsWrongRange(4002300,"IP类域-direction的值不在有效范围，只能是0或1"),
 	
 	/**
 	 * IP类域配置的IP或IpMask与addrType不一致
@@ -423,20 +422,20 @@ public enum RestBusinessCode {
 	ServiceIsWrong(4002600,"service的值配置不正确"),
 	
 	/**
-	 * 回调类ipType属性只能为4(IPV4)、6(IPV6)
+	 * 回调类-ipType属性值不在有效范围
 	 */
-	IpTypeIsWrong(4002601,"ipType属性只能为4(IPV4)、6(IPV6)"),
+	IpTypeIsWrong(4002601,"回调类-ipType属性值不在有效范围"),
 	
 	/**
 	 * 回调类的XX属性不是数值类型
 	 */
 	MastNumberic(4002602,"属性值不是数值类型"),
 	/**
-	 * 回调类的XX属性不是数值类型
+	 * 回调类的XX属性不是日期类型或不是规范的日期串
 	 */
-	MastDate(4002602,"属性值不是日期类型"),
+	MastDate(4002602,"属性值不是日期类型或不是规范的日期串"),
 	/**
-	 * 回调类的XX属性不是数值类型
+	 * 回调类的IP或Mask与addrType不一致
 	 */
 	IpIsUnMatchType(4002603,"配置IP或Mask与addrType不一致"),
 	/**
@@ -575,20 +574,7 @@ public enum RestBusinessCode {
 	 * 状态更新操作中更新内容Map不能为空
 	 */
 	ConfigInfoMapIsNull(5004005,"状态更新操作中更新内容Map不能为空"),
-	
-	
 	;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	private final int value; //错误码
