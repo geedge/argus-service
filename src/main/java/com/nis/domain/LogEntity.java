@@ -73,12 +73,18 @@ public abstract class LogEntity<T> implements Serializable {
 	@ApiModelProperty(value = "嵌套地址列表", required = true)
 	protected String addrList;
 	@ApiModelProperty(value = "用户自定义域", required = true)
-	private String userRegion;
+	protected String userRegion;
 	@ApiModelProperty(value = "服务端地址定位信息", required = true)
 	protected String serverLocate;
 	@ApiModelProperty(value = "客户端地址定位信息", required = true)
-	private String clientLocate;
-
+	protected String clientLocate;
+	@ApiModelProperty(value = "客户端ASN", required = true)
+	protected String sAsn;
+	@ApiModelProperty(value = "服务端ASN", required = true)
+	protected String dAsn;
+	@ApiModelProperty(value = "用户名", required = true)
+	protected String subscribeId;
+	
 	protected String searchCfgId;//配置id
 	protected String searchTransProto;//协议类型
 	protected String searchDIp;//服务端ip地址
@@ -451,5 +457,40 @@ public abstract class LogEntity<T> implements Serializable {
 	public void setClientLocate(String clientLocate) {
 		this.clientLocate = clientLocate;
 	}
-
+	/**
+	 * @param sAsn the sAsn to set
+	 */
+	public void setsAsn(String sAsn) {
+		this.sAsn = sAsn;
+	}
+	/**
+	 * @return the sAsn
+	 */
+	public String getsAsn() {
+		return sAsn;
+	}
+	/**
+	 * @param dAsn the dAsn to set
+	 */
+	public void setdAsn(String dAsn) {
+		this.dAsn = dAsn;
+	}
+	/**
+	 * @return the dAsn
+	 */
+	public String getdAsn() {
+		return dAsn;
+	}
+	/**
+	 * @param subscribeId the subscribeId to set
+	 */
+	public void setSubscribeId(String subscribeId) {
+		this.subscribeId = subscribeId;
+	}
+	/**
+	 * @return the subscribeId
+	 */
+	public String getSubscribeId() {
+		return subscribeId;
+	}
 }

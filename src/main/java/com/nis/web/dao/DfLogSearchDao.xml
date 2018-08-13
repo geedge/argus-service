@@ -41,6 +41,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 	</resultMap>
 
 	<resultMap id="NtcHttpLogMap" type="com.nis.domain.restful.NtcHttpLog">
@@ -63,12 +66,16 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="req_hdr_file" jdbcType="VARCHAR" property="reqHdrFile" />
 		<result column="req_body_file" jdbcType="VARCHAR" property="reqBodyFile" />
 		<result column="res_hdr_file" jdbcType="VARCHAR" property="resHdrFile" />
 		<result column="res_body_file" jdbcType="VARCHAR" property="resBodyFile" />
+		<result column="website" jdbcType="VARCHAR" property="website" />
 	</resultMap>
 
 	<resultMap id="NtcDnsLogMap" type="com.nis.domain.restful.NtcDnsLog">
@@ -91,6 +98,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="rd" jdbcType="INTEGER" property="rd" />
 		<result column="qr" jdbcType="INTEGER" property="qr" />
@@ -127,6 +137,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="mail_proto" jdbcType="VARCHAR" property="mailProto" />
 		<result column="mail_from" jdbcType="VARCHAR" property="mailFrom" />
@@ -157,6 +170,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="sni" jdbcType="VARCHAR" property="sni" />
@@ -186,6 +202,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
 		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
@@ -213,6 +232,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
 		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
@@ -239,6 +261,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="encrypt_mode" jdbcType="VARCHAR" property="encryptMode" />
@@ -267,6 +292,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="ex_protocol" jdbcType="INTEGER" property="exProtocol" />
 		<result column="isakmp_mode" jdbcType="INTEGER" property="isakmpMode" />
@@ -293,6 +321,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="host_key" jdbcType="VARCHAR" property="hostKey" />
@@ -322,6 +353,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 
 		<result column="ftp_url" jdbcType="VARCHAR" property="ftpUrl" />
 		<result column="ftp_content" jdbcType="VARCHAR" property="ftpContent" />
@@ -347,6 +381,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 	</resultMap>
 	
 	<resultMap id="NtcDdosLogMap" type="com.nis.domain.restful.NtcDdosLog">
@@ -369,6 +406,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="attack_type" jdbcType="INTEGER" property="attackType" />
 		<result column="attack_start_time" jdbcType="TIMESTAMP" property="attackStartTime" />
@@ -399,6 +439,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="app_label" jdbcType="VARCHAR" property="appLabel" />
 		<result column="c2s_pkt_num" jdbcType="VARCHAR" property="c2sPktNum" />
@@ -426,6 +469,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -455,6 +501,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -484,6 +533,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -513,6 +565,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -543,6 +598,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -579,6 +637,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -616,6 +677,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -646,6 +710,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -675,6 +742,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -704,6 +774,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -733,6 +806,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -763,6 +839,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -799,6 +878,9 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 		
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="req_line" jdbcType="VARCHAR" property="reqLine" />
@@ -834,5 +916,8 @@
 		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="subscribe_id" jdbcType="VARCHAR" property="subscribeId" />
 	</resultMap>
 </mapper>
