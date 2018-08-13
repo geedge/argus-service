@@ -89,6 +89,7 @@ public class ConfigSourcesController extends BaseRestController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			thread.setExceptionInfo("Maat 规则存储异常:" + e.getMessage());
+			logger.error("Maat 规则存储异常:" + e.getMessage());
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
 					"Maat 规则存储异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -133,6 +134,7 @@ public class ConfigSourcesController extends BaseRestController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			thread.setExceptionInfo("MAAT规则状态更新时出现异常:" + e.getMessage());
+			logger.error("MAAT规则状态更新时出现异常:" + e.getMessage());
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
 					"MAAT规则状态更新时出现异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -189,6 +191,7 @@ public class ConfigSourcesController extends BaseRestController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			thread.setExceptionInfo("回调规则存储异常:" + e.getMessage());
+			logger.error("回调规则存储异常:" + e.getMessage());
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
 					"回调规则存储异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -219,6 +222,7 @@ public class ConfigSourcesController extends BaseRestController {
 		} catch (Exception e) {
 			// TODO: handle exception
 			thread.setExceptionInfo("回调规则状态更新异常:" + e.getMessage());
+			logger.error("回调规则状态更新异常:" + e.getMessage());
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
 						"回调规则状态更新异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());

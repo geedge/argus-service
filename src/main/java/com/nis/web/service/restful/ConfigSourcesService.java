@@ -61,13 +61,21 @@ public class ConfigSourcesService extends BaseService {
 	@Autowired
 	ConfigRedisService configRedisService;
 
+	/**
+	 * 
+	 * @Description: 判断tableName是否是增强字符串类域配置表
+	 * @date 2018年8月10日 下午4:14:36
+	 * @param tableName
+	 * @param service
+	 * @return
+	 * @throws Exception
+	 */
 	public static boolean isStrStrongRegion(String tableName,Integer service) throws Exception{
 		if (null != tableName && !tableName.equals("")) {
 			List<String> tableList = new ArrayList<String>();
 			Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(service);
 			if (sercieNameMap != null && sercieNameMap.size() > 0) {
 				for (Integer type : sercieNameMap.keySet()) {
-					String typeStr="";
 	//					12代表是ip类域配置,13代表是数值类配置,14代表是字符串类域配置,15代表是增强字符串类域配置,
 					if ("15".equals(type.toString())) {
 						List<String> tableNameList = sercieNameMap.get(type);
@@ -240,8 +248,6 @@ public class ConfigSourcesService extends BaseService {
 
 							Map<String, String[]> regionAndFiledMap = maatToValueMap
 									.get(service);
-							// for (MaatConfig maatConfig :
-							// newMaatConfigList) {
 							for (int i = 0; i < newMaatConfigList.size(); i++) {
 								MaatConfig maatConfig = newMaatConfigList
 										.get(i);
@@ -452,7 +458,6 @@ public class ConfigSourcesService extends BaseService {
 				Integer ipType = null;
 				String ipTypeName = "";
 				
-				Integer action = null;
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					if (commonSourceFieldCfg.getDstName().equals("addr_type")) {
 						String dstVal = srcMap.get(
@@ -659,6 +664,18 @@ public class ConfigSourcesService extends BaseService {
 		configRedisService.saveUnMaatConfig(configMap);
 	}
 
+	/**
+	 * 
+	 * @Description:回调类配置状态更新（停/启用)
+	 * @author (zdx)
+	 * @date 2018年8月10日 下午4:28:04
+	 * @param thread
+	 * @param start
+	 * @param jsonString
+	 * @param opTime
+	 * @param sb
+	 * @throws Exception
+	 */
 	public void updateCommonSources(AuditLogThread thread, long start,
 									  String jsonString, Date opTime, StringBuffer sb) throws Exception{
 		JsonArray jsonObjectList = null;
@@ -715,6 +732,7 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		try {
+			//停用时isInvalid=true,启用时isInvalid = false
 			configRedisService.delUnMaatConfig(restMap,validIdMap.containsKey("0")?true:false);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -760,6 +778,16 @@ public class ConfigSourcesService extends BaseService {
 		}
 	}
 
+	/**
+	 * 
+	 * @Description:在linux系统下，使用摘要获取工具获取文件摘要信息
+	 * @author (zdx)
+	 * @date 2018年8月10日 下午4:29:38
+	 * @param realPath
+	 * @param filePath
+	 * @return
+	 * @throws Exception
+	 */
 	public String getDigestGen(String realPath, String filePath)
 			throws Exception {
 		logger.info("----------------开始获取摘要：getDigestGen");
