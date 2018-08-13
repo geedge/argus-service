@@ -400,7 +400,11 @@
 		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
 		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
 		
-		<result column="app_label" jdbcType="VARCHAR" property="appLabel" />
+		<result column="label_proto_id" jdbcType="INTEGER" property="labelProtoId" />
+		<result column="label_os_id" jdbcType="INTEGER" property="labelOsId" />
+		<result column="label_bs_id" jdbcType="INTEGER" property="labelBsId" />
+		<result column="label_behav_id" jdbcType="INTEGER" property="labelBehavId" />
+		<result column="label_app_id" jdbcType="INTEGER" property="labelAppId" />
 		<result column="c2s_pkt_num" jdbcType="VARCHAR" property="c2sPktNum" />
 		<result column="s2c_pkt_num" jdbcType="VARCHAR" property="s2cPktNum" />
 		<result column="c2s_byte_num" jdbcType="VARCHAR" property="c2sByteNum" />
