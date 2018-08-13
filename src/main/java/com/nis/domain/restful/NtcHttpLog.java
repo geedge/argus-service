@@ -25,7 +25,9 @@ public class NtcHttpLog extends LogEntity {
     @ApiModelProperty(value="应答体转储文件", required=true)
     protected String resBodyFile;
 
-
+    @ApiModelProperty(value="网站域名", required=true)
+    protected String website;
+    
     public String getUrl() {
         return url;
     }
@@ -64,6 +66,20 @@ public class NtcHttpLog extends LogEntity {
 
 	public void setResBodyFile(String resBodyFile) {
 		this.resBodyFile = resBodyFile;
+	}
+	
+	/**
+	 * @param website the website to set
+	 */
+	public void setWebsite(String website) {
+		this.website = website;
+	}
+	
+	/**
+	 * @return the website
+	 */
+	public String getWebsite() {
+		return website;
 	}
 
 }
