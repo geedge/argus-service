@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,9 +20,9 @@ import com.nis.domain.restful.StrRegion;
 import com.nis.util.CamelUnderlineUtil;
 import com.nis.util.Configurations;
 import com.nis.util.FileUtils;
+import com.nis.util.JedisUtils;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
-import com.nis.web.service.SpringContextHolder;
 
 @Service()
 public class MaatTestServiceimpl {
@@ -47,58 +46,56 @@ public class MaatTestServiceimpl {
 
 	public void getConfigByKey(Integer redisDB, Integer service, ConfigCompile configCompile,
 			MaatXmlConfig maatXmlConfig) {
-		RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate" + redisDB);
 		if (maatXmlConfig != null && configCompile != null) {
 			Long compileId = configCompile.getCompileId();
-			validData(service, 10, compileId, configCompile.getCompileId(), redisDB, null, maatXmlConfig, redisTemplate,
-					configCompile,configCompile);
+			validData(service, 10, compileId, configCompile.getCompileId(), redisDB, null, maatXmlConfig, configCompile,
+					configCompile);
 
 			List<ConfigGroupRelation> groupRelationList = configCompile.getGroupRelationList();
 			for (ConfigGroupRelation configGroupRelation : groupRelationList) {
 				validData(service, 11, compileId, configGroupRelation.getGroupId(), redisDB, null, maatXmlConfig,
-						redisTemplate, configGroupRelation,configCompile);
+						configGroupRelation, configCompile);
 			}
 
 			List<IpRegion> ipRegionList = configCompile.getIpRegionList();
 			for (IpRegion ipRegion : ipRegionList) {
-				validData(service, 12, compileId, ipRegion.getRegionId(), redisDB, null, maatXmlConfig, redisTemplate,
-						ipRegion,configCompile);
+				validData(service, 12, compileId, ipRegion.getRegionId(), redisDB, ipRegion.getTableName(),
+						maatXmlConfig, ipRegion, configCompile);
 			}
 			List<NumRegion> numRegionList = configCompile.getNumRegionList();
 			for (NumRegion numRegion : numRegionList) {
-				validData(service, 13, compileId, numRegion.getRegionId(), redisDB, null, maatXmlConfig, redisTemplate,
-						numRegion,configCompile);
+				validData(service, 13, compileId, numRegion.getRegionId(), redisDB, numRegion.getTableName(),
+						maatXmlConfig, numRegion, configCompile);
 			}
 
 			List<StrRegion> strRegionList = configCompile.getStrRegionList();
 			for (StrRegion strRegion : strRegionList) {
 				if (strRegion.getDistrict() == null || strRegion.getDistrict().trim().equals("")) {
-					validData(service, 14, compileId, strRegion.getRegionId(), redisDB, null, maatXmlConfig,
-							redisTemplate, strRegion,configCompile);
+					validData(service, 14, compileId, strRegion.getRegionId(), redisDB, strRegion.getTableName(),
+							maatXmlConfig, strRegion, configCompile);
 				} else {
-					validData(service, 15, compileId, strRegion.getRegionId(), redisDB, null, maatXmlConfig,
-							redisTemplate, strRegion,configCompile);
+					validData(service, 15, compileId, strRegion.getRegionId(), redisDB, strRegion.getTableName(),
+							maatXmlConfig, strRegion, configCompile);
 				}
 			}
 
 			List<DigestRegion> digestRegionList = configCompile.getDigestRegionList();
 			for (DigestRegion digestRegion : digestRegionList) {
-				validData(service, 16, compileId, digestRegion.getRegionId(), redisDB, null, maatXmlConfig,
-						redisTemplate, digestRegion,configCompile);
+				validData(service, 16, compileId, digestRegion.getRegionId(), redisDB, digestRegion.getTableName(),
+						maatXmlConfig, digestRegion, configCompile);
 			}
 
 			List<IpRegion> ipClientRangeList = configCompile.getIpClientRangeList();
 			for (IpRegion ipRegion : ipClientRangeList) {
-				validData(service, 18, compileId, ipRegion.getRegionId(), redisDB, null, maatXmlConfig, redisTemplate,
-						ipRegion,configCompile);
+				validData(service, 18, compileId, ipRegion.getRegionId(), redisDB, ipRegion.getTableName(),
+						maatXmlConfig, ipRegion, configCompile);
 			}
 
 		}
 	}
 
 	public void validData(Integer service, Integer type, Long compileId, Long id, Integer redisDb, String tableName,
-			MaatXmlConfig maatXmlConfig, RedisTemplate<String, String> redisTemplate, Object obj,
-			ConfigCompile configCompile) {
+			MaatXmlConfig maatXmlConfig, Object obj, ConfigCompile configCompile) {
 		List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
 		String[] valArr = null;
 		String key = null;
@@ -141,12 +138,12 @@ public class MaatTestServiceimpl {
 						valList.add(valStr);
 					}
 				}
-				String val = redisTemplate.opsForValue().get(key);
+				String val = JedisUtils.get(key, redisDb);
 				valArr = val.split("\\t");
 				break;
 			}
 		}
-		if (sysoLog(valArr, valList, obj, redisDb, key, configCompile)) {
+		if (sysoLog(valArr, valList, obj, redisDb, key, configCompile,service)) {
 			FileUtils
 					.addStrToFile(
 							"\t" + sdf.format(new Date()) + " 编译配置id为" + compileId + "的配置中,在" + redisDb + "号redis库中key="
@@ -156,7 +153,26 @@ public class MaatTestServiceimpl {
 	}
 
 	private boolean sysoLog(String[] valArr, List<String> valList, Object obj, Integer redisDb, String key,
-			ConfigCompile configCompile) {
+			ConfigCompile configCompile,Integer service) {
+
+		if (valList == null || valList.size() == 0) {
+			FileUtils.addStrToFile(
+					"\t" + sdf.format(new Date()) + " error:service="+service +"时拼接value属性名,value表达式为空请检查\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			return false;
+		}
+		if (valArr == null || valArr.length == 0) {
+			FileUtils.addStrToFile(
+					"\t" + sdf.format(new Date()) + " error:service="+service +"时拼接value值错误,value数组为空\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			return false;
+		}
+		if (valList == null || key.trim().equals("")) {
+			FileUtils.addStrToFile(
+					"\t" + sdf.format(new Date()) + " error:service="+service +"时拼接key=null请检查\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			return false;
+		}
 		boolean bool = true;
 		for (int i = 0; i < valList.size(); i++) {
 			String attrName = valList.get(i);
@@ -165,9 +181,9 @@ public class MaatTestServiceimpl {
 				String beanVal = null;
 				if (filedName.toLowerCase().equals("service") || filedName.toLowerCase().equals("action")
 						|| filedName.toLowerCase().equals("userregion")) {
-					beanVal=getFieldValueByFieldName(filedName, configCompile);
-				}else {
-					beanVal=getFieldValueByFieldName(filedName, obj);
+					beanVal = getFieldValueByFieldName(filedName, configCompile);
+				} else {
+					beanVal = getFieldValueByFieldName(filedName, obj);
 				}
 				String redisVal = valArr[i];
 				if (!beanVal.trim().equals(redisVal.trim())) {

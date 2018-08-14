@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import com.nis.domain.restful.*;
@@ -95,8 +96,6 @@ public class MaatTestController {
 		return "false";
 	}
 
-
-
 	@RequestMapping(value = "/cfg/v1/delUnMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
 	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
@@ -108,7 +107,7 @@ public class MaatTestController {
 			map.put(service, arrayList);
 			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 			idMap.put(redisDB, map);
-			configRedisService.delUnMaatConfig(idMap,true);
+			configRedisService.delUnMaatConfig(idMap, true);
 			// configRedisService.saveMaatConfig(listMap, service);
 			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
 			return "ok";
@@ -148,8 +147,8 @@ public class MaatTestController {
 			long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
 			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
 			long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
-			listMap.add(getMaatConfig1(service, seq_groupid,seq_regionid2));
-			//listMap.add(getMaatConfig2(service, seq_groupid,seq_regionid2));
+			listMap.add(getMaatConfig1(service, seq_groupid, seq_regionid2));
+			// listMap.add(getMaatConfig2(service, seq_groupid,seq_regionid2));
 
 			for (Integer db : redisDBByService) {
 				configMap.put(db, listMap);
@@ -164,7 +163,7 @@ public class MaatTestController {
 		return "false";
 	}
 
-	public MaatConfig getMaatConfig1(Integer service, long seq_groupid,long seq_regionid2) {
+	public MaatConfig getMaatConfig1(Integer service, long seq_groupid, long seq_regionid2) {
 		String time = new Date().getTime() + "";
 		Map<String, String> configMap1 = new HashMap<String, String>();
 		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
@@ -246,7 +245,7 @@ public class MaatTestController {
 		return maatConfig;
 	}
 
-	public MaatConfig getMaatConfig2(Integer service, long seq_groupid,long seq_regionid2) {
+	public MaatConfig getMaatConfig2(Integer service, long seq_groupid, long seq_regionid2) {
 		String time = new Date().getTime() + "";
 		Map<String, String> configMap = new HashMap<String, String>();
 		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
@@ -302,8 +301,6 @@ public class MaatTestController {
 		return maatConfig;
 	}
 
-
-
 	@RequestMapping(value = "/cfg/v1/testDelMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量删除maat配置", httpMethod = "GET", response = String.class, notes = "测试批量删除maat配置,configId为配置id,多个配置id用逗号分隔")
 	@ApiParam(value = "测试批量删除maat配置", name = "testDelMaat", required = true)
@@ -345,7 +342,7 @@ public class MaatTestController {
 					}
 				}
 			} else {
-				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "获取业务类型" + service + "对应的redisDb失败\n",
+				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:获取业务类型" + service + "对应的redisDb失败\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);
 				return "error";
 			}
@@ -353,7 +350,7 @@ public class MaatTestController {
 		try {
 			if (!configRedisService.delMaatConfig(restMap)) {
 				FileUtils.addStrToFile(
-						sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的配置" + configId + "失败\n",
+						sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的配置" + configId + "失败\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);
 				return "error";
 			} else {
@@ -365,7 +362,7 @@ public class MaatTestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			FileUtils.addStrToFile(
-					sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的配置" + configId + "失败,失败原因:"
+					sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的配置" + configId + "失败,失败原因:"
 							+ ExceptionUtil.getExceptionMsg(e) + "\n",
 					Configurations.getStringProperty("maatTestLogPath", ""), true);
 
@@ -381,7 +378,7 @@ public class MaatTestController {
 			@RequestParam(required = true) Integer saveCount, Integer forCount) {
 		List<String> list = new ArrayList<String>();
 		try {
-			
+
 			for (int a = 0; a < forCount; a++) {
 				long start = System.currentTimeMillis();
 				AuditLogThread thread = new AuditLogThread();
@@ -397,14 +394,14 @@ public class MaatTestController {
 					compileIdList.add(configCompile.getCompileId());
 				}
 				FileUtils.addStrToFile(
-						sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
-								+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+						sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是"
+								+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);
 				// 验证数据是否在正确
 				maatTestServiceimpl.getKeys(configCompileList);
 				list.add(testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service));
 			}
-			
+
 			// return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
 			// + service + "&configId="
 			// + compileIdList.toString().replace("[", "").replace("]", "");
@@ -418,37 +415,90 @@ public class MaatTestController {
 	@RequestMapping(value = "/cfg/v1/testSaveMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,saveCount:保存几条配置")
 	@ApiParam(value = "测试批量保存maat配置", name = "testSaveMaat", required = true)
-	public String testSaveMaat(@RequestParam(required = true) Integer service,
+	public Map testSaveMaat(@RequestParam(required = true) Integer service,
 			@RequestParam(required = true) Integer saveCount) {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = new AuditLogThread();
 		StringBuffer sb = new StringBuffer();
-		List<Long> compileIdList = new ArrayList<Long>();
+		List<Long> compileIdList = null;
+
+		Map<Integer, String> map = new HashMap<Integer, String>();
+
 		try {
-			List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
-			for (int i = 0; i < saveCount; i++) {
-				configCompileList.add(getConfigCompile(service));
+			// 获取所有maat类的业务类型
+			Map<Integer, Map<Integer, List<String>>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap();
+			if (sercieNameMap != null) {
+				if (service == -1) {
+					Set<Integer> keySet = sercieNameMap.keySet();
+					for (Integer ser : keySet) {
+						compileIdList = new ArrayList<Long>();
+						List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+						for (int i = 0; i < saveCount; i++) {
+							configCompileList.add(getConfigCompile(ser));
+						}
+						// 保存测试配置
+						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+						for (ConfigCompile configCompile : configCompileList) {
+							compileIdList.add(configCompile.getCompileId());
+						}
+						FileUtils.addStrToFile(
+								sdf.format(new Date()) + "\t" + "业务类型" + ser + "添加" + saveCount + "条数据成功,配置id是"
+										+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
+						// 验证数据是否在正确
+						maatTestServiceimpl.getKeys(configCompileList);
+						map.put(ser, "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType=" + ser
+								+ "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
+						
+						
+						testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), ser);
+						
+					}
+				} else {
+					if (sercieNameMap.containsKey(service)) {
+						compileIdList = new ArrayList<Long>();
+						List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
+						for (int i = 0; i < saveCount; i++) {
+							configCompileList.add(getConfigCompile(service));
+						}
+						// 保存测试配置
+						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
+						for (ConfigCompile configCompile : configCompileList) {
+							compileIdList.add(configCompile.getCompileId());
+						}
+						FileUtils.addStrToFile(
+								sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是"
+										+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
+						// 验证数据是否在正确
+						maatTestServiceimpl.getKeys(configCompileList);
+						map.put(service, "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
+								+ service + "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
+						testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service);
+					} else {
+
+						map.put(-2, "is not maat service");
+					}
+				}
+			} else {
+				map.put(-3, "service map is null");
 			}
-			// 保存测试配置
-		
-			configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
-		
-			
-			for (ConfigCompile configCompile : configCompileList) {
-				compileIdList.add(configCompile.getCompileId());
-			}
-			FileUtils.addStrToFile(
-					sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是" + compileIdList
-							+ "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
-					Configurations.getStringProperty("maatTestLogPath", ""), true);
-			// 验证数据是否在正确
-			maatTestServiceimpl.getKeys(configCompileList);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			map.put(-4, "error");
 		}
-		return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType=" + service + "&configId="
-				+ compileIdList.toString().replace("[", "").replace("]", "");
+		
+
+
+		
+		
+		
+		
+		
+		
+		return map;
 	}
 
 	private ConfigCompile getConfigCompile(Integer service) {
@@ -487,72 +537,62 @@ public class MaatTestController {
 				String[] typeArr = typeStr.split(":");
 				int tableType = Integer.parseInt(typeArr[0]);
 				String tableNameArr[] = typeArr[1].split(",");
-				if (tableType == 12) {
-					List<IpRegion> list = new ArrayList<IpRegion>();
+
+				List<IpRegion> ipList = new ArrayList<IpRegion>();
+				List<NumRegion> numList = new ArrayList<NumRegion>();
+				List<StrRegion> strList = new ArrayList<StrRegion>();
+				List<DigestRegion> digestList = new ArrayList<DigestRegion>();
+				configCompile.setIpRegionList(ipList);
+				configCompile.setNumRegionList(numList);
+				configCompile.setStrRegionList(strList);
+				configCompile.setDigestRegionList(digestList);
+				configCompile.setIpClientRangeList(ipList);
+				if (tableType == 12 || tableType == 18) {
+					ipList = new ArrayList<IpRegion>();
 					if (tableNameArr.length == 1) {
-						list.add(getIpRegion(service, tableType, groupId, null));
+						ipList.add(getIpRegion(service, tableType, groupId, null));
 					} else {
 						for (String tableName : tableNameArr) {
-							list.add(getIpRegion(service, tableType, groupId, tableName));
+							ipList.add(getIpRegion(service, tableType, groupId, tableName));
 						}
 					}
+					if (tableType == 12) {
+						configCompile.setIpRegionList(ipList);
+					} else if (tableType == 18) {
+						configCompile.setIpClientRangeList(ipList);
+					}
 
-					configCompile.setIpRegionList(list);
 				} else if (tableType == 13) {
-					List<NumRegion> list = new ArrayList<NumRegion>();
+					numList = new ArrayList<NumRegion>();
 					if (tableNameArr.length == 1) {
-						list.add(getNumRegion(service, tableType, groupId, null));
+						numList.add(getNumRegion(service, tableType, groupId, null));
 					} else {
 						for (String tableName : tableNameArr) {
-							list.add(getNumRegion(service, tableType, groupId, tableName));
+							numList.add(getNumRegion(service, tableType, groupId, tableName));
 						}
 					}
-					configCompile.setNumRegionList(list);
+					configCompile.setNumRegionList(numList);
+				} else if (tableType == 14 || tableType == 15) {
+					strList = new ArrayList<StrRegion>();
 
-				} else if (tableType == 14) {
-					List<StrRegion> list = new ArrayList<StrRegion>();
 					if (tableNameArr.length == 1) {
-						list.add(getStrRegion(service, tableType, groupId, null));
+						strList.add(getStrRegion(service, tableType, groupId, null));
 					} else {
 						for (String tableName : tableNameArr) {
-							list.add(getStrRegion(service, tableType, groupId, tableName));
+							strList.add(getStrRegion(service, tableType, groupId, tableName));
 						}
 					}
-					configCompile.setStrRegionList(list);
-				} else if (tableType == 15) {
-
-					List<StrRegion> list = new ArrayList<StrRegion>();
-					if (tableNameArr.length == 1) {
-						list.add(getStrRegion(service, tableType, groupId, null));
-					} else {
-						for (String tableName : tableNameArr) {
-							list.add(getStrRegion(service, tableType, groupId, tableName));
-						}
-					}
-					configCompile.setStrRegionList(list);
-
+					configCompile.setStrRegionList(strList);
 				} else if (tableType == 16) {
-					List<DigestRegion> list = new ArrayList<DigestRegion>();
-
+					digestList = new ArrayList<DigestRegion>();
 					if (tableNameArr.length == 1) {
-						list.add(getDigestRegion(service, tableType, groupId, null));
+						digestList.add(getDigestRegion(service, tableType, groupId, null));
 					} else {
 						for (String tableName : tableNameArr) {
-							list.add(getDigestRegion(service, tableType, groupId, tableName));
+							digestList.add(getDigestRegion(service, tableType, groupId, tableName));
 						}
 					}
-
-					configCompile.setDigestRegionList(list);
-				} else if (tableType == 18) {
-					List<IpRegion> list = new ArrayList<IpRegion>();
-					if (tableNameArr.length == 1) {
-						list.add(getIpRegion(service, tableType, groupId, null));
-					} else {
-						for (String tableName : tableNameArr) {
-							list.add(getIpRegion(service, tableType, groupId, tableName));
-						}
-					}
-					configCompile.setIpClientRangeList(list);
+					configCompile.setDigestRegionList(digestList);
 				}
 			}
 		}

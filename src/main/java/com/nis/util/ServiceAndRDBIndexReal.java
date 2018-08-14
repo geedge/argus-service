@@ -182,11 +182,11 @@ public class ServiceAndRDBIndexReal {
 			for (MaatXmlExpr maatXmlExpr : expressionList) {
 				if (maatXmlExpr.getValueExpression() != null) {
 					String[] valSplit = maatXmlExpr.getValueExpression().split(";");
-					int a=1;
+					int a = 1;
 					for (int i = 0; i < valSplit.length; i++) {
 						if (valSplit[i].toLowerCase().contains("is_valid")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
-							System.out.println(service+"--"+typeTable.get(service) + "---" + a);
-						}else if (valSplit[i].toLowerCase().contains("[")){
+							System.out.println(service + "--" + typeTable.get(service) + "---" + a);
+						} else if (valSplit[i].toLowerCase().contains("[")) {
 							a++;
 						}
 					}
@@ -255,32 +255,33 @@ public class ServiceAndRDBIndexReal {
 		Map<Integer, List<String>> typeMap = sercieNameMap.get(service);
 		if (typeMap != null && typeMap.size() > 0) {
 			List<String> tableList = typeMap.get(type);
-			if (tableName == null || tableName.trim().equals("")) {
-				if (tableList.size() > 1) {
-					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-					throw new ServiceRuntimeException("在applicationConfig-rule.properties配置文件中，业务类型:" + service + ",配置类型:" + type + "对应多个表,请输入具体的表名",RestBusinessCode.NotFoundTableName.getValue());
-				} else {
-					return tableList.get(0);
-				}
-			} else {
-				// 保存tableName在表名列表中的序号
-				int index = -1;
-				for (int i = 0; i < tableList.size(); i++) {
-					String str = tableList.get(i);
-					if (str.toLowerCase().contains(tableName.toLowerCase())) {
-						index = i;
+			if (tableList != null && tableList.size() > 0) {
+				if (tableName == null || tableName.trim().equals("")) {
+					if (tableList.size() > 1) {
+						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
+						throw new ServiceRuntimeException("在applicationConfig-rule.properties配置文件中，业务类型:" + service
+								+ ",配置类型:" + type + "对应多个表,请输入具体的表名", RestBusinessCode.NotFoundTableName.getValue());
+					} else {
+						return tableList.get(0);
 					}
-				}
-				if (index != -1 && tableList != null) {
-					return tableList.get(index);
 				} else {
-					logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-					throw new ServiceRuntimeException(
-							"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service+ ",配置类型:" + type 
-									+ "对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
-
+					// 保存tableName在表名列表中的序号
+					int index = -1;
+					for (int i = 0; i < tableList.size(); i++) {
+						String str = tableList.get(i);
+						if (str.toLowerCase().contains(tableName.toLowerCase())) {
+							index = i;
+						}
+					}
+					if (index != -1 && tableList != null) {
+						return tableList.get(index);
+					} else {
+						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
+						throw new ServiceRuntimeException("无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"
+								+ service + ",配置类型:" + type + "对应的真实表名", RestBusinessCode.NotFoundTableName.getValue());
+					}
+					
 				}
-
 			}
 
 		}
