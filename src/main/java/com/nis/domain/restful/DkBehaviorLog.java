@@ -12,8 +12,18 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  */
 public class DkBehaviorLog  extends LogEntity<DkBehaviorLog> {
 	private static final long serialVersionUID = -589390375816690510L;
-	@ApiModelProperty(value = "协议标签", required = true)
-    protected String appLabel;
+
+	@ApiModelProperty(value = "协议类型ID", required = true)
+    protected Integer labelProtoId;
+	@ApiModelProperty(value = "操作系统ID", required = true)
+    protected Integer labelOsId;
+	@ApiModelProperty(value = "浏览器ID", required = true)
+    protected Integer labelBsId;
+	@ApiModelProperty(value = "行为ID", required = true)
+    protected Integer labelBehavId;
+	@ApiModelProperty(value = "应用ID", required = true)
+    protected Integer labelAppId;
+	
 	@ApiModelProperty(value = "c2s包数", required = true)
     protected String c2sPktNum;
     @ApiModelProperty(value = "s2c包数", required = true)
@@ -22,12 +32,69 @@ public class DkBehaviorLog  extends LogEntity<DkBehaviorLog> {
     protected String c2sByteNum;
     @ApiModelProperty(value = "s2c字节数", required = true)
     protected String s2cByteNum;
-	public String getAppLabel() {
-		return appLabel;
+	
+    /**
+	 * @param labelAppId the labelAppId to set
+	 */
+	public void setLabelAppId(Integer labelAppId) {
+		this.labelAppId = labelAppId;
 	}
-	public void setAppLabel(String appLabel) {
-		this.appLabel = appLabel;
+	/**
+	 * @return the labelAppId
+	 */
+	public Integer getLabelAppId() {
+		return labelAppId;
 	}
+	/**
+	 * @param labelBehavId the labelBehavId to set
+	 */
+	public void setLabelBehavId(Integer labelBehavId) {
+		this.labelBehavId = labelBehavId;
+	}
+	/**
+	 * @return the labelBehavId
+	 */
+	public Integer getLabelBehavId() {
+		return labelBehavId;
+	}
+	/**
+	 * @param labelBsId the labelBsId to set
+	 */
+	public void setLabelBsId(Integer labelBsId) {
+		this.labelBsId = labelBsId;
+	}
+	/**
+	 * @return the labelBsId
+	 */
+	public Integer getLabelBsId() {
+		return labelBsId;
+	}
+	/**
+	 * @param labelOsId the labelOsId to set
+	 */
+	public void setLabelOsId(Integer labelOsId) {
+		this.labelOsId = labelOsId;
+	}
+	/**
+	 * @return the labelOsId
+	 */
+	public Integer getLabelOsId() {
+		return labelOsId;
+	}
+	/**
+	 * @param labelProtoId the labelProtoId to set
+	 */
+	public void setLabelProtoId(Integer labelProtoId) {
+		this.labelProtoId = labelProtoId;
+	}
+	
+	/**
+	 * @return the labelProtoId
+	 */
+	public Integer getLabelProtoId() {
+		return labelProtoId;
+	}
+	
 	public String getC2sPktNum() {
 		return c2sPktNum;
 	}
