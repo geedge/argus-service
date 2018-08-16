@@ -342,4 +342,15 @@ public class ServiceAndRDBIndexReal {
 	public static Integer getValveDBIndex() {
 		return valveDBIndex;
 	}
+
+	public static Map<Integer, String> getUnMaatSercieNameMap() {
+		return unMaatSercieNameMap;
+	}
+
+	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
+		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
+	}
+	
+	
+	
 }

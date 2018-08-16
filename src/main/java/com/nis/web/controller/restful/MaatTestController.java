@@ -10,20 +10,31 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.nis.domain.restful.*;
-import com.nis.web.service.AuditLogThread;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nis.domain.restful.CommonSourceFieldCfg;
+import com.nis.domain.restful.ConfigCompile;
+import com.nis.domain.restful.ConfigGroupRelation;
+import com.nis.domain.restful.DigestRegion;
+import com.nis.domain.restful.IpRegion;
+import com.nis.domain.restful.NumRegion;
+import com.nis.domain.restful.StrRegion;
 import com.nis.util.Configurations;
 import com.nis.util.ExceptionUtil;
 import com.nis.util.FileUtils;
+import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigRedisService;
 import com.nis.web.service.restful.ConfigSourcesService;
@@ -33,11 +44,10 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 @RestController
-@RequestMapping("test")
-@Api(value = "ConfigSourcesController", description = "测试maat及非maat配置入库,取消功能")
+@RequestMapping("${servicePath}/test")
+@Api(value = "MaatTestController", description = "测试maat及unMaat配置入库,取消功能")
 public class MaatTestController {
-	// private static Logger logger =
-	// LoggerFactory.getLogger(MaatTestController.class);
+	private static Logger logger = LoggerFactory.getLogger(MaatTestController.class);
 	@Autowired
 	MaatTestServiceimpl maatTestServiceimpl;
 	@Autowired
@@ -47,259 +57,6 @@ public class MaatTestController {
 	@Autowired
 	ServicesRequestLogService servicesRequestLogService;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	@RequestMapping(value = "/cfg/v1/saveUnMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String saveUnMaat(Integer type) {
-		try {
-			List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
-			if (type == 1) {
-				Map<String, String> map = new HashMap<String, String>();
-				Integer service = 261;
-				long id = configRedisService.getIncrId("seq_compileid");
-				// int id=2;
-				map.put("cfg_id", id + "");
-				map.put("is_valid", "1");
-				map.put("dst_file", "home");
-				map.put("dst_file_md5", "fasdfdasfsdafdsafadsf");
-				map.put("op_time", new Date().getTime() + "");
-				map.put("level", "20");
-				map.put("file_id", id + "");
-				map.put("service", service + "");
-				listMap.add(map);
-
-				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
-				configMap.put(1, listMap);
-				configRedisService.saveUnMaatConfig(configMap);
-			} else {
-				Integer service = 265;
-				Map<String, String> map = new HashMap<String, String>();
-				long id = configRedisService.getIncrId("seq_compileid");
-				// int id=2;
-				map.put("cfg_id", id + "");
-				map.put("is_valid", "1");
-				map.put("service", "100");
-				map.put("description", "123" + id);
-				map.put("level", "20");
-				listMap.add(map);
-				map.put("service", service + "");
-
-				Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
-				configMap.put(1, listMap);
-				configRedisService.saveUnMaatConfig(configMap);
-			}
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	@RequestMapping(value = "/cfg/v1/delUnMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String delUnMaat(int redisDB, int service, long id) {
-		try {
-			Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-			ArrayList<Long> arrayList = new ArrayList<Long>();
-			arrayList.add(id);
-			map.put(service, arrayList);
-			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-			idMap.put(redisDB, map);
-			configRedisService.delUnMaatConfig(idMap, true);
-			// configRedisService.saveMaatConfig(listMap, service);
-			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	@RequestMapping(value = "/cfg/v1/delMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String delMaat(int redisDB, int service, long id) {
-		try {
-			Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-			ArrayList<Long> arrayList = new ArrayList<Long>();
-			arrayList.add(id);
-			map.put(service, arrayList);
-			Map<Integer, Map<Integer, List<Long>>> idMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-			idMap.put(redisDB, map);
-
-			boolean delMaatConfig = configRedisService.delMaatConfig(idMap);
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	@RequestMapping(value = "/cfg/v1/saveMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "test redis", httpMethod = "GET", response = Map.class, notes = "测试redis事务的crontroller")
-	@ApiParam(value = "test redis", name = "测试redis事务的crontroller", required = true)
-	public String saveMaat(Integer service) {
-		try {
-			Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-			List<Integer> redisDBByService = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			long seq_groupid = configRedisService.getIncrId("SEQ_GROUPID");
-			List<MaatConfig> listMap = new ArrayList<MaatConfig>();
-			long seq_regionid2 = configRedisService.getIncrId("SEQ_REGIONID");
-			listMap.add(getMaatConfig1(service, seq_groupid, seq_regionid2));
-			// listMap.add(getMaatConfig2(service, seq_groupid,seq_regionid2));
-
-			for (Integer db : redisDBByService) {
-				configMap.put(db, listMap);
-			}
-			configRedisService.saveMaatConfig(configMap);
-			// configRedisService.saveMaatConfig(listMap, service);
-			// new ConfigRedisServiceimpl().GETMaatConfig(listMap);
-			return "ok";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "false";
-	}
-
-	public MaatConfig getMaatConfig1(Integer service, long seq_groupid, long seq_regionid2) {
-		String time = new Date().getTime() + "";
-		Map<String, String> configMap1 = new HashMap<String, String>();
-		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
-		long seq_regionid1 = configRedisService.getIncrId("SEQ_REGIONID");
-		// int id=2;
-		configMap1.put("compile_id", seq_compileid + "");
-		configMap1.put("service", service + "");
-		configMap1.put("action", "0");
-		configMap1.put("do_blacklist", "1");
-		configMap1.put("do_log", "1");
-		configMap1.put("effective_range", "0");
-		configMap1.put("user_region", "0");
-		configMap1.put("is_valid", "1");
-		configMap1.put("group_num", "1");
-		configMap1.put("father_cfg_id", "0");
-		configMap1.put("op_time", time);
-
-		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> groupMap1 = new HashMap<String, String>();
-		groupMap1.put("group_id", seq_groupid + "");
-		groupMap1.put("compile_id", seq_compileid + "");
-		groupMap1.put("is_valid", "1");
-		groupMap1.put("op_time", time);
-		groupMap1.put("service", service + "");
-		groupMapList.add(groupMap1);
-		Long incrId = configRedisService.getIncrId("SEQ_GROUPID");
-		Map<String, String> groupMap2 = new HashMap<String, String>();
-		groupMap2.put("group_id", incrId + "");
-		groupMap2.put("compile_id", seq_compileid + "");
-		groupMap2.put("is_valid", "1");
-		groupMap2.put("op_time", time);
-		groupMap2.put("service", service + "");
-		groupMapList.add(groupMap2);
-		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> strMap = new HashMap<String, String>();
-		strMap.put("group_id", incrId + "");
-		strMap.put("region_id", seq_regionid1 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-
-		ipRegionMapList.add(strMap);
-
-		strMap = new HashMap<String, String>();
-		strMap.put("group_id", seq_groupid + "");
-		strMap.put("region_id", seq_regionid2 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-		ipRegionMapList.add(strMap);
-
-		MaatConfig maatConfig = new MaatConfig();
-		maatConfig.setCompileMap(configMap1);
-		maatConfig.setGroupMapList(groupMapList);
-		maatConfig.setService(service);
-		maatConfig.setIpRegionMapList(ipRegionMapList);
-		return maatConfig;
-	}
-
-	public MaatConfig getMaatConfig2(Integer service, long seq_groupid, long seq_regionid2) {
-		String time = new Date().getTime() + "";
-		Map<String, String> configMap = new HashMap<String, String>();
-		long seq_compileid = configRedisService.getIncrId("SEQ_COMPILEID");
-
-		// int id=2;
-		configMap.put("compile_id", seq_compileid + "");
-		configMap.put("service", service + "");
-		configMap.put("action", "0");
-		configMap.put("do_blacklist", "1");
-		configMap.put("do_log", "1");
-		configMap.put("effective_range", "0");
-		configMap.put("user_region", "0");
-		configMap.put("is_valid", "1");
-		configMap.put("group_num", "1");
-		configMap.put("father_cfg_id", "0");
-		configMap.put("op_time", time);
-
-		List<Map<String, String>> groupMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> groupMap = new HashMap<String, String>();
-		groupMap.put("group_id", seq_groupid + "");
-		groupMap.put("compile_id", seq_compileid + "");
-		groupMap.put("is_valid", "1");
-		groupMap.put("op_time", time);
-		groupMap.put("service", service + "");
-		groupMapList.add(groupMap);
-
-		List<Map<String, String>> ipRegionMapList = new ArrayList<Map<String, String>>();
-		Map<String, String> strMap = new HashMap<String, String>();
-		strMap = new HashMap<String, String>();
-		strMap.put("group_id", seq_groupid + "");
-		strMap.put("region_id", seq_regionid2 + "");
-		strMap.put("addr_type", "4");
-		strMap.put("src_ip", "0.0.0.0");
-		strMap.put("mask_src_ip", "255.255.255.255");
-		strMap.put("src_port", "0");
-		strMap.put("mask_src_port", "0");
-		strMap.put("dst_ip", "0.0.0.0");
-		strMap.put("mask_dst_ip", "255.255.255.255");
-		strMap.put("dst_port", "0");
-		strMap.put("mask_dst_port", "0");
-		strMap.put("protocol", "0");
-		strMap.put("direction", "0");
-		strMap.put("is_valid", "1");
-		strMap.put("op_time", time);
-		strMap.put("service", service + "");
-		ipRegionMapList.add(strMap);
-
-		MaatConfig maatConfig = new MaatConfig();
-		maatConfig.setCompileMap(configMap);
-		maatConfig.setGroupMapList(groupMapList);
-		maatConfig.setService(service);
-		maatConfig.setIpRegionMapList(ipRegionMapList);
-		return maatConfig;
-	}
 
 	@RequestMapping(value = "/cfg/v1/testDelMaat", method = RequestMethod.GET)
 	@ApiOperation(value = "测试批量删除maat配置", httpMethod = "GET", response = String.class, notes = "测试批量删除maat配置,configId为配置id,多个配置id用逗号分隔")
@@ -323,7 +80,7 @@ public class MaatTestController {
 				compileMap.put(serviceType, idList);
 			}
 		}
-		FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "开始删除业务类型" + serviceType + "下的配置" + configId + "\n",
+		FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "开始删除业务类型" + serviceType + "下的maat配置" + configId + "\n",
 				Configurations.getStringProperty("maatTestLogPath", ""), true);
 
 		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
@@ -350,70 +107,28 @@ public class MaatTestController {
 		try {
 			if (!configRedisService.delMaatConfig(restMap)) {
 				FileUtils.addStrToFile(
-						sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的配置" + configId + "失败\n",
+						sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的maat配置" + configId + "失败\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);
 				return "error";
 			} else {
 				FileUtils.addStrToFile(
-						sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的配置" + configId + "成功\n",
+						sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的maat配置" + configId + "成功\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			FileUtils.addStrToFile(
-					sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的配置" + configId + "失败,失败原因:"
-							+ ExceptionUtil.getExceptionMsg(e) + "\n",
-					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			String exceptionMsg = ExceptionUtil.getExceptionMsg(e);
+			logger.error(exceptionMsg);
+			FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的maat配置" + configId
+					+ "失败,失败原因:" + exceptionMsg + "\n", Configurations.getStringProperty("maatTestLogPath", ""), true);
 
 			return "error";
 		}
 		return "ok";
 	}
 
-	@RequestMapping(value = "/cfg/v1/testSaveMaatMore", method = RequestMethod.GET)
-	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,saveCount:保存几条配置")
-	@ApiParam(value = "测试批量保存maat配置", name = "testSaveMaat", required = true)
-	public String testSaveMaatMore(@RequestParam(required = true) Integer service,
-			@RequestParam(required = true) Integer saveCount, Integer forCount) {
-		List<String> list = new ArrayList<String>();
-		try {
-
-			for (int a = 0; a < forCount; a++) {
-				long start = System.currentTimeMillis();
-				AuditLogThread thread = new AuditLogThread();
-				StringBuffer sb = new StringBuffer();
-				List<ConfigCompile> configCompileList = new ArrayList<ConfigCompile>();
-				for (int i = 0; i < saveCount; i++) {
-					configCompileList.add(getConfigCompile(service));
-				}
-				// 保存测试配置
-				configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
-				List<Long> compileIdList = new ArrayList<Long>();
-				for (ConfigCompile configCompile : configCompileList) {
-					compileIdList.add(configCompile.getCompileId());
-				}
-				FileUtils.addStrToFile(
-						sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是"
-								+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
-						Configurations.getStringProperty("maatTestLogPath", ""), true);
-				// 验证数据是否在正确
-				maatTestServiceimpl.getKeys(configCompileList);
-				list.add(testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service));
-			}
-
-			// return "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
-			// + service + "&configId="
-			// + compileIdList.toString().replace("[", "").replace("]", "");
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-		}
-		return list.toString();
-	}
-
 	@RequestMapping(value = "/cfg/v1/testSaveMaat", method = RequestMethod.GET)
-	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,saveCount:保存几条配置")
+	@ApiOperation(value = "测试批量保存maat配置", httpMethod = "GET", response = String.class, notes = "测试批量保存maat配置,service:需要保存的业务类型,service为-1表示下发所有maat类配置,saveCount:保存几条配置")
 	@ApiParam(value = "测试批量保存maat配置", name = "testSaveMaat", required = true)
 	public Map testSaveMaat(@RequestParam(required = true) Integer service,
 			@RequestParam(required = true) Integer saveCount) {
@@ -442,17 +157,16 @@ public class MaatTestController {
 							compileIdList.add(configCompile.getCompileId());
 						}
 						FileUtils.addStrToFile(
-								sdf.format(new Date()) + "\t" + "业务类型" + ser + "添加" + saveCount + "条数据成功,配置id是"
+								sdf.format(new Date()) + "\t" + "业务类型" + ser + "添加" + saveCount + "条maat配置成功,配置id是"
 										+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
 								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 验证数据是否在正确
-						maatTestServiceimpl.getKeys(configCompileList);
-						map.put(ser, "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType=" + ser
+						maatTestServiceimpl.getMaatKeys(configCompileList);
+						map.put(ser, "http://127.0.0.1:8080/galaxy/service/test/cfg/v1/testDelMaat?serviceType=" + ser
 								+ "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
-						
-						
+
 						testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), ser);
-						
+
 					}
 				} else {
 					if (sercieNameMap.containsKey(service)) {
@@ -467,12 +181,12 @@ public class MaatTestController {
 							compileIdList.add(configCompile.getCompileId());
 						}
 						FileUtils.addStrToFile(
-								sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是"
+								sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条maat配置成功,配置id是"
 										+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
 								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 验证数据是否在正确
-						maatTestServiceimpl.getKeys(configCompileList);
-						map.put(service, "http://127.0.0.1:8080/galaxy/service/cfg/v1/testDelMaat?serviceType="
+						maatTestServiceimpl.getMaatKeys(configCompileList);
+						map.put(service, "http://127.0.0.1:8080/galaxy/service/test/cfg/v1/testDelMaat?serviceType="
 								+ service + "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
 						testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service);
 					} else {
@@ -485,19 +199,13 @@ public class MaatTestController {
 			}
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			String exceptionMsg = ExceptionUtil.getExceptionMsg(e);
+			logger.error(exceptionMsg);
+			FileUtils.addStrToFile(
+					sdf.format(new Date()) + "\t" + "error:添加业务类型" + service + "下的maat配置失败,失败原因:" + exceptionMsg + "\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
 			map.put(-4, "error");
 		}
-		
-
-
-		
-		
-		
-		
-		
-		
 		return map;
 	}
 
@@ -625,6 +333,7 @@ public class MaatTestController {
 	private ConfigGroupRelation getConfigGroupRelation(long compileId) {
 		ConfigGroupRelation group = new ConfigGroupRelation();
 		group.setCompileId(compileId);
+
 		group.setGroupId(configRedisService.getIncrId("SEQ_GROUPID"));
 		group.setIsValid(1);
 		group.setOpTime(new Date());
@@ -694,4 +403,204 @@ public class MaatTestController {
 
 	}
 
+	@RequestMapping(value = "/cfg/v1/testSaveUnMaat", method = RequestMethod.GET)
+	@ApiOperation(value = "测试批量保存unmaat配置", httpMethod = "GET", response = Map.class, notes = "测试批量保存unmaat配置,service需要保存的业务类型,service为-1表示下发所有unmaat类配置,saveCount为每类配置下发的条数")
+	@ApiParam(value = "测试批量保存unmaat配置", name = "测试批量删除unmaat配置", required = true)
+	public Map testSaveUnMaat(@RequestParam(required = true) Integer service,
+			@RequestParam(required = true) Integer saveCount, HttpServletRequest request,
+			HttpServletResponse response) {
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		try {
+			if (service == -1) {
+				Map<Integer, String> unMaatSercieNameMap = ServiceAndRDBIndexReal.getUnMaatSercieNameMap();
+				if (unMaatSercieNameMap != null && unMaatSercieNameMap.size() > 0) {
+					Set<Integer> keySet = unMaatSercieNameMap.keySet();
+					for (Integer ser : keySet) {
+						getUnMaatStr(ser, saveCount, map);
+					}
+				}
+			} else {
+				getUnMaatStr(service, saveCount, map);
+			}
+		} catch (Exception e) {
+			String exceptionMsg = ExceptionUtil.getExceptionMsg(e);
+			logger.error(exceptionMsg);
+
+			FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:添加业务类型" + service + "下的unMaat类配置失败,失败原因:"
+					+ exceptionMsg + "\n", Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+			map.put(-4, "error");
+		}
+		return map;
+	}
+
+	@RequestMapping(value = "/cfg/v1/testDelUnMaat", method = RequestMethod.GET)
+	@ApiOperation(value = "测试批量删除unmaat配置", httpMethod = "GET", response = String.class, notes = "测试批量删除unmaat配置,configId为配置id,多个配置id用逗号分隔")
+	@ApiParam(value = "测试批量删除unmaat配置", name = "testDelMaat", required = true)
+	public String testDelUnMaat(@RequestParam(required = true) String configId,
+			@RequestParam(required = true) Integer serviceType) {
+		String[] configArr = null;
+		if (configId.contains(",")) {
+			configArr = configId.split(",");
+		} else {
+			configArr = new String[1];
+			configArr[0] = configId;
+		}
+		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
+		for (String id : configArr) {
+			if (compileMap.containsKey(serviceType)) {
+				compileMap.get(serviceType).add(Long.valueOf(id.trim()));
+			} else {
+				List<Long> idList = new ArrayList<Long>();
+				idList.add(Long.valueOf(id.trim()));
+				compileMap.put(serviceType, idList);
+			}
+		}
+		FileUtils.addStrToFile(
+				sdf.format(new Date()) + "\t" + "开始删除业务类型" + serviceType + "下的unmaat类配置" + configId + "\n",
+				Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
+		Iterator<Integer> serviceIterator = compileMap.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (restMap.containsKey(dbIndex)) {
+						restMap.get(dbIndex).put(service, compileMap.get(service));
+					} else {
+						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+						map.put(service, compileMap.get(service));
+						restMap.put(dbIndex, map);
+					}
+				}
+			} else {
+				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:获取业务类型" + service + "对应的redisDb失败\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+				return "error";
+			}
+		}
+		try {
+			if (!configRedisService.delUnMaatConfig(restMap, true)) {
+				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的unmaat类配置"
+						+ configId + "失败\n", Configurations.getStringProperty("maatTestLogPath", ""), true);
+				return "error";
+			} else {
+				FileUtils.addStrToFile(
+						sdf.format(new Date()) + "\t" + "删除业务类型" + serviceType + "下的unmaat类配置" + configId + "成功\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+			}
+		} catch (Exception e) {
+			String exceptionMsg = ExceptionUtil.getExceptionMsg(e);
+			logger.error(exceptionMsg);
+			FileUtils
+					.addStrToFile(
+							sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的unMaat类配置" + configId
+									+ "失败,失败原因:" + exceptionMsg + "\n",
+							Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+			return "error";
+		}
+		return "ok";
+	}
+
+	/**
+	 * 组装json串,然后下发配置,在验证配置是否正确,然后删除配置
+	 * @param service
+	 * @param saveCount
+	 * @param map
+	 */
+	private void getUnMaatStr(Integer service, Integer saveCount, Map<Integer, String> map) {
+		try {
+			ArrayList<Long> compileIdList = new ArrayList<Long>();
+			List<CommonSourceFieldCfg> commonSourceFieldCfgList = ReadCommSourceXmlUtil
+					.getCommonSourceCfgByService(service.toString());
+			if (commonSourceFieldCfgList != null && commonSourceFieldCfgList.size() > 0) {
+				StringBuffer jsonString = new StringBuffer();
+				jsonString.append("[");
+				for (int i = 0; i < saveCount; i++) {
+					jsonString.append("{");
+					for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
+						String fieldType = commonSourceFieldCfg.getFieldType();
+						String srcName = commonSourceFieldCfg.getSrcName();
+						jsonString.append("\"");
+						jsonString.append(srcName);
+						jsonString.append("\":");
+						if (fieldType.equals("String")) {
+							if (srcName.toLowerCase().equals("service")) {
+								jsonString.append("\"" + service + "\"");
+							} else if (srcName.toLowerCase().equals("dstfile")) {
+								jsonString.append(
+										"\"http://10.0.6.249/group1/M00/00/02/CgAG-VtziqWAIzafAAITEbfJ8Zw992.jpg\"");
+							} else {
+								jsonString.append("\"" + UUID.randomUUID() + "\"");
+							}
+						} else if (fieldType.equals("Number")) {
+							if (srcName.toLowerCase().equals("addrtype")) {
+								jsonString.append("4");
+							} else if (srcName.toLowerCase().equals("action")) {
+								jsonString.append(ServiceAndRDBIndexReal.getActionByService(service));
+							} else if (srcName.toLowerCase().equals("protocol")) {
+								jsonString.append("0");
+							} else if (srcName.toLowerCase().equals("direction")) {
+								jsonString.append("0");
+							} else if (srcName.toLowerCase().equals("location")) {
+								jsonString.append("1");
+							} else if (srcName.toLowerCase().equals("isvalid")) {
+								jsonString.append("1");
+							} else if (srcName.toLowerCase().equals("cfgid")) {
+								Long incrId = configRedisService.getIncrId("seq_compileid");
+								compileIdList.add(incrId);
+								jsonString.append(incrId);
+							} else {
+								if (commonSourceFieldCfg.getDefaultVal() != null) {
+									jsonString.append(commonSourceFieldCfg.getDefaultVal());
+								} else {
+									jsonString.append(System.currentTimeMillis());
+								}
+							}
+						} else if (fieldType.equals("IP")) {
+							if (srcName.toLowerCase().equals("srcip")) {
+								jsonString.append("\"1.1.1.1\"");
+							} else {
+								jsonString.append("\"2.2.2.2\"");
+							}
+						} else if (fieldType.equals("Port")) {
+							jsonString.append("\"80\"");
+						} else if (fieldType.equals("Date")) {
+							jsonString.append("\"" + sdf.format(new Date()) + "\"");
+						}
+						jsonString.append(",");
+					}
+					String str = jsonString.substring(0, jsonString.lastIndexOf(","));
+					jsonString.setLength(0);
+					jsonString.append(str);
+					jsonString.append("},");
+				}
+				String jsonStr = jsonString.substring(0, jsonString.lastIndexOf(","));
+				jsonStr += "]";
+				map.put(service, "http://127.0.0.1:8080/galaxy/service/test/cfg/v1/testDelUnMaat?serviceType=" + service
+						+ "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
+				configSourcesService.saveCommonSources(null, -1, jsonStr);
+				FileUtils.addStrToFile(
+						sdf.format(new Date()) + "\t" + "业务类型" + service + "添加" + saveCount + "条数据成功,配置id是"
+								+ compileIdList + "\n" + sdf.format(new Date()) + "\t开始验证添加的数据各字段是否正确\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+
+				// 验证数据是否在正确
+				maatTestServiceimpl.getUnMaatKeys(jsonStr, service);
+				// 删除配置
+				testDelUnMaat(compileIdList.toString().replace("[", "").replace("]", ""), service);
+			}
+		} catch (Exception e) {
+			String exceptionMsg = ExceptionUtil.getExceptionMsg(e);
+			logger.error(exceptionMsg);
+			FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:添加业务类型" + service + "下的unMaat类配置失败,失败原因:"
+					+ exceptionMsg + "\n", Configurations.getStringProperty("maatTestLogPath", ""), true);
+			map.put(-4, "error");
+		}
+
+	}
 }
