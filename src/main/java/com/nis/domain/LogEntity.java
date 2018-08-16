@@ -82,8 +82,12 @@ public abstract class LogEntity<T> implements Serializable {
 	protected String sAsn;
 	@ApiModelProperty(value = "服务端ASN", required = true)
 	protected String dAsn;
-	@ApiModelProperty(value = "用户名", required = true)
-	protected String subscribeId;
+	@ApiModelProperty(value = "客户端用户名", required = true)
+	protected String sSubscribeId;
+	@ApiModelProperty(value = "服务器用户名", required = true)
+	protected String dSubscribeId;
+	@ApiModelProperty(value = "现场日志文件地址", required = true)
+	protected String sceneFile;
 	
 	protected String searchCfgId;//配置id
 	protected String searchTransProto;//协议类型
@@ -482,15 +486,40 @@ public abstract class LogEntity<T> implements Serializable {
 		return dAsn;
 	}
 	/**
-	 * @param subscribeId the subscribeId to set
+	 * @param sSubscribeId the sSubscribeId to set
 	 */
-	public void setSubscribeId(String subscribeId) {
-		this.subscribeId = subscribeId;
+	public void setsSubscribeId(String sSubscribeId) {
+		this.sSubscribeId = sSubscribeId;
 	}
 	/**
-	 * @return the subscribeId
+	 * @return the sSubscribeId
 	 */
-	public String getSubscribeId() {
-		return subscribeId;
+	public String getsSubscribeId() {
+		return sSubscribeId;
 	}
+	/**
+	 * @param dSubscribeId the dSubscribeId to set
+	 */
+	public void setdSubscribeId(String dSubscribeId) {
+		this.dSubscribeId = dSubscribeId;
+	}
+	/**
+	 * @return the dSubscribeId
+	 */
+	public String getdSubscribeId() {
+		return dSubscribeId;
+	}
+	/**
+	 * @param sceneFile the sceneFile to set
+	 */
+	public void setSceneFile(String sceneFile) {
+		this.sceneFile = sceneFile;
+	}
+	/**
+	 * @return the sceneFile
+	 */
+	public String getSceneFile() {
+		return sceneFile;
+	}
+	
 }

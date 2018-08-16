@@ -27,7 +27,19 @@ public class NtcHttpLog extends LogEntity {
     
     @ApiModelProperty(value="网站域名", required=true)
     protected String website;
+    
+    @ApiModelProperty(value="请求头转储文件KEY", required=true)
+    protected String reqHdrKey;
 
+    @ApiModelProperty(value="请求体转储文件KEY", required=true)
+    protected String reqBodyKey;
+    
+    @ApiModelProperty(value="应答头转储文件KEY", required=true)
+    protected String resHdrKey;
+
+    @ApiModelProperty(value="应答体转储文件KEY", required=true)
+    protected String resBodyKey;
+    
     public String getUrl() {
         return url;
     }
@@ -80,5 +92,37 @@ public class NtcHttpLog extends LogEntity {
 	 */
 	public String getWebsite() {
 		return website;
-	}	
+	}
+
+	public String getReqHdrKey() {
+		return reqHdrKey;
+	}
+
+	public void setReqHdrKey(String reqHdrKey) {
+		this.reqHdrKey = reqHdrKey;
+	}
+
+	public String getReqBodyKey() {
+		return reqBodyKey;
+	}
+
+	public void setReqBodyKey(String reqBodyKey) {
+		this.reqBodyKey = reqBodyKey;
+	}
+
+	public String getResHdrKey() {
+		return resHdrKey;
+	}
+
+	public void setResHdrKey(String resHdrKey) {
+		this.resHdrKey = resHdrKey;
+	}
+
+	public String getResBodyKey() {
+		return resBodyKey;
+	}
+
+	public void setResBodyKey(String resBodyKey) {
+		this.resBodyKey = resBodyKey;
+	}
 }
