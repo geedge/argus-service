@@ -20,7 +20,7 @@ public class MmAvIpLog  extends LogEntity<MmAvIpLog> {
     @ApiModelProperty(value="封堵现场片段路径", required=true)
     protected String logUri;
     @ApiModelProperty(value="入口页面", required=true)
-    protected String refer;
+    protected String referer;
     @ApiModelProperty(value="有害级别", required=true)
     protected Integer level;
     @ApiModelProperty(value="封堵类型", required=true)
@@ -45,11 +45,11 @@ public class MmAvIpLog  extends LogEntity<MmAvIpLog> {
 	public void setLogUri(String logUri) {
 		this.logUri = logUri;
 	}
-	public String getRefer() {
-		return refer;
+	public String getReferer() {
+		return referer;
 	}
-	public void setRefer(String refer) {
-		this.refer = refer;
+	public void setReferer(String referer) {
+		this.referer = referer;
 	}
 	public Integer getLevel() {
 		return level;
