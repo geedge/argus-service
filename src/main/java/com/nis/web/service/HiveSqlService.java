@@ -2,7 +2,10 @@ package com.nis.web.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
@@ -26,9 +30,21 @@ import com.nis.util.redis.SaveRedisThread;
 
 public class HiveSqlService {
 	private final static Logger logger = LoggerFactory.getLogger(HiveSqlService.class);
+	static DruidDataSource datasource = null;
+	Connection conn = null;
+	ResultSet rs = null;
+	Statement st = null;
+
+	public static Connection getConnection() throws SQLException {
+		if (datasource == null) {
+			datasource = (DruidDataSource) SpringContextHolder.getBean("HiveDataSourceByDruid");
+		}
+		return datasource.getConnection();
+	}
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
-	public static ResultSet getResultSet(Page page, Object bean, String tableName,
+	
+	public static String getSql(Page page, Object bean, String tableName,
 			Map<String, Map<String, String>> col2col, String orderBy, String searchActiveSys) throws Exception {
 		tableName = tableName.toLowerCase();
 		String showColmun = getFiledsSql(bean.getClass().getSimpleName(), page.getFields());
@@ -132,10 +148,7 @@ public class HiveSqlService {
 		// row_Num between " + startNum + " and " + endNum);
 		sql.append("  limit " + Constants.EVERY_GETHIVEDATANUM);
 		logger.info("获取数据中心日志sql==================={}", sql);
-		// ResultSet query = HiveJDBC.query(sql.toString());
-		ResultSet query = HiveDataSource.query(sql.toString());
-		logger.info("获取数据中心日志成功");
-		return query;
+		return sql.toString();
 	}
 
 	public static Long getHivePageCount(Object bean, String countKey, String tableName,
@@ -444,7 +457,6 @@ public class HiveSqlService {
 
 	public static String getFiledsSql(String mapName, String fileds) throws Exception {
 		String[] fieldsColoumn = null;
-		String orderByStr = "";
 		// 所有字段名
 		List<String> columnList = new ArrayList<String>();
 		// 所有属性名
@@ -489,7 +501,7 @@ public class HiveSqlService {
 		return fileds;
 	}
 
-	public static Map<String, String> getFiledAndColumnMap(Class clazz) {
+	public static Map<String, String> getFiledAndColumnMap(Class<?> clazz) {
 		Map<String, String> map = new HashMap<String, String>();
 		SqlSessionFactory sqlSessionFactory = SpringContextHolder.getBean(SqlSessionFactory.class);
 		ResultMap resultMap = sqlSessionFactory.getConfiguration().getResultMap(clazz.getSimpleName() + "Map");
@@ -604,11 +616,5 @@ public class HiveSqlService {
 			return false;
 		}
 
-	}
-
-	public static void main(String[] args) {
-		Long datacenterTime = Constants.DATACENTER_TIME;
-		double doubleValue = datacenterTime.doubleValue();
-		System.out.println(doubleValue);
 	}
 }

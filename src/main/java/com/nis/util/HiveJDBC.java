@@ -40,24 +40,16 @@ public class HiveJDBC {
 	static {
 		try {
 			prop.load(Configurations.class.getResourceAsStream("/jdbc.properties"));
+			driverName = prop.getProperty("jdbc.hive.driver").trim();
+			url = prop.getProperty("jdbc.hive.url").trim();
+			username = prop.getProperty("jdbc.hive.username").trim();
+			password = prop.getProperty("jdbc.hive.password").trim();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static void getConn(String searchActiveSys) throws Exception {
-
-		if (null != searchActiveSys && searchActiveSys.equals("4")) {
-			driverName = prop.getProperty("jdbc.hiveA.driver").trim();
-			url = prop.getProperty("jdbc.hiveA.url").trim();
-			username = prop.getProperty("jdbc.hiveA.username").trim();
-			password = prop.getProperty("jdbc.hiveA.password").trim();
-		} else {
-			driverName = prop.getProperty("jdbc.hiveB.driver").trim();
-			url = prop.getProperty("jdbc.hiveB.url").trim();
-			username = prop.getProperty("jdbc.hiveB.username").trim();
-			password = prop.getProperty("jdbc.hiveB.password").trim();
-		}
+	public static void getConn() throws Exception {
 		Class.forName(driverName);
 		conn = DriverManager.getConnection(url, username, password);
 
@@ -65,7 +57,7 @@ public class HiveJDBC {
 
 	public static ResultSet query(String sql, String searchActiveSys) throws Exception {
 		logger.info("开始连接数据中心日志库--------------------------");
-		getConn(searchActiveSys);
+		getConn();
 		logger.info("连接数据中心日志库成功--------------------------");
 		st = conn.createStatement();
 		if (null != searchActiveSys && searchActiveSys.equals("4")) {
@@ -135,15 +127,15 @@ public class HiveJDBC {
 		Map<String, String> filedAndColumnMap = getColumn2FiledMap(entityClass);
 		List<String> listString = new ArrayList<String>();
 		List listObject = new ArrayList();
-		//不从Object... obj中获取需要date类型的字段了,调用的时候容易漏写,改为反射获取date类型的字段
-		List<String> columnList =getDateColumn(entityClass); 
-//		List<String> columnList =null; 
-//		if (null != obj && obj.length > 0) {
-//			columnList = new ArrayList<String>();
-//			for (int i = 0; i < obj.length; i++) {
-//				columnList.add(obj[i].toString().toLowerCase());
-//			}
-//		}
+		// 不从Object... obj中获取需要date类型的字段了,调用的时候容易漏写,改为反射获取date类型的字段
+		List<String> columnList = getDateColumn(entityClass);
+		// List<String> columnList =null;
+		// if (null != obj && obj.length > 0) {
+		// columnList = new ArrayList<String>();
+		// for (int i = 0; i < obj.length; i++) {
+		// columnList.add(obj[i].toString().toLowerCase());
+		// }
+		// }
 		// ResultSet rs = HiveJDBC.query(sql.toString());
 		ResultSetMetaData metaData = rs.getMetaData();
 		while (rs.next()) {
@@ -152,11 +144,11 @@ public class HiveJDBC {
 				Object value = rs.getObject(i);
 				String filedName = filedAndColumnMap.get(metaData.getColumnName(i).toString().toLowerCase());
 				if (!StringUtil.isEmpty(value)) {
-					//如果是日期类型的属性需要把时间戳转换成日期，如果时间戳为0直接把值设置为null
+					// 如果是日期类型的属性需要把时间戳转换成日期，如果时间戳为0直接把值设置为null
 					if (null != columnList && columnList.contains(filedName.toLowerCase())) {
 						long time = 0l;
 						time = Long.parseLong(value.toString());
-						map.put(filedName, time==0l?null:new Date(time * 1000));
+						map.put(filedName, time == 0l ? null : new Date(time * 1000));
 						// map.put(filedName, new
 						// Date(Long.parseLong("1476583810000")));
 					} else {
