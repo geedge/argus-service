@@ -1,6 +1,5 @@
 package com.nis.web.controller.restful;
 
-import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.util.HiveJDBC;
+import com.nis.util.HiveJDBCByDruid;
 import com.nis.util.JsonMapper;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
@@ -83,10 +82,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmAvIpLog,
+			String sql = HiveSqlService.getSql(page, mmAvIpLog,
 					Configurations.getStringProperty(MmAvIpLog.class.getSimpleName() + "HiveTable", "MM_AV_IP_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmAvIpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmAvIpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -136,10 +135,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmAvUrlLog,
+			String sql = HiveSqlService.getSql(page, mmAvUrlLog,
 					Configurations.getStringProperty(MmAvUrlLog.class.getSimpleName() + "HiveTable", "MM_AV_URL_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmAvUrlLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmAvUrlLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -189,10 +188,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmPicIpLog,
+			String sql = HiveSqlService.getSql(page, mmPicIpLog,
 					Configurations.getStringProperty(MmPicIpLog.class.getSimpleName() + "HiveTable", "MM_PIC_IP_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmPicIpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmPicIpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -242,10 +241,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmPicUrlLog,
+			String sql = HiveSqlService.getSql(page, mmPicUrlLog,
 					Configurations.getStringProperty(MmPicUrlLog.class.getSimpleName() + "HiveTable", "MM_PIC_URL_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmPicUrlLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmPicUrlLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -296,10 +295,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmVoipIpLog,
+			String sql = HiveSqlService.getSql(page, mmVoipIpLog,
 					Configurations.getStringProperty(MmVoipIpLog.class.getSimpleName() + "HiveTable", "MM_VOIP_IP_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmVoipIpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmVoipIpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -349,10 +348,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmVoipLog,
+			String sql = HiveSqlService.getSql(page, mmVoipLog,
 					Configurations.getStringProperty(MmVoipAccountLog.class.getSimpleName() + "HiveTable", "MM_VOIP_ACCOUNT_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmVoipAccountLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmVoipAccountLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -403,10 +402,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmSampleAudioLog,
+			String sql = HiveSqlService.getSql(page, mmSampleAudioLog,
 					Configurations.getStringProperty(MmSampleAudioLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_AUDIO_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSampleAudioLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmSampleAudioLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -456,10 +455,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmSampleVideoLog,
+			String sql = HiveSqlService.getSql(page, mmSampleVideoLog,
 					Configurations.getStringProperty(MmSampleVideoLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_VIDEO_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSampleVideoLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmSampleVideoLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -509,10 +508,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmPornAudioLevelLog,
+			String sql = HiveSqlService.getSql(page, mmPornAudioLevelLog,
 					Configurations.getStringProperty(MmPornAudioLevelLog.class.getSimpleName() + "HiveTable", "MM_PORN_AUDIO_LEVEL_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmPornAudioLevelLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmPornAudioLevelLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -562,10 +561,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmPornVideoLevelLog,
+			String sql = HiveSqlService.getSql(page, mmPornVideoLevelLog,
 					Configurations.getStringProperty(MmPornVideoLevelLog.class.getSimpleName() + "HiveTable", "MM_PRON_VIDEO_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmPornVideoLevelLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmPornVideoLevelLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -616,10 +615,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmSamplePicLog,
+			String sql = HiveSqlService.getSql(page, mmSamplePicLog,
 					Configurations.getStringProperty(MmSamplePicLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_PIC_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSamplePicLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmSamplePicLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -669,10 +668,10 @@ public class MmLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, mmSampleVoipLog,
+			String sql = HiveSqlService.getSql(page, mmSampleVoipLog,
 					Configurations.getStringProperty(MmSampleVoipLog.class.getSimpleName() + "HiveTable", "MM_SAMPLE_VOIP_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, MmSampleVoipLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, MmSampleVoipLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
