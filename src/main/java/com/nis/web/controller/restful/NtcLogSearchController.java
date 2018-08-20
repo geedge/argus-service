@@ -869,10 +869,12 @@ public class NtcLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			ResultSet rs = HiveSqlService.getResultSet(page, ntcP2pLog,
+			
+			String sql = HiveSqlService.getSql(page, ntcP2pLog,
 					Configurations.getStringProperty(NtcP2pLog.class.getSimpleName() + "HiveTable", "ntc_p2p_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcP2pLog.class, "foundTime",
+			
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcP2pLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcP2pLogPage.setList(new ArrayList());
