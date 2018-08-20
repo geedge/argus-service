@@ -67,7 +67,19 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT CFG_ID, SERVICE, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_PZ_REPORT 
+			FROM 
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_PZ_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_PZ_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_PZ_REPORT 
+			</otherwise>
+		</choose>	
+			
 		<where>
 			<if test="searchCfgId != null and searchCfgId !=''">
 				<![CDATA[AND CFG_ID in (${searchCfgId})]]>
@@ -82,16 +94,28 @@
 				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 		</where>
-			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
-			GROUP BY CFG_ID,SERVICE
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 1 ">
+				GROUP BY CFG_ID,SERVICE
 			)
-		</if>
-		<if test="searchBusinessType != null and searchBusinessType ==2">
-			GROUP BY CFG_ID,SERVICE,REPORT_TIME
+			</when>
+			<otherwise>
+				GROUP BY CFG_ID,SERVICE,REPORT_TIME
 			)
-		</if>
-		NTC_PZ_REPORT
+			</otherwise>
+		</choose>	
+		
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_PZ_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_PZ_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_PZ_REPORT 
+			</otherwise>
+		</choose>	
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -110,7 +134,19 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_SERVICE_REPORT 
+			FROM 
+			
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_SERVICE_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_SERVICE_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_SERVICE_REPORT 
+			</otherwise>
+		</choose>		
 		<where>
 			<if test="searchService != null and searchService !=''">
 				<![CDATA[AND SERVICE in (${searchService})]]>
@@ -123,11 +159,20 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,REPORT_TIME
 			)
-		</if>
-		NTC_SERVICE_REPORT
+		
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_SERVICE_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_SERVICE_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_SERVICE_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -148,7 +193,19 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE,TAG,SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_TAG_REPORT 
+			FROM
+			
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_TAG_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_TAG_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_TAG_REPORT 
+			</otherwise>
+		</choose>	
 		<where>
 			<if test="searchTag != null and searchTag !=''">
 				<![CDATA[AND TAG in (${searchTag})]]>
@@ -164,11 +221,19 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,TAG,REPORT_TIME
 			)
-		</if>
-		NTC_TAG_REPORT
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_TAG_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_TAG_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_TAG_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -189,7 +254,19 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE,ATTR_TYPE, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_ATTR_TYPE_REPORT 
+			FROM
+			
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_ATTR_TYPE_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_ATTR_TYPE_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_ATTR_TYPE_REPORT 
+			</otherwise>
+		</choose>
 		<where>
 			<if test="searchAttrType != null and searchAttrType !=''">
 				<![CDATA[AND ATTR_TYPE in (${searchAttrType})]]>
@@ -205,11 +282,20 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,ATTR_TYPE,REPORT_TIME
 			)
-		</if>
-		NTC_ATTR_TYPE_REPORT
+		
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_ATTR_TYPE_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_ATTR_TYPE_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_ATTR_TYPE_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -230,7 +316,18 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE,LWHH, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_LWHH_REPORT 
+			FROM
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_LWHH_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_LWHH_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_LWHH_REPORT 
+			</otherwise>
+		</choose>	
 		<where>
 			<if test="searchLwhh != null and searchLwhh !=''">
 				<![CDATA[AND LWHH in (${searchLwhh})]]>
@@ -246,11 +343,19 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,LWHH,REPORT_TIME
 			)
-		</if>
-		NTC_LWHH_REPORT
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_LWHH_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_LWHH_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_LWHH_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -270,7 +375,18 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE,SRC_PROVINCE,SRC_CITY, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_SRCIP_DOMESTIC_REPORT 
+			FROM
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_SRCIP_DOMESTIC_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_SRCIP_DOMESTIC_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_SRCIP_DOMESTIC_REPORT 
+			</otherwise>
+		</choose>
 		<where>
 			<if test="searchService != null and searchService !=''">
 				<![CDATA[AND SERVICE in (${searchService})]]>
@@ -283,11 +399,19 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,SRC_PROVINCE,SRC_CITY,REPORT_TIME
 			)
-		</if>
-		NTC_SRCIP_DOMESTIC_REPORT
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_SRCIP_DOMESTIC_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_SRCIP_DOMESTIC_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_SRCIP_DOMESTIC_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -308,7 +432,18 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE,DEST_COUNTRY, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_DESTIP_COUNTRY_REPORT 
+			FROM 
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_DESTIP_COUNTRY_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_DESTIP_COUNTRY_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_DESTIP_COUNTRY_REPORT 
+			</otherwise>
+		</choose>
 		<where>
 			<if test="searchService != null and searchService !=''">
 				<![CDATA[AND SERVICE in (${searchService})]]>
@@ -321,11 +456,19 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,DEST_COUNTRY,REPORT_TIME
 			)
-		</if>
-		NTC_DESTIP_COUNTRY_REPORT
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_DESTIP_COUNTRY_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_DESTIP_COUNTRY_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_DESTIP_COUNTRY_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}
@@ -346,7 +489,18 @@
 			</otherwise>
 		</choose>
 		FROM (SELECT SERVICE,ENTRANCE_ID, SUM(SUM) SUM ,REPORT_TIME
-			FROM NTC_ENTRANCE_REPORT 
+			FROM 
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_ENTRANCE_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_ENTRANCE_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_ENTRANCE_REPORT 
+			</otherwise>
+		</choose>
 		<where>
 		
 			<if test="searchEntrance != null and searchEntrance !=''">
@@ -363,11 +517,19 @@
 			</if>
 		</where>
 			
-		<if test="searchBusinessType != null and searchBusinessType ==1">
 			GROUP BY SERVICE,ENTRANCE_ID,REPORT_TIME
 			)
-		</if>
-		NTC_ENTRANCE_REPORT
+		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+				NTC_ENTRANCE_STAT_HOUR
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				NTC_ENTRANCE_STAT_DAILY
+			</when>
+			<otherwise>
+				NTC_ENTRANCE_REPORT 
+			</otherwise>
+		</choose>
 		<choose>
 			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
 				ORDER BY ${page.orderBy}

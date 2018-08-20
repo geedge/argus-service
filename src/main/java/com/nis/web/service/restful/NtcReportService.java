@@ -50,10 +50,9 @@ public class NtcReportService extends BaseLogService {
 			pageTotal.setCount(restList.size());
 			pageTotal.setList(restList);
 			return pageTotal;
-		} else if ("2".equals(entity.getSearchBusinessType())) {
+		} else{
 			return page;
 		}
-		return null;
 
 	}
 
