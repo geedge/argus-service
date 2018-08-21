@@ -60,17 +60,30 @@ public class ServiceAndRDBIndexReal {
 		if (unMaatService != null && !unMaatService.trim().equals("")) {
 			String[] split = unMaatService.split(";");
 			for (String str : split) {
-				String[] serviceAction = str.split(":");
-				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+//回调类删除action zdx20180821
+//				String[] serviceAction = str.split(":");
+//				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+//
+//				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+//				if (serviceType != null && !serviceType.trim().equals("")) {
+//					String[] typeArrs = serviceType.split(";");
+//					for (String typeStr : typeArrs) {
+//						String[] typeArr = typeStr.split(":");
+//						String tableNameArr[] = typeArr[1].split(",");
+//						for (String tableName : tableNameArr) {
+//							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
+//						}
+//					}
+//				}
 
-				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+				String serviceType = Configurations.getStringProperty(str, "");
 				if (serviceType != null && !serviceType.trim().equals("")) {
 					String[] typeArrs = serviceType.split(";");
 					for (String typeStr : typeArrs) {
 						String[] typeArr = typeStr.split(":");
 						String tableNameArr[] = typeArr[1].split(",");
 						for (String tableName : tableNameArr) {
-							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
+							unMaatSercieNameMap.put(Integer.parseInt(str), tableName.toUpperCase());
 						}
 					}
 				}

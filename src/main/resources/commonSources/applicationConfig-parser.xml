@@ -128,6 +128,33 @@
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
+	
+	<!-- #0x208	PXY 证书管理 520=0:PXY_OBJ_KEYRING -->
+	<t:commonSource serviceIds="520">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="keyringId" dstName="keyring_id"  isRequired="true" />
+		<t:field fieldType="String" srcName="keyringName" dstName="keyring_name"  isRequired="true"/>
+		<t:field fieldType="String" srcName="keyringType" dstName="keyring_type"  isRequired="true"/>
+		<t:field fieldType="String" srcName="privateKeyFile" dstName="private_key_file"  isRequired="true"/>
+		<t:field fieldType="String" srcName="publicKeyFile" dstName="public_key_file"  isRequired="true"/>
+		<t:field fieldType="String" srcName="expireAfter" dstName="expire_after"  isRequired="true"/>
+		<t:field fieldType="String" srcName="publicKeyAlgo" dstName="public_key_algo"  isRequired="true"/>
+		<t:field fieldType="Number" srcName="crl" dstName="crl" range="0-100" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	
+	<!-- # 0x260	PXY 管控文件策略 	608=0:PXY_OBJ_FILE -->
+	<t:commonSource serviceIds="608">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="fileId" dstName="file_id"  isRequired="true" />
+		<t:field fieldType="String" srcName="fileDesc" dstName="file_desc"  isRequired="true"/>
+		<t:field fieldType="String" srcName="contentType" dstName="content_type"  isRequired="true"/>
+		<t:field fieldType="Number" srcName="contentLength" dstName="content_length"  isRequired="true"/>
+		<t:field fieldType="String" srcName="filePath" dstName="file_path"  isRequired="true"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
 </t:commonSources>
 
 
