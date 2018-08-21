@@ -20,6 +20,7 @@ public class CommonSourceFieldCfg {
 	private String defaultVal;
 	private String regexp;
 	private Boolean isSrcInfo=false;
+	private Boolean isCfgId=false;
 	
 	public CommonSourceFieldCfg() {
 		super();
@@ -37,7 +38,7 @@ public class CommonSourceFieldCfg {
 	 */
 	public CommonSourceFieldCfg(String fieldType, String srcName,
 			String dstName, String range, Boolean isRequired,
-			String defaultVal, String regexp,Boolean isSrcInfo) {
+			String defaultVal, String regexp,Boolean isSrcInfo,Boolean isCfgId) {
 		super();
 		this.fieldType = fieldType;
 		this.srcName = srcName;
@@ -47,6 +48,7 @@ public class CommonSourceFieldCfg {
 		this.defaultVal = defaultVal;
 		this.regexp = regexp;
 		this.isSrcInfo = isSrcInfo;
+		this.isCfgId = isCfgId;
 	}
 
 	public String getSrcName() {
@@ -117,4 +119,19 @@ public class CommonSourceFieldCfg {
 	public void setIsSrcInfo(Boolean isSrcInfo) {
 		this.isSrcInfo = isSrcInfo;
 	}
+	
+	/**
+	 * @return the isCfgId
+	 */
+	public Boolean getIsCfgId() {
+		return isCfgId;
+	}
+	
+	/**
+	 * @param isCfgId the isCfgId to set
+	 */
+	public void setIsCfgId(Boolean isCfgId) {
+		this.isCfgId = isCfgId;
+	}
+	
 }

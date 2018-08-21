@@ -14,7 +14,7 @@
 	<t:commonSource serviceIds="3,4,25,28,5">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
 		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="^([4|6]{1})|46|64|10$"/>
 		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true" isSrcInfo="true"/>
 		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true" isSrcInfo="true"/>
@@ -42,7 +42,7 @@
 	<t:commonSource serviceIds="261,262,263,264,389,390,391,392,1025">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="String" srcName="dstFile" dstName="dst_file"  isRequired="true"/>
 		<t:field fieldType="String" srcName="dstFileMd5" dstName="dst_file_md5"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="level" dstName="level" range="0-100" defaultVal="0"/>
@@ -59,7 +59,7 @@
 	<t:commonSource serviceIds="265,266,393,394">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="String" srcName="description" dstName="description"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="level" dstName="level" range="0-100" defaultVal="0"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
@@ -70,7 +70,7 @@
 	<t:commonSource serviceIds="832">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="Number" srcName="policyGroup" dstName="policy_group" isRequired="true"/>
 		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
 		<t:field fieldType="Number" srcName="protocol" dstName="protocol" isRequired="true" defaultVal="0"/>
@@ -88,7 +88,7 @@
 	<t:commonSource serviceIds="64">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="Number" srcName="policyGroup" dstName="policy_group" isRequired="true" defaultVal="0"/>
 		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="^([4|6]{1})|46|64|10$"/>
 		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true" isSrcInfo="true"/>
@@ -110,7 +110,7 @@
 	<t:commonSource serviceIds="65">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="Number" srcName="reqStrateId" dstName="req_strate_id" isRequired="true" regexp="[0]|[1-9]+[0-9]{2,}"/>
 		<t:field fieldType="String" srcName="strateName" dstName="strate_name" isRequired="true"/>
 		<t:field fieldType="Number" srcName="resGroup1Id" dstName="res_group_1_id" defaultVal="0"/>
@@ -132,14 +132,14 @@
 	<!-- #0x208	PXY 证书管理 520=0:PXY_OBJ_KEYRING -->
 	<t:commonSource serviceIds="520">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
-		<t:field fieldType="Number" srcName="keyringId" dstName="keyring_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="keyringId" dstName="keyring_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="String" srcName="keyringName" dstName="keyring_name"  isRequired="true"/>
 		<t:field fieldType="String" srcName="keyringType" dstName="keyring_type"  isRequired="true"/>
 		<t:field fieldType="String" srcName="privateKeyFile" dstName="private_key_file"  isRequired="true"/>
 		<t:field fieldType="String" srcName="publicKeyFile" dstName="public_key_file"  isRequired="true"/>
-		<t:field fieldType="String" srcName="expireAfter" dstName="expire_after"  isRequired="true"/>
+		<t:field fieldType="String" srcName="expireAfter" dstName="expire_after"  defaultVal="30" isRequired="true"/>
 		<t:field fieldType="String" srcName="publicKeyAlgo" dstName="public_key_algo"  isRequired="true"/>
-		<t:field fieldType="Number" srcName="crl" dstName="crl" range="0-100" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="crl" dstName="crl" defaultVal=""/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
@@ -147,7 +147,7 @@
 	<!-- # 0x260	PXY 管控文件策略 	608=0:PXY_OBJ_FILE -->
 	<t:commonSource serviceIds="608">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
-		<t:field fieldType="Number" srcName="fileId" dstName="file_id"  isRequired="true" />
+		<t:field fieldType="Number" srcName="fileId" dstName="file_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="String" srcName="fileDesc" dstName="file_desc"  isRequired="true"/>
 		<t:field fieldType="String" srcName="contentType" dstName="content_type"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="contentLength" dstName="content_length"  isRequired="true"/>

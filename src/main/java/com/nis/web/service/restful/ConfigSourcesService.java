@@ -697,7 +697,15 @@ public class ConfigSourcesService extends BaseService {
 			checkOptForUpdate(srcMap);
 			validIdMap.put(srcMap.get("isValid").toString(), srcMap.get("isValid").toString());
 			Integer service = Integer.valueOf(srcMap.get("service").toString());
-			Long cfgId = Long.valueOf(srcMap.get("cfgId").toString());
+			
+			List<CommonSourceFieldCfg> list = ReadCommSourceXmlUtil.getCommonSourceCfgByService(service+"");
+			String srcName="cfgId";
+			for (CommonSourceFieldCfg commonSourceFieldCfg : list) {
+				if (commonSourceFieldCfg.getIsCfgId()) {
+					srcName = commonSourceFieldCfg.getSrcName();
+				}
+			}
+			Long cfgId = Long.valueOf(srcMap.get(srcName).toString());
 			if (cfgMap.containsKey(service)) {
 				cfgMap.get(service).add(cfgId);
 			} else {
@@ -736,7 +744,8 @@ public class ConfigSourcesService extends BaseService {
 			configRedisService.delUnMaatConfig(restMap,validIdMap.containsKey("0")?true:false);
 		} catch (Exception e) {
 			// TODO: handle exception
-			throw new ServiceRuntimeException(RestBusinessCode.service_runtime_error.getErrorReason(),RestBusinessCode.service_runtime_error.getValue());
+			throw e;
+			//throw new ServiceRuntimeException(RestBusinessCode.service_runtime_error.getErrorReason(),RestBusinessCode.service_runtime_error.getValue());
 		}
 	}
 
@@ -749,25 +758,31 @@ public class ConfigSourcesService extends BaseService {
 	 * @throws Exception
 	 */
 	private void checkOptForUpdate(Map<String, Object> srcMap) throws Exception{
-		String cfgId = srcMap.get("cfgId").toString();
-		String service = srcMap.get("service").toString();
-		String isValid = srcMap.get("isValid").toString();
-		if (StringUtil.isEmpty(cfgId)) {
-			throw new RestServiceException(RestBusinessCode.CfgIdIsNull.getErrorReason(),RestBusinessCode.CfgIdIsNull.getValue());
-		} else if (!StringUtil.isNumeric(cfgId)) {
-			throw new RestServiceException("cfgId字段格式不正确,"+RestBusinessCode.MastNumberic.getErrorReason(),RestBusinessCode.MastNumberic.getValue());
-		}
+		Object service = srcMap.get("service");
+		Object isValid = srcMap.get("isValid");
 
 		if (StringUtil.isEmpty(service)) {
 			throw new RestServiceException(RestBusinessCode.ServiceIsNull.getErrorReason(),RestBusinessCode.ServiceIsNull.getValue());
-		} else if (!StringUtil.isNumeric(service)) {
+		} else if (!StringUtil.isNumeric(service.toString())) {
 			throw new RestServiceException("service字段格式不正确,"+RestBusinessCode.MastNumberic.getErrorReason(),RestBusinessCode.MastNumberic.getValue());
 		}
-
+		List<CommonSourceFieldCfg> list = ReadCommSourceXmlUtil.getCommonSourceCfgByService(service+"");
+		String srcName="cfgId";
+		for (CommonSourceFieldCfg commonSourceFieldCfg : list) {
+			if (commonSourceFieldCfg.getIsCfgId()) {
+				srcName = commonSourceFieldCfg.getSrcName();
+			}
+		}
+		Object cfgId = srcMap.get(srcName);
+		if (StringUtil.isEmpty(cfgId)) {
+			throw new RestServiceException(RestBusinessCode.CfgIdIsNull.getErrorReason(),RestBusinessCode.CfgIdIsNull.getValue());
+		} else if (!StringUtil.isNumeric(cfgId.toString())) {
+			throw new RestServiceException("cfgId字段格式不正确,"+RestBusinessCode.MastNumberic.getErrorReason(),RestBusinessCode.MastNumberic.getValue());
+		}
 		if (StringUtil.isEmpty(isValid)) {
 			throw new RestServiceException("配置id为" + srcMap.get("cfgId") + "的isValid字段不能为空",RestBusinessCode.IsValidIsNull.getValue());
 		} else {
-			if (!StringUtil.isNumeric(service)) {
+			if (!StringUtil.isNumeric(service.toString())) {
 				throw new RestServiceException(RestBusinessCode.IsValidInWrongRange.getErrorReason(),RestBusinessCode.IsValidInWrongRange.getValue());
 			}
 			//配置取消改为状态更新（停/启用）

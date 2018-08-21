@@ -15,6 +15,12 @@
 											</xs:documentation>
 										</xs:annotation>
 									</xs:attribute>
+									<xs:attribute name="isCfgId" type="xs:boolean">
+										<xs:annotation>
+											<xs:documentation><![CDATA[是否对应CfgId字段]]>
+											</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
 									<xs:attribute name="dstName" type="xs:string" use="required">
 										<xs:annotation>
 											<xs:documentation><![CDATA[目的字段名，需要传给服务接口中的Key]]>
