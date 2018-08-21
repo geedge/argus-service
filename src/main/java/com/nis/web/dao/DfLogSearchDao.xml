@@ -158,6 +158,7 @@
 		<result column="mail_from" jdbcType="VARCHAR" property="mailFrom" />
 		<result column="mail_to" jdbcType="VARCHAR" property="mailTo" />
 		<result column="subject" jdbcType="VARCHAR" property="subject" />
+		<result column="eml_key" jdbcType="VARCHAR" property="emlKey" />
 		<result column="eml_file" jdbcType="VARCHAR" property="emlFile" />
 	</resultMap>
 

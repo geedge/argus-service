@@ -18,6 +18,8 @@ public class NtcMailLog extends LogEntity{
     protected String mailTo;
     @ApiModelProperty(value="主题", required=true)
     protected String subject;
+    @ApiModelProperty(value="EML文件KEY", required=true)
+    protected String emlKey;
     @ApiModelProperty(value="EML文件转储路径", required=true)
     protected String emlFile;
 
@@ -60,4 +62,19 @@ public class NtcMailLog extends LogEntity{
     public void setEmlFile(String emlFile) {
         this.emlFile = emlFile;
     }
+    
+    /**
+	 * @return the emlKey
+	 */
+	public String getEmlKey() {
+		return emlKey;
+	}
+	
+	/**
+	 * @param emlKey the emlKey to set
+	 */
+	public void setEmlKey(String emlKey) {
+		this.emlKey = emlKey;
+	}
+	
 }
