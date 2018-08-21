@@ -147,17 +147,21 @@ public class ServiceAndRDBIndexReal {
 	}
 
 	public static void main(String[] args) {
-		getUnMaatTable();
+		// getUnMaatTable();
+		getMaatTable();
 	}
 
 	public static void getUnMaatTable() {
 		Map<Integer, String> typeTable = new HashMap<Integer, String>();
 
+		Map<String, String> map = new HashMap<String, String>();
 		String unMaatService = Configurations.getStringProperty("unMaatService", "");
 		if (unMaatService != null && !unMaatService.trim().equals("")) {
 			String[] split = unMaatService.split(";");
 			for (String str : split) {
 				String[] serviceAction = str.split(":");
+				String action = serviceAction[1];
+				map.put(serviceAction[0], action);
 				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
 				if (serviceType != null && !serviceType.trim().equals("")) {
 					String[] typeArrs = serviceType.split(";");
@@ -170,7 +174,7 @@ public class ServiceAndRDBIndexReal {
 							} else {
 								System.out.println();
 							}
-
+							map.put(serviceAction[0], action);
 							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
 						}
 					}
@@ -178,48 +182,35 @@ public class ServiceAndRDBIndexReal {
 			}
 		}
 		for (Integer service : typeTable.keySet()) {
-			List<MaatXmlExpr> expressionList = ReadMaatXmlUtil.getMaatConfigByService(service).getExpressionList();
-			for (MaatXmlExpr maatXmlExpr : expressionList) {
-				if (maatXmlExpr.getValueExpression() != null) {
-					String[] valSplit = maatXmlExpr.getValueExpression().split(";");
-					int a = 1;
-					for (int i = 0; i < valSplit.length; i++) {
-						if (valSplit[i].toLowerCase().contains("is_valid")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
-							System.out.println(service + "--" + typeTable.get(service) + "---" + a);
-						} else if (valSplit[i].toLowerCase().contains("[")) {
-							a++;
-						}
-					}
-				}
-
-			}
+			System.out.println(
+					"0x" + Integer.toHexString(service) + "--servie=" + service + "--table=" + typeTable.get(service)
+							+ "---redisDB=" + serviceDBIndexmap.get(service) + "--action=" + map.get(service.toString())
+							+ "--HexAction=0x" + Integer.toHexString(Integer.parseInt(map.get(service.toString()))));
 		}
 
 	}
 
 	public static void getMaatTable() {
 		Map<Integer, Set<String>> typeMap = new HashMap<Integer, Set<String>>();
-		String service = Configurations.getStringProperty("service", "");
-		if (service != null && !service.trim().equals("")) {
-			String[] split = service.split(";");
+		String serviceStr = Configurations.getStringProperty("service", "");
+		if (serviceStr != null && !serviceStr.trim().equals("")) {
+			String[] split = serviceStr.split(";");
 			for (String str : split) {
 				String[] serviceAction = str.split(":");
-				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+				Integer ser = Integer.parseInt(serviceAction[0]);
 				String type = Configurations.getStringProperty(serviceAction[0], "");
 				if (type != null && !type.trim().equals("")) {
-
 					String[] typeArrs = type.split(";");
 					for (String typeStr : typeArrs) {
 						String[] typeArr = typeStr.split(":");
-						int tableType = Integer.parseInt(typeArr[0]);
 						String tableNameArr[] = typeArr[1].split(",");
 						for (String tableName : tableNameArr) {
-							if (typeMap.containsKey(tableType)) {
-								typeMap.get(tableType).add(tableName.toUpperCase());
+							if (typeMap.containsKey(ser)) {
+								typeMap.get(ser).add(tableName.toUpperCase());
 							} else {
 								Set<String> list = new HashSet<String>();
 								list.add(tableName.toUpperCase());
-								typeMap.put(tableType, list);
+								typeMap.put(ser, list);
 							}
 						}
 					}
@@ -227,8 +218,16 @@ public class ServiceAndRDBIndexReal {
 
 			}
 		}
-		for (Integer type : typeMap.keySet()) {
-			System.out.println(type + "----" + typeMap.get(type));
+		if (serviceStr != null && !serviceStr.trim().equals("")) {
+			String[] split = serviceStr.split(";");
+			for (String str : split) {
+				String[] serviceAction = str.split(":");
+				Integer ser = Integer.parseInt(serviceAction[0]);
+				String action = serviceAction[1];
+				System.out.println("0x" + Integer.toHexString(ser) + "--servie=" + ser + "--table="
+						+ typeMap.get(ser) + "---redisDB=" + serviceDBIndexmap.get(ser) + "--action=" + action
+						+ "--HexAction=0x" + Integer.toHexString(Integer.parseInt(action)));
+			}
 		}
 	}
 
@@ -280,7 +279,7 @@ public class ServiceAndRDBIndexReal {
 						throw new ServiceRuntimeException("无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"
 								+ service + ",配置类型:" + type + "对应的真实表名", RestBusinessCode.NotFoundTableName.getValue());
 					}
-					
+
 				}
 			}
 
@@ -350,7 +349,5 @@ public class ServiceAndRDBIndexReal {
 	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
 		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
 	}
-	
-	
-	
+
 }

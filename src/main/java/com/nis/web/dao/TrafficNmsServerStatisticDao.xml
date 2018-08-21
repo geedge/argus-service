@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.TrafficNmsServerStatisticDao">
+
+
+
+	<insert id="insert" parameterType="trafficNmsServerStatistic"
+		useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		traffic_nmsserver_statistic(
+		commit_time ,
+		area ,
+		total ,
+		normal ,
+		abnormal
+		) VALUES (
+		#{commitTime},
+		#{area},
+		#{total},
+		#{normal},
+		#{abnormal}
+		)
+	</insert>
+
+	<insert id="delete" parameterType="trafficNmsServerStatistic"
+		useGeneratedKeys="true" keyProperty="id">
+		delete from
+		traffic_nmsserver_statistic
+		where id=#{id}
+	</insert>
+
+
+	<insert id="insertAbnormalMachine" parameterType="trafficNmsServerStatistic">
+		INSERT INTO traffic_abnormal_machine(
+		nmsserver_id ,
+		hostName ,
+		ip
+		)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+			(
+			#{nmsServerId},
+			#{item.hostName},
+			#{item.ip}
+			)
+		</foreach>
+	</insert>
+
+
+</mapper>
