@@ -1,6 +1,5 @@
 package com.nis.web.controller.restful;
 
-import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAppLog;
+import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcDdosLog;
 import com.nis.domain.restful.NtcDnsLog;
 import com.nis.domain.restful.NtcFtpLog;
@@ -36,7 +36,6 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.util.HiveJDBC;
 import com.nis.util.HiveJDBCByDruid;
 import com.nis.util.JsonMapper;
 import com.nis.web.controller.BaseRestController;
@@ -907,6 +906,67 @@ public class NtcLogSearchController extends BaseRestController {
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "P2P日志检索成功",
 				ntcP2pLogPage, 0);
+	}
+	
+	@RequestMapping(value = "/ntcBgpLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "BGP日志查询", httpMethod = "GET", notes = "对应配置为“其他-BGP”，存储动作为阻断和监测的命中日志。对日志功能“BGP日志”提供数据基础查询服务")
+	public Map<String, ?> ntcBgpLogs(Page page, NtcBgpLog ntcBgpLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<NtcBgpLog> ntcBgpLogPage = null;
+		try {
+			resetTime(ntcBgpLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcBgpLog, NtcBgpLog.class, page);
+			ntcBgpLogPage = new Page<NtcBgpLog>();
+			ntcBgpLogPage.setPageNo(page.getPageNo());
+			ntcBgpLogPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcBgpLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			
+			String sql = HiveSqlService.getSql(page, ntcBgpLog,
+					Configurations.getStringProperty(NtcBgpLog.class.getSimpleName() + "HiveTable", "ntc_bgp_log"),
+					getCol2Col(), orderBy, null);
+			
+			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcBgpLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				ntcBgpLogPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+//				if (tableMapping.get("obj").size() > page.getPageSize()) {
+//					list = tableMapping.get("obj").subList(0, page.getPageSize());
+//				} else {
+//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+//				}
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcBgpLog> List = (java.util.List<NtcBgpLog>) JsonMapper.fromJsonList(jsonString,
+							NtcBgpLog.class);
+					ntcBgpLogPage.setList(List);
+					ntcBgpLogPage.setCount(List.size());
+
+				} else {
+					ntcBgpLogPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "BGP日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "BGP日志检索成功",
+				ntcBgpLogPage, 0);
 	}
 		
 	/**
