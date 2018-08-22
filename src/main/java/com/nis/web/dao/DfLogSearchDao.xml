@@ -512,7 +512,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -546,7 +546,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -580,7 +580,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -614,7 +614,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -732,7 +732,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -767,7 +767,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -801,7 +801,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -835,7 +835,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -869,7 +869,7 @@
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
-		<result column="refer" jdbcType="VARCHAR" property="refer" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
 		<result column="level" jdbcType="INTEGER" property="level" />
 		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
