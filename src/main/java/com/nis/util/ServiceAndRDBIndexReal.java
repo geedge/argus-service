@@ -176,6 +176,8 @@ public class ServiceAndRDBIndexReal {
 		}
 	}
 
+	
+
 	public static void main(String[] args) {
 		// getUnMaatTable();
 		getMaatTable();
@@ -317,6 +319,19 @@ public class ServiceAndRDBIndexReal {
 		return null;
 
 	}
+	
+	/**
+	 * 判断service是否被分组复用 
+	 * @param service
+	 * @return
+	 */
+	public static Boolean serviceIsRepeated(Integer service) {
+		if (service != null) {
+			return serviceRepeatedRealSet.contains(service);
+		} else {
+		}	throw new ServiceRuntimeException("判断service是否是分组复用时发生了异常,异常原因:service=null", RestBusinessCode.ServiceIsNull.getValue());
+
+	}
 
 	/**
 	 * 根据业务类型获取unmaat配置表名
@@ -378,14 +393,6 @@ public class ServiceAndRDBIndexReal {
 
 	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
 		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
-	}
-
-	public static Set<Integer> getServiceRepeatedRealSet() {
-		return serviceRepeatedRealSet;
-	}
-
-	public static void setServiceRepeatedRealSet(Set<Integer> serviceRepeatedRealSet) {
-		ServiceAndRDBIndexReal.serviceRepeatedRealSet = serviceRepeatedRealSet;
 	}
 
 }
