@@ -10,7 +10,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nis.domain.MaatXmlExpr;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 
@@ -25,6 +24,11 @@ import com.nis.restful.ServiceRuntimeException;
  */
 public class ServiceAndRDBIndexReal {
 	private static Logger logger = LoggerFactory.getLogger(ServiceAndRDBIndexReal.class);
+	/**
+	 * 记录哪些service可以被分组复用(只有maat类配置可以被分组复用)
+	 */
+	private static Set<Integer> serviceRepeatedRealSet = new HashSet<Integer>();
+
 	/**
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
 	 */
@@ -60,21 +64,23 @@ public class ServiceAndRDBIndexReal {
 		if (unMaatService != null && !unMaatService.trim().equals("")) {
 			String[] split = unMaatService.split(";");
 			for (String str : split) {
-//回调类删除action zdx20180821
-//				String[] serviceAction = str.split(":");
-//				serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
-//
-//				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
-//				if (serviceType != null && !serviceType.trim().equals("")) {
-//					String[] typeArrs = serviceType.split(";");
-//					for (String typeStr : typeArrs) {
-//						String[] typeArr = typeStr.split(":");
-//						String tableNameArr[] = typeArr[1].split(",");
-//						for (String tableName : tableNameArr) {
-//							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
-//						}
-//					}
-//				}
+				// 回调类删除action zdx20180821
+				// String[] serviceAction = str.split(":");
+				// serviceActionMap.put(Integer.valueOf(serviceAction[0]),
+				// Integer.valueOf(serviceAction[1]));
+				//
+				// String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+				// if (serviceType != null && !serviceType.trim().equals("")) {
+				// String[] typeArrs = serviceType.split(";");
+				// for (String typeStr : typeArrs) {
+				// String[] typeArr = typeStr.split(":");
+				// String tableNameArr[] = typeArr[1].split(",");
+				// for (String tableName : tableNameArr) {
+				// unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]),
+				// tableName.toUpperCase());
+				// }
+				// }
+				// }
 
 				String serviceType = Configurations.getStringProperty(str, "");
 				if (serviceType != null && !serviceType.trim().equals("")) {
@@ -157,6 +163,17 @@ public class ServiceAndRDBIndexReal {
 				}
 			}
 		}
+
+		String serviceRepeatedReal = Configurations.getStringProperty("serviceRepeatedReal", "");
+		if (serviceRepeatedReal != null && !serviceRepeatedReal.trim().equals("")) {
+			String[] serviceRepeatedRealArr = serviceRepeatedReal.split(",");
+			for (String ser : serviceRepeatedRealArr) {
+				if (ser != null && !ser.trim().equals("")) {
+					serviceRepeatedRealSet.add(Integer.parseInt(ser));
+				}
+
+			}
+		}
 	}
 
 	public static void main(String[] args) {
@@ -237,9 +254,9 @@ public class ServiceAndRDBIndexReal {
 				String[] serviceAction = str.split(":");
 				Integer ser = Integer.parseInt(serviceAction[0]);
 				String action = serviceAction[1];
-				System.out.println("0x" + Integer.toHexString(ser) + "--servie=" + ser + "--table="
-						+ typeMap.get(ser) + "---redisDB=" + serviceDBIndexmap.get(ser) + "--action=" + action
-						+ "--HexAction=0x" + Integer.toHexString(Integer.parseInt(action)));
+				System.out.println("0x" + Integer.toHexString(ser) + "--servie=" + ser + "--table=" + typeMap.get(ser)
+						+ "---redisDB=" + serviceDBIndexmap.get(ser) + "--action=" + action + "--HexAction=0x"
+						+ Integer.toHexString(Integer.parseInt(action)));
 			}
 		}
 	}
@@ -361,6 +378,14 @@ public class ServiceAndRDBIndexReal {
 
 	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
 		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
+	}
+
+	public static Set<Integer> getServiceRepeatedRealSet() {
+		return serviceRepeatedRealSet;
+	}
+
+	public static void setServiceRepeatedRealSet(Set<Integer> serviceRepeatedRealSet) {
+		ServiceAndRDBIndexReal.serviceRepeatedRealSet = serviceRepeatedRealSet;
 	}
 
 }
