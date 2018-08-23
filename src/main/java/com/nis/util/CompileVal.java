@@ -132,7 +132,8 @@ public class CompileVal {
 				}
 			}
 		}
-
+		//只有分组复用的业务类型，域可以不埴写，其他的maat配置至少填写一个域配置
+		Boolean hasRegionFlag = false;
 		List<Long> regionGroupIdList = new ArrayList<Long>();// 所有域配置中groupId的集合,不重复
 		List<NumRegion> numRegionList = configCompile.getNumRegionList();
 		if (numRegionList == null) {
@@ -142,6 +143,7 @@ public class CompileVal {
 					RestBusinessCode.NumRegionIsNull.getValue());
 		}
 		if (numRegionList.size() > 0) {
+			hasRegionFlag = true;
 			for (NumRegion numRegion : numRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(numRegion.getGroupId())) {
@@ -194,6 +196,7 @@ public class CompileVal {
 					RestBusinessCode.StrRegionIsNull.getValue());
 		}
 		if (strRegionList != null && strRegionList.size() > 0) {
+			hasRegionFlag = true;
 			for (StrRegion strRegion : strRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(strRegion.getGroupId())) {
@@ -248,6 +251,7 @@ public class CompileVal {
 					RestBusinessCode.IpRegionIsNull.getValue());
 		}
 		if (ipRegionList != null && ipRegionList.size() > 0) {
+			hasRegionFlag = true;
 			for (IpRegion ipRegion : ipRegionList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
@@ -295,6 +299,7 @@ public class CompileVal {
 
 		// 验证
 		if (digestRegionList != null && digestRegionList.size() > 0) {
+			hasRegionFlag = true;
 			for (DigestRegion digestRegion : digestRegionList) {
 
 				// 不验证表名和业务类型是否对应
@@ -335,6 +340,7 @@ public class CompileVal {
 		List<IpRegion> ipClientRangeList = configCompile.getIpClientRangeList();
 
 		if (ipClientRangeList != null && ipClientRangeList.size() > 0) {
+			hasRegionFlag = true;
 			for (IpRegion ipRegion : ipClientRangeList) {
 				// if (configCompile.getIsValid() != 0 &&
 				// !regionGroupIdList.contains(ipRegion.getGroupId())) {
@@ -375,6 +381,10 @@ public class CompileVal {
 					serviceIpRegionVal(ipRegion, compileId, "ipClientRangeList");
 				}
 			}
+		}
+		
+		if (!hasRegionFlag&&!ServiceAndRDBIndexReal.serviceIsReuse(configCompile.getService())) {
+			throw new RestServiceException("配置id为" + configCompile.getCompileId() + "的业务类型属于分组复用，域配置信息不能全为空",RestBusinessCode.RegionListIsNull.getValue());
 		}
 	}
 

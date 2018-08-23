@@ -26,8 +26,9 @@ public class ServiceAndRDBIndexReal {
 	private static Logger logger = LoggerFactory.getLogger(ServiceAndRDBIndexReal.class);
 	/**
 	 * 记录哪些service可以被分组复用(只有maat类配置可以被分组复用)
+	 * Map<Service,Map<regionName,List<tableName>>
 	 */
-	private static Set<Integer> serviceRepeatedRealSet = new HashSet<Integer>();
+	private static Map<Integer,Map<String, List<String>>> serviceGroupReuseMap = new HashMap<Integer, Map<String,List<String>>>();
 
 	/**
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
@@ -64,35 +65,26 @@ public class ServiceAndRDBIndexReal {
 		if (unMaatService != null && !unMaatService.trim().equals("")) {
 			String[] split = unMaatService.split(";");
 			for (String str : split) {
-				// 回调类删除action zdx20180821
-				// String[] serviceAction = str.split(":");
-				// serviceActionMap.put(Integer.valueOf(serviceAction[0]),
-				// Integer.valueOf(serviceAction[1]));
-				//
-				// String serviceType = Configurations.getStringProperty(serviceAction[0], "");
-				// if (serviceType != null && !serviceType.trim().equals("")) {
-				// String[] typeArrs = serviceType.split(";");
-				// for (String typeStr : typeArrs) {
-				// String[] typeArr = typeStr.split(":");
-				// String tableNameArr[] = typeArr[1].split(",");
-				// for (String tableName : tableNameArr) {
-				// unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]),
-				// tableName.toUpperCase());
-				// }
-				// }
-				// }
-
-				String serviceType = Configurations.getStringProperty(str, "");
-				if (serviceType != null && !serviceType.trim().equals("")) {
-					String[] typeArrs = serviceType.split(";");
-					for (String typeStr : typeArrs) {
-						String[] typeArr = typeStr.split(":");
-						String tableNameArr[] = typeArr[1].split(",");
-						for (String tableName : tableNameArr) {
-							unMaatSercieNameMap.put(Integer.parseInt(str), tableName.toUpperCase());
-						}
-					}
-				}
+			 String[] serviceAction = str.split(":");
+			 if (serviceAction.length==2) {
+				serviceActionMap.put(Integer.valueOf(serviceAction[0]),
+						Integer.valueOf(serviceAction[1]));
+			 }else{
+				 serviceActionMap.put(Integer.valueOf(serviceAction[0]),
+						null);
+			 }
+			 String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+			 if (serviceType != null && !serviceType.trim().equals("")) {
+			 String[] typeArrs = serviceType.split(";");
+			 for (String typeStr : typeArrs) {
+				 String[] typeArr = typeStr.split(":");
+				 String tableNameArr[] = typeArr[1].split(",");
+				 for (String tableName : tableNameArr) {
+					 unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]),
+					 tableName.toUpperCase());
+					 }
+				 }
+			 }
 			}
 		}
 
@@ -165,13 +157,25 @@ public class ServiceAndRDBIndexReal {
 		}
 
 		String serviceRepeatedReal = Configurations.getStringProperty("serviceRepeatedReal", "");
-		if (serviceRepeatedReal != null && !serviceRepeatedReal.trim().equals("")) {
-			String[] serviceRepeatedRealArr = serviceRepeatedReal.split(",");
-			for (String ser : serviceRepeatedRealArr) {
-				if (ser != null && !ser.trim().equals("")) {
-					serviceRepeatedRealSet.add(Integer.parseInt(ser));
+		if (!StringUtil.isEmpty(serviceRepeatedReal)) {
+			String[] serviceRepeatedRealArr = serviceRepeatedReal.split(";");
+			for (String serviceRepeated : serviceRepeatedRealArr) {
+				String [] serInfos = serviceRepeated.split(":");
+				String [] regionInfos = serInfos[1].split("[|]");
+				for (String regionInfo : regionInfos) {
+					String [] regionTabName = regionInfo.split("@");
+					String [] tableNames = regionTabName[1].split(",");
+					for (String tableName : tableNames) {
+						if(serviceGroupReuseMap.containsKey(Integer.valueOf(serInfos[0]))){
+							serviceGroupReuseMap.get(Integer.valueOf(serInfos[0])).get(regionTabName[0]).add(tableName);
+						}else{
+							Map<String,List<String>> regTabMap = new HashMap<String, List<String>>();
+							List<String> tabList = new ArrayList<String>();
+							tabList.add(tableName);
+							regTabMap.put(regionTabName[0], tabList);
+						}
+					}
 				}
-
 			}
 		}
 	}
@@ -325,12 +329,12 @@ public class ServiceAndRDBIndexReal {
 	 * @param service
 	 * @return
 	 */
-	public static Boolean serviceIsRepeated(Integer service) {
+	public static Boolean serviceIsReuse(Integer service) {
 		if (service != null) {
-			return serviceRepeatedRealSet.contains(service);
+			return serviceGroupReuseMap.containsKey(service);
 		} else {
-		}	throw new ServiceRuntimeException("判断service是否是分组复用时发生了异常,异常原因:service=null", RestBusinessCode.ServiceIsNull.getValue());
-
+			throw new ServiceRuntimeException("判断service是否是分组复用时发生了异常,异常原因:service=null", RestBusinessCode.ServiceIsNull.getValue());
+		}
 	}
 
 	/**
@@ -394,5 +398,12 @@ public class ServiceAndRDBIndexReal {
 	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
 		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
 	}
-
+	
+	/**
+	 * @return the serviceGroupReuseMap
+	 */
+	public static Map<String, List<String>> getServiceGroupReuseMap(Integer service) {
+		return serviceGroupReuseMap.get(service);
+	}
+	
 }
