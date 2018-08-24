@@ -188,7 +188,9 @@ public class MaatTestController {
 						maatTestServiceimpl.getMaatKeys(configCompileList);
 						map.put(service, "http://127.0.0.1:8080/galaxy/service/test/cfg/v1/testDelMaat?serviceType="
 								+ service + "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
-						testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service);
+						if(!testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service).equals("ok")) {
+							map.put(-4, "del config error");
+						}
 					} else {
 
 						map.put(-2, "is not maat service");
@@ -592,7 +594,9 @@ public class MaatTestController {
 				// 验证数据是否在正确
 				maatTestServiceimpl.getUnMaatKeys(jsonStr, service);
 				// 删除配置
-				testDelUnMaat(compileIdList.toString().replace("[", "").replace("]", ""), service);
+				if(!testDelUnMaat(compileIdList.toString().replace("[", "").replace("]", ""), service).equals("ok")){
+					map.put(-4, "del unmaat error");
+				}
 			}
 		} catch (Exception e) {
 			String exceptionMsg = ExceptionUtil.getExceptionMsg(e);

@@ -114,6 +114,11 @@ public enum RestBusinessCode {
 	IsValidIsNull(4001013, "配置isValid属性不能为空"),
 	
 	/**
+	 * MAAT配置的域配置信息不能全为空
+	 */
+	RegionListIsNull(4001014, "MAAT配置的域配置信息不能全为空"),
+	
+	/**
 	 * 编译配置的groupNum不能为空
 	 */
 	GroupNumIsNull(4001016, "Maat配置groupNum属性不能为空"),
@@ -414,7 +419,14 @@ public enum RestBusinessCode {
 	 */
 	CfdsLevelIsWrongRange(4002500,"摘要域-cfdsLevel的值只能是1到10"),
 	
-	
+	/**
+	 * service不能为空并且必须是分组复用的业务类型
+	 */
+	ServiceIsNullOrNotReuse(4002501, "service不能为空并且必须是分组复用的业务类型"),
+	/**
+	 * 分组复用配置中域不能全为空
+	 */
+	ReuseRegionIsNull(4002501, "分组复用配置中域不能全为空"),
 	//回调类
 	/**
 	 * 回调类service配置不正确
@@ -544,6 +556,10 @@ public enum RestBusinessCode {
 	 * Redis数据库中MAAT配置的对应关系不存在
 	 */
 	RelationNotExistsInRedis(5003004,"Redis数据库中MAAT配置的对应关系不存在"),
+	/**
+	 * Redis关联关系库中未找到配置对应的redisdb信息
+	 */
+	RedisDBRelationNotExistsInRedis(5003005,"Redis关联关系库中未找到配置对应的redisdb信息"),
 	
 	/**
 	 * Map中缺少编译配置信息
