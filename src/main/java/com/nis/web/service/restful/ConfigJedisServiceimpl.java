@@ -76,8 +76,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 																	.getUnMaatTableName(service);
 															if (maatTableName == null) {
 																throw new ServiceRuntimeException(
-																		"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service
-																				+ "对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+																		"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"
+																				+ service + "对应的真实表名",
+																		RestBusinessCode.NotFoundTableName.getValue());
 															} else {
 																keyBF.append(maatTableName);
 															}
@@ -151,7 +152,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										}
 									} else {
 										throw new ServiceRuntimeException(
-												"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",RestBusinessCode.NotFoundRedisRule.getValue());
+												"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service
+														+ "对应的规则,请检查业务类型是否正确",
+												RestBusinessCode.NotFoundRedisRule.getValue());
 									}
 								}
 								transaction.incrBy("MAAT_VERSION", 1l);
@@ -160,10 +163,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								count++;
 							}
 						} else {
-							throw new ServiceRuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+							throw new ServiceRuntimeException(
+									"向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",
+									RestBusinessCode.ConfigSourceIsNull.getValue());
 						}
 					} else {
-						throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",RestBusinessCode.DbIndexNotInRange.getValue());
+						throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",
+								RestBusinessCode.DbIndexNotInRange.getValue());
 					}
 				}
 				if (count == configMap.size()) {
@@ -174,38 +180,34 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				}
 			} catch (JedisConnectionException e) {
 				String error = "连接redis异常,保存非maat类配置失败," + e.getMessage();
-//				logger.error(error);
+				// logger.error(error);
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
-				
+
 			} catch (Exception e) {
 				transaction.discard();
-				
-				if (e instanceof ServiceRuntimeException) {
-					throw e;
-				}else {
-					String error = "保存非maat类配置发生了异常," + e.getMessage();
-//					logger.error(error);
-					throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
-				}
-				
+				String error = "保存非maat类配置发生了异常," + e.getMessage();
+				// logger.error(error);
+				throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 			} finally {
 				// 释放连接到连接池
 				JedisUtils.returnResource(resource);
 			}
 		} else {
-			throw new ServiceRuntimeException("向redis库添加配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+			throw new ServiceRuntimeException("向redis库添加配置时,未发现对应的配置信息,请检查配置参数是否正确",
+					RestBusinessCode.ConfigSourceIsNull.getValue());
 		}
 		return false;
 	}
 
 	/**
-	 *  下发配置成功后,需要更新编译,组,域等配置id的对应关系
+	 *  下发配置时,需要记录编译,组,域等配置id的对应关系,以便于在取消配置时可以根据配置id查找对应的编译,分组,域的关系
 	 */
 	private void addMaatRelation(Map<Integer, List<MaatConfig>> configMap, Transaction transaction) {
 		if (configMap != null && configMap.size() > 0) {
 			int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
 			transaction.select(idRelaRedisDBIndex);
-			for (Integer redisDBIndex : configMap.keySet()) {
+			Set<Integer> redisDBSet = configMap.keySet();// 所有的redisdb
+			for (Integer redisDBIndex : redisDBSet) {
 				if (redisDBIndex >= 0 && redisDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 6)) {
 					List<MaatConfig> maatConfigList = configMap.get(redisDBIndex);
 					if (maatConfigList != null && maatConfigList.size() > 0) {
@@ -216,7 +218,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 							List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
 							if (groupMapList != null && groupMapList.size() > 0) {
 								for (Map<String, String> map : groupMapList) {
-									String cfgIdStr = redisDBIndex + ":COMPILEGROUP:" + map.get("compile_id");
+									String cfgIdStr = redisDBSet.toString() + ":COMPILEGROUP:" + map.get("compile_id");
 									String groupIdStr = redisDBIndex + ":GROUPCOMPILE:" + map.get("group_id");
 									// + map.get("compile_id");
 									if (cfgIdStr != null && groupIdStr != null && !cfgIdStr.equals("")
@@ -240,7 +242,6 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									}
 								}
 							}
-
 							Map<String, List<String>> map = new HashMap<String, List<String>>();
 							int service = maatConfig.getService();
 							MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
@@ -268,10 +269,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										sb.append(";");
 									}
 								}
-
 								transaction.set(groupIdStr, sb.substring(0, sb.length() - 1));// 保存分组id和域id的关系(每个域配置,只会属于一个组)
 							}
-
 						}
 
 						for (String compile : compileAndGroupMap.keySet()) {
@@ -283,7 +282,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									sb.append(";");
 								}
 							}
-							transaction.set(compile, sb.substring(0, sb.length() - 1));// 保存分组id和域id的关系(每个域配置,只会属于一个组)
+							transaction.set(compile, sb.substring(0, sb.length() - 1));// 保存编译id和分组id的关系(每个域配置,只会属于一个组)
 						}
 						for (String group : groupAndCompileMap.keySet()) {
 							List<String> list = groupAndCompileMap.get(group);
@@ -294,18 +293,21 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									sb.append(";");
 								}
 							}
-							transaction.append(group, sb.substring(0, sb.length() - 1));// 保存分组id和域id的关系(每个域配置,只会属于一个组)
+							transaction.append(group, sb.substring(0, sb.length() - 1));// 保存分组id和编译id的关系(每个域配置,只会属于一个组)
 							// redisTemplate.opsForValue().set(group, sb.substring(0, sb.length() - 1));//
 							// 保存分组id和域id的关系(每个域配置,只会属于一个组)
 						}
 
 					}
 				} else {
-					throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",RestBusinessCode.DbIndexNotInRange.getValue());
+					throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",
+							RestBusinessCode.DbIndexNotInRange.getValue());
 				}
+				break;// 只循环一次,map中的value都是一模一样的
 			}
 		} else {
-			throw new ServiceRuntimeException("向redis库中配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+			throw new ServiceRuntimeException("向redis库中配置时,未发现对应的配置信息,请检查配置参数是否正确",
+					RestBusinessCode.ConfigSourceIsNull.getValue());
 		}
 
 	}
@@ -350,7 +352,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												if (keyVal != null && !keyVal.equals("")) {
 													keyBF.append(keyVal);
 												} else {
-													throw new ServiceRuntimeException("未从map中获取到" + keyStr + "的值,请检查数据或配置文件是否正确",RestBusinessCode.NotFoundValueByKey.getValue());
+													throw new ServiceRuntimeException(
+															"未从map中获取到" + keyStr + "的值,请检查数据或配置文件是否正确",
+															RestBusinessCode.NotFoundValueByKey.getValue());
 												}
 											} else if (!StringUtils.isEmpty(keyStr) && keyStr.trim().startsWith("{")) {
 												keyStr = keyStr.trim().replace("{", "").replace("}", "");
@@ -360,8 +364,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 															service, 10, argTableName == null ? null : argTableName);
 													if (maatTableName == null) {
 														throw new ServiceRuntimeException(
-																"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service
-																		+ ",配置类型:10,对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+																"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"
+																		+ service + ",配置类型:10,对应的真实表名",
+																RestBusinessCode.NotFoundTableName.getValue());
 													} else {
 														keyBF.append(maatTableName);
 													}
@@ -384,7 +389,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 													// if (!valStr.toLowerCase().equals("service")&&!
 													// valStr.toLowerCase().equals("action")
 													// &&!valStr.toLowerCase().equals("user_region") &&type==10) {
-													throw new ServiceRuntimeException("未从map中获取到" + valStr + "的值,请检查数据或配置文件是否正确",RestBusinessCode.NotFoundValueByKey.getValue());
+													throw new ServiceRuntimeException(
+															"未从map中获取到" + valStr + "的值,请检查数据或配置文件是否正确",
+															RestBusinessCode.NotFoundValueByKey.getValue());
 
 												}
 											} else if (valStr.equals("\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
@@ -393,7 +400,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												valBF.append(valStr.trim());
 											}
 										}
-										//向实时统计库中添加时间标识,方便人眼直观识别入库时间
+										// 向实时统计库中添加时间标识,方便人眼直观识别入库时间
 										valBF.append("\t");
 										valBF.append(sdf.format(new Date()));
 										String maatKey = keyBF.toString();
@@ -412,11 +419,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						}
 					} else {
 						throw new ServiceRuntimeException(
-								"向" + redisStatisticsRealDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+								"向" + redisStatisticsRealDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",
+								RestBusinessCode.ConfigSourceIsNull.getValue());
 					}
 
 				} else {
-					throw new ServiceRuntimeException("redis数据库编号:" + redisStatisticsRealDBIndex + "不正确,请检查数据库编号",RestBusinessCode.DbIndexNotInRange.getValue());
+					throw new ServiceRuntimeException("redis数据库编号:" + redisStatisticsRealDBIndex + "不正确,请检查数据库编号",
+							RestBusinessCode.DbIndexNotInRange.getValue());
 				}
 				break;// configMap中所有的value都是相同的,在记录配置新增或者取消时只记录一次即可
 			}
@@ -450,8 +459,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 											argTableName == null ? null : argTableName);
 									if (maatTableName == null) {
-										throw new ServiceRuntimeException("无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"+ service + ",配置类型:" + type + 
-												",对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+										throw new ServiceRuntimeException(
+												"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service
+														+ ",配置类型:" + type + ",对应的真实表名",
+												RestBusinessCode.NotFoundTableName.getValue());
 									} else {
 										keyBF.append(maatTableName);
 									}
@@ -510,11 +521,14 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										Integer.valueOf(maatVersionStr) + 1);
 								count++;
 							} else {
-								throw new ServiceRuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+								throw new ServiceRuntimeException(
+										"向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",
+										RestBusinessCode.ConfigSourceIsNull.getValue());
 							}
 						}
 					} else {
-						throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",RestBusinessCode.DbIndexNotInRange.getValue());
+						throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",
+								RestBusinessCode.DbIndexNotInRange.getValue());
 					}
 				}
 				if (count == configMap.size()) {
@@ -531,19 +545,15 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 			} catch (Exception e) {
 				transaction.discard();
-				if (e instanceof ServiceRuntimeException) {
-					throw e;
-				}else {
-					String error = "保存maat类配置发生了异常" + e.getMessage();
-					logger.error(error);
-					throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
-				}
+				String error = "保存maat类配置发生了异常" + e.getMessage();
+				logger.error(error);
+				throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 			} finally {
 				// 释放连接到连接池
 				JedisUtils.returnResource(resource);
 			}
 		} else {
-			throw new ServiceRuntimeException("写入Redis数据库中的配置信息不能为空",RestBusinessCode.ConfigSourceIsNull.getValue());
+			throw new ServiceRuntimeException("写入Redis数据库中的配置信息不能为空", RestBusinessCode.ConfigSourceIsNull.getValue());
 		}
 		return false;
 
@@ -566,7 +576,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			setCommonConfig(maatXmlConfig, compileMap, 10, maatVersion.doubleValue(), service, transaction,
 					redisDBIndex, null);// 10代表是编译配置
 		} else {
-			throw new ServiceRuntimeException("无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确",RestBusinessCode.NotFoundCompileInfo.getValue());
+			throw new ServiceRuntimeException(
+					"无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确",
+					RestBusinessCode.NotFoundCompileInfo.getValue());
 		}
 
 		List<Map<String, String>> groupMapList = maatConfig.getGroupMapList();
@@ -576,7 +588,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						compileId);// 11代表是分组配置
 			}
 		} else {
-			throw new ServiceRuntimeException("无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的分组配置信息,请检查配置参数是否正确",RestBusinessCode.NotFoundGroupInfo.getValue());
+			throw new ServiceRuntimeException(
+					"无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的分组配置信息,请检查配置参数是否正确",
+					RestBusinessCode.NotFoundGroupInfo.getValue());
 		}
 
 		List<Map<String, String>> ipRegionMapList = maatConfig.getIpRegionMapList();
@@ -659,7 +673,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 							if (keyVal != null && !keyVal.equals("")) {
 								keyBF.append(keyVal);
 							} else {
-								throw new ServiceRuntimeException("未从map中获取到" + keyStr + "的值,请检查数据或配置文件是否正确",RestBusinessCode.NotFoundValueByKey.getValue());
+								throw new ServiceRuntimeException("未从map中获取到" + keyStr + "的值,请检查数据或配置文件是否正确",
+										RestBusinessCode.NotFoundValueByKey.getValue());
 							}
 							if (type == 11 && keyStr.toLowerCase().equals("group_id")) {
 								keyBF.append(compileId);
@@ -671,8 +686,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								String maatTableName = ServiceAndRDBIndexReal.getMaatTableName(service, type,
 										argTableName == null ? null : argTableName);
 								if (maatTableName == null) {
-									throw new ServiceRuntimeException("无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"+ service + ",配置类型:" + type + 
-											",对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+									throw new ServiceRuntimeException(
+											"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service
+													+ ",配置类型:" + type + ",对应的真实表名",
+											RestBusinessCode.NotFoundTableName.getValue());
 								} else {
 									keyBF.append(maatTableName);
 								}
@@ -721,7 +738,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								valBF.append(val);
 							} else {
 								// 所有在maat.xml中配置的属性都不可以为空
-								throw new ServiceRuntimeException("未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据或配置文件是否正确",RestBusinessCode.NotFoundValueByKey.getValue());
+								throw new ServiceRuntimeException(
+										"未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据或配置文件是否正确",
+										RestBusinessCode.NotFoundValueByKey.getValue());
 							}
 						} else if (valStr.equals("&nbsp")) {
 							valBF.append(" ");
@@ -767,9 +786,11 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		} else {
 			if (maatXmlConfig == null) {
 				throw new ServiceRuntimeException(
-						"无法从applicationConfig-maatRedis.xml配置文件中,获取service为" + service + "对应的规则,请检查业务类型是否正确",RestBusinessCode.NotFoundRedisRule.getValue());
+						"无法从applicationConfig-maatRedis.xml配置文件中,获取service为" + service + "对应的规则,请检查业务类型是否正确",
+						RestBusinessCode.NotFoundRedisRule.getValue());
 			} else {
-				throw new ServiceRuntimeException("向redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+				throw new ServiceRuntimeException("向redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",
+						RestBusinessCode.ConfigSourceIsNull.getValue());
 			}
 		}
 	}
@@ -795,7 +816,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						String maatVersionStr = JedisUtils.get("MAAT_VERSION", redisDBIndex);
 						if (maatVersionStr == null) {
 							throw new ServiceRuntimeException("从" + redisDBIndex
-									+ "号redis库中获取MAAT_VERSION的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",RestBusinessCode.GetMaatVersionFailure.getValue());
+									+ "号redis库中获取MAAT_VERSION的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",
+									RestBusinessCode.GetMaatVersionFailure.getValue());
 						}
 						if (maatVersionStr != null) {
 							Long maatVersion = Long.valueOf(maatVersionStr) + 1;
@@ -834,8 +856,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 																		.getUnMaatTableName(service);
 																if (maatTableName == null) {
 																	throw new ServiceRuntimeException(
-																			"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service
-																					+ "对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+																			"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"
+																					+ service + "对应的真实表名",
+																			RestBusinessCode.NotFoundTableName
+																					.getValue());
 																} else {
 																	keyBF.append(maatTableName);
 																}
@@ -861,8 +885,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 																maatKey.toString().toUpperCase());
 														break;
 													} else {
-														throw new ServiceRuntimeException(redisDBIndex + "号redis库中不存在key="
-																+ oldKey + "请检查id映射关系是否正确",RestBusinessCode.KeyNotExistsInRedis.getValue());
+														throw new ServiceRuntimeException(
+																redisDBIndex + "号redis库中不存在key=" + oldKey
+																		+ "请检查id映射关系是否正确",
+																RestBusinessCode.KeyNotExistsInRedis.getValue());
 													}
 												}
 											}
@@ -918,7 +944,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 											}
 										} else {
 											throw new ServiceRuntimeException(
-													"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",RestBusinessCode.NotFoundRedisRule.getValue());
+													"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service
+															+ "对应的规则,请检查业务类型是否正确",
+													RestBusinessCode.NotFoundRedisRule.getValue());
 										}
 									}
 									transaction.incrBy("MAAT_VERSION", 1l);
@@ -927,14 +955,17 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 											Integer.valueOf(maatVersionStr) + 1);
 									count++;
 								} else {
-									throw new ServiceRuntimeException("无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service
-											+ "的配置id信息,请检查配置参数是否正确",RestBusinessCode.CompileIdListIsNull.getValue());
+									throw new ServiceRuntimeException(
+											"无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service
+													+ "的配置id信息,请检查配置参数是否正确",
+											RestBusinessCode.CompileIdListIsNull.getValue());
 								}
 							}
 
 						}
 					} else {
-						throw new ServiceRuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ServiceAndCompileMapIsNull.getValue());
+						throw new ServiceRuntimeException("向" + redisDBIndex + "号redis库中添加配置时,未发现对应的配置信息,请检查配置参数是否正确",
+								RestBusinessCode.ServiceAndCompileMapIsNull.getValue());
 					}
 
 				}
@@ -946,25 +977,20 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				}
 			} catch (JedisConnectionException e) {
 				String error = "连接redis异常,删除非maat类配置失败," + e.getMessage();
-//				logger.error(error);
+				// logger.error(error);
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 			} catch (Exception e) {
 				transaction.discard();
 				String error = "删除非maat类配置发生了异常," + e.getMessage();
-//				logger.error(error);
-				if (e instanceof ServiceRuntimeException) {
-					throw e;
-				}else {
-					throw new ServiceRuntimeException(error, RestBusinessCode.DeleteDataInError.getValue());
-				}
-				
-				
+				// logger.error(error);
+				throw new ServiceRuntimeException(error, RestBusinessCode.DeleteDataInError.getValue());
 			} finally {
 				// 释放连接到连接池
 				JedisUtils.returnResource(resource);
 			}
 		} else {
-			throw new ServiceRuntimeException("状态更新操作Map参数信息不能为空,请检查!",RestBusinessCode.ConfigInfoMapIsNull.getValue());
+			throw new ServiceRuntimeException("状态更新操作Map参数信息不能为空,请检查!",
+					RestBusinessCode.ConfigInfoMapIsNull.getValue());
 		}
 		return false;
 	}
@@ -978,7 +1004,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			try {
 				int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
 				for (Integer redisDBIndex : idMap.keySet()) {
-					//按序号选择Redis数据库
+					// 按序号选择Redis数据库
 					transaction.select(redisDBIndex);
 					Map<Integer, List<Long>> serviceConfigMap = idMap.get(redisDBIndex);
 					if (serviceConfigMap != null && serviceConfigMap.size() > 0) {
@@ -995,12 +1021,14 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
 									Integer.valueOf(maatVersionStr) + 1);
 							count++;
-						}else{
+						} else {
 							throw new ServiceRuntimeException("从" + redisDBIndex
-									+ "号redis库中获取MAAT_VERSION的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",RestBusinessCode.GetMaatVersionFailure.getValue());
+									+ "号redis库中获取MAAT_VERSION的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",
+									RestBusinessCode.GetMaatVersionFailure.getValue());
 						}
 					} else {
-						throw new ServiceRuntimeException("从" + redisDBIndex + "号redis库删除配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+						throw new ServiceRuntimeException("从" + redisDBIndex + "号redis库删除配置时,未发现对应的配置信息,请检查配置参数是否正确",
+								RestBusinessCode.ConfigSourceIsNull.getValue());
 					}
 				}
 				if (count == idMap.size()) {
@@ -1014,24 +1042,24 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 
 			} catch (JedisConnectionException e) {
 				String error = "连接redis异常,删除maat配置失败," + e.getMessage();
-//				logger.error(error);
+				// logger.error(error);
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
-				
+
 			} catch (Exception e) {
 				transaction.discard();
-				
-//				logger.error(error);
+
+				// logger.error(error);
 				int businessCode = RestBusinessCode.service_runtime_error.getValue();
 				if (e instanceof ServiceRuntimeException) {
 					businessCode = ((ServiceRuntimeException) e).getErrorCode();
 				}
-				throw new ServiceRuntimeException("删除maat配置发生了异常,"+ e.getMessage(),businessCode);	
+				throw new ServiceRuntimeException("删除maat配置发生了异常," + e.getMessage(), businessCode);
 			} finally {
 				// 释放连接到连接池
 				JedisUtils.returnResource(resource);
 			}
 		} else {
-			throw new ServiceRuntimeException("Map参数信息不能为空,请检查!",RestBusinessCode.ConfigInfoMapIsNull.getValue());
+			throw new ServiceRuntimeException("Map参数信息不能为空,请检查!", RestBusinessCode.ConfigInfoMapIsNull.getValue());
 		}
 		return false;
 	}
@@ -1050,12 +1078,12 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 
 		if (idList != null && idList.size() > 0 && maatXmlConfig != null) {
 			for (Long id : idList) {
-				//删除(重命名)编译配置
+				// 删除(重命名)编译配置
 				removeCompileAndGroupConfig(maatXmlConfig, id + "", 10, maatVersion.doubleValue(), service, transaction,
 						redisDBIndex, null);// 10代表是编译配置
-				//拼接编译与分组关系的Redis Key
+				// 拼接编译与分组关系的Redis Key
 				String compileStr = redisDBIndex + ":COMPILEGROUP:" + id;
-				//获取当前编译配置与分组配置的关联关系
+				// 获取当前编译配置与分组配置的关联关系
 				String groupCompileStrs = JedisUtils.get(compileStr, idRelaRedisDBIndex);
 				if (groupCompileStrs != null && !groupCompileStrs.trim().equals("")) {
 					String[] split = groupCompileStrs.split(";");
@@ -1071,37 +1099,43 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										if (regionStr != null && !regionStr.trim().equals("")) {
 											String[] regionKeyArr = regionStr.split(";");
 											if (regionKeyArr != null && regionKeyArr.length > 0) {
-												//根据分组与域关联关系找到对应域配置然后删除(重命名)
+												// 根据分组与域关联关系找到对应域配置然后删除(重命名)
 												removeRegionConfig(maatXmlConfig, regionKeyArr,
 														maatVersion.doubleValue(), service, transaction, redisDBIndex);
 											}
 										} else {
 											throw new ServiceRuntimeException(
-													"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与域的关联关系，key为"+groupRegionKey,RestBusinessCode.KeyNotExistsInRedis.getValue());
+													"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与域的关联关系，key为"
+															+ groupRegionKey,
+													RestBusinessCode.KeyNotExistsInRedis.getValue());
 										}
 									}
 								}
 							}
-							//根据分组与域关联关系找到对应域配置然后删除(重命名)
+							// 根据分组与域关联关系找到对应域配置然后删除(重命名)
 							removeCompileAndGroupConfig(maatXmlConfig,
 									groupId.replace(redisDBIndex + ":GROUPCOMPILE:", ""), 11, maatVersion.doubleValue(),
 									service, transaction, redisDBIndex, id + "");// 11代表是分组配置
 						} else {
 							throw new ServiceRuntimeException(
-									"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为"+groupId,RestBusinessCode.KeyNotExistsInRedis.getValue());
+									"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为" + groupId,
+									RestBusinessCode.KeyNotExistsInRedis.getValue());
 						}
 					}
 				} else {
 					throw new ServiceRuntimeException(
-							"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置编译与分组关联关系，key为"+compileStr,RestBusinessCode.KeyNotExistsInRedis.getValue());
+							"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置编译与分组关联关系，key为" + compileStr,
+							RestBusinessCode.KeyNotExistsInRedis.getValue());
 				}
 			}
 		} else {
 			if (StringUtils.isEmpty(maatXmlConfig)) {
 				throw new ServiceRuntimeException(
-						"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",RestBusinessCode.NotFoundRedisRule.getValue());
-			}else {
-				throw new ServiceRuntimeException("删除redis库中配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+						"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",
+						RestBusinessCode.NotFoundRedisRule.getValue());
+			} else {
+				throw new ServiceRuntimeException("删除redis库中配置时,未发现对应的配置信息,请检查配置参数是否正确",
+						RestBusinessCode.ConfigSourceIsNull.getValue());
 			}
 		}
 	}
@@ -1135,7 +1169,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								if (maatTableName == null) {
 									throw new ServiceRuntimeException(
 											"无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为" + service
-													+ "对应的真实表名",RestBusinessCode.NotFoundTableName.getValue());
+													+ "对应的真实表名",
+											RestBusinessCode.NotFoundTableName.getValue());
 								} else {
 									keyBF.append(maatTableName);
 								}
@@ -1156,8 +1191,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								maatKey.toUpperCase());
 						break;
 					} else {
-						throw new ServiceRuntimeException(redisDBIndex + "号redis库中不存在key=" + oldKey
-								+ "请检查id映射关系是否正确,或该配置已经被取消,已经被取消的配置不可再次取消,否则将抛出异常",RestBusinessCode.KeyNotExistsInRedis.getValue());
+						throw new ServiceRuntimeException(
+								redisDBIndex + "号redis库中不存在key=" + oldKey
+										+ "请检查id映射关系是否正确,或该配置已经被取消,已经被取消的配置不可再次取消,否则将抛出异常",
+								RestBusinessCode.KeyNotExistsInRedis.getValue());
 					}
 				}
 			}
@@ -1191,7 +1228,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			}
 		} else {
 			throw new ServiceRuntimeException(
-					"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",RestBusinessCode.NotFoundRedisRule.getValue());
+					"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",
+					RestBusinessCode.NotFoundRedisRule.getValue());
 		}
 	}
 
@@ -1216,7 +1254,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					transaction.rename(oldKey, maatKey.toUpperCase());
 					logger.info("向{}号redis数据库修改了一条配置,修改前key是{},修改后key是{}", redisDBIndex, oldKey, maatKey.toUpperCase());
 				} else {
-					throw new ServiceRuntimeException(redisDBIndex + "号redis库中不存在key=" + oldKey + ",请检查id映射关系是否正确",RestBusinessCode.KeyNotExistsInRedis.getValue());
+					throw new ServiceRuntimeException(redisDBIndex + "号redis库中不存在key=" + oldKey + ",请检查id映射关系是否正确",
+							RestBusinessCode.KeyNotExistsInRedis.getValue());
 				}
 
 				for (MaatXmlExpr maatXmlExpr : expressionList) {
@@ -1250,8 +1289,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		} else {
 			if (maatXmlConfig == null) {
 				throw new ServiceRuntimeException(
-						"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",RestBusinessCode.NotFoundRedisRule.getValue());
-			} 
+						"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",
+						RestBusinessCode.NotFoundRedisRule.getValue());
+			}
 
 		}
 	}
@@ -1266,8 +1306,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			transaction.select(redisStatisticsRealDBIndex);
 			String maatVersionStr = JedisUtils.get("MAAT_VERSION", redisStatisticsRealDBIndex);
 			if (maatVersionStr == null) {
-				throw new ServiceRuntimeException("从" + redisStatisticsRealDBIndex
-						+ "号redis库中获取MAAT_VERSION失败",RestBusinessCode.KeyNotExistsInRedis.getValue());
+				throw new ServiceRuntimeException("从" + redisStatisticsRealDBIndex + "号redis库中获取MAAT_VERSION失败",
+						RestBusinessCode.KeyNotExistsInRedis.getValue());
 			}
 			double maatVersion = Double.valueOf(maatVersionStr) + 1D;
 			for (Integer redisDBIndex : idMap.keySet()) {
@@ -1294,12 +1334,16 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										logger.info("向{}号redis数据库更新了MAAT_UPDATE_STATUS,内容是{},SCORES是{}",
 												redisStatisticsRealDBIndex, zset.toUpperCase(), maatVersion);
 									} else {
-										throw new ServiceRuntimeException("从" + redisStatisticsRealDBIndex + "号redisDB中判断" + effectiveRuleKey.toUpperCase() + "是否存在失败", RestBusinessCode.ExistsKeyFailed.getValue());
+										throw new ServiceRuntimeException(
+												"从" + redisStatisticsRealDBIndex + "号redisDB中判断"
+														+ effectiveRuleKey.toUpperCase() + "是否存在失败",
+												RestBusinessCode.ExistsKeyFailed.getValue());
 									}
 
 								}
 							} else {
-								throw new ServiceRuntimeException("取消配置时,未发现配置Id信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+								throw new ServiceRuntimeException("取消配置时,未发现配置Id信息,请检查配置参数是否正确",
+										RestBusinessCode.ConfigSourceIsNull.getValue());
 							}
 
 						}
@@ -1308,11 +1352,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								Integer.valueOf(maatVersionStr) + 1);
 
 					} else {
-						throw new ServiceRuntimeException("删除redis库中配置时,未发现对应的配置信息,请检查配置参数是否正确",RestBusinessCode.ConfigSourceIsNull.getValue());
+						throw new ServiceRuntimeException("删除redis库中配置时,未发现对应的配置信息,请检查配置参数是否正确",
+								RestBusinessCode.ConfigSourceIsNull.getValue());
 					}
 
 				} else {
-					throw new ServiceRuntimeException("redis数据库编号:" + redisStatisticsRealDBIndex + "不正确,请检查数据库编号",RestBusinessCode.DbIndexNotInRange.getValue());
+					throw new ServiceRuntimeException("redis数据库编号:" + redisStatisticsRealDBIndex + "不正确,请检查数据库编号",
+							RestBusinessCode.DbIndexNotInRange.getValue());
 				}
 				break;// 因为所有的value都是相同的所以只取消一次就可以了
 			}
@@ -1325,7 +1371,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	 * 删除配置成功后,需要更新编译,组,域等配置id的对应关系
 	 * @param idMap
 	 */
-	private void delMaatRelation(Map<Integer, Map<Integer, List<Long>>> idMap, Transaction transaction) {
+	private String delMaatRelation(Map<Integer, Map<Integer, List<Long>>> idMap, Transaction transaction) {
 		if (idMap != null && idMap.size() > 0) {
 			int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
 			transaction.select(idRelaRedisDBIndex);
@@ -1356,20 +1402,24 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 															.equals(compileStr.toUpperCase())) {
 														String groupRegion = groupCompile.replaceAll("GROUPCOMPILE",
 																"GROUPREGION");
-														//删除分组与域的关联关系
+														// 删除分组与域的关联关系
 														if (JedisUtils.exists(groupRegion, idRelaRedisDBIndex)) {
 															transaction.del(groupRegion);
 														} else {
-															throw new ServiceRuntimeException(
-																	"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与域的关联关系，key为"+groupRegion,RestBusinessCode.KeyNotExistsInRedis.getValue());
+															throw new ServiceRuntimeException("从" + idRelaRedisDBIndex
+																	+ "号redis库中无法获取MAAT配置分组与域的关联关系，key为" + groupRegion,
+																	RestBusinessCode.KeyNotExistsInRedis.getValue());
 														}
-														//删除分组与编译的关联关系
+														// 删除分组与编译的关联关系
 														if (JedisUtils.exists(groupCompile.toUpperCase(),
 																idRelaRedisDBIndex)) {
 															transaction.del(groupCompile.toUpperCase());// 删除当前组所对应的编译
 														} else {
 															throw new ServiceRuntimeException(
-																	"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为"+groupCompile.toUpperCase(),RestBusinessCode.KeyNotExistsInRedis.getValue());
+																	"从" + idRelaRedisDBIndex
+																			+ "号redis库中无法获取MAAT配置分组与编译的关联关系，key为"
+																			+ groupCompile.toUpperCase(),
+																	RestBusinessCode.KeyNotExistsInRedis.getValue());
 														}
 
 													}
@@ -1390,7 +1440,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												}
 											} else {
 												throw new ServiceRuntimeException(
-														"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为"+groupCompile.toUpperCase(),RestBusinessCode.KeyNotExistsInRedis.getValue());
+														"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为"
+																+ groupCompile.toUpperCase(),
+														RestBusinessCode.KeyNotExistsInRedis.getValue());
 											}
 										}
 										if (JedisUtils.exists(compileStr.toUpperCase(), idRelaRedisDBIndex)) {
@@ -1398,20 +1450,25 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										}
 
 									} else {
-										throw new ServiceRuntimeException("从" + idRelaRedisDBIndex + "号redis库中获取" + compileStr
-												+ "的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",RestBusinessCode.KeyNotExistsInRedis.getValue());
-
+										throw new ServiceRuntimeException(
+												"从" + idRelaRedisDBIndex + "号redis库中获取" + compileStr
+														+ "的值为null,redis中不存在该值,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",
+												RestBusinessCode.KeyNotExistsInRedis.getValue());
 									}
 								}
 							}
 						}
 					}
 				} else {
-					throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",RestBusinessCode.DbIndexNotInRange.getValue());
+					throw new ServiceRuntimeException("redis数据库编号:" + redisDBIndex + "不正确,请检查数据库编号",
+							RestBusinessCode.DbIndexNotInRange.getValue());
 				}
+				break;// map中的每个value都是一样的,而且关联关系里面只存储了一个信息,
 			}
 		} else {
-			throw new ServiceRuntimeException("状态更新操作Map参数信息不能为空,请检查配置参数是否正确",RestBusinessCode.ConfigInfoMapIsNull.getValue());
+			throw new ServiceRuntimeException("状态更新操作Map参数信息不能为空,请检查配置参数是否正确",
+					RestBusinessCode.ConfigInfoMapIsNull.getValue());
 		}
+		return null;
 	}
 }
