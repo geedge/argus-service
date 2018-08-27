@@ -63,6 +63,7 @@
 		<t:field fieldType="String" srcName="description" dstName="description"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="level" dstName="level" range="0-100" defaultVal="0"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
 	<!--
 		 #0x340	IP复用地址池配置（回调）	832=0:IR_STATIC_IP_POOL_CB
@@ -141,7 +142,7 @@
 		<t:field fieldType="String" srcName="publicKeyAlgo" dstName="public_key_algo"  isRequired="true"/>
 		<t:field fieldType="String" srcName="crl" dstName="crl" defaultVal=""/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
-		<!-- <t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/> -->
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
 	
 	<!-- # 0x260	PXY 管控文件策略 	608=0:PXY_OBJ_FILE -->
@@ -153,7 +154,7 @@
 		<t:field fieldType="Number" srcName="contentLength" dstName="content_length"  isRequired="true"/>
 		<t:field fieldType="String" srcName="filePath" dstName="file_path"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
-		<!-- <t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/> -->
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
 </t:commonSources>
 

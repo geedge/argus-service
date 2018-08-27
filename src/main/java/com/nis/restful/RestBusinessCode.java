@@ -107,7 +107,10 @@ public enum RestBusinessCode {
 	 * 编译配置的的endTime不能为空
 	 */
 	EndTimeIsNull(4001011, "Maat配置的endTime不能为空"),
-	
+	/**
+	 * 配置的userRegion不能为空
+	 */
+	UserRegionIsNull(4001012, "配置userRegion属性不能为空"),
 	/**
 	 * 配置的isValid不能为空
 	 */
