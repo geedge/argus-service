@@ -9,10 +9,8 @@
 package com.nis.domain.restful;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
@@ -24,7 +22,8 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * @version V1.0
  */
 public class GroupReuse implements Serializable {
-	private static final long serialVersionUID = 5803814776173252917L;
+
+	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "业务ID", required = true)
 	private Integer service;
@@ -37,7 +36,10 @@ public class GroupReuse implements Serializable {
 
 	@ApiModelProperty(value = "数值域分组列表", required = true)
 	private List<NumRegion> numRegionList;
-	
+
+	@ApiModelProperty(value = "生效范围IP域分组列表", required = true)
+	private List<IpRegion> ipClientRangeList;
+
 	/**
 	 * @return service
 	 */
@@ -53,7 +55,6 @@ public class GroupReuse implements Serializable {
 		this.service = service;
 	}
 
-	
 	/**
 	 * @return strRegionList
 	 */
@@ -99,5 +100,13 @@ public class GroupReuse implements Serializable {
 	public void setNumRegionList(List<NumRegion> numRegionList) {
 		this.numRegionList = numRegionList;
 	}
-	
+
+	public List<IpRegion> getIpClientRangeList() {
+		return ipClientRangeList;
+	}
+
+	public void setIpClientRangeList(List<IpRegion> ipClientRangeList) {
+		this.ipClientRangeList = ipClientRangeList;
+	}
+
 }

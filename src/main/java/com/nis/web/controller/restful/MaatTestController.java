@@ -31,6 +31,7 @@ import com.nis.domain.restful.StrRegion;
 import com.nis.util.Configurations;
 import com.nis.util.ExceptionUtil;
 import com.nis.util.FileUtils;
+import com.nis.util.JsonMapper;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 import com.nis.util.StringUtil;
@@ -151,6 +152,8 @@ public class MaatTestController {
 						for (int i = 0; i < saveCount; i++) {
 							configCompileList.add(getConfigCompile(ser));
 						}
+						String jsonString = JsonMapper.toJsonString(configCompileList);
+						System.out.println(jsonString);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 						for (ConfigCompile configCompile : configCompileList) {
@@ -175,6 +178,8 @@ public class MaatTestController {
 						for (int i = 0; i < saveCount; i++) {
 							configCompileList.add(getConfigCompile(service));
 						}
+						String jsonString = JsonMapper.toJsonString(configCompileList);
+						System.out.println(jsonString);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 						for (ConfigCompile configCompile : configCompileList) {
@@ -188,7 +193,8 @@ public class MaatTestController {
 						maatTestServiceimpl.getMaatKeys(configCompileList);
 						map.put(service, "http://127.0.0.1:8080/galaxy/service/test/cfg/v1/testDelMaat?serviceType="
 								+ service + "&configId=" + compileIdList.toString().replace("[", "").replace("]", ""));
-						if(!testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service).equals("ok")) {
+						if (!testDelMaat(compileIdList.toString().replace("[", "").replace("]", ""), service)
+								.equals("ok")) {
 							map.put(-4, "del config error");
 						}
 					} else {
@@ -594,7 +600,7 @@ public class MaatTestController {
 				// 验证数据是否在正确
 				maatTestServiceimpl.getUnMaatKeys(jsonStr, service);
 				// 删除配置
-				if(!testDelUnMaat(compileIdList.toString().replace("[", "").replace("]", ""), service).equals("ok")){
+				if (!testDelUnMaat(compileIdList.toString().replace("[", "").replace("]", ""), service).equals("ok")) {
 					map.put(-4, "del unmaat error");
 				}
 			}

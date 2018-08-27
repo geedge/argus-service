@@ -72,12 +72,10 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	public static boolean isStrStrongRegion(String tableName, Integer service)
-			throws Exception {
+	public static boolean isStrStrongRegion(String tableName, Integer service) throws Exception {
 		if (null != tableName && !tableName.equals("")) {
 			List<String> tableList = new ArrayList<String>();
-			Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal
-					.getSercieNameMap().get(service);
+			Map<Integer, List<String>> sercieNameMap = ServiceAndRDBIndexReal.getSercieNameMap().get(service);
 			if (sercieNameMap != null && sercieNameMap.size() > 0) {
 				for (Integer type : sercieNameMap.keySet()) {
 					// 12代表是ip类域配置,13代表是数值类配置,14代表是字符串类域配置,15代表是增强字符串类域配置,
@@ -121,30 +119,25 @@ public class ConfigSourcesService extends BaseService {
 	 * @param sb
 	 * @return
 	 */
-	public void saveMaatConfig(AuditLogThread thread, long start,
-			List<ConfigCompile> configCompileList, StringBuffer sb)
-			throws Exception {
+	public void saveMaatConfig(AuditLogThread thread, long start, List<ConfigCompile> configCompileList,
+			StringBuffer sb) throws Exception {
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
 
 		for (ConfigCompile configCompile : configCompileList) {
-			Integer service = Integer.valueOf(configCompile.getService()
-					.toString());
+			Integer service = Integer.valueOf(configCompile.getService().toString());
 			MaatConfig maatConfig = new MaatConfig();
 			CompileVal.compileIsOk(configCompile, false, sb);
 
 			maatConfig.setService(service);
 			// 编译
-			maatConfig.setCompileMap(convertObjectToMap(configCompile,
-					ConfigCompile.class));
+			maatConfig.setCompileMap(convertObjectToMap(configCompile, ConfigCompile.class));
 			// 分组
 			List<Map<String, String>> dstMaplList = null;
 			if (!StringUtil.isEmpty(configCompile.getGroupRelationList())) {
 				dstMaplList = new ArrayList<Map<String, String>>();
-				for (ConfigGroupRelation group : configCompile
-						.getGroupRelationList()) {
-					dstMaplList.add(convertObjectToMap(group,
-							ConfigGroupRelation.class));
+				for (ConfigGroupRelation group : configCompile.getGroupRelationList()) {
+					dstMaplList.add(convertObjectToMap(group, ConfigGroupRelation.class));
 				}
 			}
 			maatConfig.setGroupMapList(dstMaplList);
@@ -155,14 +148,12 @@ public class ConfigSourcesService extends BaseService {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (StrRegion region : configCompile.getStrRegionList()) {
 					if (StringUtil.isEmpty(region.getDistrict())) {
-						dstMaplList.add(convertObjectToMap(region,
-								StrRegion.class));
+						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
 					} else {
 						if (StringUtil.isEmpty(strongMapList)) {
 							strongMapList = new ArrayList<Map<String, String>>();
 						}
-						strongMapList.add(convertObjectToMap(region,
-								StrRegion.class));
+						strongMapList.add(convertObjectToMap(region, StrRegion.class));
 					}
 				}
 			}
@@ -176,8 +167,7 @@ public class ConfigSourcesService extends BaseService {
 			if (!StringUtil.isEmpty(configCompile.getNumRegionList())) {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (NumRegion region : configCompile.getNumRegionList()) {
-					dstMaplList
-							.add(convertObjectToMap(region, NumRegion.class));
+					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
 				}
 			}
 			maatConfig.setNumRegionMapList(dstMaplList);
@@ -197,8 +187,7 @@ public class ConfigSourcesService extends BaseService {
 			if (!StringUtil.isEmpty(configCompile.getDigestRegionList())) {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (DigestRegion region : configCompile.getDigestRegionList()) {
-					dstMaplList.add(convertObjectToMap(region,
-							DigestRegion.class));
+					dstMaplList.add(convertObjectToMap(region, DigestRegion.class));
 				}
 			}
 
@@ -232,74 +221,53 @@ public class ConfigSourcesService extends BaseService {
 
 		Iterator serviceIterator = maatMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
-			Integer service = Integer
-					.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal
-					.getRedisDBByService(service);
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
 					// 分发到阀门有些业务需要添加编译属性到域配置
 					List<MaatConfig> newMaatConfigList = new ArrayList<MaatConfig>();
 					newMaatConfigList.addAll(maatMap.get(service));
-					if (dbIndex.intValue() == ServiceAndRDBIndexReal
-							.getValveDBIndex().intValue()) {
-						Map<Integer, Map<String, String[]>> maatToValueMap = ServiceAndRDBIndexReal
-								.getMaatToValveMap();
+					if (dbIndex.intValue() == ServiceAndRDBIndexReal.getValveDBIndex().intValue()) {
+						Map<Integer, Map<String, String[]>> maatToValueMap = ServiceAndRDBIndexReal.getMaatToValveMap();
 						if (maatToValueMap.containsKey(service)) {
 
-							Map<String, String[]> regionAndFiledMap = maatToValueMap
-									.get(service);
+							Map<String, String[]> regionAndFiledMap = maatToValueMap.get(service);
 							for (int i = 0; i < newMaatConfigList.size(); i++) {
-								MaatConfig maatConfig = newMaatConfigList
-										.get(i);
+								MaatConfig maatConfig = newMaatConfigList.get(i);
 								MaatConfig newMaatConfig = (MaatConfig) JsonMapper
-										.fromJsonString(JsonMapper
-												.toJsonString(maatConfig),
-												MaatConfig.class);
-								Iterator iterator = regionAndFiledMap.keySet()
-										.iterator();
+										.fromJsonString(JsonMapper.toJsonString(maatConfig), MaatConfig.class);
+								Iterator iterator = regionAndFiledMap.keySet().iterator();
 								while (iterator.hasNext()) {
-									String regionName = iterator.next()
-											.toString();
+									String regionName = iterator.next().toString();
 									PropertyDescriptor pd;
 									try {
-										pd = new PropertyDescriptor(regionName
-												+ "MapList", MaatConfig.class);
+										pd = new PropertyDescriptor(regionName + "MapList", MaatConfig.class);
 										Method method = pd.getReadMethod();
-										Object object = method
-												.invoke(newMaatConfig);
+										Object object = method.invoke(newMaatConfig);
 
 										if (object != null) {
 
 											List<Map<String, String>> listMaps = new ArrayList<Map<String, String>>();
 											listMaps.addAll((List<Map<String, String>>) object);
-											String[] fields = regionAndFiledMap
-													.get(regionName);
+											String[] fields = regionAndFiledMap.get(regionName);
 											for (String fieldName : fields) {
-												String value = newMaatConfig
-														.getCompileMap()
-														.get(fieldName
-																.toLowerCase());
+												String value = newMaatConfig.getCompileMap()
+														.get(fieldName.toLowerCase());
 												if (!StringUtil.isEmpty(value)) {
 													for (Map<String, String> map : listMaps) {
-														map.put(fieldName
-																.toLowerCase(),
-																value);
+														map.put(fieldName.toLowerCase(), value);
 													}
 												}
 											}
 											method = pd.getWriteMethod();
-											method.invoke(newMaatConfig,
-													listMaps);
+											method.invoke(newMaatConfig, listMaps);
 										}
 										newMaatConfigList.set(i, newMaatConfig);
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
-										throw new RestServiceException(
-												"未找到域列表，请检查配置文件中域类型是否正确！:"
-														+ e.getMessage(),
-												RestBusinessCode.service_runtime_error
-														.getValue());
+										throw new RestServiceException("未找到域列表，请检查配置文件中域类型是否正确！:" + e.getMessage(),
+												RestBusinessCode.service_runtime_error.getValue());
 									}
 
 								}
@@ -317,8 +285,7 @@ public class ConfigSourcesService extends BaseService {
 
 				}
 			} else {
-				throw new ServiceRuntimeException(
-						RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),
+				throw new ServiceRuntimeException(RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 		}
@@ -326,15 +293,13 @@ public class ConfigSourcesService extends BaseService {
 		configRedisService.saveMaatConfig(configMap);
 	}
 
-	private Map<String, String> convertObjectToMap(Object obj, Class clazz)
-			throws Exception {
+	private Map<String, String> convertObjectToMap(Object obj, Class clazz) throws Exception {
 		Map<String, String> dstMap = new HashMap<String, String>();
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			if ("serialVersionUID".equals(field.getName()))
 				continue;
-			String dstName = CamelUnderlineUtil.camelToUnderline(field
-					.getName());
+			String dstName = CamelUnderlineUtil.camelToUnderline(field.getName());
 			PropertyDescriptor pd;
 			pd = new PropertyDescriptor(field.getName(), clazz);
 			Method method = pd.getReadMethod();
@@ -345,15 +310,13 @@ public class ConfigSourcesService extends BaseService {
 			if (dstObject instanceof ArrayList) {
 				dstObject = "";
 			}
-			dstMap.put(dstName,
-					StringUtil.isEmpty(dstObject) ? "" : dstObject.toString());
+			dstMap.put(dstName, StringUtil.isEmpty(dstObject) ? "" : dstObject.toString());
 		}
 		return dstMap;
 	}
 
-	public void updateConfigSources(AuditLogThread thread, long start,
-			List<ConfigCompile> compileList, Date opTime, StringBuffer sb)
-			throws Exception {
+	public void updateConfigSources(AuditLogThread thread, long start, List<ConfigCompile> compileList, Date opTime,
+			StringBuffer sb) throws Exception {
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
@@ -364,8 +327,7 @@ public class ConfigSourcesService extends BaseService {
 
 				// compileAllList.add(config);
 				if (compileMap.containsKey(config.getService())) {
-					compileMap.get(config.getService()).add(
-							config.getCompileId());
+					compileMap.get(config.getService()).add(config.getCompileId());
 				} else {
 					List<Long> idList = new ArrayList<Long>();
 					idList.add(config.getCompileId());
@@ -374,22 +336,18 @@ public class ConfigSourcesService extends BaseService {
 			}
 
 		} else {
-			throw new RestServiceException("编译配置不能为空" + sb.toString(),
-					RestBusinessCode.CompileIsNull.getValue());
+			throw new RestServiceException("编译配置不能为空" + sb.toString(), RestBusinessCode.CompileIsNull.getValue());
 		}
 		// Map<DBIndex,Map<Service,List<CompileId>>
 		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 		Iterator serviceIterator = compileMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
-			Integer service = Integer
-					.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal
-					.getRedisDBByService(service);
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
 					if (restMap.containsKey(dbIndex)) {
-						restMap.get(dbIndex).put(service,
-								compileMap.get(service));
+						restMap.get(dbIndex).put(service, compileMap.get(service));
 					} else {
 						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
 						map.put(service, compileMap.get(service));
@@ -397,8 +355,7 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			} else {
-				ServiceRuntimeException e = new ServiceRuntimeException(
-						"service值为" + service + ",与写入数据库序号映射关系不存在",
+				ServiceRuntimeException e = new ServiceRuntimeException("service值为" + service + ",与写入数据库序号映射关系不存在",
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 		}
@@ -422,58 +379,47 @@ public class ConfigSourcesService extends BaseService {
 	 * @param config
 	 * @return
 	 */
-	private void checkCompileOptForUpdate(ConfigCompile config)
-			throws Exception {
+	private void checkCompileOptForUpdate(ConfigCompile config) throws Exception {
 
 		if (StringUtil.isEmpty(config.getCompileId())) {
-			throw new RestServiceException(
-					RestBusinessCode.CompileIdIsNull.getErrorReason(),
+			throw new RestServiceException(RestBusinessCode.CompileIdIsNull.getErrorReason(),
 					RestBusinessCode.CompileIdIsNull.getValue());
 		}
 		if (StringUtil.isEmpty(config.getService())) {
-			throw new RestServiceException(
-					RestBusinessCode.ServiceIsNull.getErrorReason(),
+			throw new RestServiceException(RestBusinessCode.ServiceIsNull.getErrorReason(),
 					RestBusinessCode.ServiceIsNull.getValue());
 		}
 		if (StringUtil.isEmpty(config.getIsValid())) {
-			throw new RestServiceException("编译配置id为" + config.getCompileId()
-					+ "的IsValid字段不能为空",
+			throw new RestServiceException("编译配置id为" + config.getCompileId() + "的IsValid字段不能为空",
 					RestBusinessCode.IsValidIsNull.getValue());
 		}
 		if (config.getIsValid() != 0) {
-			throw new RestServiceException("编译配置id为" + config.getCompileId()
-					+ "的配置在修改时不能为有效", RestBusinessCode.IsValidIsF.getValue());
+			throw new RestServiceException("编译配置id为" + config.getCompileId() + "的配置在修改时不能为有效",
+					RestBusinessCode.IsValidIsF.getValue());
 		}
 	}
 
-	public void saveCommonSources(AuditLogThread thread, long start,
-			String jsonString) throws Exception {
+	public void saveCommonSources(AuditLogThread thread, long start, String jsonString) throws Exception {
 		JsonArray jsonObjectList = null;
 		try {
-			jsonObjectList = new JsonParser().parse(jsonString)
-					.getAsJsonArray();
+			jsonObjectList = new JsonParser().parse(jsonString).getAsJsonArray();
 		} catch (Exception e) {
 			// TODO: handle exception
-			throw new RestServiceException(
-					RestBusinessCode.CBParamFormateError.getErrorReason() + ","
-							+ e.getMessage(),
+			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
 
 		Map<Integer, List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String, String>>>();
 		for (int i = 0; i < jsonObjectList.size(); i++) {
 			JsonObject jsonObj = (JsonObject) jsonObjectList.get(i);
-			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject
-					.fromObject((jsonObj.toString())));
+			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject.fromObject((jsonObj.toString())));
 			if (srcMap.containsKey("service")) {
 				Map<String, String> dstMap = new HashMap<String, String>();
 				List<CommonSourceFieldCfg> commonSourceFieldCfgList = ReadCommSourceXmlUtil
-						.getCommonSourceCfgByService(srcMap.get("service")
-								.toString().trim());
+						.getCommonSourceCfgByService(srcMap.get("service").toString().trim());
 				if (StringUtil.isEmpty(commonSourceFieldCfgList)) {
 					throw new RestServiceException(
-							RestBusinessCode.ServiceIsWrong.getErrorReason()
-									+ ",请检查service配置是否正确",
+							RestBusinessCode.ServiceIsWrong.getErrorReason() + ",请检查service配置是否正确",
 							RestBusinessCode.ServiceIsWrong.getValue());
 				}
 				// 获取IP类型
@@ -482,41 +428,28 @@ public class ConfigSourcesService extends BaseService {
 
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					if (commonSourceFieldCfg.getDstName().equals("addr_type")) {
-						String dstVal = srcMap.get(
-								commonSourceFieldCfg.getSrcName()).toString();
+						String dstVal = srcMap.get(commonSourceFieldCfg.getSrcName()).toString();
 						ipTypeName = commonSourceFieldCfg.getSrcName();
 						// regexp 特殊格式正则验证
 						Boolean valFlag = true;
-						if (!StringUtil.isEmpty(commonSourceFieldCfg
-								.getRegexp())) {
-							Pattern pattern = Pattern
-									.compile(commonSourceFieldCfg.getRegexp());
+						if (!StringUtil.isEmpty(commonSourceFieldCfg.getRegexp())) {
+							Pattern pattern = Pattern.compile(commonSourceFieldCfg.getRegexp());
 							Matcher matcher = pattern.matcher(dstVal);
 							valFlag = valFlag & matcher.matches();
 						}
 						if (!valFlag) {
-							throw new RestServiceException(
-									RestBusinessCode.IpTypeIsWrong
-											.getErrorReason(),
+							throw new RestServiceException(RestBusinessCode.IpTypeIsWrong.getErrorReason(),
 									RestBusinessCode.IpTypeIsWrong.getValue());
 						}
 						ipType = Integer.parseInt(dstVal);
 					}
 					// 验证service与action是否匹配
 					if (commonSourceFieldCfg.getDstName().equals("action")) {
-						String dstVal = srcMap
-								.get(commonSourceFieldCfg.getSrcName())
-								.toString().trim();
-						if (Integer.valueOf(dstVal).compareTo(
-								ServiceAndRDBIndexReal
-										.getActionByService(Integer
-												.valueOf(srcMap.get("service")
-														.toString().trim()))) != 0) {
-							throw new RestServiceException(
-									RestBusinessCode.ServiceUnmatchAction
-											.getErrorReason(),
-									RestBusinessCode.ServiceUnmatchAction
-											.getValue());
+						String dstVal = srcMap.get(commonSourceFieldCfg.getSrcName()).toString().trim();
+						if (Integer.valueOf(dstVal).compareTo(ServiceAndRDBIndexReal
+								.getActionByService(Integer.valueOf(srcMap.get("service").toString().trim()))) != 0) {
+							throw new RestServiceException(RestBusinessCode.ServiceUnmatchAction.getErrorReason(),
+									RestBusinessCode.ServiceUnmatchAction.getValue());
 						}
 					}
 				}
@@ -526,47 +459,33 @@ public class ConfigSourcesService extends BaseService {
 				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 					// 是否必填
 					if (commonSourceFieldCfg.getIsRequired()
-							&& !srcMap.containsKey(commonSourceFieldCfg
-									.getSrcName())) {
-						throw new RestServiceException(
-								commonSourceFieldCfg.getSrcName() + "参数不能为空",
+							&& !srcMap.containsKey(commonSourceFieldCfg.getSrcName())) {
+						throw new RestServiceException(commonSourceFieldCfg.getSrcName() + "参数不能为空",
 								RestBusinessCode.FieldIsNull.getValue());
 					}
 					// 字段类型 String Number Date Ip Port
-					String dstStr = StringUtil.isEmpty(srcMap
-							.get(commonSourceFieldCfg.getSrcName())) ? commonSourceFieldCfg
-							.getDefaultVal() : srcMap.get(
-							commonSourceFieldCfg.getSrcName()).toString();
-					if (!StringUtil.isEmpty(dstStr) && dstStr.startsWith("[")
-							&& dstStr.endsWith("]")) {
-						dstStr = srcMap.get(
-								dstStr.substring(1, dstStr.length() - 1))
-								.toString();
+					String dstStr = StringUtil.isEmpty(srcMap.get(commonSourceFieldCfg.getSrcName()))
+							? commonSourceFieldCfg.getDefaultVal()
+							: srcMap.get(commonSourceFieldCfg.getSrcName()).toString();
+					if (!StringUtil.isEmpty(dstStr) && dstStr.startsWith("[") && dstStr.endsWith("]")) {
+						dstStr = srcMap.get(dstStr.substring(1, dstStr.length() - 1)).toString();
 					}
 
 					if ("dstFile".equals(commonSourceFieldCfg.getSrcName())) {
-						if ("dst_file"
-								.equals(commonSourceFieldCfg.getDstName())) {
+						if ("dst_file".equals(commonSourceFieldCfg.getDstName())) {
 							String maatTableName = ServiceAndRDBIndexReal
-									.getUnMaatTableName(Integer.valueOf(srcMap
-											.get("service").toString().trim()));
-							String dstPath = Constants.MM_SAMPLE_DST_PATH
-									.replace("{tableType}", maatTableName
-											.substring(maatTableName
-													.lastIndexOf("_") + 1));
-							dstStr = dstPath.replace("{fileName}", dstStr
-									.substring(dstStr.lastIndexOf("/") + 1));
-						} else if ("file_id".equals(commonSourceFieldCfg
-								.getDstName())) {
+									.getUnMaatTableName(Integer.valueOf(srcMap.get("service").toString().trim()));
+							String dstPath = Constants.MM_SAMPLE_DST_PATH.replace("{tableType}",
+									maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
+							dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
+						} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
 							dstStr = dstStr.substring(dstStr.indexOf("group"));
 						}
 					}
 					switch (commonSourceFieldCfg.getFieldType()) {
 					case "Number":
 						if (!StringUtil.isNumeric(dstStr)) {
-							throw new RestServiceException(
-									commonSourceFieldCfg.getSrcName()
-											+ "参数不能格式不正确,必需是数值型",
+							throw new RestServiceException(commonSourceFieldCfg.getSrcName() + "参数不能格式不正确,必需是数值型",
 									RestBusinessCode.MastNumberic.getValue());
 						}
 						break;
@@ -580,9 +499,7 @@ public class ConfigSourcesService extends BaseService {
 							dstStr = date.getTime() + "000";
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
-							throw new RestServiceException(
-									commonSourceFieldCfg.getSrcName()
-											+ "参数格式不正确或不是规范的日期串",
+							throw new RestServiceException(commonSourceFieldCfg.getSrcName() + "参数格式不正确或不是规范的日期串",
 									RestBusinessCode.MastDate.getValue());
 						}
 						break;
@@ -598,16 +515,13 @@ public class ConfigSourcesService extends BaseService {
 						}
 						if (!BasicProvingUtil.isIpOrIpMask(dstStr, valAddrType)) {
 							throw new RestServiceException(
-									commonSourceFieldCfg.getSrcName()
-											+ "参数格式不正确或与" + ipTypeName + "不一致",
+									commonSourceFieldCfg.getSrcName() + "参数格式不正确或与" + ipTypeName + "不一致",
 									RestBusinessCode.IpIsUnMatchType.getValue());
 						}
 						break;
 					case "Port":
 						if (!BasicProvingUtil.isPortOrPortMask(dstStr)) {
-							throw new RestServiceException(
-									commonSourceFieldCfg.getSrcName()
-											+ "参数不能格式不正确，不是合法的Port",
+							throw new RestServiceException(commonSourceFieldCfg.getSrcName() + "参数不能格式不正确，不是合法的Port",
 									RestBusinessCode.PortIsNotVal.getValue());
 						}
 						break;
@@ -615,73 +529,55 @@ public class ConfigSourcesService extends BaseService {
 					}
 					// range取值范围验证
 					if (!StringUtil.isEmpty(commonSourceFieldCfg.getRange())) {
-						String[] range = commonSourceFieldCfg.getRange().split(
-								"-");
+						String[] range = commonSourceFieldCfg.getRange().split("-");
 						Boolean flag = false;
 						if (range.length == 2) {
-							if (!(Long.valueOf(range[0]).compareTo(
-									Long.valueOf(dstStr)) <= 0 && Long.valueOf(
-									range[1]).compareTo(Long.valueOf(dstStr)) >= 0)) {
+							if (!(Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr)) <= 0
+									&& Long.valueOf(range[1]).compareTo(Long.valueOf(dstStr)) >= 0)) {
 								flag = true;
 							}
 
-						} else if (commonSourceFieldCfg.getRange().startsWith(
-								"-")) {// 只有最大值限制
-							if (Long.valueOf(range[0]).compareTo(
-									Long.valueOf(dstStr)) <= 0) {
+						} else if (commonSourceFieldCfg.getRange().startsWith("-")) {// 只有最大值限制
+							if (Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr)) <= 0) {
 								flag = true;
 							}
-						} else if (commonSourceFieldCfg.getRange()
-								.endsWith("-")) {// 只有最小值限制
-							if (Long.valueOf(range[0]).compareTo(
-									Long.valueOf(dstStr)) >= 0) {
+						} else if (commonSourceFieldCfg.getRange().endsWith("-")) {// 只有最小值限制
+							if (Long.valueOf(range[0]).compareTo(Long.valueOf(dstStr)) >= 0) {
 								flag = true;
 							}
 						}
 						if (flag) {
-							throw new RestServiceException(
-									commonSourceFieldCfg.getSrcName()
-											+ "参数不在有效范围("
-											+ commonSourceFieldCfg.getRange()
-											+ ")",
-									RestBusinessCode.ValueInWrongRange
-											.getValue());
+							throw new RestServiceException(commonSourceFieldCfg.getSrcName() + "参数不在有效范围("
+									+ commonSourceFieldCfg.getRange() + ")",
+									RestBusinessCode.ValueInWrongRange.getValue());
 						}
 					}
 					// regexp 特殊格式正则验证
 					Boolean valFlag = true;
 					if (!StringUtil.isEmpty(commonSourceFieldCfg.getRegexp())) {
-						Pattern pattern = Pattern.compile(commonSourceFieldCfg
-								.getRegexp());
+						Pattern pattern = Pattern.compile(commonSourceFieldCfg.getRegexp());
 						Matcher matcher = pattern.matcher(dstStr);
 						valFlag = valFlag & matcher.matches();
 					}
 					if (valFlag) {
 						dstMap.put(commonSourceFieldCfg.getDstName(), dstStr);
 					} else {
-						throw new RestServiceException(
-								commonSourceFieldCfg.getSrcName() + "参数格式与正则("
-										+ commonSourceFieldCfg.getRegexp()
-										+ ")不匹配",
+						throw new RestServiceException(commonSourceFieldCfg.getSrcName() + "参数格式与正则("
+								+ commonSourceFieldCfg.getRegexp() + ")不匹配",
 								RestBusinessCode.ValueInWrongRegexp.getValue());
 					}
 				}
-				if (StringUtil.isEmpty(dstMaps.get(Integer.valueOf(srcMap.get(
-						"service").toString())))) {
+				if (StringUtil.isEmpty(dstMaps.get(Integer.valueOf(srcMap.get("service").toString())))) {
 					List<Map<String, String>> list = new ArrayList<Map<String, String>>();
 					list.add(dstMap);
-					dstMaps.put(
-							Integer.valueOf(srcMap.get("service").toString()),
-							list);
+					dstMaps.put(Integer.valueOf(srcMap.get("service").toString()), list);
 				} else {
-					List<Map<String, String>> list = dstMaps.get(Integer
-							.valueOf(srcMap.get("service").toString()));
+					List<Map<String, String>> list = dstMaps.get(Integer.valueOf(srcMap.get("service").toString()));
 					list.add(dstMap);
 
 				}
 			} else {
-				throw new RestServiceException("service参数不能为空",
-						RestBusinessCode.ServiceIsNull.getValue());
+				throw new RestServiceException("service参数不能为空", RestBusinessCode.ServiceIsNull.getValue());
 			}
 		}
 		logger.info("------------------调用非maat配置新增接口-------------------");
@@ -689,10 +585,8 @@ public class ConfigSourcesService extends BaseService {
 		Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
 		Iterator serviceIterator = dstMaps.keySet().iterator();
 		while (serviceIterator.hasNext()) {
-			Integer service = Integer
-					.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal
-					.getRedisDBByService(service);
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
 					if (configMap.containsKey(dbIndex)) {
@@ -724,17 +618,14 @@ public class ConfigSourcesService extends BaseService {
 	 * @param sb
 	 * @throws Exception
 	 */
-	public void updateCommonSources(AuditLogThread thread, long start,
-			String jsonString, Date opTime, StringBuffer sb) throws Exception {
+	public void updateCommonSources(AuditLogThread thread, long start, String jsonString, Date opTime, StringBuffer sb)
+			throws Exception {
 		JsonArray jsonObjectList = null;
 		try {
-			jsonObjectList = new JsonParser().parse(jsonString)
-					.getAsJsonArray();
+			jsonObjectList = new JsonParser().parse(jsonString).getAsJsonArray();
 		} catch (Exception e) {
 			// TODO: handle exception
-			throw new RestServiceException(
-					RestBusinessCode.CBParamFormateError.getErrorReason() + ","
-							+ e.getMessage(),
+			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
 		// <service,cfgIdList>
@@ -743,15 +634,12 @@ public class ConfigSourcesService extends BaseService {
 		Map<String, String> validIdMap = new HashMap<String, String>();
 		for (int i = 0; i < jsonObjectList.size(); i++) {
 			JsonObject jsonObj = (JsonObject) jsonObjectList.get(i);
-			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject
-					.fromObject((jsonObj.toString())));
+			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject.fromObject((jsonObj.toString())));
 			checkOptForUpdate(srcMap);
-			validIdMap.put(srcMap.get("isValid").toString(),
-					srcMap.get("isValid").toString());
+			validIdMap.put(srcMap.get("isValid").toString(), srcMap.get("isValid").toString());
 			Integer service = Integer.valueOf(srcMap.get("service").toString());
 
-			List<CommonSourceFieldCfg> list = ReadCommSourceXmlUtil
-					.getCommonSourceCfgByService(service + "");
+			List<CommonSourceFieldCfg> list = ReadCommSourceXmlUtil.getCommonSourceCfgByService(service + "");
 			String srcName = "cfgId";
 			for (CommonSourceFieldCfg commonSourceFieldCfg : list) {
 				if (commonSourceFieldCfg.getIsCfgId()) {
@@ -769,17 +657,14 @@ public class ConfigSourcesService extends BaseService {
 		}
 
 		if (validIdMap.size() > 1) {
-			throw new RestServiceException(
-					RestBusinessCode.IsValidNonUniq.getErrorReason(),
+			throw new RestServiceException(RestBusinessCode.IsValidNonUniq.getErrorReason(),
 					RestBusinessCode.IsValidNonUniq.getValue());
 		}
 		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
 		Iterator serviceIterator = cfgMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
-			Integer service = Integer
-					.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal
-					.getRedisDBByService(service);
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
 					if (restMap.containsKey(dbIndex)) {
@@ -797,8 +682,7 @@ public class ConfigSourcesService extends BaseService {
 		}
 		try {
 			// 停用时isInvalid=true,启用时isInvalid = false
-			configRedisService.delUnMaatConfig(restMap,
-					validIdMap.containsKey("0") ? true : false);
+			configRedisService.delUnMaatConfig(restMap, validIdMap.containsKey("0") ? true : false);
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw e;
@@ -820,16 +704,13 @@ public class ConfigSourcesService extends BaseService {
 		Object isValid = srcMap.get("isValid");
 
 		if (StringUtil.isEmpty(service)) {
-			throw new RestServiceException(
-					RestBusinessCode.ServiceIsNull.getErrorReason(),
+			throw new RestServiceException(RestBusinessCode.ServiceIsNull.getErrorReason(),
 					RestBusinessCode.ServiceIsNull.getValue());
 		} else if (!StringUtil.isNumeric(service.toString())) {
-			throw new RestServiceException("service字段格式不正确,"
-					+ RestBusinessCode.MastNumberic.getErrorReason(),
+			throw new RestServiceException("service字段格式不正确," + RestBusinessCode.MastNumberic.getErrorReason(),
 					RestBusinessCode.MastNumberic.getValue());
 		}
-		List<CommonSourceFieldCfg> list = ReadCommSourceXmlUtil
-				.getCommonSourceCfgByService(service + "");
+		List<CommonSourceFieldCfg> list = ReadCommSourceXmlUtil.getCommonSourceCfgByService(service + "");
 		String srcName = "cfgId";
 		for (CommonSourceFieldCfg commonSourceFieldCfg : list) {
 			if (commonSourceFieldCfg.getIsCfgId()) {
@@ -838,22 +719,18 @@ public class ConfigSourcesService extends BaseService {
 		}
 		Object cfgId = srcMap.get(srcName);
 		if (StringUtil.isEmpty(cfgId)) {
-			throw new RestServiceException(
-					RestBusinessCode.CfgIdIsNull.getErrorReason(),
+			throw new RestServiceException(RestBusinessCode.CfgIdIsNull.getErrorReason(),
 					RestBusinessCode.CfgIdIsNull.getValue());
 		} else if (!StringUtil.isNumeric(cfgId.toString())) {
-			throw new RestServiceException("cfgId字段格式不正确,"
-					+ RestBusinessCode.MastNumberic.getErrorReason(),
+			throw new RestServiceException("cfgId字段格式不正确," + RestBusinessCode.MastNumberic.getErrorReason(),
 					RestBusinessCode.MastNumberic.getValue());
 		}
 		if (StringUtil.isEmpty(isValid)) {
-			throw new RestServiceException("配置id为" + srcMap.get("cfgId")
-					+ "的isValid字段不能为空",
+			throw new RestServiceException("配置id为" + srcMap.get("cfgId") + "的isValid字段不能为空",
 					RestBusinessCode.IsValidIsNull.getValue());
 		} else {
 			if (!StringUtil.isNumeric(service.toString())) {
-				throw new RestServiceException(
-						RestBusinessCode.IsValidInWrongRange.getErrorReason(),
+				throw new RestServiceException(RestBusinessCode.IsValidInWrongRange.getErrorReason(),
 						RestBusinessCode.IsValidInWrongRange.getValue());
 			}
 			// 配置取消改为状态更新（停/启用）
@@ -874,8 +751,7 @@ public class ConfigSourcesService extends BaseService {
 	 * @return
 	 * @throws Exception
 	 */
-	public String getDigestGen(String realPath, String filePath)
-			throws Exception {
+	public String getDigestGen(String realPath, String filePath) throws Exception {
 		logger.info("----------------开始获取摘要：getDigestGen");
 		String content = "";
 		String digestGenToolPath = Constants.DIGEST_GEN_TOOL_PATH;
@@ -897,8 +773,7 @@ public class ConfigSourcesService extends BaseService {
 		}
 		// System.out.println("-------------------->>"+content);
 		String[] digestGenReslt = content.split(" ");
-		if (digestGenReslt.length >= 4
-				&& !StringUtil.isEmpty(digestGenReslt[3])) {
+		if (digestGenReslt.length >= 4 && !StringUtil.isEmpty(digestGenReslt[3])) {
 			return digestGenReslt[3];
 		}
 		return null;
@@ -915,15 +790,15 @@ public class ConfigSourcesService extends BaseService {
 	 * @param sb
 	 * @return
 	 */
-	public void addGroupReuseSources(AuditLogThread thread, long start,
-			List<GroupReuse> groupReuseList, StringBuffer sb) throws Exception {
+	public void addGroupReuseSources(AuditLogThread thread, long start, List<GroupReuse> groupReuseList,
+			StringBuffer sb) throws Exception {
 		// Map<service,List<maat配置>> 存放解析后输入数据
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		// Map<service,List<maat配置>> 存放多分发的数据
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-		//验证
+		// 验证
 		GroupReuseVal.valGroupReuse(groupReuseList, false);
-		
+
 		for (GroupReuse groupReuse : groupReuseList) {
 			Integer service = groupReuse.getService();
 			MaatConfig maatConfig = new MaatConfig();
@@ -935,14 +810,12 @@ public class ConfigSourcesService extends BaseService {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (StrRegion region : groupReuse.getStrRegionList()) {
 					if (StringUtil.isEmpty(region.getDistrict())) {
-						dstMaplList.add(convertObjectToMap(region,
-								StrRegion.class));
+						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
 					} else {
 						if (StringUtil.isEmpty(strongMapList)) {
 							strongMapList = new ArrayList<Map<String, String>>();
 						}
-						strongMapList.add(convertObjectToMap(region,
-								StrRegion.class));
+						strongMapList.add(convertObjectToMap(region, StrRegion.class));
 					}
 				}
 			}
@@ -956,8 +829,7 @@ public class ConfigSourcesService extends BaseService {
 			if (!StringUtil.isEmpty(groupReuse.getNumRegionList())) {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (NumRegion region : groupReuse.getNumRegionList()) {
-					dstMaplList
-							.add(convertObjectToMap(region, NumRegion.class));
+					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
 				}
 			}
 			maatConfig.setNumRegionMapList(dstMaplList);
@@ -971,7 +843,16 @@ public class ConfigSourcesService extends BaseService {
 				}
 			}
 			maatConfig.setIpRegionMapList(dstMaplList);
-
+			
+			// 生效范围IP域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(groupReuse.getIpClientRangeList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (IpRegion region : groupReuse.getIpClientRangeList()) {
+					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
+				}
+			}
+			maatConfig.setIpClientRangeMapList(dstMaplList);
 			if (maatMap.containsKey(service)) {
 				maatMap.get(service).add(maatConfig);
 			} else {
@@ -985,10 +866,8 @@ public class ConfigSourcesService extends BaseService {
 		// 根据service分发到各系统
 		Iterator serviceIterator = maatMap.keySet().iterator();
 		while (serviceIterator.hasNext()) {
-			Integer service = Integer
-					.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal
-					.getRedisDBByService(service);
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
 					List<MaatConfig> newMaatConfigList = new ArrayList<MaatConfig>();
@@ -1003,13 +882,12 @@ public class ConfigSourcesService extends BaseService {
 
 				}
 			} else {
-				throw new ServiceRuntimeException(
-						RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),
+				throw new ServiceRuntimeException(RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 		}
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
-		// configRedisService.addGroupReuseConfig(configMap);
+		configRedisService.saveGroupReuseConfig(configMap);
 	}
 
 	/**
@@ -1024,17 +902,16 @@ public class ConfigSourcesService extends BaseService {
 	 * @param sb
 	 * @throws Exception
 	 */
-	public void deleteGroupReuseSources(AuditLogThread thread, long start,
-			List<GroupReuse> groupReuseList, Date opTime, StringBuffer sb)
-			throws Exception {
-		//按service分类
+	public void deleteGroupReuseSources(AuditLogThread thread, long start, List<GroupReuse> groupReuseList, Date opTime,
+			StringBuffer sb) throws Exception {
+		// 按service分类
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 
 		GroupReuseVal.valGroupReuse(groupReuseList, false);
 		for (GroupReuse groupReuse : groupReuseList) {
-			//验证格式
+			// 验证格式
 			checkGroupReuseForUpdate(groupReuse);
-			
+
 			Integer service = groupReuse.getService();
 			MaatConfig maatConfig = new MaatConfig();
 			maatConfig.setService(service);
@@ -1045,14 +922,12 @@ public class ConfigSourcesService extends BaseService {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (StrRegion region : groupReuse.getStrRegionList()) {
 					if (StringUtil.isEmpty(region.getDistrict())) {
-						dstMaplList.add(convertObjectToMap(region,
-								StrRegion.class));
+						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
 					} else {
 						if (StringUtil.isEmpty(strongMapList)) {
 							strongMapList = new ArrayList<Map<String, String>>();
 						}
-						strongMapList.add(convertObjectToMap(region,
-								StrRegion.class));
+						strongMapList.add(convertObjectToMap(region, StrRegion.class));
 					}
 				}
 			}
@@ -1066,8 +941,7 @@ public class ConfigSourcesService extends BaseService {
 			if (!StringUtil.isEmpty(groupReuse.getNumRegionList())) {
 				dstMaplList = new ArrayList<Map<String, String>>();
 				for (NumRegion region : groupReuse.getNumRegionList()) {
-					dstMaplList
-							.add(convertObjectToMap(region, NumRegion.class));
+					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
 				}
 			}
 			maatConfig.setNumRegionMapList(dstMaplList);
@@ -1092,10 +966,10 @@ public class ConfigSourcesService extends BaseService {
 		}
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
 		// 所有的都删除成功返回true
-//		if (!configRedisService.delMaatConfig(maatMap)) {
-//			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
-//					RestBusinessCode.service_runtime_error.getValue());
-//		}
+		if (!configRedisService.delGroupReuseConfig(maatMap)) {
+			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
+					RestBusinessCode.service_runtime_error.getValue());
+		}
 	}
 
 	/**
@@ -1106,48 +980,36 @@ public class ConfigSourcesService extends BaseService {
 	 * @param config
 	 * @return
 	 */
-	private void checkGroupReuseForUpdate(GroupReuse config)
-			throws Exception {
+	private void checkGroupReuseForUpdate(GroupReuse config) throws Exception {
 
 		if (StringUtil.isEmpty(config.getService())) {
-			throw new RestServiceException(
-					RestBusinessCode.ServiceIsNull.getErrorReason(),
+			throw new RestServiceException(RestBusinessCode.ServiceIsNull.getErrorReason(),
 					RestBusinessCode.ServiceIsNull.getValue());
 		}
-		
+
 		if (!ServiceAndRDBIndexReal.serviceIsReuse(config.getService())) {
-			throw new RestServiceException("server为空或" + config.getService()
-					+ "或不属于分组复用的业务类型",
+			throw new RestServiceException("server为空或" + config.getService() + "或不属于分组复用的业务类型",
 					RestBusinessCode.ServiceIsNullOrNotReuse.getValue());
 		}
 		Boolean hasRegionFlag = false;
-		Map<String, List<String>> regTabNameMap = ServiceAndRDBIndexReal
-				.getServiceGroupReuseMap(config.getService());
-		if (regTabNameMap.containsKey("numRegion")
-				&& !StringUtil.isEmpty(config.getNumRegionList())
+		Map<String, List<String>> regTabNameMap = ServiceAndRDBIndexReal.getServiceGroupReuseMap(config.getService());
+		if (regTabNameMap.containsKey("numRegion") && !StringUtil.isEmpty(config.getNumRegionList())
 				&& config.getNumRegionList().size() > 0) {
 			hasRegionFlag = true;
 			List<NumRegion> numRegionList = config.getNumRegionList();
 			for (NumRegion numRegion : numRegionList) {
 				if (!StringUtil.isEmpty(numRegion.getTableName())
-						&& !CompileVal.type2TableNameIsOk(config.getService(),
-								numRegion.getTableName())) {
-					throw new RestServiceException("service为" + config.getService()
-							+ "的配置中numRegionList中的regionId为"
-							+ numRegion.getRegionId()
-							+ "的域配置tableName与业务类型不一致",
-							RestBusinessCode.TableNameUnmatchService
-									.getValue());
+						&& !CompileVal.type2TableNameIsOk(config.getService(), numRegion.getTableName())) {
+					throw new RestServiceException("service为" + config.getService() + "的配置中numRegionList中的regionId为"
+							+ numRegion.getRegionId() + "的域配置tableName与业务类型不一致",
+							RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 				if (numRegion.getIsValid() != 0) {
-					throw new RestServiceException("service为" + config.getService()
-							+ "的配置中numRegionList中的regionId为"
-							+ numRegion.getRegionId() + "的域配置在修改时不能为有效",
-							RestBusinessCode.IsValidIsF.getValue());
+					throw new RestServiceException("service为" + config.getService() + "的配置中numRegionList中的regionId为"
+							+ numRegion.getRegionId() + "的域配置在修改时不能为有效", RestBusinessCode.IsValidIsF.getValue());
 				}
 			}
-		} else if (regTabNameMap.containsKey("strRegion")
-				&& !StringUtil.isEmpty(config.getStrRegionList())
+		} else if (regTabNameMap.containsKey("strRegion") && !StringUtil.isEmpty(config.getStrRegionList())
 				&& config.getStrRegionList().size() > 0) {
 			hasRegionFlag = true;
 			List<StrRegion> strRegionList = config.getStrRegionList();
@@ -1156,54 +1018,40 @@ public class ConfigSourcesService extends BaseService {
 				// !regionGroupIdList.contains(strRegion.getGroupId()))
 				// {
 				if (!StringUtil.isEmpty(strRegion.getTableName())
-						&& !CompileVal.type2TableNameIsOk(config.getService(),
-								strRegion.getTableName())) {
-					throw new RestServiceException("配置id为" + config.getService()
-							+ "的配置中strRegionList中的regionId为"
-							+ strRegion.getRegionId()
-							+ "的域配置tableName与业务类型不一致",
-							RestBusinessCode.TableNameUnmatchService
-									.getValue());
+						&& !CompileVal.type2TableNameIsOk(config.getService(), strRegion.getTableName())) {
+					throw new RestServiceException("配置id为" + config.getService() + "的配置中strRegionList中的regionId为"
+							+ strRegion.getRegionId() + "的域配置tableName与业务类型不一致",
+							RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 				if (strRegion.getIsValid() != 0) {
-					throw new RestServiceException("配置id为" + config.getService()
-							+ "的配置中strRegionList中的regionId为"
-							+ strRegion.getRegionId() + "的域配置在修改时不能为有效",
-							RestBusinessCode.IsValidIsF.getValue());
+					throw new RestServiceException("配置id为" + config.getService() + "的配置中strRegionList中的regionId为"
+							+ strRegion.getRegionId() + "的域配置在修改时不能为有效", RestBusinessCode.IsValidIsF.getValue());
 				}
 
 			}
-		} else if (regTabNameMap.containsKey("ipRegion")
-				&& !StringUtil.isEmpty(config.getIpRegionList())
+		} else if (regTabNameMap.containsKey("ipRegion") && !StringUtil.isEmpty(config.getIpRegionList())
 				&& config.getIpRegionList().size() > 0) {
 			hasRegionFlag = true;
 			List<IpRegion> ipRegionList = config.getIpRegionList();
 			for (IpRegion ipRegion : ipRegionList) {
 				if (!StringUtil.isEmpty(ipRegion.getTableName())
-						&& !CompileVal.type2TableNameIsOk(config.getService(),
-								ipRegion.getTableName())) {
-					throw new RestServiceException("配置id为" + config.getService()
-							+ "的配置中ipRegionList中的regionId为"
-							+ ipRegion.getRegionId()
-							+ "的域配置tableName与业务类型不一致",
-							RestBusinessCode.TableNameUnmatchService
-									.getValue());
+						&& !CompileVal.type2TableNameIsOk(config.getService(), ipRegion.getTableName())) {
+					throw new RestServiceException("配置id为" + config.getService() + "的配置中ipRegionList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置tableName与业务类型不一致",
+							RestBusinessCode.TableNameUnmatchService.getValue());
 				}
 
-				if (null == ipRegion.getIsValid() || ipRegion
-								.getIsValid() != 0) {
-					throw new RestServiceException("service为" + config.getService()
-							+ "的配置中ipRegionList中的regionId为"
-							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效",
-							RestBusinessCode.IsValidIsF.getValue());
+				if (null == ipRegion.getIsValid() || ipRegion.getIsValid() != 0) {
+					throw new RestServiceException("service为" + config.getService() + "的配置中ipRegionList中的regionId为"
+							+ ipRegion.getRegionId() + "的域配置在修改时不能为有效", RestBusinessCode.IsValidIsF.getValue());
 				}
 			}
 		}
-		
+
 		if (hasRegionFlag) {
 			// 所有的域类型都不包括，可能是配置文件配错了
-			throw new ServiceRuntimeException("service为" + config.getService() + "的"
-					+ RestBusinessCode.ReuseRegionIsNull.getErrorReason(),
+			throw new ServiceRuntimeException(
+					"service为" + config.getService() + "的" + RestBusinessCode.ReuseRegionIsNull.getErrorReason(),
 					RestBusinessCode.ReuseRegionIsNull.getValue());
 		}
 	}

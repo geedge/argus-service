@@ -539,6 +539,11 @@ public enum RestBusinessCode {
 	ExistsKeyFailed(5002008,"判断key是否存在失败"),
 	
 	/**
+	 * 当前service不允许单独添加域配置
+	 */
+	ServiceNotAllowAddReion(5002009,"当前service不允许单独添加域配置"),
+	
+	/**
 	 * 无法从Map中获取配置的属性值
 	 */
 	GetMaatVersionFailure(5003001,"无法从Map中获取配置的属性值"),

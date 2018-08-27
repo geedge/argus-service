@@ -28,11 +28,13 @@ public interface ConfigRedisService {
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
 	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap);
+
 	/**
-	 * 下发配置成功后,需要更新编译,组,域等配置id的对应关系
+	 * 分组复用域配置新增接口,key是redisDBIndex,value是配置集合
 	 * @param configMap
+	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	//public void addMaatRelation(Map<Integer, List<MaatConfig>> configMap);
+	public boolean saveGroupReuseConfig(Map<Integer, List<MaatConfig>> configMap);
 
 	/**
 	 * 获取指定key的自增长值
@@ -47,7 +49,7 @@ public interface ConfigRedisService {
 	 * @param isInvalid 是否将配置置为无效
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap,boolean isInvalid);
+	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap, boolean isInvalid);
 
 	/**
 	 * 删除maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
@@ -57,9 +59,10 @@ public interface ConfigRedisService {
 	public boolean delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
 
 	/**
-	 * 删除maat类配置成功后,需要更新编译,组,域等配置id的对应关系
-	 * @param idMap
+	 * 删除分组复用的域配置
+	 * @param maatMap key是service
+	 * @return
 	 */
-	//public void delMaatRelation(Map<Integer, Map<Integer, List<Long>>> idMap);
+	public boolean delGroupReuseConfig(Map<Integer, List<MaatConfig>> configMap);
 
 }
