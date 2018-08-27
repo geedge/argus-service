@@ -376,7 +376,7 @@ public class ConfigSourcesController extends BaseRestController {
 
 	@RequestMapping(value = "/cfg/v1/groupReuseSources", method = RequestMethod.POST)
 	@ApiOperation(value = "分组复用域配置新增接口", httpMethod = "POST", response = Map.class, notes = "接收分组复用域配置，增加到对应的分组中")
-	@ApiParam(value = "分组复用域配置对象", name = "configSource", required = true)
+	@ApiParam(value = "分组复用域配置对象", name = "groupReuseSource", required = true)
 	public Map addGroupReuseSources(@RequestBody GroupReuseSource groupReuseSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		
@@ -419,7 +419,7 @@ public class ConfigSourcesController extends BaseRestController {
 	
 	@RequestMapping(value = "/cfg/v1/groupReuseSources", method = RequestMethod.PUT)
 	@ApiOperation(value = "分组复用域配置删除接口", httpMethod = "PUT", response = Map.class, notes = "接收分组复用域配置，并从对应分组中删除")
-	@ApiParam(value = "分组复用域配置对象", name = "configSource", required = true)
+	@ApiParam(value = "分组复用域配置对象", name = "groupReuseSource", required = true)
 	public Map delGroupReuseSources(@RequestBody GroupReuseSource groupReuseSource, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();

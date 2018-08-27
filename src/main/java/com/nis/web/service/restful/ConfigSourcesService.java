@@ -904,72 +904,69 @@ public class ConfigSourcesService extends BaseService {
 	 */
 	public void deleteGroupReuseSources(AuditLogThread thread, long start, List<GroupReuse> groupReuseList, Date opTime,
 			StringBuffer sb) throws Exception {
-		// 按service分类
-		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
-
-		GroupReuseVal.valGroupReuse(groupReuseList, false);
+		// 按service分类 Map<service,Map<groupId,List<"tableName,regionId">>
+		Map<Integer, Map<Long, List<String>>> reuseMap = new HashMap<Integer, Map<Long,List<String>>>();
+		
 		for (GroupReuse groupReuse : groupReuseList) {
 			// 验证格式
 			checkGroupReuseForUpdate(groupReuse);
 
 			Integer service = groupReuse.getService();
-			MaatConfig maatConfig = new MaatConfig();
-			maatConfig.setService(service);
-			List<Map<String, String>> dstMaplList = null;
+			
+			if (!reuseMap.containsKey(service)) {
+				Map<Long, List<String>> map = new HashMap<Long, List<String>>();
+				reuseMap.put(service, map);
+			}
+			
 			// 字符串域
-			List<Map<String, String>> strongMapList = null;
 			if (!StringUtil.isEmpty(groupReuse.getStrRegionList())) {
-				dstMaplList = new ArrayList<Map<String, String>>();
 				for (StrRegion region : groupReuse.getStrRegionList()) {
-					if (StringUtil.isEmpty(region.getDistrict())) {
-						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
-					} else {
-						if (StringUtil.isEmpty(strongMapList)) {
-							strongMapList = new ArrayList<Map<String, String>>();
-						}
-						strongMapList.add(convertObjectToMap(region, StrRegion.class));
+					if (reuseMap.get(service).containsKey(region.getGroupId())) {
+						reuseMap.get(service).get(region.getGroupId()).add(region.getTableName()+","+region.getRegionId());
+					}else{
+						Map<Long, List<String>> groupMap = new HashMap<Long, List<String>>();
+						List<String> regionList = new ArrayList<String>();
+						regionList.add(region.getTableName()+","+region.getRegionId());
+						groupMap.put(region.getGroupId(), regionList);
 					}
 				}
 			}
-			maatConfig.setStrRegionMapList(dstMaplList);
-			// 增强字符串域
-			if (!StringUtil.isEmpty(strongMapList) && strongMapList.size() > 0) {
-				maatConfig.setStrStrRegionMapList((strongMapList));
-			}
+			
 			// 数值域
-			dstMaplList = null;
 			if (!StringUtil.isEmpty(groupReuse.getNumRegionList())) {
-				dstMaplList = new ArrayList<Map<String, String>>();
 				for (NumRegion region : groupReuse.getNumRegionList()) {
-					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
+					if (reuseMap.get(service).containsKey(region.getGroupId())) {
+						reuseMap.get(service).get(region.getGroupId()).add(region.getTableName()+","+region.getRegionId());
+					}else{
+						Map<Long, List<String>> groupMap = new HashMap<Long, List<String>>();
+						List<String> regionList = new ArrayList<String>();
+						regionList.add(region.getTableName()+","+region.getRegionId());
+						groupMap.put(region.getGroupId(), regionList);
+					}
 				}
 			}
-			maatConfig.setNumRegionMapList(dstMaplList);
 
 			// Ip域
-			dstMaplList = null;
 			if (!StringUtil.isEmpty(groupReuse.getIpRegionList())) {
-				dstMaplList = new ArrayList<Map<String, String>>();
 				for (IpRegion region : groupReuse.getIpRegionList()) {
-					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
+					if (reuseMap.get(service).containsKey(region.getGroupId())) {
+						reuseMap.get(service).get(region.getGroupId()).add(region.getTableName()+","+region.getRegionId());
+					}else{
+						Map<Long, List<String>> groupMap = new HashMap<Long, List<String>>();
+						List<String> regionList = new ArrayList<String>();
+						regionList.add(region.getTableName()+","+region.getRegionId());
+						groupMap.put(region.getGroupId(), regionList);
+						reuseMap.put(service, groupMap);	
+					}
 				}
-			}
-			maatConfig.setIpRegionMapList(dstMaplList);
-
-			if (maatMap.containsKey(service)) {
-				maatMap.get(service).add(maatConfig);
-			} else {
-				List<MaatConfig> maatCfgList = new ArrayList<MaatConfig>();
-				maatCfgList.add(maatConfig);
-				maatMap.put(service, maatCfgList);
 			}
 		}
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
 		// 所有的都删除成功返回true
-		if (!configRedisService.delGroupReuseConfig(maatMap)) {
-			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
-					RestBusinessCode.service_runtime_error.getValue());
-		}
+//		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
+//			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
+//					RestBusinessCode.service_runtime_error.getValue());
+//		}
 	}
 
 	/**
@@ -1048,7 +1045,7 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 
-		if (hasRegionFlag) {
+		if (!hasRegionFlag) {
 			// 所有的域类型都不包括，可能是配置文件配错了
 			throw new ServiceRuntimeException(
 					"service为" + config.getService() + "的" + RestBusinessCode.ReuseRegionIsNull.getErrorReason(),
