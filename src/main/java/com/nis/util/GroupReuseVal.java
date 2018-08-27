@@ -153,7 +153,7 @@ public class GroupReuseVal {
 					}
 				}
 			}
-			if (hasRegionFlag) {
+			if (!hasRegionFlag) {
 				// 所有的域类型都不包括，可能是配置文件配错了
 				throw new ServiceRuntimeException("service为" + service + "的"
 						+ RestBusinessCode.ReuseRegionIsNull.getErrorReason(),

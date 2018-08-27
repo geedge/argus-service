@@ -60,9 +60,9 @@ public interface ConfigRedisService {
 
 	/**
 	 * 删除分组复用的域配置
-	 * @param maatMap key是service
+	 * @param reuseMap 第一个key是service,第二个key是groupId,value是tableName,regionId
 	 * @return
 	 */
-	public boolean delGroupReuseConfig(Map<Integer, List<MaatConfig>> configMap);
+	public boolean delGroupReuseConfig(Map<Integer, Map<Long, List<String>>> reuseMap);
 
 }

@@ -112,10 +112,6 @@ public enum RestBusinessCode {
 	 */
 	UserRegionIsNull(4001012, "配置userRegion属性不能为空"),
 	/**
-	 * 配置的userRegion不能为空
-	 */
-	UserRegionIsNull(4001012, "配置userRegion属性不能为空"),
-	/**
 	 * 配置的isValid不能为空
 	 */
 	IsValidIsNull(4001013, "配置isValid属性不能为空"),
@@ -433,7 +429,7 @@ public enum RestBusinessCode {
 	/**
 	 * 分组复用配置中域不能全为空
 	 */
-	ReuseRegionIsNull(4002501, "分组复用配置中域不能全为空"),
+	ReuseRegionIsNull(4002502, "分组复用配置中域不能全为空"),
 	//回调类
 	/**
 	 * 回调类service配置不正确

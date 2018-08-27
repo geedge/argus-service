@@ -963,10 +963,10 @@ public class ConfigSourcesService extends BaseService {
 		}
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
 		// 所有的都删除成功返回true
-//		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
-//			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
-//					RestBusinessCode.service_runtime_error.getValue());
-//		}
+		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
+			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
+					RestBusinessCode.service_runtime_error.getValue());
+		}
 	}
 
 	/**
