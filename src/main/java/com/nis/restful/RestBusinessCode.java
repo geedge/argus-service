@@ -109,6 +109,10 @@ public enum RestBusinessCode {
 	EndTimeIsNull(4001011, "Maat配置的endTime不能为空"),
 	
 	/**
+	 * 配置的userRegion不能为空
+	 */
+	UserRegionIsNull(4001012, "配置userRegion属性不能为空"),
+	/**
 	 * 配置的isValid不能为空
 	 */
 	IsValidIsNull(4001013, "配置isValid属性不能为空"),
@@ -542,6 +546,10 @@ public enum RestBusinessCode {
 	 * 当前service不允许单独添加域配置
 	 */
 	ServiceNotAllowAddReion(5002009,"当前service不允许单独添加域配置"),
+	/**
+	 * 删除分组复用域配置时,无法在关联关系中找到对应的域配置信息,之前该域没有添加过,或者关联关系被损坏请检查
+	 */
+	RegionIsNotExist(5002010,"删除分组复用域配置时,无法在关联关系中找到对应的域配置信息,之前该域没有添加过,或者关联关系被损坏请检查"),
 	
 	/**
 	 * 无法从Map中获取配置的属性值
