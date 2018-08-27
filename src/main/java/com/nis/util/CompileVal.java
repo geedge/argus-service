@@ -489,10 +489,11 @@ public class CompileVal {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中endTime不能为空",
 					RestBusinessCode.EndTimeIsNull.getValue());
 		}
-		// if (null == configCompile.getUserRegion() ||
-		// configCompile.getUserRegion().equals("")) {
-		// return "编译配置id为" + compileId + "的编译配置中userRegion不能为空";
-		// }
+		if (null == configCompile.getUserRegion() ||
+			configCompile.getUserRegion().equals("")) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中userRegion不能为空",
+					RestBusinessCode.UserRegionIsNull.getValue());
+		}
 		if (null == configCompile.getIsValid()) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中isValid不能为空",
 					RestBusinessCode.IsValidIsNull.getValue());
