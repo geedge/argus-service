@@ -339,28 +339,28 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException("编译配置不能为空" + sb.toString(), RestBusinessCode.CompileIsNull.getValue());
 		}
 		// Map<DBIndex,Map<Service,List<CompileId>>
-		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-		Iterator serviceIterator = compileMap.keySet().iterator();
-		while (serviceIterator.hasNext()) {
-			Integer service = Integer.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
-				for (Integer dbIndex : dbIndexList) {
-					if (restMap.containsKey(dbIndex)) {
-						restMap.get(dbIndex).put(service, compileMap.get(service));
-					} else {
-						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-						map.put(service, compileMap.get(service));
-						restMap.put(dbIndex, map);
-					}
-				}
-			} else {
-				ServiceRuntimeException e = new ServiceRuntimeException("service值为" + service + ",与写入数据库序号映射关系不存在",
-						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
-			}
-		}
+//		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
+//		Iterator serviceIterator = compileMap.keySet().iterator();
+//		while (serviceIterator.hasNext()) {
+//			Integer service = Integer.valueOf(serviceIterator.next().toString());
+//			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+//			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+//				for (Integer dbIndex : dbIndexList) {
+//					if (restMap.containsKey(dbIndex)) {
+//						restMap.get(dbIndex).put(service, compileMap.get(service));
+//					} else {
+//						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+//						map.put(service, compileMap.get(service));
+//						restMap.put(dbIndex, map);
+//					}
+//				}
+//			} else {
+//				ServiceRuntimeException e = new ServiceRuntimeException("service值为" + service + ",与写入数据库序号映射关系不存在",
+//						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
+//			}
+//		}
 		// 所有的都删除成功返回true
-		if (!configRedisService.delMaatConfig(restMap)) {
+		if (!configRedisService.delMaatConfig(compileMap)) {
 			throw new ServiceRuntimeException("取消MAAT配置时出现异常，具体原因不详，请联系管理员",
 					RestBusinessCode.service_runtime_error.getValue());
 		}
