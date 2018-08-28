@@ -84,29 +84,29 @@ public class MaatTestController {
 		FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "开始删除业务类型" + serviceType + "下的maat配置" + configId + "\n",
 				Configurations.getStringProperty("maatTestLogPath", ""), true);
 
-		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-		Iterator<Integer> serviceIterator = compileMap.keySet().iterator();
-		while (serviceIterator.hasNext()) {
-			Integer service = Integer.valueOf(serviceIterator.next().toString());
-			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
-				for (Integer dbIndex : dbIndexList) {
-					if (restMap.containsKey(dbIndex)) {
-						restMap.get(dbIndex).put(service, compileMap.get(service));
-					} else {
-						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-						map.put(service, compileMap.get(service));
-						restMap.put(dbIndex, map);
-					}
-				}
-			} else {
-				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:获取业务类型" + service + "对应的redisDb失败\n",
-						Configurations.getStringProperty("maatTestLogPath", ""), true);
-				return "error";
-			}
-		}
+//		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
+//		Iterator<Integer> serviceIterator = compileMap.keySet().iterator();
+//		while (serviceIterator.hasNext()) {
+//			Integer service = Integer.valueOf(serviceIterator.next().toString());
+//			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+//			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+//				for (Integer dbIndex : dbIndexList) {
+//					if (restMap.containsKey(dbIndex)) {
+//						restMap.get(dbIndex).put(service, compileMap.get(service));
+//					} else {
+//						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+//						map.put(service, compileMap.get(service));
+//						restMap.put(dbIndex, map);
+//					}
+//				}
+//			} else {
+//				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:获取业务类型" + service + "对应的redisDb失败\n",
+//						Configurations.getStringProperty("maatTestLogPath", ""), true);
+//				return "error";
+//			}
+//		}
 		try {
-			if (!configRedisService.delMaatConfig(restMap)) {
+			if (!configRedisService.delMaatConfig(compileMap)) {
 				FileUtils.addStrToFile(
 						sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的maat配置" + configId + "失败\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);

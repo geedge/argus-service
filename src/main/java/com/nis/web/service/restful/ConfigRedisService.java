@@ -52,11 +52,11 @@ public interface ConfigRedisService {
 	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap, boolean isInvalid);
 
 	/**
-	 * 删除maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
-	 * @param idMap
+	 * 删除maat类配置,key是业务类型,value是配置id集合
+	 * @param serviceConfigMap
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public boolean delMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap);
+	public boolean delMaatConfig(Map<Integer, List<Long>> serviceConfigMap);
 
 	/**
 	 * 删除分组复用的域配置

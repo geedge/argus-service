@@ -1,6 +1,5 @@
 package com.nis.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class GroupReuseVal {
 				hasRegionFlag = true;
 				List<NumRegion> numRegionList = groupReuse.getNumRegionList();
 				for (NumRegion numRegion : numRegionList) {
-					if (!StringUtil.isEmpty(numRegion.getTableName())
+					if (!StringUtil.isEmpty(numRegion.getTableName())	
 							&& !CompileVal.type2TableNameIsOk(service,
 									numRegion.getTableName())) {
 						throw new RestServiceException("service为" + service
