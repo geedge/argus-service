@@ -25,6 +25,7 @@ import com.nis.domain.restful.NtcTagReport;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
+import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -62,7 +63,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> ntcPzReportPage = null;
 		try {
-			resetReportTime(ntcPzReport);
+			resetReportTime(ntcPzReport,true);
 			//验证实时报表
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcPzReport, NtcPzReport.class, page);
 			//验证serachCfgId
@@ -100,7 +101,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcServiceReport);
+			resetReportTime(ntcServiceReport,false);
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcServiceReport, NtcServiceReport.class, page);
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
@@ -137,7 +138,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcTagReport);
+			resetReportTime(ntcTagReport,false);
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcTagReport, NtcTagReport.class, page);
 			//验证serachTag
 			ntcReportService.checkNumericCondition(saveLogThread,start,ntcTagReport.getSearchTag(),"searchTag");
@@ -173,7 +174,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcAttrTypeReport);
+			resetReportTime(ntcAttrTypeReport,false);
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcAttrTypeReport, NtcAttrTypeReport.class, page);
 			//验证searchAttrType
 			ntcReportService.checkNumericCondition(saveLogThread,start,ntcAttrTypeReport.getSearchAttrType(),"searchAttrType");
@@ -210,7 +211,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcLwhhReport);
+			resetReportTime(ntcLwhhReport,false);
 			//验证实时报表
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcLwhhReport, NtcLwhhReport.class, page);
 			//验证serachCfgId
@@ -248,7 +249,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcSrcipDomesticReport);
+			resetReportTime(ntcSrcipDomesticReport,false);
 			//验证实时报表
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcSrcipDomesticReport, NtcSrcipDomesticReport.class, page);
 			String orderBy = "";
@@ -287,7 +288,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcDestipCountryReport);
+			resetReportTime(ntcDestipCountryReport,false);
 			// 验证实时报表
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcDestipCountryReport,
 					NtcDestipCountryReport.class, page);
@@ -325,7 +326,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 		Page<?> reportPage = null;
 		try {
-			resetReportTime(ntcEntranceReport);
+			resetReportTime(ntcEntranceReport,false);
 			ntcReportService.queryReportConditionCheck(saveLogThread, start, ntcEntranceReport, NtcEntranceReport.class,
 					page);
 			// 验证searchEntrance
@@ -361,11 +362,32 @@ public class SingleDimensionReport extends BaseRestController {
 	* @param entity
 	* @throws Exception
 	*/
-	public void resetReportTime(NtcReportEntity<?> entity) throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Map<String, String> map = DateUtils.getLocalTime(entity.getSearchReportStartTime(),
-				entity.getSearchReportEndTime(), Constants.PZ_REPORT_TIME, "minute");
-		entity.setSearchReportStartTime(map.get("startTime"));
-		entity.setSearchReportEndTime(map.get("endTime"));
+	public void resetReportTime(NtcReportEntity<?> entity,Boolean isTotal) throws Exception {
+		if (StringUtil.isEmpty(entity.getSearchReportStartTime())&&StringUtil.isEmpty(entity.getSearchReportEndTime())) {
+			String dateType = "minute";	//默认为分钟
+			if (!isTotal){
+				if (entity.getSearchBusinessType().equals("2")) {
+					dateType = "hour";
+				}else if (entity.getSearchBusinessType().equals("3")) {
+					dateType = "daily";
+				}else if (entity.getSearchBusinessType().equals("4")) {
+					dateType = "month";
+				}
+			}else{
+				if (entity.getSearchBusinessType().equals("3")) {
+					dateType = "hour";
+				}else if (entity.getSearchBusinessType().equals("4")) {
+					dateType = "daily";
+				}else if (entity.getSearchBusinessType().equals("5")) {
+					dateType = "month";
+				}
+			}
+			Map<String, String> map = DateUtils.getLocalTime(entity.getSearchReportStartTime(),
+				entity.getSearchReportEndTime(), Constants.PZ_REPORT_TIME, dateType);
+			entity.setSearchReportStartTime(map.get("startTime"));
+			entity.setSearchReportEndTime(map.get("endTime"));
+		}
 	}
+	
+	
 }

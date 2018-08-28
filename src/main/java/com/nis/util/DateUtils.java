@@ -178,50 +178,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 	}
 	/**
 	 * 
-	 * 
-	 * @Title: getLocalTime
-	 * @Description: (各种业务查询的时间条件默认值)
-	 * @param @param startTime
-	 * @param @param endTime
-	 * @param @param 本地存储时间长度(小时)
-	 * @param @return
-	 * @return Map 返回类型
-	 * @author （DDM）
-	 * @version V1.0
+	 * @Description: 按类型获取默认时间
+	 * @author (zdx)
+	 * @date 2018年8月28日 下午4:53:40
+	 * @param startTime
+	 * @param endTime
+	 * @param localLen
+	 * @param type
+	 * @return
+	 * @throws Exception
 	 */
 	public static Map<String, String> getLocalTime(String startTime,String endTime,Long localLen,String type)throws Exception {
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		SimpleDateFormat sdf2=new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, String> timeMap=new HashMap<String, String>();
-		Date date=new Date();
-		//日报表默认查询前一天的数据
-		if("daily".equals(type) && startTime == null && endTime == null){
-			Calendar cal=Calendar.getInstance();
-			cal.add(Calendar.DAY_OF_YEAR, -1);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			timeMap.put("startTime", sdf.format(cal.getTime()));
-			timeMap.put("endTime", sdf.format(sdf.parse(sdf2.format(cal.getTime())+" 23:59:59")));
-			logger.info("日报默认开始时间条件："+sdf.format(cal.getTime()));
-			logger.info("日报默认结束时间条件："+sdf.format(sdf.parse(sdf2.format(cal.getTime())+" 23:59:59")));
-			return timeMap;
+		if (StringUtil.isEmpty(type)) {
+			type = "minute";
 		}
-		//月报表默认查询前一天的数据
-		if("month".equals(type) && startTime == null && endTime == null){
-			Calendar cal=Calendar.getInstance();
-			cal.add(Calendar.MONTH, date.getMonth()-2);
-			cal.set(Calendar.DAY_OF_MONTH, 1);
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-			timeMap.put("startTime", sdf.format(cal.getTime()));
-			timeMap.put("endTime", sdf.format(date));
-			logger.info("月报默认开始时间条件："+sdf.format(cal.getTime()));
-			logger.info("月报默认结束时间条件："+sdf.format(date));
-			return timeMap;
-		}
-		
 		//实时报表统计，默认查询最近5分钟
 		if("minute".equals(type) && startTime == null && endTime == null){
 			Calendar cal=Calendar.getInstance();
@@ -234,23 +206,30 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 			timeMap.put("startTime", sdf.format(cal.getTime()));
 			logger.info("实时报表统计默认开始时间条件："+timeMap.get("startTime"));
 			logger.info("默认结束时间条件："+timeMap.get("endTime"));
-			return timeMap;
-		}
-		if(startTime == null && endTime == null && localLen != null){
+			
+		}else if("hour".equals(type) && startTime == null && endTime == null){//小时报表默认查询最近一小时的数据
 			Calendar cal=Calendar.getInstance();
-			cal.add(Calendar.HOUR, -localLen.intValue());
+			timeMap.put("endTime", sdf.format(cal.getTime()));
+			cal.add(Calendar.HOUR_OF_DAY, -1);
 			timeMap.put("startTime", sdf.format(cal.getTime()));
-			timeMap.put("endTime", sdf.format(date));
-			logger.info("默认开始时间条件："+sdf.format(cal.getTime()));
-			logger.info("默认结束时间条件："+sdf.format(date));
-			return timeMap;
-		}else {
-			timeMap.put("startTime", startTime);
-			timeMap.put("endTime", endTime);
-			logger.info("开始时间条件："+startTime);
-			logger.info("结束时间条件："+endTime);
-			return timeMap;
+			logger.info("小时报默认开始时间条件："+timeMap.get("startTime"));
+			logger.info("小时报默认结束时间条件："+timeMap.get("endTime"));
+		}else if("daily".equals(type) && startTime == null && endTime == null){//日报表默认查询最近一天的数据
+			Calendar cal=Calendar.getInstance();
+			timeMap.put("endTime", sdf.format(cal.getTime()));
+			cal.add(Calendar.DAY_OF_YEAR, -1);
+			timeMap.put("startTime", sdf.format(cal.getTime()));
+			logger.info("日报默认开始时间条件："+timeMap.get("startTime"));
+			logger.info("日报默认结束时间条件："+timeMap.get("endTime"));
+		}else if("month".equals(type) && startTime == null && endTime == null){//月报表默认查询最近一月的数据
+			Calendar cal=Calendar.getInstance();
+			timeMap.put("endTime", sdf.format(cal.getTime()));
+			cal.add(Calendar.MONTH,-1);
+			timeMap.put("startTime", sdf.format(cal.getTime()));
+			logger.info("月报默认开始时间条件："+timeMap.get("startTime"));
+			logger.info("月报默认结束时间条件："+timeMap.get("endTime"));
 		}
+		return timeMap;
 	}
 	
 	/**

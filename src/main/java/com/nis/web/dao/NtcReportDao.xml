@@ -75,6 +75,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
 				NTC_PZ_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 5 ">
+				NTC_PZ_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_PZ_REPORT 
 			</otherwise>
@@ -112,6 +115,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
 				NTC_PZ_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 5 ">
+				NTC_PZ_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_PZ_REPORT 
 			</otherwise>
@@ -143,6 +149,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_SERVICE_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_SERVICE_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_SERVICE_REPORT 
 			</otherwise>
@@ -168,6 +177,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_SERVICE_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_SERVICE_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_SERVICE_REPORT 
@@ -202,6 +214,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_TAG_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_TAG_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_TAG_REPORT 
 			</otherwise>
@@ -229,6 +244,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_TAG_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_TAG_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_TAG_REPORT 
@@ -263,6 +281,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_ATTR_TYPE_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_ATTR_TYPE_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_ATTR_TYPE_REPORT 
 			</otherwise>
@@ -291,6 +312,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_ATTR_TYPE_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_ATTR_TYPE_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_ATTR_TYPE_REPORT 
@@ -324,6 +348,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_LWHH_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_LWHH_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_LWHH_REPORT 
 			</otherwise>
@@ -351,6 +378,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_LWHH_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_LWHH_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_LWHH_REPORT 
@@ -383,6 +413,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_SRCIP_DOMESTIC_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_SRCIP_DOMESTIC_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_SRCIP_DOMESTIC_REPORT 
 			</otherwise>
@@ -407,6 +440,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_SRCIP_DOMESTIC_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_SRCIP_DOMESTIC_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_SRCIP_DOMESTIC_REPORT 
@@ -440,6 +476,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_DESTIP_COUNTRY_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_DESTIP_COUNTRY_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_DESTIP_COUNTRY_REPORT 
 			</otherwise>
@@ -464,6 +503,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_DESTIP_COUNTRY_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_DESTIP_COUNTRY_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_DESTIP_COUNTRY_REPORT 
@@ -497,6 +539,9 @@
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_ENTRANCE_STAT_DAILY
 			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_ENTRANCE_STAT_MONTH
+			</when>
 			<otherwise>
 				NTC_ENTRANCE_REPORT 
 			</otherwise>
@@ -525,6 +570,9 @@
 			</when>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_ENTRANCE_STAT_DAILY
+			</when>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+				NTC_ENTRANCE_STAT_MONTH
 			</when>
 			<otherwise>
 				NTC_ENTRANCE_REPORT 

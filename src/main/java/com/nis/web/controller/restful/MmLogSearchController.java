@@ -1,6 +1,5 @@
 package com.nis.web.controller.restful;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,7 @@ import com.nis.util.Constants;
 import com.nis.util.DateUtils;
 import com.nis.util.HiveJDBCByDruid;
 import com.nis.util.JsonMapper;
+import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.HiveSqlService;
@@ -708,11 +708,12 @@ public class MmLogSearchController extends BaseRestController {
 	 * @throws Exception
 	 */
 	public void resetTime(LogEntity<?> entity) throws Exception {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Map<String, String> map = DateUtils.getLocalTime(entity.getSearchFoundStartTime(),
-				entity.getSearchFoundEndTime(), Constants.LOG_LOCAL_TIME, "log");
-		entity.setSearchFoundStartTime(map.get("startTime"));
-		entity.setSearchFoundEndTime(map.get("endTime"));
+		if (StringUtil.isEmpty(entity.getSearchFoundStartTime())&&StringUtil.isEmpty(entity.getSearchFoundEndTime())) {
+			Map<String, String> map = DateUtils.getLocalTime(entity.getSearchFoundStartTime(),
+					entity.getSearchFoundEndTime(), Constants.LOG_LOCAL_TIME, "minute");
+			entity.setSearchFoundStartTime(map.get("startTime"));
+			entity.setSearchFoundEndTime(map.get("endTime"));
+		}
 	}
 
 	/**
