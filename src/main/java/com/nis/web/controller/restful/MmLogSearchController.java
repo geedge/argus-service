@@ -275,7 +275,7 @@ public class MmLogSearchController extends BaseRestController {
 	}
 	
 	@RequestMapping(value = "/mmVoipIpLogs", method = RequestMethod.GET)
-	@ApiOperation(value = "VOIP IP日志查询", httpMethod = "GET", notes = "对日志功能“VOIP IP日志”提供数据基础查询服务")
+	@ApiOperation(value = "VoIP IP日志查询", httpMethod = "GET", notes = "对日志功能“VoIP IP日志”提供数据基础查询服务")
 	public Map<String, ?> mmVoipIpLogs(Page page, MmVoipIpLog mmVoipIpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
@@ -320,15 +320,15 @@ public class MmLogSearchController extends BaseRestController {
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP IP日志检索失败");
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VoIP IP日志检索失败");
 			}
 			throw ((RestServiceException) e);
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP IP日志检索成功",
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VoIP IP日志检索成功",
 				logPage, 0);
 	}
 	@RequestMapping(value = "/mmVoipAccountLogs", method = RequestMethod.GET)
-	@ApiOperation(value = "VOIP Account日志查询", httpMethod = "GET", notes = "对日志功能“VOIP Account日志”提供数据基础查询服务")
+	@ApiOperation(value = "VoIP Account日志查询", httpMethod = "GET", notes = "对日志功能“VoIP Account日志”提供数据基础查询服务")
 	public Map<String, ?> mmVoipAccountLogs(Page page, MmVoipAccountLog mmVoipLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
@@ -373,11 +373,11 @@ public class MmLogSearchController extends BaseRestController {
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP Account日志检索失败");
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VoIP Account日志检索失败");
 			}
 			throw ((RestServiceException) e);
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VOIP Account日志检索成功",
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VoIP Account日志检索成功",
 				logPage, 0);
 	}
 	

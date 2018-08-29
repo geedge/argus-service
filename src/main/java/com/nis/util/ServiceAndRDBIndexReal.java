@@ -3,6 +3,7 @@ package com.nis.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -400,12 +401,24 @@ public class ServiceAndRDBIndexReal {
 	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
 		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
 	}
-	
 	/**
 	 * @return the serviceGroupReuseMap
 	 */
-	public static Map<String, List<String>> getServiceGroupReuseMap(Integer service) {
-		return serviceGroupReuseMap.get(service);
+	public static Map<String, List<String>> getGroupReuseRegionMap() {
+		Map<String, List<String>> groupReuseRegionMap = new HashMap<String, List<String>>();
+		Iterator iterator = serviceGroupReuseMap.keySet().iterator();
+		while (iterator.hasNext()) {
+			Map<String, List<String>> map = serviceGroupReuseMap.get(Integer.valueOf(iterator.next().toString()));
+			Iterator mapIterator = map.keySet().iterator();
+			while (mapIterator.hasNext()) {
+				String regionName = mapIterator.next().toString();
+				if (StringUtil.isEmpty(groupReuseRegionMap.containsKey(regionName))) {
+					groupReuseRegionMap.put(regionName, map.get(regionName));
+				}else{
+					groupReuseRegionMap.get(regionName).addAll(map.get(regionName));
+				}
+			}
+		}
+		return groupReuseRegionMap;
 	}
-	
 }

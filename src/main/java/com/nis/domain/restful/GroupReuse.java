@@ -25,9 +25,6 @@ public class GroupReuse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(value = "业务ID", required = true)
-	private Integer service;
-
 	@ApiModelProperty(value = "字符串域分组列表", access = "", required = true)
 	private List<StrRegion> strRegionList;
 
@@ -39,21 +36,6 @@ public class GroupReuse implements Serializable {
 
 	@ApiModelProperty(value = "生效范围IP域分组列表", required = true)
 	private List<IpRegion> ipClientRangeList;
-
-	/**
-	 * @return service
-	 */
-	public Integer getService() {
-		return service;
-	}
-
-	/**
-	 * @param service
-	 *            要设置的 service
-	 */
-	public void setService(Integer service) {
-		this.service = service;
-	}
 
 	/**
 	 * @return strRegionList

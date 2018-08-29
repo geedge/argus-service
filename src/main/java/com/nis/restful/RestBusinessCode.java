@@ -371,6 +371,10 @@ public enum RestBusinessCode {
 	 * 当前编译配置service与域配置tableName的关系不存在
 	 */
 	TableNameUnmatchService(4002101, "当前编译配置service与域配置tableName的关系不存在"),
+	/**
+	 * 域配置中的tableName不是分组复用的域表
+	 */
+	TableNameUnReuse(4002102, "域配置中tableName不是分组复用的域表"),
 	
 	/**
 	 *数值域配置的lowBoundary值不在有效范围内
