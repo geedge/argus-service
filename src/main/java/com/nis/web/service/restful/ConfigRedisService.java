@@ -30,11 +30,11 @@ public interface ConfigRedisService {
 	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap);
 
 	/**
-	 * 分组复用域配置新增接口,key是redisDBIndex,value是配置集合
-	 * @param configMap
+	 * 分组复用域配置新增接口,value是配置集合
+	 * @param configList
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public boolean saveGroupReuseConfig(Map<Integer, List<MaatConfig>> configMap);
+	public boolean saveGroupReuseConfig( List<MaatConfig> configList);
 
 	/**
 	 * 获取指定key的自增长值
@@ -60,9 +60,9 @@ public interface ConfigRedisService {
 
 	/**
 	 * 删除分组复用的域配置
-	 * @param reuseMap 第一个key是service,第二个key是groupId,value是tableName,regionId
+	 * @param reuseMap key是groupId,value是"tableName,regionId"
 	 * @return
 	 */
-	public boolean delGroupReuseConfig(Map<Integer, Map<Long, List<String>>> reuseMap);
+	public boolean delGroupReuseConfig( Map<Long, List<String>> reuseMap);
 
 }
