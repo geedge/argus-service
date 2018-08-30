@@ -839,7 +839,7 @@ public class ConfigSourcesService extends BaseService {
 				}
 			}
 			
-			if (StringUtil.isEmpty(maatConfig.getStrRegionMapList())) {
+			if (StringUtil.isEmpty(maatConfig.getNumRegionMapList())) {
 				maatConfig.setNumRegionMapList(dstMapList);
 			}else{
 				maatConfig.getNumRegionMapList().addAll(dstMapList);
@@ -853,7 +853,7 @@ public class ConfigSourcesService extends BaseService {
 					dstMapList.add(convertObjectToMap(region, IpRegion.class));
 				}
 			}
-			if (StringUtil.isEmpty(maatConfig.getStrRegionMapList())) {
+			if (StringUtil.isEmpty(maatConfig.getIpRegionMapList())) {
 				maatConfig.setIpRegionMapList(dstMapList);
 			}else{
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
@@ -949,11 +949,11 @@ public class ConfigSourcesService extends BaseService {
 			hasRegionFlag = true;
 			List<NumRegion> numRegionList = config.getNumRegionList();
 			for (NumRegion numRegion : numRegionList) {
-				if (!StringUtil.isEmpty(numRegion.getTableName())	
-						&& groupReuseRegionMap.get("numRegion").contains(numRegion.getTableName())) {
+				if (StringUtil.isEmpty(numRegion.getTableName())	
+						|| !groupReuseRegionMap.get("numRegion").contains(numRegion.getTableName())) {
 					throw new RestServiceException("numRegionList中的regionId为"
 							+ numRegion.getRegionId()
-							+ "的域配置tableName不是分组复用的域表",
+							+ "的域配置tableName为空或不是分组复用的域表",
 							RestBusinessCode.TableNameUnReuse
 									.getValue());
 				}
@@ -967,11 +967,11 @@ public class ConfigSourcesService extends BaseService {
 			hasRegionFlag = true;
 			List<StrRegion> strRegionList = config.getStrRegionList();
 			for (StrRegion strRegion : strRegionList) {
-				if (!StringUtil.isEmpty(strRegion.getTableName())	
-						&& groupReuseRegionMap.get("strRegion").contains(strRegion.getTableName())) {
+				if (StringUtil.isEmpty(strRegion.getTableName())	
+						|| !groupReuseRegionMap.get("strRegion").contains(strRegion.getTableName())) {
 					throw new RestServiceException("strRegionList中的regionId为"
 							+ strRegion.getRegionId()
-							+ "的域配置tableName不是分组复用的域表",
+							+ "的域配置tableName为空或不是分组复用的域表",
 							RestBusinessCode.TableNameUnReuse
 									.getValue());
 				}
@@ -987,11 +987,11 @@ public class ConfigSourcesService extends BaseService {
 			List<IpRegion> ipRegionList = config.getIpRegionList();
 			for (IpRegion ipRegion : ipRegionList) {
 
-				if (!StringUtil.isEmpty(ipRegion.getTableName())	
-						&& groupReuseRegionMap.get("ipRegion").contains(ipRegion.getTableName())) {
+				if (StringUtil.isEmpty(ipRegion.getTableName())	
+						|| !groupReuseRegionMap.get("ipRegion").contains(ipRegion.getTableName())) {
 					throw new RestServiceException("ipRegionList中的regionId为"
 							+ ipRegion.getRegionId()
-							+ "的域配置tableName不是分组复用的域表",
+							+ "的域配置tableName为空或不是分组复用的域表",
 							RestBusinessCode.TableNameUnReuse
 									.getValue());
 				}

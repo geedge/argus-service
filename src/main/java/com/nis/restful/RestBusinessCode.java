@@ -408,6 +408,10 @@ public enum RestBusinessCode {
 	SrcIpEQDstIp(4002303,"IP类域-srcIp和dstIp不能相同"),
 	
 	/**
+	 * IP类域配置的addrType的值只能为4(IPV4)、6(IPV6)、46(4OVER6隧道)、64(6OVER4隧道)、10(全部)
+	 */
+	AddrTypeIsWrongRange(4002304,"IP类域配置的addrType的值只能为4(IPV4)、6(IPV6)、46(4OVER6隧道)、64(6OVER4隧道)、10(全部)"),
+	/**
 	 * 字符串域配置的exprType的值只能是0(无表达式)或者1(与表达式)
 	 */
 	ExprTypeIsWrongRange(4002400,"字符域-exprType的值只能是0(无表达式)或1(与表达式)"),
