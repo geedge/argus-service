@@ -759,7 +759,7 @@ public class ConfigSourcesService extends BaseService {
 		// System.out.println("----------------chmodCommod:"+chmodCommond);
 		String commondStr = realPath + digestGenToolPath + " -f " + filePath; // 执行
 		// 执行摘要获取命令 digest -f /home/aa.txt
-		// System.out.println("------------commondStr:"+commondStr);
+		logger.info("------------commondStr:"+commondStr);
 		Runtime.getRuntime().exec(chmodCommond);
 		Process p = Runtime.getRuntime().exec(commondStr);
 		byte[] b = new byte[1024];
@@ -771,7 +771,10 @@ public class ConfigSourcesService extends BaseService {
 		if (!StringUtil.isBlank(content)) {
 			content = StringUtil.stripAll(content);
 		}
-		// System.out.println("-------------------->>"+content);
+		logger.info("摘要工具获取到的内容-------------------->>"+content);
+		if (StringUtil.isEmpty(content)) {
+			throw new Exception("调用摘要工具获取到的内容为空");
+		}
 		String[] digestGenReslt = content.split(" ");
 		if (digestGenReslt.length >= 4 && !StringUtil.isEmpty(digestGenReslt[3])) {
 			return digestGenReslt[3];
