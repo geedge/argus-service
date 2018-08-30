@@ -360,7 +360,7 @@ public class ConfigSourcesController extends BaseRestController {
 			logger.info("摘要获取开始：---------------");
 			String digestStr = configSourcesService.getDigestGen(request.getRealPath(File.separator), tempFilePath);
 			logger.info("摘要获取结束：---------------:"+digestStr);
-			resultObject.put("digest", digestStr);
+			resultObject.put("digest", null==digestStr?"":digestStr);
 			resultObject.put("rawLen", file.getSize());
 			FileUtils.deleteFile(tempFilePath);
 		} catch (Exception e) {
@@ -368,7 +368,7 @@ public class ConfigSourcesController extends BaseRestController {
 			e.printStackTrace();
 			logger.error(RestBusinessCode.GetFileDigestFailure.getValue()+":"+e.getMessage()+",请检查摘要获取工具是否安装成功");
 			thread.setExceptionInfo("摘要获取过程中出现异常:"+e.getMessage()+",请检查摘要获取工具是否安装成功");
-			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, RestBusinessCode.GetFileDigestFailure.getValue()+":"+e.getMessage()+",请检查摘要获取工具是否安装成功",
+			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, RestBusinessCode.GetFileDigestFailure.getErrorReason()+":"+e.getMessage()+",请检查摘要获取工具是否安装成功",
 					RestBusinessCode.GetFileDigestFailure.getValue());
 		}
 		return serviceResponse(thread, System.currentTimeMillis() - start, request, response, "摘要获取成功", resultObject);

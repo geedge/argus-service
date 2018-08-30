@@ -28,7 +28,7 @@ public class GroupReuseVal {
 				List<NumRegion> numRegionList = groupReuse.getNumRegionList();
 				for (NumRegion numRegion : numRegionList) {
 					if (!StringUtil.isEmpty(numRegion.getTableName())	
-							&& groupReuseRegionMap.get("numRegion").contains(numRegion.getTableName())) {
+							&& !groupReuseRegionMap.get("numRegion").contains(numRegion.getTableName())) {
 						throw new RestServiceException("numRegionList中的regionId为"
 								+ numRegion.getRegionId()
 								+ "的域配置tableName不是分组复用的域表",
@@ -64,7 +64,7 @@ public class GroupReuseVal {
 					// {
 					
 					if (!StringUtil.isEmpty(strRegion.getTableName())	
-							&& groupReuseRegionMap.get("strRegion").contains(strRegion.getTableName())) {
+							&& !groupReuseRegionMap.get("strRegion").contains(strRegion.getTableName())) {
 						throw new RestServiceException("strRegionList中的regionId为"
 								+ strRegion.getRegionId()
 								+ "的域配置tableName不是分组复用的域表",
@@ -99,7 +99,7 @@ public class GroupReuseVal {
 					// !regionGroupIdList.contains(ipRegion.getGroupId())) {
 					
 					if (!StringUtil.isEmpty(ipRegion.getTableName())	
-							&& groupReuseRegionMap.get("ipRegion").contains(ipRegion.getTableName())) {
+							&& !groupReuseRegionMap.get("ipRegion").contains(ipRegion.getTableName())) {
 						throw new RestServiceException("ipRegionList中的regionId为"
 								+ ipRegion.getRegionId()
 								+ "的域配置tableName不是分组复用的域表",
@@ -355,6 +355,13 @@ public class GroupReuseVal {
 
 	public static void serviceIpRegionVal(IpRegion ipRegion) throws Exception {
 
+		int addrType = ipRegion.getAddrType().intValue();
+		if (!(addrType == 4|| addrType == 6 || addrType == 46|| addrType == 64 || addrType ==10)) {
+			throw new RestServiceException("ipRegionList中regionId为" + ipRegion.getRegionId()
+					+ "的域配置addrType的值只能为4(IPV4)、6(IPV6)、46(4OVER6隧道)、64(6OVER4隧道)、10(全部)",
+					RestBusinessCode.AddrTypeIsWrongRange.getValue());
+		}
+		
 		validateIpAndMask(ipRegion);
 
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {

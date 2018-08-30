@@ -412,8 +412,10 @@ public class ServiceAndRDBIndexReal {
 			Iterator mapIterator = map.keySet().iterator();
 			while (mapIterator.hasNext()) {
 				String regionName = mapIterator.next().toString();
-				if (StringUtil.isEmpty(groupReuseRegionMap.containsKey(regionName))) {
-					groupReuseRegionMap.put(regionName, map.get(regionName));
+				if (!groupReuseRegionMap.containsKey(regionName)) {
+					List<String> list = new ArrayList<String>();
+					list.addAll(map.get(regionName));
+					groupReuseRegionMap.put(regionName, list);
 				}else{
 					groupReuseRegionMap.get(regionName).addAll(map.get(regionName));
 				}

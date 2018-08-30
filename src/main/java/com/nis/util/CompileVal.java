@@ -766,7 +766,12 @@ public class CompileVal {
 	}
 
 	public static void serviceIpRegionVal(IpRegion ipRegion, Long compileId, String listName) throws Exception {
-
+		int addrType = ipRegion.getAddrType().intValue();
+		if (!(addrType == 4|| addrType == 6 || addrType == 46|| addrType == 64 || addrType ==10)) {
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中" + listName + "中regionId为" + ipRegion.getRegionId()
+					+ "的域配置addrType的值只能为4(IPV4)、6(IPV6)、46(4OVER6隧道)、64(6OVER4隧道)、10(全部)",
+					RestBusinessCode.AddrTypeIsWrongRange.getValue());
+		}
 		validateIpAndMask(ipRegion, compileId, listName);
 
 		if (!BasicProvingUtil.isPortOrPortMask(ipRegion.getSrcPort())) {
