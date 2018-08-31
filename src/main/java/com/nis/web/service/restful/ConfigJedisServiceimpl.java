@@ -1040,27 +1040,21 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			removeCompileAndGroupConfig(maatXmlConfig, id + "", 10, maatVersion, service, transaction, redisDBIndex,
 					null);// 10代表是编译配置
 			// 拼接编译与分组关系的Redis Key
-			// String compileStr = redisDBIndex + ":COMPILEGROUP:" + id;
 			String compileStr = "COMPILEGROUP:" + id;
 			// 获取当前编译配置与分组配置的关联关系
 			String compileStrVal = JedisUtils.get(compileStr, idRelaRedisDBIndex);// 根据编译id获取该编译下的分组关系
-			String groupCompileStrs = getRegionInfo(compileStrVal);//获取编译对应的分组信息
-			// if (compileStrVal != null && compileStrVal.contains("-")) {
-			// String[] split = compileStrVal.split("-");
-			// groupCompileStrs = split[0];// 去除后面的redisdb信息
-			// }
-			if (groupCompileStrs != null && !groupCompileStrs.trim().equals("")) {//遍历编译和分组的信息
+			String groupCompileStrs = getRegionInfo(compileStrVal);// 获取编译对应的分组信息,去除后面的redisdb信息
+			if (groupCompileStrs != null && !groupCompileStrs.trim().equals("")) {// 遍历编译和分组的信息
 				String[] split = groupCompileStrs.split(";");
-				for (String groupId : split) {//GROUPCOMPILE:groupid-redisdb
-					String compileGroupStr = getRegionInfo(JedisUtils.get(groupId, idRelaRedisDBIndex));
-					if (compileGroupStr != null && !compileGroupStr.trim().equals("")) {
-						String[] compileGroupArr = compileGroupStr.split(";");// 获取组对应的编译id
-
-						// 被分组复用的业务,不能将域置为失效
-						if (!ServiceAndRDBIndexReal.serviceIsReuse(service)) {// 如果当前业务不允许被分组复用(普通的maat类配置),则可以将域置为失效,否则不将域置为失效
-							// if (compileGroupArr != null && compileGroupArr.length == 1) {//
-							// 如果只有一个编译id且与上面的编译id相同则说明未被分组复用,可以将其下的所有域置失效,否则不处理域配置,只把编译,分组关系置为无效
-							for (String compileId : compileGroupArr) {
+				for (String groupId : split) {// GROUPCOMPILE:groupid-redisdb
+					String groupCompileAndDBStrs = JedisUtils.get(groupId, idRelaRedisDBIndex);
+					String[] compileGroupArr = groupCompileAndDBStrs.split(";");// 获取组对应的编译id
+					for (String groupAndCompileStr : compileGroupArr) {
+						String compileId = getRegionInfo(groupAndCompileStr);
+						if (compileId != null && !compileId.trim().equals("")) {
+							// 被分组复用的业务,不能将域置为失效
+							if (!ServiceAndRDBIndexReal.serviceIsReuse(service)) {// 如果当前业务不允许被分组复用(普通的maat类配置),则可以将域置为失效,否则不将域置为失效
+								// 如果只有一个编译id且与上面的编译id相同则说明未被分组复用,可以将其下的所有域置失效,否则不处理域配置,只把编译,分组关系置为无效
 								if (compileId.equals(compileStr)) {//
 									String groupRegionKey = groupId.replace("GROUPCOMPILE", "GROUPREGION");// groupregion里面value是region的信息,key是group的信息,所以可以直接将GROUPCOMPILE替换为GROUPREGION
 									String regionStr = getRegionInfo(
@@ -1080,15 +1074,15 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									}
 								}
 							}
-						}
-						// 根据分组与编译关联关系找到对应分组配置然后删除(重命名)
-						removeCompileAndGroupConfig(maatXmlConfig, groupId.replace("GROUPCOMPILE:", ""), 11,
-								maatVersion, service, transaction, redisDBIndex, id + "");// 11代表是分组配置
+							// 根据分组与编译关联关系找到对应分组配置然后删除(重命名)
+							removeCompileAndGroupConfig(maatXmlConfig, groupId.replace("GROUPCOMPILE:", ""), 11,
+									maatVersion, service, transaction, redisDBIndex, id + "");// 11代表是分组配置
 
-					} else {
-						throw new ServiceRuntimeException(
-								"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为" + groupId,
-								RestBusinessCode.KeyNotExistsInRedis.getValue());
+						} else {
+							throw new ServiceRuntimeException(
+									"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为" + groupId,
+									RestBusinessCode.KeyNotExistsInRedis.getValue());
+						}
 					}
 				}
 			} else {
