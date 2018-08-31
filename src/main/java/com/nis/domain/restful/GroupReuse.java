@@ -34,9 +34,6 @@ public class GroupReuse implements Serializable {
 	@ApiModelProperty(value = "数值域分组列表", required = true)
 	private List<NumRegion> numRegionList;
 
-	@ApiModelProperty(value = "生效范围IP域分组列表", required = true)
-	private List<IpRegion> ipClientRangeList;
-
 	/**
 	 * @return strRegionList
 	 */
@@ -81,14 +78,6 @@ public class GroupReuse implements Serializable {
 	 */
 	public void setNumRegionList(List<NumRegion> numRegionList) {
 		this.numRegionList = numRegionList;
-	}
-
-	public List<IpRegion> getIpClientRangeList() {
-		return ipClientRangeList;
-	}
-
-	public void setIpClientRangeList(List<IpRegion> ipClientRangeList) {
-		this.ipClientRangeList = ipClientRangeList;
 	}
 
 }

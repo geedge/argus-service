@@ -243,7 +243,12 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									sb.append(";");
 								}
 							}
-							transaction.append(group, sb.substring(0, sb.length() - 1));// 保存分组id和编译id的关系(每个域配置,只会属于一个组)
+							if (JedisUtils.exists(group, idRelaRedisDBIndex)) {
+								transaction.append(group, ";" + sb.substring(0, sb.length() - 1));// 保存分组id和编译id的关系(每个域配置,只会属于一个组)
+							} else {
+								transaction.set(group, sb.substring(0, sb.length() - 1));
+							}
+
 							// redisTemplate.opsForValue().set(group, sb.substring(0, sb.length() - 1));//
 							// 保存分组id和域id的关系(每个域配置,只会属于一个组)
 						}
@@ -557,7 +562,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	}
 
 	/**
-	 * 将整理好的数据添加到redis中
+	 * 将整理好的数据添加到redis中,如果是分组复用时,则去临时库将对应的域找到复制过来,如果当前库存在则不复制了(在复制就重复了)
 	 * @param maatXmlConfig
 	 * @param map
 	 * @param type
@@ -694,7 +699,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								}
 							}
 						}
-					} else if (isReuse && (type == 12 || type == 13 || type == 14)) {// 将数据往临时库复制一份
+					} else if (isReuse && (type == 12 || type == 13 || type == 14)) {// 将数据往临时库复制一份,无论临时库里有没有都可以直接写,有则覆盖,不影响
 						int tmpStorageReuseRegionDB = Configurations.getIntProperty("tmpStorageReuseRegionDB", 15);
 						transaction.select(tmpStorageReuseRegionDB);
 						transaction.set(maatKey.toUpperCase(), valBF.toString());
@@ -705,8 +710,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				}
 
 			}
-			transaction.select(redisDBIndex);
 
+			transaction.select(redisDBIndex);
 			updateMaatInfo(expressionList, maatKey, transaction, maatVersion, redisDBIndex, false);
 		} else {
 			if (maatXmlConfig == null) {
@@ -1006,18 +1011,15 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		return false;
 	}
 
+	/**
+	 * 获取关联关系中每个关系中的-前部分
+	 * @param compileStrVal
+	 * @return
+	 */
 	private String getRegionInfo(String compileStrVal) {
 		if (compileStrVal != null && compileStrVal.contains("-")) {
 			String[] split = compileStrVal.split("-");
 			return split[0];// 去除后面的redisdb信息
-		}
-		return null;
-	}
-
-	private String getRegionDBInfo(String compileStrVal) {
-		if (compileStrVal != null && compileStrVal.contains("-")) {
-			String[] split = compileStrVal.split("-");
-			return split[1];
 		}
 		return null;
 	}
@@ -1042,14 +1044,14 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			String compileStr = "COMPILEGROUP:" + id;
 			// 获取当前编译配置与分组配置的关联关系
 			String compileStrVal = JedisUtils.get(compileStr, idRelaRedisDBIndex);// 根据编译id获取该编译下的分组关系
-			String groupCompileStrs = getRegionInfo(compileStrVal);
+			String groupCompileStrs = getRegionInfo(compileStrVal);//获取编译对应的分组信息
 			// if (compileStrVal != null && compileStrVal.contains("-")) {
 			// String[] split = compileStrVal.split("-");
 			// groupCompileStrs = split[0];// 去除后面的redisdb信息
 			// }
-			if (groupCompileStrs != null && !groupCompileStrs.trim().equals("")) {
+			if (groupCompileStrs != null && !groupCompileStrs.trim().equals("")) {//遍历编译和分组的信息
 				String[] split = groupCompileStrs.split(";");
-				for (String groupId : split) {
+				for (String groupId : split) {//GROUPCOMPILE:groupid-redisdb
 					String compileGroupStr = getRegionInfo(JedisUtils.get(groupId, idRelaRedisDBIndex));
 					if (compileGroupStr != null && !compileGroupStr.trim().equals("")) {
 						String[] compileGroupArr = compileGroupStr.split(";");// 获取组对应的编译id
@@ -1082,6 +1084,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						// 根据分组与编译关联关系找到对应分组配置然后删除(重命名)
 						removeCompileAndGroupConfig(maatXmlConfig, groupId.replace("GROUPCOMPILE:", ""), 11,
 								maatVersion, service, transaction, redisDBIndex, id + "");// 11代表是分组配置
+
 					} else {
 						throw new ServiceRuntimeException(
 								"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为" + groupId,
@@ -1156,11 +1159,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										+ "请检查id映射关系是否正确,或该配置已经被取消,已经被取消的配置不可再次取消,否则将抛出异常",
 								RestBusinessCode.KeyNotExistsInRedis.getValue());
 					}
+
 				}
 			}
-			for (MaatXmlExpr maatXmlExpr : expressionList) {
-
-			}
+			updateMaatInfo(expressionList, maatKey, transaction, maatVersion, redisDBIndex, true);
 		} else {
 			throw new ServiceRuntimeException(
 					"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service + "对应的规则,请检查业务类型是否正确",
@@ -1193,7 +1195,6 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					throw new ServiceRuntimeException(redisDBIndex + "号redis库中不存在key=" + oldKey + ",请检查id映射关系是否正确",
 							RestBusinessCode.KeyNotExistsInRedis.getValue());
 				}
-
 				updateMaatInfo(expressionList, maatKey, transaction, maatVersion, redisDBIndex, true);
 			}
 		} else {
@@ -1316,9 +1317,26 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 
 										}
 									}
+
+									String groupCompileStrVal = JedisUtils.get(groupCompile.toUpperCase(),
+											idRelaRedisDBIndex);
 									// 删除分组与编译的关联关系
-									if (JedisUtils.exists(groupCompile.toUpperCase(), idRelaRedisDBIndex)) {
-										transaction.del(groupCompile.toUpperCase());// 删除当前组所对应的编译
+									if (groupCompileStrVal != null && !groupCompileStrVal.trim().equals("")) {
+										StringBuffer sb = new StringBuffer();
+										String[] split = groupCompileStrVal.split(";");
+										for (String groupCompileAndDBStr : split) {
+											if (groupCompileAndDBStr.contains(compileStr.toUpperCase())
+													&& split.length == 1) {
+												transaction.del(groupCompile.toUpperCase());// 删除当前组所对应的编译
+											} else if (!groupCompileAndDBStr.contains(compileStr.toUpperCase())) {
+												sb.append(groupCompileAndDBStr + ";");
+											}
+										}
+										if (sb.length() > 0) {
+											transaction.set(groupCompile.toUpperCase(),
+													sb.substring(0, sb.length() - 1));// 重新设置分组与编译
+										}
+
 									} else {
 										throw new ServiceRuntimeException(
 												"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与编译的关联关系，key为"
@@ -1333,9 +1351,25 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 											RestBusinessCode.KeyNotExistsInRedis.getValue());
 								}
 							}
-							if (JedisUtils.exists(compileStr.toUpperCase(), idRelaRedisDBIndex)) {
-								transaction.del(compileStr.toUpperCase());// 删除编译与分组的关联关系
-							}
+
+							// String compileGroupStrVal = JedisUtils.get(compileStr.toUpperCase(),
+							// idRelaRedisDBIndex);
+							// if (compileGroupStrVal != null && !compileGroupStrVal.trim().equals("")) {
+							// StringBuffer sb = new StringBuffer();
+							// String[] split = compileGroupStrVal.split(";");
+							// for (String compileGroupAndDBStr : split) {
+							// if (compileGroupAndDBStr.contains(groupCompile.toUpperCase()) && split.length
+							// == 1) {
+							transaction.del(compileStr.toUpperCase());// 删除编译与分组的关联关系
+							// } else {
+							// sb.append(compileGroupAndDBStr + ";");
+							// }
+							// }
+							// if (sb.length() > 0) {
+							// transaction.set(compileStr.toUpperCase(), sb.substring(0, sb.length() -
+							// 1));// 重新设置编译与分组的对应
+							// }
+							// }
 
 						} else {
 							throw new ServiceRuntimeException(
@@ -1643,6 +1677,15 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		return count;
 	}
 
+	/**
+	 * 从临时库删除分组复用域配置,如果该域被引用了,则去对应的redisdb中删除,并将关联库中记录的信息删除
+	 * @param groupId
+	 * @param regionList
+	 * @param transaction
+	 * @param maatXmlConfig
+	 * @param tmpStorageReuseRegionDB
+	 * @param idRelaRedisDBIndex
+	 */
 	private void removeReuseReion(long groupId, List<String> regionList, Transaction transaction,
 			MaatXmlConfig maatXmlConfig, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex) {
 		if (regionList != null && regionList.size() > 0) {
@@ -1685,9 +1728,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						for (Integer redisDb : redisDBSet) {
 							if (JedisUtils.exists(regionKey, redisDb)) {
 								transaction.select(redisDb);
-								
-							String	isValidKey=regionKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
-								transaction.rename(regionKey,isValidKey);
+
+								String isValidKey = regionKey.replace("EFFECTIVE_RULE", "OBSOLETE_RULE");
+								transaction.rename(regionKey, isValidKey);
 
 								String maatVersionStr = JedisUtils.get("MAAT_VERSION", redisDb);
 								if (maatVersionStr == null) {
@@ -1760,88 +1803,6 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		} finally {
 			// 释放连接到连接池
 			JedisUtils.returnResource(resource);
-		}
-	}
-
-	private void removeRegion(List<String> regionStrList, long groupId, MaatXmlConfig maatXmlConfig, int service,
-			Transaction transaction, Integer idRelaRedisDBIndex) {
-		String groupRegionKey = "GROUPREGION:" + groupId;// groupregion里面value是region的信息,key是group的信息,所以可以直接将GROUPCOMPILE替换为GROUPREGION
-		String groupRegionVal = JedisUtils.get(groupRegionKey, idRelaRedisDBIndex);
-		if (groupRegionVal != null && !groupRegionVal.trim().equals("")) {
-			String[] regionKeyAndDBStrArr = groupRegionVal.split(";");
-			// 记录所有需要删除的域配置信息key是相同的redisdb,value是需要删除的region集合
-			Map<String, List<String>> delRegionMap = new HashMap<String, List<String>>();
-			// 记录需要保留的域信息,//key是regionKey,value是redisdb
-			Map<String, List<String>> regionMap = new HashMap<String, List<String>>();
-			for (String delRegionStr : regionStrList) {
-				for (String regionKeyAndDBStr : regionKeyAndDBStrArr) {
-					String regionStr = getRegionInfo(regionKeyAndDBStr).replace("EFFECTIVE_RULE:", "");
-					String regionDb = getRegionDBInfo(regionKeyAndDBStr);
-					if (delRegionStr.toUpperCase().equals(regionStr)) {
-						if (delRegionMap.containsKey(regionDb)) {
-							delRegionMap.get(regionDb).add("EFFECTIVE_RULE:" + regionStr);
-						} else {
-							ArrayList<String> arrayList = new ArrayList<String>();
-							arrayList.add("EFFECTIVE_RULE:" + regionStr);
-							delRegionMap.put(regionDb, arrayList);
-						}
-					} else {
-						if (regionMap.containsKey(regionStr)) {
-							regionMap.get(regionStr).add(regionDb);
-						} else {
-							ArrayList<String> arrayList = new ArrayList<String>();
-							arrayList.add(regionDb);
-							regionMap.put(regionStr, arrayList);
-						}
-					}
-				}
-			}
-			Set<String> keySet = delRegionMap.keySet();
-			for (String redisDbArr : keySet) {
-				String[] split = redisDbArr.split(",");
-				for (String redisDb : split) {
-					if (redisDb != null && !redisDb.trim().equals("")) {
-						// 关联关系中存在需要删除的region信息,开始删除域配置
-						// 根据分组与域关联关系找到对应域配置然后删除(重命名)
-						int redisDBIndex = Integer.parseInt(redisDb.trim());
-						String maatVersionStr = JedisUtils.get("MAAT_VERSION", redisDBIndex);
-						if (maatVersionStr == null) {
-							maatVersionStr = "0";
-						}
-						if (maatVersionStr != null) {
-							Double maatVersion = Double.valueOf(maatVersionStr) + 1D;
-							removeRegionConfig(maatXmlConfig,
-									delRegionMap.get(redisDbArr)
-											.toArray(new String[delRegionMap.get(redisDbArr).size()]),
-									maatVersion, service, transaction, redisDBIndex);
-							transaction.incrBy("MAAT_VERSION", 1l);
-							logger.info("向{}号redis数据库更新了MAAT_VERSION,更新后版本是{}", redisDBIndex,
-									Integer.valueOf(maatVersionStr) + 1);
-						}
-					}
-				}
-			}
-			String groupIdStr = "GROUPREGION:" + groupId;
-			transaction.select(idRelaRedisDBIndex);
-			if (regionMap.size() == 0) {// 当前分组下面没有域配置了,将关联关系删除
-				transaction.del(groupIdStr);
-			} else {
-				// 更新关联关系
-				StringBuffer sb = new StringBuffer();
-				for (String redisKey : regionMap.keySet()) {
-					sb.append("EFFECTIVE_RULE:");
-					sb.append(redisKey);
-					sb.append("-");
-					sb.append(regionMap.get(redisKey).toString().replace("[", "").replace("]", ""));
-					sb.append(";");
-				}
-				String realStr = sb.substring(0, sb.length() - 1);
-
-				transaction.set(groupIdStr, realStr.toUpperCase());
-			}
-		} else {
-			throw new ServiceRuntimeException("无法从" + idRelaRedisDBIndex + "号redis库中获取groupId=" + groupId + ",service="
-					+ service + "的域配置关系,请检查数据是否正确", RestBusinessCode.KeyNotExistsInRedis.getValue());
 		}
 	}
 
