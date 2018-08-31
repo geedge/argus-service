@@ -497,7 +497,7 @@
 			<version>2.4</version>
 			<classifier>jdk15</classifier>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.apache.hive</groupId>
 			<artifactId>hive-jdbc</artifactId>
@@ -551,7 +551,7 @@
 			<artifactId>httpmime</artifactId>
 			<version>4.4</version>
 		</dependency>
-		
+
 		<!-- spring-data-redis -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -564,12 +564,19 @@
 			<artifactId>fastdfs-client-java</artifactId>
 			<version>1.27-SNAPSHOT</version>
 		</dependency>
-		
-		
+
+
 		<dependency>
-		    <groupId>com.alibaba</groupId>
-		    <artifactId>druid</artifactId>
-		    <version>1.1.10</version>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid</artifactId>
+			<version>1.1.10</version>
+		</dependency>
+
+		<!-- clickhouse-jdbc -->
+		<dependency>
+			<groupId>ru.yandex.clickhouse</groupId>
+			<artifactId>clickhouse-jdbc</artifactId>
+			<version>0.1.40</version>
 		</dependency>
 		
 	</dependencies>

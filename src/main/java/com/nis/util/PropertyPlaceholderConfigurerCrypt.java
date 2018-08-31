@@ -91,6 +91,14 @@ public class PropertyPlaceholderConfigurerCrypt extends PropertyPlaceholderConfi
 						new String(AESUtil.decrypt(Base64.decodeBase64(clusterPassword), clusterScretKey)));
 			}
 			
+			//clickhouse
+			String clickHousePassword = props.getProperty("jdbc.clickhouse.password");
+			String clickHouseScretKey = props.getProperty("jdbc.clickhouse.key");
+			if (null != clickHousePassword) {
+				props.setProperty("jdbc.clickhouse.password",
+						new String(AESUtil.decrypt(Base64.decodeBase64(clickHousePassword), clickHouseScretKey)));
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -35,7 +35,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.util.HiveJDBCByDruid;
+import com.nis.util.LogJDBCByDruid;
 import com.nis.util.JsonMapper;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
@@ -91,7 +91,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcIpLog,
 					Configurations.getStringProperty(NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null,sql , NtcIpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null,sql , NtcIpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcIpLogPage.setList(new ArrayList<NtcIpLog>());
@@ -157,7 +157,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcHttpLog,
 					Configurations.getStringProperty(NtcHttpLog.class.getSimpleName() + "HiveTable", "ntc_http_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcHttpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcHttpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcHttpLogPage.setList(new ArrayList());
@@ -217,7 +217,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcDnsLog,
 					Configurations.getStringProperty(NtcDnsLog.class.getSimpleName() + "HiveTable", "ntc_dns_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcDnsLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcDnsLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcDnsLogPage.setList(new ArrayList());
@@ -277,7 +277,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcMailLog,
 					Configurations.getStringProperty(NtcMailLog.class.getSimpleName() + "HiveTable", "ntc_mail_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcMailLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcMailLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcMailLogPage.setList(new ArrayList());
@@ -337,7 +337,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcSslLog,
 					Configurations.getStringProperty(NtcSslLog.class.getSimpleName() + "HiveTable", "ntc_ssl_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcSslLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcSslLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcSslLogPage.setList(new ArrayList());
@@ -397,7 +397,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcPptpLog,
 					Configurations.getStringProperty(NtcPptpLog.class.getSimpleName() + "HiveTable", "ntc_pptp_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcPptpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcPptpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcPptpLogPage.setList(new ArrayList());
@@ -456,7 +456,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcL2tpLog,
 					Configurations.getStringProperty(NtcL2tpLog.class.getSimpleName() + "HiveTable", "ntc_l2tp_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcL2tpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcL2tpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcL2tpLogPage.setList(new ArrayList());
@@ -516,7 +516,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcOpenvpnLog,
 					Configurations.getStringProperty(NtcOpenvpnLog.class.getSimpleName() + "HiveTable", "ntc_openvpn_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcOpenvpnLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcOpenvpnLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcOpenvpnLogPage.setList(new ArrayList());
@@ -576,7 +576,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcIpsecLog,
 					Configurations.getStringProperty(NtcIpsecLog.class.getSimpleName() + "HiveTable", "ntc_ipsec_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcIpsecLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcIpsecLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcIpsecLogPage.setList(new ArrayList());
@@ -636,7 +636,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcSshLog,
 					Configurations.getStringProperty(NtcSshLog.class.getSimpleName() + "HiveTable", "ntc_ssh_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcSshLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcSshLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcSshLogPage.setList(new ArrayList());
@@ -696,7 +696,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcFtpLog,
 					Configurations.getStringProperty(NtcFtpLog.class.getSimpleName() + "HiveTable", "ntc_ftp_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcFtpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcFtpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcFtpLogPage.setList(new ArrayList());
@@ -754,7 +754,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcAppLog,
 					Configurations.getStringProperty(NtcAppLog.class.getSimpleName() + "HiveTable", "ntc_app_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcAppLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcAppLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcAppLogPage.setList(new ArrayList());
@@ -812,7 +812,7 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcDdosLog,
 					Configurations.getStringProperty(NtcDdosLog.class.getSimpleName() + "HiveTable", "ntc_ddos_log"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcDdosLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcDdosLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcDdosLogPage.setList(new ArrayList());
@@ -873,7 +873,7 @@ public class NtcLogSearchController extends BaseRestController {
 					Configurations.getStringProperty(NtcP2pLog.class.getSimpleName() + "HiveTable", "ntc_p2p_log"),
 					getCol2Col(), orderBy, null);
 			
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcP2pLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcP2pLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcP2pLogPage.setList(new ArrayList());
@@ -934,7 +934,7 @@ public class NtcLogSearchController extends BaseRestController {
 					Configurations.getStringProperty(NtcBgpLog.class.getSimpleName() + "HiveTable", "ntc_bgp_log"),
 					getCol2Col(), orderBy, null);
 			
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, NtcBgpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcBgpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				ntcBgpLogPage.setList(new ArrayList());

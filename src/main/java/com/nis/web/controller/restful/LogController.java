@@ -1,6 +1,5 @@
 package com.nis.web.controller.restful;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +22,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.util.HiveJDBCByDruid;
+import com.nis.util.LogJDBCByDruid;
 import com.nis.util.JsonMapper;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
@@ -77,7 +76,7 @@ public class LogController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, dkBehaviorLog,
 					Configurations.getStringProperty(DkBehaviorLog.class.getSimpleName() + "HiveTable", "DK_BEHAVIOR_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, DkBehaviorLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, DkBehaviorLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -130,7 +129,7 @@ public class LogController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, pxyHttpLog,
 					Configurations.getStringProperty(PxyHttpLog.class.getSimpleName() + "HiveTable", "PXY_HTTP_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new HiveJDBCByDruid().tableMapping(page, null, sql, PxyHttpLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, PxyHttpLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());

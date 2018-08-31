@@ -33,8 +33,8 @@ import com.nis.web.service.SpringContextHolder;
  * @date 2018年8月20日 
  *
  */
-public class HiveJDBCByDruid {
-	private final static Logger logger = LoggerFactory.getLogger(HiveJDBCByDruid.class);
+public class LogJDBCByDruid {
+	private final static Logger logger = LoggerFactory.getLogger(LogJDBCByDruid.class);
 	static DruidDataSource datasource = null;
 	Connection conn = null;
 	ResultSet rs = null;
@@ -43,6 +43,7 @@ public class HiveJDBCByDruid {
 	public static Connection getConnection() throws SQLException {
 		if (datasource == null) {
 			datasource = (DruidDataSource) SpringContextHolder.getBean("HiveDataSourceByDruid");
+//			datasource = (DruidDataSource) SpringContextHolder.getBean("ClickHouseDataSourceByDruid");
 		}
 		return datasource.getConnection();
 	}
