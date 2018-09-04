@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.jolbox.bonecp.BoneCPDataSource;
 import com.nis.domain.Page;
 import com.nis.web.service.SpringContextHolder;
 
@@ -103,8 +104,6 @@ public class LogJDBCByDruid {
 				listString.add(JsonMapper.toJsonString(map2Obj(map, entityClass)));
 				listObject.add(map2Obj(map, entityClass));
 			}
-			logger.info("开始关闭数据中心连接");
-			HiveDataSource.closeConn();
 			if (null == listString || listString.size() == 0 || null == listObject || listObject.size() == 0) {
 				return null;
 			} else {
@@ -238,6 +237,20 @@ public class LogJDBCByDruid {
 			map.put(mapp.getColumn().toLowerCase(), mapp.getProperty());
 		}
 		return map;
+
+	}
+	public  ResultSet query(String sql) throws Exception {
+		conn = getConnection();
+		logger.info("连接数据中心日志库成功--------------------------");
+		st = conn.createStatement();
+		// logger.info("开始选择{}数据库--------------------------", Constants.HIVEDBNAME);
+		// String hiveAName = "use " + Constants.HIVEDBNAME;
+		// st.execute(hiveAName);
+		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
+		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
+		rs = st.executeQuery(sql);
+		logger.info("执行查询语句成功sql={}",sql);
+		return rs;
 
 	}
 

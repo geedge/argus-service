@@ -161,8 +161,8 @@ public class HiveJDBC {
 			listString.add(JsonMapper.toJsonString(map2Obj(map, entityClass)));
 			listObject.add(map2Obj(map, entityClass));
 		}
-		logger.info("开始关闭数据中心连接");
-		HiveDataSource.closeConn();
+//		logger.info("开始关闭数据中心连接");
+//		HiveDataSource.closeConn();
 		if (null == listString || listString.size() == 0 || null == listObject || listObject.size() == 0) {
 			return null;
 		} else {
