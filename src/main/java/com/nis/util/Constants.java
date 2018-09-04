@@ -1,6 +1,5 @@
 package com.nis.util;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class Constants {
@@ -187,7 +186,15 @@ public final class Constants {
 	/**
 	 * 数据中心数据库名称,程序中每次查询时使用的数据库名称 use HIVEDBNAME
 	 */
-	public static final String HIVEDBNAME = Configurations.getStringProperty("jdbc.hive.Name", "xa_dfbhit_hive");
+	public static final String HIVEDBNAME = Configurations.getStringProperty("jdbc.hive.DBName", "maat");
+	/**
+	 * clickhouse数据库名称
+	 */
+	public static final String CLICKHOUSEDBNAME = Configurations.getStringProperty("jdbc.clickHouse.DBName", "k18_ods");
+	/**
+	 * 日志查询是否使用clickhouse,否则使用hive
+	 */
+	public static final Boolean ISUSECLICKHOUSE = Configurations.getBooleanProperty("isUseClickHouse", true);
 	
 	public static final String DIGEST_GEN_TOOL_PATH = Configurations.getStringProperty("digest.gen.tool.path", "maat-redis/digest_gen");
 

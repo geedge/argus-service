@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,13 +33,6 @@ public class HiveSqlService {
 	Connection conn = null;
 	ResultSet rs = null;
 	Statement st = null;
-
-	public static Connection getConnection() throws SQLException {
-		if (datasource == null) {
-			datasource = (DruidDataSource) SpringContextHolder.getBean("HiveDataSourceByDruid");
-		}
-		return datasource.getConnection();
-	}
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
 	
@@ -142,13 +134,23 @@ public class HiveSqlService {
 
 			}
 		}
-		Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;
-		Integer endNum = startNum - 1 + page.getPageSize();
-		// sql.append(" order by " + orderBy + " limit 10000) t1) t2 where
-		// row_Num between " + startNum + " and " + endNum);
-		sql.append("  limit " + Constants.EVERY_GETHIVEDATANUM);
-		logger.info("获取数据中心日志sql==================={}", sql);
-		return sql.toString();
+		
+		if(Constants.ISUSECLICKHOUSE) {
+			//Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;
+			Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
+			//Integer endNum = startNum - 1 + page.getPageSize();
+			sql.append(" order by " + orderBy );
+			sql.append("  limit " + startNum+","+page.getPageSize());//clickhouse的分页与mysql相同
+			
+			
+		}else {
+
+			// sql.append(" order by " + orderBy + " limit 10000) t1) t2 where
+			// row_Num between " + startNum + " and " + endNum);
+			sql.append("  limit " + Constants.EVERY_GETHIVEDATANUM);
+			logger.info("获取数据中心日志sql==================={}", sql);
+		}
+		return sql.toString().toUpperCase();
 	}
 
 	public static Long getHivePageCount(Object bean, String countKey, String tableName,

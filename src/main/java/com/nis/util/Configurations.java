@@ -1,10 +1,8 @@
 package com.nis.util;
+
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
-
-
-
 
 public final class Configurations {
 	private static Properties prop = new Properties();
@@ -13,10 +11,11 @@ public final class Configurations {
 		try {
 			prop.load(Configurations.class.getResourceAsStream("/nis.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/applicationLog-hive.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/applicationLog-clickhouse.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-maatOracle.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-rule.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/fastdfs-client.properties"));
-			
+
 		} catch (Exception e) {
 			prop = null;
 			System.err.println("未知nis.properties,请确定文件是否存在!");
@@ -24,36 +23,35 @@ public final class Configurations {
 	}
 
 	public static String getStringProperty(String key, String defaultValue) {
-		if (prop==null||StringUtil.isBlank(prop.getProperty(key))) {
+		if (prop == null || StringUtil.isBlank(prop.getProperty(key))) {
 			return defaultValue;
 		}
 		return prop.getProperty(key).trim();
 	}
 
 	public static int getIntProperty(String key, int defaultValue) {
-		if (prop==null||StringUtil.isBlank(prop.getProperty(key))) {
+		if (prop == null || StringUtil.isBlank(prop.getProperty(key))) {
 			return defaultValue;
 		}
 		return Integer.parseInt(prop.getProperty(key).trim());
 	}
 
 	public static long getLongProperty(String key, long defaultValue) {
-		if (prop==null||StringUtil.isBlank(prop.getProperty(key))) {
+		if (prop == null || StringUtil.isBlank(prop.getProperty(key))) {
 			return defaultValue;
 		}
 		return Long.parseLong(prop.getProperty(key).trim());
 	}
 
 	public static boolean getBooleanProperty(String key, boolean defaultValue) {
-		if (prop==null||StringUtil.isBlank(prop.getProperty(key))) {
+		if (prop == null || StringUtil.isBlank(prop.getProperty(key))) {
 			return defaultValue;
 		}
 		return prop.getProperty(key).toLowerCase().trim().equals("true");
 	}
 
-	public static String getFileDirPathProperty(String key,
-			String defaultValue) {
-		if (prop==null||StringUtil.isBlank(prop.getProperty(key))) {
+	public static String getFileDirPathProperty(String key, String defaultValue) {
+		if (prop == null || StringUtil.isBlank(prop.getProperty(key))) {
 			return defaultValue;
 		}
 		String path = prop.getProperty(key).trim();
@@ -70,16 +68,9 @@ public final class Configurations {
 		}
 		return true;
 	}
-	
-	
+
 	public static Map getProp() {
 		return prop;
 	}
-
-	
-	
-	
-
-	
 
 }

@@ -74,7 +74,7 @@ public class LogController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, dkBehaviorLog,
-					Configurations.getStringProperty(DkBehaviorLog.class.getSimpleName() + "HiveTable", "DK_BEHAVIOR_LOG"),
+					getTableName(DkBehaviorLog.class.getSimpleName() + "HiveTable", "DK_BEHAVIOR_LOG"),
 					getCol2Col(), orderBy, null);
 			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, DkBehaviorLog.class, "foundTime",
 					"recvTime");
@@ -127,7 +127,7 @@ public class LogController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, pxyHttpLog,
-					Configurations.getStringProperty(PxyHttpLog.class.getSimpleName() + "HiveTable", "PXY_HTTP_LOG"),
+					getTableName(PxyHttpLog.class.getSimpleName() + "HiveTable", "PXY_HTTP_LOG"),
 					getCol2Col(), orderBy, null);
 			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, PxyHttpLog.class, "foundTime",
 					"recvTime");

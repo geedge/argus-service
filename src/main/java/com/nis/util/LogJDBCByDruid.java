@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
 import com.nis.web.service.SpringContextHolder;
+
 /**
  * 
  * <p>Title: HiveJDBCByDruid</p>
@@ -42,8 +43,11 @@ public class LogJDBCByDruid {
 
 	public static Connection getConnection() throws SQLException {
 		if (datasource == null) {
-			datasource = (DruidDataSource) SpringContextHolder.getBean("HiveDataSourceByDruid");
-//			datasource = (DruidDataSource) SpringContextHolder.getBean("ClickHouseDataSourceByDruid");
+			if (Constants.ISUSECLICKHOUSE) {
+				datasource = (DruidDataSource) SpringContextHolder.getBean("ClickHouseDataSourceByDruid");
+			} else {
+				datasource = (DruidDataSource) SpringContextHolder.getBean("HiveDataSourceByDruid");
+			}
 		}
 		return datasource.getConnection();
 	}
@@ -61,8 +65,8 @@ public class LogJDBCByDruid {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, List<Object>> tableMapping(Page<?> page, String redisKey, String sql, Class<?> entityClass, Object... obj)
-			throws Exception {
+	public Map<String, List<Object>> tableMapping(Page<?> page, String redisKey, String sql, Class<?> entityClass,
+			Object... obj) throws Exception {
 		Map<String, List<Object>> mapList = new HashMap<String, List<Object>>();
 		try {
 			Map<String, String> filedAndColumnMap = getColumn2FiledMap(entityClass);
@@ -73,11 +77,11 @@ public class LogJDBCByDruid {
 			conn = getConnection();
 			logger.info("连接数据中心日志库成功--------------------------");
 			st = conn.createStatement();
+			logger.info("开始执行日志查询语句sql={}", sql);
 			rs = st.executeQuery(sql);
-			logger.info("执行查询语句成功sql={}", sql);
 			ResultSetMetaData metaData = rs.getMetaData();
 			while (rs.next()) {
-				Map<String,Object> map = new HashMap<String,Object>();
+				Map<String, Object> map = new HashMap<String, Object>();
 				for (int i = 1; i <= metaData.getColumnCount(); i++) {
 					Object value = rs.getObject(i);
 					String filedName = filedAndColumnMap.get(metaData.getColumnName(i).toString().toLowerCase());
@@ -104,34 +108,38 @@ public class LogJDBCByDruid {
 			if (null == listString || listString.size() == 0 || null == listObject || listObject.size() == 0) {
 				return null;
 			} else {
-				//暂时没有往缓存写的操作
-//				if (Constants.IS_OPEN_REDIS && Constants.DATACENTER_OPEN_REDIS) {
-//					new SaveRedisListThread(redisKey, listString, Constants.HIVE_EXPIRE).start();
-//				}
+				// 暂时没有往缓存写的操作
+				// if (Constants.IS_OPEN_REDIS && Constants.DATACENTER_OPEN_REDIS) {
+				// new SaveRedisListThread(redisKey, listString, Constants.HIVE_EXPIRE).start();
+				// }
 			}
-			// sublist包前不包后,0-30实际获取的是0-29的数据
-			Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
-			Integer endNum = startNum - 1 + page.getPageSize() + 1;
-			if (listString.size() >= startNum) {
-				if (listString.size() >= endNum) {
-					mapList.put("str", listString.subList(startNum, endNum));
-				} else {
-					mapList.put("str", listString.subList(startNum, listString.size()));
-				}
-
+			if (Constants.ISUSECLICKHOUSE) {// sql查询时已经分页了
+				mapList.put("str", listString);
+				mapList.put("obj", listObject);
 			} else {
-				mapList.put("str", new ArrayList<Object>());
-			}
-			if (listObject.size() >= startNum) {
-				if (listObject.size() >= endNum) {
-					mapList.put("obj", listObject.subList(startNum, endNum));
-				} else {
-					mapList.put("obj", listObject.subList(startNum, listObject.size()));
-				}
-			} else {
-				mapList.put("obj", new ArrayList<Object>());
-			}
+				// sublist包前不包后,0-30实际获取的是0-29的数据
+				Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
+				Integer endNum = startNum - 1 + page.getPageSize() + 1;
+				if (listString.size() >= startNum) {
+					if (listString.size() >= endNum) {
+						mapList.put("str", listString.subList(startNum, endNum));
+					} else {
+						mapList.put("str", listString.subList(startNum, listString.size()));
+					}
 
+				} else {
+					mapList.put("str", new ArrayList<Object>());
+				}
+				if (listObject.size() >= startNum) {
+					if (listObject.size() >= endNum) {
+						mapList.put("obj", listObject.subList(startNum, endNum));
+					} else {
+						mapList.put("obj", listObject.subList(startNum, listObject.size()));
+					}
+				} else {
+					mapList.put("obj", new ArrayList<Object>());
+				}
+			}
 		} finally {
 			closeConn();
 		}
@@ -220,8 +228,6 @@ public class LogJDBCByDruid {
 		}
 		return obj;
 	}
-
-
 
 	public static Map<String, String> getColumn2FiledMap(Class<?> clazz) {
 		Map<String, String> map = new HashMap<String, String>();

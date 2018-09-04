@@ -17,7 +17,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nis.web.service.AuditLogThread;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
@@ -30,8 +29,10 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestConstants;
 import com.nis.restful.RestResult;
 import com.nis.restful.RestServiceException;
+import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 
 /**
@@ -44,6 +45,7 @@ import com.nis.web.service.ServicesRequestLogService;
 public class BaseRestController {
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+
 	/**
 	 * 
 	 * @Title: serviceResponse
@@ -64,7 +66,7 @@ public class BaseRestController {
 	 */
 
 	public Map serviceResponse(AuditLogThread thread, long time, HttpServletRequest request,
-                               HttpServletResponse response, String msg) {
+			HttpServletResponse response, String msg) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -110,7 +112,7 @@ public class BaseRestController {
 	 * @version V1.0
 	 */
 	public Map serviceResponse(AuditLogThread thread, long time, HttpServletRequest request,
-                               HttpServletResponse response, String msg, Object data) {
+			HttpServletResponse response, String msg, Object data) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -135,10 +137,7 @@ public class BaseRestController {
 		new Thread(thread).start();
 		return convert(restResult);
 	}
-	
-	
-	
-	
+
 	/**
 	 * 不将日志插入到数据库中,只返回到前台
 	 * @param time
@@ -148,8 +147,8 @@ public class BaseRestController {
 	 * @param data
 	 * @return
 	 */
-	public Map testServiceResponse(long time, HttpServletRequest request,
-			HttpServletResponse response, String msg, Object data) {
+	public Map testServiceResponse(long time, HttpServletRequest request, HttpServletResponse response, String msg,
+			Object data) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -192,7 +191,7 @@ public class BaseRestController {
 	 * @version V1.0
 	 */
 	public Map compileServiceResponse(AuditLogThread thread, long time, HttpServletRequest request,
-                                      HttpServletResponse response, String msg, Object data) {
+			HttpServletResponse response, String msg, Object data) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -219,18 +218,18 @@ public class BaseRestController {
 		return convert(restResult);
 	}
 
-    /**
-     * 日志结果响应格式规范
-     * @param auditLogThread
-     * @param executedTime
-     * @param request
-     * @param msg
-     * @param data
-     * @param logSource
-     * @return
-     */
+	/**
+	 * 日志结果响应格式规范
+	 * @param auditLogThread
+	 * @param executedTime
+	 * @param request
+	 * @param msg
+	 * @param data
+	 * @param logSource
+	 * @return
+	 */
 	public Map serviceLogResponse(AuditLogThread auditLogThread, long executedTime, HttpServletRequest request,
-                                  String msg, Object data, Integer logSource) {
+			String msg, Object data, Integer logSource) {
 		RestResult restResult = new RestResult();
 		String requestMethod = request.getMethod();
 		if (requestMethod.equals(RequestMethod.GET.name())) {
@@ -251,8 +250,8 @@ public class BaseRestController {
 		restResult.setMsg(msg);
 		restResult.setLogSource(logSource);
 		restResult.setTraceCode(auditLogThread.getTraceCode());
-        auditLogThread.setConsumerTime(executedTime);
-        auditLogThread.setBusinessCode(restResult.getBusinessCode().getValue());
+		auditLogThread.setConsumerTime(executedTime);
+		auditLogThread.setBusinessCode(restResult.getBusinessCode().getValue());
 		new Thread(auditLogThread).start();
 		return convert(restResult);
 	}
@@ -359,19 +358,19 @@ public class BaseRestController {
 		}
 	}
 
-	protected AuditLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
-                                            HttpServletRequest request, Object data) {
+	protected AuditLogThread saveRequestLog(ServicesRequestLogService service, int opAction, HttpServletRequest request,
+			Object data) {
 		logger.debug("SaveRequestLogThread初始化开始----" + System.currentTimeMillis());
 		AuditLogThread thread = AuditLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
 		thread.setOpAction(opAction);
-		thread.setTraceCode(sdf.format(new Date())+(Math.round((Math.random()*9+1)*10000)+""));
+		thread.setTraceCode(sdf.format(new Date()) + (Math.round((Math.random() * 9 + 1) * 10000) + ""));
 		if (data != null && ConfigCommonSource.class.isAssignableFrom(data.getClass())) {
 			ConfigCommonSource source = (ConfigCommonSource) data;
 			thread.setOperator(source.getOperator());
 			thread.setVersion(source.getVersion());
 			thread.setOpTime(source.getOpTime());
-		}else{
+		} else {
 			thread.setOperator("admin");
 			thread.setOpTime(new Date());
 		}
@@ -381,13 +380,13 @@ public class BaseRestController {
 	}
 
 	// 文件上传用
-	protected AuditLogThread saveRequestLog(ServicesRequestLogService service, int opAction,
-                                            HttpServletRequest request, Object data, Object fileInfo) {
+	protected AuditLogThread saveRequestLog(ServicesRequestLogService service, int opAction, HttpServletRequest request,
+			Object data, Object fileInfo) {
 		AuditLogThread thread = AuditLogThread.getNewSaveRequestLogThread(request);
 		thread.setService(service);
-	//	thread.setContent(fileInfo);
+		// thread.setContent(fileInfo);
 		thread.setOpAction(opAction);
-		thread.setTraceCode(sdf.format(new Date())+(Math.round((Math.random()*9+1)*10000)+""));
+		thread.setTraceCode(sdf.format(new Date()) + (Math.round((Math.random() * 9 + 1) * 10000) + ""));
 		if (data != null && ConfigCommonSource.class.isAssignableFrom(data.getClass())) {
 			System.out.println(data.getClass().getSimpleName());
 			ConfigCommonSource source = (ConfigCommonSource) data;
@@ -398,4 +397,12 @@ public class BaseRestController {
 		return thread;
 
 	}
+
+	protected String getTableName(String key, String defaultTableName) {
+		if (Constants.ISUSECLICKHOUSE) {
+			key = key.replace("HiveTable", "ClickHouseTable");
+		}
+		return Configurations.getStringProperty(key, defaultTableName);
+	}
+
 }
