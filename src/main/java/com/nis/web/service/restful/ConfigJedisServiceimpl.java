@@ -112,17 +112,6 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										}
 										updateMaatInfo(expressionList, maatKey, transaction, maatVersion, redisDBIndex,
 												false);
-										List<MaatXmlSeq> seqList = maatXmlConfig.getSequenceList();
-										for (MaatXmlSeq maatXmlSeq : seqList) {
-											String seqKey = maatXmlSeq.getSequenceKey();
-											if (!seqKey.toUpperCase().equals("MAAT_VERSION")) {
-												Integer operation = maatXmlSeq.getOperation();
-												if (operation == 1) {
-													transaction.incrBy(seqKey.toUpperCase(), 1l);
-												}
-											}
-
-										}
 									} else {
 										throw new ServiceRuntimeException(
 												"无法从applicationConfig-maatRedis.xml配置文件中获取service为" + service
@@ -522,7 +511,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	 * @param maatXmlConfig
 	 * @param maatVersion
 	 * @param service
-	 * @param redisTemplate
+	 * @param transaction
 	 * @param redisDBIndex
 	 */
 	public void setConfig(MaatConfig maatConfig, MaatXmlConfig maatXmlConfig, Double maatVersion, int service,
@@ -537,13 +526,11 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					"无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确",
 					RestBusinessCode.NotFoundCompileInfo.getValue());
 		}
-		boolean isReuse = false;
-
+		boolean isReuse =false;
 		/**
 		 * 保存域配置信息
 		 */
 		int count = addRegion(maatConfig, maatXmlConfig, maatVersion, service, transaction, redisDBIndex, false);
-
 		if (count == 0 && ServiceAndRDBIndexReal.serviceIsReuse(service)) {
 			isReuse = true;// 如果没有域配置那么就是分组复用的配置,只有分组复用的配置才可以没有域配置
 		}
@@ -570,7 +557,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	 * @param service
 	 * @param redisTemplate
 	 * @param redisDBIndex
-	 * @param isReuse
+	 * @param compileId
+	 * @param isReuse 是否是分组复用
 	 */
 	private void setCommonConfig(MaatXmlConfig maatXmlConfig, Map<String, String> map, int type, Double maatVersion,
 			int service, Transaction transaction, Integer redisDBIndex, String compileId, boolean isReuse) {
