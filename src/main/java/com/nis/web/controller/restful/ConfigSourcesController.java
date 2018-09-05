@@ -206,7 +206,34 @@ public class ConfigSourcesController extends BaseRestController {
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "回调规则下发成功",
 				Constants.IS_DEBUG ? jsonString : null);
 	}
-
+	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PATCH, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "回调（通用）规则内容更新接口", httpMethod = "PATCH", response = Map.class, notes = "接收回调规则数据,格式为结构化行列式JSON,存储到流量处理平台配置线中")
+	public Map patchCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PATCH, request,
+				null);
+		try {
+			configSourcesService.saveCommonSources(thread, start, jsonString);
+		} catch (Exception e) {
+			// TODO: handle exception
+			thread.setExceptionInfo("回调规则内容更新异常:" + e.getMessage());
+			logger.error("回调规则内容更新异常:" + e.getMessage());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"回调规则内容更新异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			}else if (e instanceof ServiceRuntimeException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"回调规则内容更新异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			}else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					"回调规则内容更新异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "回调规则内容更新成功",
+				Constants.IS_DEBUG ? jsonString : null);
+	}
 	@RequestMapping(value = "/cfg/v1/commonSources", method = RequestMethod.PUT)
 	@ApiOperation(value = "回调（通用）规则状态更新接口", httpMethod = "PUT", response = Map.class, notes = "接收回调规则,对其状态置为失效")
 	public Map updateCommonConfigSource(@RequestBody String jsonString, HttpServletRequest request,

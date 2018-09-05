@@ -206,6 +206,9 @@ public class BaseRestController {
 		} else if (requestMethod.equals(RequestMethod.POST.name())) {
 			restResult.setStatus(HttpStatus.CREATED);
 			restResult.setBusinessCode(RestBusinessCode.add_success);
+		} else if (requestMethod.equals(RequestMethod.PATCH.name())) {
+			restResult.setStatus(HttpStatus.CREATED);
+			restResult.setBusinessCode(RestBusinessCode.update_success);
 		}
 		restResult.setFromUri(request.getRequestURI());
 		restResult.setData(data);

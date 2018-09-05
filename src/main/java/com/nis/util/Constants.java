@@ -59,6 +59,7 @@ public final class Constants {
 	public static final int OPACTION_PUT = 2;
 	public static final int OPACTION_DELETE = 3;
 	public static final int OPACTION_GET = 4;
+	public static final int OPACTION_PATCH = 5;
 	/**
 	 * 是/否
 	 */
