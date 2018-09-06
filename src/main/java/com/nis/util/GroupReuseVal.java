@@ -202,6 +202,10 @@ public class GroupReuseVal {
 			throw new RestServiceException("ipRegionList中id为" + regionId + "的配置isValid不能为空",
 					RestBusinessCode.IsValidIsNull.getValue());
 		}
+		if (null == ipRegion.getOpTime()) {
+			throw new RestServiceException("ipRegionList中id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
+		}
 	}
 
 	public static void valNumRegion(NumRegion numRegion)
@@ -222,6 +226,10 @@ public class GroupReuseVal {
 		if (null == numRegion.getUpBoundary()) {
 			throw new RestServiceException("数值类域配置id为" + regionId + "的配置upBoundary不能为空",
 					RestBusinessCode.UpBoundaryIsNull.getValue());
+		}
+		if (null == numRegion.getOpTime()) {
+			throw new RestServiceException("数值类域配置中id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
 		}
 	}
 
@@ -254,6 +262,10 @@ public class GroupReuseVal {
 		if (null == strRegion.getIsHexbin()) {
 			throw new RestServiceException("strRegionList中id为" + regionId + "的配置isHexbin不能为空",
 					RestBusinessCode.MatchMethodIsNull.getValue());
+		}
+		if (null == strRegion.getOpTime()) {
+			throw new RestServiceException("strRegionList中id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
 		}
 	}
 

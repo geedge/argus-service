@@ -593,6 +593,10 @@ public class CompileVal {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置isValid不能为空",
 					RestBusinessCode.IsValidIsNull.getValue());
 		}
+		if (null == ipRegion.getOpTime()) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的ip类域配置id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
+		}
 	}
 
 	public static void valNumRegion(NumRegion numRegion, Long compileId) throws Exception {
@@ -612,6 +616,10 @@ public class CompileVal {
 		if (null == numRegion.getUpBoundary()) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置upBoundary不能为空",
 					RestBusinessCode.UpBoundaryIsNull.getValue());
+		}
+		if (null == numRegion.getOpTime()) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的数值类域配置id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
 		}
 	}
 
@@ -649,6 +657,10 @@ public class CompileVal {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置isHexbin不能为空",
 					RestBusinessCode.MatchMethodIsNull.getValue());
 		}
+		if (null == strRegion.getOpTime()) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
+		}
 	}
 
 	public static void valDigestRegion(DigestRegion digestRegion, Long compileId) throws Exception {
@@ -670,8 +682,12 @@ public class CompileVal {
 					RestBusinessCode.DigestIsNull.getValue());
 		}
 		if (null == digestRegion.getCfdsLevel()) {
-			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的字符串类域配置id为" + regionId + "的配置cfdsLevel不能为空",
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置cfdsLevel不能为空",
 					RestBusinessCode.CfdsLevelIsNull.getValue());
+		}
+		if (null == digestRegion.getOpTime()) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中的摘要类域配置id为" + regionId + "的配置opTime不能为空",
+					RestBusinessCode.OpTimeIsNull.getValue());
 		}
 	}
 
