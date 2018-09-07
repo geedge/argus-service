@@ -40,6 +40,7 @@ public class NtcHttpLog extends LogEntity {
     @ApiModelProperty(value="应答体转储文件KEY", required=true)
     protected String resBodyKey;
     
+    protected String searchUrl; //命中url
     public String getUrl() {
         return url;
     }
@@ -124,5 +125,19 @@ public class NtcHttpLog extends LogEntity {
 
 	public void setResBodyKey(String resBodyKey) {
 		this.resBodyKey = resBodyKey;
+	}
+	
+	/**
+	 * @return the searchUrl
+	 */
+	public String getSearchUrl() {
+		return searchUrl;
+	}
+	
+	/**
+	 * @param searchUrl the searchUrl to set
+	 */
+	public void setSearchUrl(String searchUrl) {
+		this.searchUrl = searchUrl;
 	}
 }
