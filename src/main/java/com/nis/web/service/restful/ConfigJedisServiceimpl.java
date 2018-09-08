@@ -270,7 +270,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						&& redisStatisticsRealDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 16)) {
 					List<MaatConfig> list = configMap.get(redisDBIndex);
 					if (list != null && list.size() > 0) {
-						transaction.select(redisStatisticsRealDBIndex);
+						transaction.select(redisStatisticsRealDBIndex);//选择实时统计库
 						String redisStatisticsReal = Configurations.getStringProperty("redis-statisticsReal",
 								"[COMPILE_ID];\t;[SERVICE];\t;[ACTION];\t;[CONT_TYPE];\t;[ATTR_TYPE];\t;[CONT_LABEL];\t;[TASK_ID];\t;[AFFAIR_ID];\t;[DO_BLACKLIST];\t;[DO_LOG];\t;[EFFECTIVE_RANGE];\t;[START_TIME];\t;[END_TIME];\t;[USER_REGION];\t;[IS_VALID];\t;[GROUP_NUM];\t;[FATHER_CFG_ID];\t;[OP_TIME]");
 						String[] redisStatisticsRealArr = redisStatisticsReal.split(";");
