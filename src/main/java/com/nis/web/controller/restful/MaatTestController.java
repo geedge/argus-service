@@ -258,11 +258,11 @@ public class MaatTestController {
 				List<NumRegion> numList = new ArrayList<NumRegion>();
 				List<StrRegion> strList = new ArrayList<StrRegion>();
 				List<DigestRegion> digestList = new ArrayList<DigestRegion>();
-				configCompile.setIpRegionList(ipList);
-				configCompile.setNumRegionList(numList);
-				configCompile.setStrRegionList(strList);
-				configCompile.setDigestRegionList(digestList);
-				configCompile.setIpClientRangeList(ipList);
+//				configCompile.setIpRegionList(ipList);
+//				configCompile.setNumRegionList(numList);
+//				configCompile.setStrRegionList(strList);
+//				configCompile.setDigestRegionList(digestList);
+//				configCompile.setIpClientRangeList(ipList);
 				if (tableType == 12 || tableType == 18) {
 					ipList = new ArrayList<IpRegion>();
 					if (tableNameArr.length == 1) {
@@ -379,7 +379,11 @@ public class MaatTestController {
 		strRegion.setGroupId(groupId);
 		strRegion.setRegionId(configRedisService.getIncrId("SEQ_REGIONID"));
 		strRegion.setTableName(ServiceAndRDBIndexReal.getMaatTableName(service, type, tableName));
-		strRegion.setDistrict("");
+		if(type==15) {
+			strRegion.setDistrict("增强字符串测试groupid"+groupId);
+		}else {
+			strRegion.setDistrict("");
+		}
 		strRegion.setKeywords("keywords,UUID:" + UUID.randomUUID());
 		strRegion.setExprType(1);
 		strRegion.setMatchMethod(1);

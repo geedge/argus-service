@@ -526,7 +526,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					"无法从参数中获取" + redisDBIndex + "号redis库,业务类型为:" + service + "的编译配置信息,请检查配置参数是否正确",
 					RestBusinessCode.NotFoundCompileInfo.getValue());
 		}
-		boolean isReuse =false;
+		boolean isReuse = false;
 		/**
 		 * 保存域配置信息
 		 */
@@ -687,7 +687,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								}
 							}
 						}
-					} else if (isReuse && (type == 12 || type == 13 || type == 14)) {// 将数据往临时库复制一份,无论临时库里有没有都可以直接写,有则覆盖,不影响
+					} else if (isReuse && (type == 12 || type == 13 || type == 14|| type == 15|| type == 18)) {// 将数据往临时库复制一份,无论临时库里有没有都可以直接写,有则覆盖,不影响
 						int tmpStorageReuseRegionDB = Configurations.getIntProperty("tmpStorageReuseRegionDB", 15);
 						transaction.select(tmpStorageReuseRegionDB);
 						transaction.set(maatKey.toUpperCase(), valBF.toString());
@@ -1048,20 +1048,24 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										// 如果只有一个编译id且与上面的编译id相同则说明未被分组复用,可以将其下的所有域置失效,否则不处理域配置,只把编译,分组关系置为无效
 										if (compileId.equals(compileStr)) {//
 											String groupRegionKey = groupId.replace("GROUPCOMPILE", "GROUPREGION");// groupregion里面value是region的信息,key是group的信息,所以可以直接将GROUPCOMPILE替换为GROUPREGION
-											String regionStr = getRegionInfo(
-													JedisUtils.get(groupRegionKey, idRelaRedisDBIndex));
-											if (regionStr != null && !regionStr.trim().equals("")) {
-												String[] regionKeyArr = regionStr.split(";");
-												if (regionKeyArr != null && regionKeyArr.length > 0) {
-													// 根据分组与域关联关系找到对应域配置然后删除(重命名)
-													removeRegionConfig(maatXmlConfig, regionKeyArr, maatVersion,
-															service, transaction, redisDBIndex);
+											String regionStrs = JedisUtils.get(groupRegionKey, idRelaRedisDBIndex);
+											if (regionStrs != null && !regionStrs.trim().equals("")) {
+												String[] regionStrArr = regionStrs.split(";");
+												for (String str : regionStrArr) {
+													String regionStr = getRegionInfo(str);
+													if (regionStr != null && !regionStr.trim().equals("")) {
+														String[] regionKeyArr = regionStr.split(";");
+														if (regionKeyArr != null && regionKeyArr.length > 0) {
+															// 根据分组与域关联关系找到对应域配置然后删除(重命名)
+															removeRegionConfig(maatXmlConfig, regionKeyArr, maatVersion,
+																	service, transaction, redisDBIndex);
+														}
+													} else {
+														throw new ServiceRuntimeException("从" + idRelaRedisDBIndex
+																+ "号redis库中无法获取MAAT配置分组与域的关联关系，key为" + groupRegionKey,
+																RestBusinessCode.KeyNotExistsInRedis.getValue());
+													}
 												}
-											} else {
-												throw new ServiceRuntimeException(
-														"从" + idRelaRedisDBIndex + "号redis库中无法获取MAAT配置分组与域的关联关系，key为"
-																+ groupRegionKey,
-														RestBusinessCode.KeyNotExistsInRedis.getValue());
 											}
 										}
 									}
