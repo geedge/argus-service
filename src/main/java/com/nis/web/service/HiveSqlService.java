@@ -36,6 +36,19 @@ public class HiveSqlService {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
 
+	private static Map<String, String> getFiledsType(Object o) {
+		Field[] fields = o.getClass().getSuperclass().getDeclaredFields();
+		Field[] superfields = o.getClass().getDeclaredFields();
+		Map<String, String> infoMap = new HashMap<String, String>();
+		for (int i = 0; i < fields.length; i++) {
+			infoMap.put(fields[i].getName(), fields[i].getType().toString().replace("class", ""));
+		}
+		for (int i = 0; i < superfields.length; i++) {
+			infoMap.put(superfields[i].getName(), superfields[i].getType().toString().replace("class", ""));
+		}
+		return infoMap;
+	}
+
 	public static String getSql(Page page, Object bean, String tableName, Map<String, Map<String, String>> col2col,
 			String orderBy, String searchActiveSys) throws Exception {
 		tableName = tableName.toLowerCase();
@@ -56,9 +69,14 @@ public class HiveSqlService {
 			sqlTrim = sqlTrim.substring(0, sqlTrim.length() - 1);
 		}
 		sql.setLength(0);
-		sql.append(" select " + sqlTrim + "  from " + tableName + " t where 1=1  ");
+		sql.append(" select " + sqlTrim.toLowerCase() + "  from " + tableName.toLowerCase() + " t ");
+		StringBuffer whereSB = new StringBuffer();
 		if (!StringUtil.isEmpty(bean)) {
 			Class<?> clazz = bean.getClass();
+			Map<String, String> filedsType = null;
+			if (Constants.ISUSECLICKHOUSE) {
+				filedsType = getFiledsType(bean);
+			}
 			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
 				// 获取所有的字段包括public,private,protected,private
 				// Field[] fields = bean.getClass().getDeclaredFields();
@@ -90,15 +108,17 @@ public class HiveSqlService {
 										// + ">=to_date('" +
 										// value.toString().trim()
 										// + "','yyyy-mm-dd HH24:mi:ss')");
-										sql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("start")) + ">="
-												+ value);
+										whereSB.append(" and "
+												+ filedAndColumnMap.get(col2col.get(key).get("start")).toLowerCase()
+												+ ">=" + value);
 									} else {
 										// sql.append(" and " +
 										// filedAndColumnMap.get(col2col.get(key).get("end"))
 										// + "<=to_date('" +
 										// value.toString().trim()
 										// + "','yyyy-mm-dd HH24:mi:ss')");
-										sql.append(" and " + filedAndColumnMap.get(col2col.get(key).get("end")) + "<"
+										whereSB.append(" and "
+												+ filedAndColumnMap.get(col2col.get(key).get("end")).toLowerCase() + "<"
 												+ value);
 									}
 								}
@@ -107,51 +127,66 @@ public class HiveSqlService {
 									key = key.replace("search", "");
 									key = key.substring(0, 1).toLowerCase() + key.substring(1);
 								}
+								if (!Constants.ISUSECLICKHOUSE) {//hive写法
+									if (typeName.equals("java.lang.String")) {
+										whereSB.append(" and " + filedAndColumnMap.get(key) + "='"
+												+ value.toString().trim() + "'");
+									} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
+										whereSB.append(
+												" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
 
-								if (typeName.equals("java.lang.String")) {
-									sql.append(" and " + filedAndColumnMap.get(key) + "='" + value.toString().trim()
-											+ "'");
-								} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
-									sql.append(" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
-
-								} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
-									sql.append(
-											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim() + "L");
+									} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
+										whereSB.append(" and " + filedAndColumnMap.get(key) + "="
+												+ value.toString().trim() + "L");
+									}
+								} else {//clickhouse写法
+									String type = filedsType.get(key).trim();
+									if (type.equals("java.lang.String")) {
+										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "='"
+												+ value.toString().trim() + "'");
+									} else if (type.equals("java.lang.Integer") || type.equals("int")
+											|| type.equals("java.lang.Long") || type.equals("long")) {
+										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "="
+												+ value.toString().trim());
+									}
 								}
 							}
 						}
 
 					}
 				}
-				if (!Constants.ISUSECLICKHOUSE) {//hive需要加这个字段
+				if (!Constants.ISUSECLICKHOUSE) {// hive需要加这个字段
 					if (null != foundTimePartStart) {
 						// sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
-						sql.append(" and found_time_partition>=" + foundTimePartStart);
+						whereSB.append(" and found_time_partition>=" + foundTimePartStart);
 					}
 					if (null != foundTimePartEnd) {
 						// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
-						sql.append(" and found_time_partition<=" + foundTimePartEnd);
+						whereSB.append(" and found_time_partition<=" + foundTimePartEnd);
 					}
 				}
 
 			}
 		}
 
+		if (whereSB.length() > 0) {
+			int indexOf = whereSB.indexOf("and")+"and".length();
+			sql.append(" where "+whereSB.substring(indexOf));
+		}
 		if (Constants.ISUSECLICKHOUSE) {
 			// Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;
 			Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 			// Integer endNum = startNum - 1 + page.getPageSize();
-			sql.append(" order by " + orderBy);
+			sql.append(" order by " + orderBy.toLowerCase());
 			sql.append("  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
 
 		} else {
-
 			// sql.append(" order by " + orderBy + " limit 10000) t1) t2 where
 			// row_Num between " + startNum + " and " + endNum);
 			sql.append("  limit " + Constants.EVERY_GETHIVEDATANUM);
 			logger.info("获取数据中心日志sql==================={}", sql);
 		}
-		return sql.toString().toLowerCase();
+		return sql.toString();
 	}
 
 	public static Long getHivePageCount(Object bean, String countKey, String tableName,
