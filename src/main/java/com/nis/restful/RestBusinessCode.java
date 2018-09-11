@@ -139,6 +139,31 @@ public enum RestBusinessCode {
 	 */
 	OpTimeIsNull(4001019, "Maat配置的opTime不能为空"),
 	
+	/**
+	 * 编译配置的contType不能为空
+	 */
+	ContTypeIsNull(4001020, "Maat配置的contType不能为空"),
+	
+	/**
+	 * 编译配置的attrType不能为空
+	 */
+	AttrTypeIsNull(4001021, "Maat配置的attrType不能为空"),
+	
+	/**
+	 * 编译配置的taskId不能为空
+	 */
+	 TaskIdIsNull(4001022, "Maat配置的taskId不能为空"),
+	
+	/**
+	 * 编译配置的contLabel不能为空
+	 */
+	 ContLabelIsNull(4001023, "Maat配置的contLabel不能为空"),
+	
+	/**
+	 * 编译配置的affairId不能为空
+	*/
+	AffairIdIsNull(4001024, "Maat配置的affairId不能为空"),
+	
 	//分组配置数据完整性业务码10100~
 	
 	/**
