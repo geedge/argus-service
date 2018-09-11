@@ -153,7 +153,8 @@ public class MaatTestController {
 							configCompileList.add(getConfigCompile(ser));
 						}
 						String jsonString = JsonMapper.toJsonString(configCompileList);
-						System.out.println(jsonString);
+						FileUtils.addStrToFile("下发的json串是"+jsonString+"\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 						for (ConfigCompile configCompile : configCompileList) {
@@ -179,7 +180,8 @@ public class MaatTestController {
 							configCompileList.add(getConfigCompile(service));
 						}
 						String jsonString = JsonMapper.toJsonString(configCompileList);
-						System.out.println(jsonString);
+						FileUtils.addStrToFile("下发的json串是"+jsonString+"\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 						for (ConfigCompile configCompile : configCompileList) {

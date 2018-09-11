@@ -127,10 +127,15 @@ public class HiveSqlService {
 									key = key.replace("search", "");
 									key = key.substring(0, 1).toLowerCase() + key.substring(1);
 								}
-								if (!Constants.ISUSECLICKHOUSE) {//hive写法
+								if (!Constants.ISUSECLICKHOUSE) {// hive写法
 									if (typeName.equals("java.lang.String")) {
-										whereSB.append(" and " + filedAndColumnMap.get(key) + "='"
-												+ value.toString().trim() + "'");
+										String field = filedAndColumnMap.get(key);
+										if (field.equals("url")) {
+											whereSB.append(
+													" and " + field + " like '" + value.toString().trim() + "%'");
+										} else {
+											whereSB.append(" and " + field + "='" + value.toString().trim() + "'");
+										}
 									} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
 										whereSB.append(
 												" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
@@ -139,11 +144,16 @@ public class HiveSqlService {
 										whereSB.append(" and " + filedAndColumnMap.get(key) + "="
 												+ value.toString().trim() + "L");
 									}
-								} else {//clickhouse写法
+								} else {// clickhouse写法
 									String type = filedsType.get(key).trim();
 									if (type.equals("java.lang.String")) {
-										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "='"
-												+ value.toString().trim() + "'");
+										String field = filedAndColumnMap.get(key).toLowerCase();
+										if (field.equals("url")) {
+											whereSB.append(
+													" and " + field + " like '" + value.toString().trim() + "%'");
+										} else {
+											whereSB.append(" and " + field + "='" + value.toString().trim() + "'");
+										}
 									} else if (type.equals("java.lang.Integer") || type.equals("int")
 											|| type.equals("java.lang.Long") || type.equals("long")) {
 										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "="
@@ -170,8 +180,8 @@ public class HiveSqlService {
 		}
 
 		if (whereSB.length() > 0) {
-			int indexOf = whereSB.indexOf("and")+"and".length();
-			sql.append(" where "+whereSB.substring(indexOf));
+			int indexOf = whereSB.indexOf("and") + "and".length();
+			sql.append(" where " + whereSB.substring(indexOf));
 		}
 		if (Constants.ISUSECLICKHOUSE) {
 			// Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;

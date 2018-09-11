@@ -159,6 +159,13 @@ public class MaatTestServiceimpl {
 					}
 				}
 				String val = JedisUtils.get(key, redisDb);
+				FileUtils.addStrToFile("\t\t入库的key=" + key + "\n", Configurations.getStringProperty("maatTestLogPath", ""),
+						true);
+				FileUtils.addStrToFile("\t\t入库的val=" + val, Configurations.getStringProperty("maatTestLogPath", ""),
+						true);
+				FileUtils.addStrToFile("\t\t表达式" + maatXmlExpr.getValueExpression() + "\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+
 				valArr = val.split("\\t");
 				break;
 			}

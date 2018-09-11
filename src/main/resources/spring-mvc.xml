@@ -19,7 +19,9 @@
 	         http://www.springframework.org/schema/context     
 	         http://www.springframework.org/schema/context/spring-context.xsd
 	         http://www.springframework.org/schema/cache
-	         http://www.springframework.org/schema/cache/spring-cache.xsd">
+	         http://www.springframework.org/schema/cache/spring-cache.xsd
+	         http://www.springframework.org/schema/task
+	         http://www.springframework.org/schema/task/spring-task.xsd">
 
 
 	<!-- 加载配置属性文件 -->
@@ -44,6 +46,14 @@
 
 	<!-- 默认注解映射支持 -->
 	<mvc:annotation-driven />
+    <!-- 配置任务线性池 -->  
+	<task:executor id="executor" pool-size="5"></task:executor>
+	<task:scheduler id="scheduler" pool-size="5"></task:scheduler>
+	<!-- 开启定时任务注解 --> 
+	<task:annotation-driven scheduler="scheduler"
+		executor="executor" />
+
+
 
 	<bean class="com.nis.restful.SwaggerConfig" />
 	<!-- redis 工具类 -->
@@ -190,7 +200,7 @@
 		<mvc:interceptor>
 			<mvc:mapping path="/service/cfg/**" />
 			<mvc:mapping path="/service/log/**" />
-			<mvc:mapping path="/log/**"/> 
+			<mvc:mapping path="/log/**" />
 			<bean class="com.nis.interceptor.DataSourceAInterceptor"></bean>
 		</mvc:interceptor>
 
