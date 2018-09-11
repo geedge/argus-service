@@ -7,7 +7,7 @@
 		音频样例监测 389=0:MM_SAMPLE_AUDIO #0x186 视频样例监测 390=0:MM_SAMPLE_VIDEO #0x187 图片样例监测 
 		391=0:MM_SAMPLE_PIC #0x188 VOIP样例监测 392=0:MM_SAMPLE_VOIP -->
 
-	<p:maatType service="261;262;263;264;389;390;391;392;1025">
+	<p:maatType service="261;262;263;264;268;269;270;389;390;391;392;396;397;398;1025">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 <!-- 			最开始调整的这个,格式不是\t;[op_time];&amp;nbsp;0;\n,后面的要求都改成这个格式,前端不好该代码,所以这个与其他的有区别 -->

@@ -38,8 +38,14 @@
 		#0x186	视频样例监测	390=0:MM_SAMPLE_VIDEO
 		#0x187	图片样例监测	391=0:MM_SAMPLE_PIC
 		#0x188	VOIP样例监测	392=0:MM_SAMPLE_VOIP
+		#0x10C	说话人识别阻断 	268=0:MM_SPEAKER_RECOGNIZATION
+		#0x10D	台标识别阻断 	269=0:MM_LOGO_DETECTION
+		#0x10E	人脸识别阻断 	270=0:MM_FACE_RECOGNIZATION
+		#0x18C	说话人识别监测	296=0:MM_SPEAKER_RECOGNIZATION
+		#0x18D	台标识别监测 	297=0:MM_LOGO_DETECTION
+		#0x18E	人脸识别监测	298=0:MM_FACE_RECOGNIZATION
 	 -->
-	<t:commonSource serviceIds="261,262,263,264,389,390,391,392,1025">
+	<t:commonSource serviceIds="261,262,263,264,268,269,270,389,390,391,392,396,397,398,1025">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
