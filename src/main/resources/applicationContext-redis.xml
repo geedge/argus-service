@@ -34,16 +34,53 @@
 	</bean>
 
 
+	<!-- <bean id="jedisCluster" class="com.nis.util.JedisClusterFactory"> -->
+	<!-- <property name="addressConfig"> -->
+	<!-- <value>classpath:jdbc.properties</value> -->
+	<!-- </property> -->
+	<!-- <property name="addressKeyPrefix" value="cluster" /> 属性文件里 key的前缀 -->
+	<!-- <property name="timeout" value="${redis.timeout}" /> -->
+	<!-- <property name="maxRedirections" value="${redis.maxRedirects}" /> -->
+	<!-- <property name="genericObjectPoolConfig" ref="poolConfig" /> -->
+	<!-- </bean> -->
 
-
-	<bean id="jedisCluster" class="com.nis.util.JedisClusterFactory">
-		<property name="addressConfig">
-			<value>classpath:jdbc.properties</value>
-		</property>
-		<property name="addressKeyPrefix" value="cluster" />   <!-- 属性文件里 key的前缀 -->
-		<property name="timeout" value="${redis.timeout}" />
-		<property name="maxRedirections" value="${redis.maxRedirects}" />
-		<property name="genericObjectPoolConfig" ref="poolConfig" />
+	<!-- redis集群 -->
+	<bean id="jedisCluster" class="redis.clients.jedis.JedisCluster">
+		<constructor-arg index="0">
+			<set>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port1}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port2}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port3}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port4}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port5}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port6}"></constructor-arg>
+				</bean>
+			</set>
+		</constructor-arg>
+		<constructor-arg index="1" value="${redis.timeout}"></constructor-arg>
+		<constructor-arg index="2" value="${redis.maxRedirects}"></constructor-arg>
+		<constructor-arg index="3" ref="poolConfig"></constructor-arg>
 	</bean>
+
+
+
+
 
 </beans>
