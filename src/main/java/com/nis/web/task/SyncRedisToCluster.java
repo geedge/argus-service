@@ -39,7 +39,7 @@ public class SyncRedisToCluster {
 	// private JedisSentinelPool jedisSentinelPool;
 
 	// @Scheduled(cron = "0/3 * * * * ?")
-	@Scheduled(cron = "${syncRedisToClusterCron}")
+	//@Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
 		try {
 			// keys("EFFECTIVE_RULE*");

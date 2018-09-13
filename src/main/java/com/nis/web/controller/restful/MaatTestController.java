@@ -564,7 +564,7 @@ public class MaatTestController {
 								jsonString.append("1");
 							} else if (srcName.toLowerCase().equals("isvalid")) {
 								jsonString.append("1");
-							} else if (srcName.toLowerCase().equals("cfgid")) {
+							} else if (srcName.toLowerCase().equals("cfgid")||srcName.toLowerCase().equals("keyringid")||srcName.toLowerCase().equals("fileid")) {
 								Long incrId = configRedisService.getIncrId("seq_compileid");
 								compileIdList.add(incrId);
 								jsonString.append(incrId);

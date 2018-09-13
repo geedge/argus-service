@@ -139,7 +139,7 @@
 	<!-- #0x208	PXY 证书管理 520=0:PXY_OBJ_KEYRING -->
 	<t:commonSource serviceIds="520">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
-		<t:field fieldType="Number" srcName="keyringId" dstName="keyring_id"  isRequired="true" isCfgId="true"/>
+		<t:field fieldType="Number" srcName="keyringId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="String" srcName="keyringName" dstName="keyring_name"  isRequired="true"/>
 		<t:field fieldType="String" srcName="keyringType" dstName="keyring_type"  isRequired="true"/>
 		<t:field fieldType="String" srcName="privateKeyFile" dstName="private_key_file"  isRequired="true"/>
@@ -154,7 +154,7 @@
 	<!-- # 0x260	PXY 管控文件策略 	608=0:PXY_OBJ_FILE -->
 	<t:commonSource serviceIds="608">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
-		<t:field fieldType="Number" srcName="fileId" dstName="file_id"  isRequired="true" isCfgId="true"/>
+		<t:field fieldType="Number" srcName="fileId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
 		<t:field fieldType="String" srcName="fileDesc" dstName="file_desc"  isRequired="true"/>
 		<t:field fieldType="String" srcName="contentType" dstName="content_type"  isRequired="true"/>
 		<t:field fieldType="Number" srcName="contentLength" dstName="content_length"  isRequired="true"/>

@@ -108,10 +108,10 @@
 				<![CDATA[AND SERVICE in (${searchService})]]>
 			</if>
 			<if test="searchReportStartTime != null and searchReportStartTime !=''">
-				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+				<![CDATA[AND REPORT_TIME > STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 			<if test="searchReportEndTime != null and searchReportEndTime !=''">
-				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+				<![CDATA[AND REPORT_TIME <= STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 		</where>
 		<choose>
