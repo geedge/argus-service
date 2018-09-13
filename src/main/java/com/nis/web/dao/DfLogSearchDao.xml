@@ -414,6 +414,13 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="label_proto_id" jdbcType="INTEGER" property="labelProtoId" />
+		<result column="label_proto_source" jdbcType="INTEGER" property="labelProtoSource" />
+		<result column="label_behav_id" jdbcType="INTEGER" property="labelBehavId" />
+		<result column="label_behav_source" jdbcType="INTEGER" property="labelBehavSource" />
+		<result column="label_app_id" jdbcType="INTEGER" property="labelAppId" />
+		<result column="label_app_source" jdbcType="INTEGER" property="labelAppSource" />
 	</resultMap>
 	
 	<resultMap id="NtcDdosLogMap" type="com.nis.domain.restful.NtcDdosLog">
@@ -985,6 +992,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="p2p_proto" jdbcType="VARCHAR" property="p2pProto" />
+		<result column="p2p_file_id" jdbcType="VARCHAR" property="p2pFileId" />
+		<result column="p2p_keyword" jdbcType="VARCHAR" property="p2pKeyword" />
 	</resultMap>
 	<resultMap id="NtcBgpLogMap" type="com.nis.domain.restful.NtcBgpLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
