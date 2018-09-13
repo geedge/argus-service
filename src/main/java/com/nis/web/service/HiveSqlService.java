@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
-import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.LogJDBCByDruid;
 import com.nis.util.StringUtil;
@@ -187,7 +186,11 @@ public class HiveSqlService {
 			// Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;
 			Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 			// Integer endNum = startNum - 1 + page.getPageSize();
-			sql.append(" order by " + orderBy.toLowerCase());
+			if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
+				sql.append(" order by " + orderBy.toLowerCase());
+			} else {
+				sql.append(" order by " + orderBy.toLowerCase() + " desc");
+			}
 			sql.append("  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
 
 		} else {
