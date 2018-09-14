@@ -498,6 +498,9 @@ public class CompileVal {
 		if (null == configCompile.getDoLog()) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中doLog不能为空",
 					RestBusinessCode.DoLogIsNull.getValue());
+		}else if ("1".equals(configCompile.getAction().toString())&&configCompile.getDoLog().toString().equals("0")) {
+			throw new RestServiceException("编译配置id为" + compileId + "的配置,动作(action)为监测(1)时doLog的值不能为0",
+					RestBusinessCode.DoLogIsWrong.getValue());
 		}
 		if (null == configCompile.getEffectiveRange() || configCompile.getEffectiveRange().equals("")) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中effectiveRange不能为空",

@@ -388,6 +388,11 @@ public enum RestBusinessCode {
 	IsValidNonUniq(4002011, "状态更新操作，所有配置的isValid值必须相同"),
 	
 	/**
+	 * 编译配置的动作(action)为监测(1)时doLog的值不能为0
+	 */
+	DoLogIsWrong(4002012, "Maat编译配置的动作(action)为监测(1)时doLog的值不能为0"),
+	
+	/**
 	 * 配置分组中同一groupId不能重复出现多次
 	 */
 	GroupIdIsRepeat(4002100,"Maat配置分组中groupId不能重复出现多次"),
