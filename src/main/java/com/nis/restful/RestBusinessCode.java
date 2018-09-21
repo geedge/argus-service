@@ -328,6 +328,10 @@ public enum RestBusinessCode {
 	 * 回调类checksum与文件MD5值不一致
 	 */
 	CheckSumIsWrong(4001603,"checksum与文件MD5值不一致"),
+	/**
+	 * minio地址和端口不能为空
+	 */
+	MinioUrlIsNull(4001604,"minio地址和端口不能为空"),
 	
 	//配置业务格式验证 20000
 	/**
