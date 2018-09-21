@@ -15,6 +15,7 @@ public final class Configurations {
 			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-maatOracle.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/applicationConfig-rule.properties"));
 			prop.load(Configurations.class.getResourceAsStream("/fastdfs-client.properties"));
+			prop.load(Configurations.class.getResourceAsStream("/jdbc.properties"));
 
 		} catch (Exception e) {
 			prop = null;

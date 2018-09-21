@@ -153,7 +153,8 @@ public class MaatTestController {
 							configCompileList.add(getConfigCompile(ser));
 						}
 						String jsonString = JsonMapper.toJsonString(configCompileList);
-						System.out.println(jsonString);
+						FileUtils.addStrToFile("下发的json串是"+jsonString+"\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 						for (ConfigCompile configCompile : configCompileList) {
@@ -179,7 +180,8 @@ public class MaatTestController {
 							configCompileList.add(getConfigCompile(service));
 						}
 						String jsonString = JsonMapper.toJsonString(configCompileList);
-						System.out.println(jsonString);
+						FileUtils.addStrToFile("下发的json串是"+jsonString+"\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
 						for (ConfigCompile configCompile : configCompileList) {
@@ -258,11 +260,11 @@ public class MaatTestController {
 				List<NumRegion> numList = new ArrayList<NumRegion>();
 				List<StrRegion> strList = new ArrayList<StrRegion>();
 				List<DigestRegion> digestList = new ArrayList<DigestRegion>();
-				configCompile.setIpRegionList(ipList);
-				configCompile.setNumRegionList(numList);
-				configCompile.setStrRegionList(strList);
-				configCompile.setDigestRegionList(digestList);
-				configCompile.setIpClientRangeList(ipList);
+//				configCompile.setIpRegionList(ipList);
+//				configCompile.setNumRegionList(numList);
+//				configCompile.setStrRegionList(strList);
+//				configCompile.setDigestRegionList(digestList);
+//				configCompile.setIpClientRangeList(ipList);
 				if (tableType == 12 || tableType == 18) {
 					ipList = new ArrayList<IpRegion>();
 					if (tableNameArr.length == 1) {
@@ -379,7 +381,11 @@ public class MaatTestController {
 		strRegion.setGroupId(groupId);
 		strRegion.setRegionId(configRedisService.getIncrId("SEQ_REGIONID"));
 		strRegion.setTableName(ServiceAndRDBIndexReal.getMaatTableName(service, type, tableName));
-		strRegion.setDistrict("");
+		if(type==15) {
+			strRegion.setDistrict("增强字符串测试groupid"+groupId);
+		}else {
+			strRegion.setDistrict("");
+		}
 		strRegion.setKeywords("keywords,UUID:" + UUID.randomUUID());
 		strRegion.setExprType(1);
 		strRegion.setMatchMethod(1);
@@ -558,7 +564,7 @@ public class MaatTestController {
 								jsonString.append("1");
 							} else if (srcName.toLowerCase().equals("isvalid")) {
 								jsonString.append("1");
-							} else if (srcName.toLowerCase().equals("cfgid")) {
+							} else if (srcName.toLowerCase().equals("cfgid")||srcName.toLowerCase().equals("keyringid")||srcName.toLowerCase().equals("fileid")) {
 								Long incrId = configRedisService.getIncrId("seq_compileid");
 								compileIdList.add(incrId);
 								jsonString.append(incrId);

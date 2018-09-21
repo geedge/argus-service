@@ -469,6 +469,28 @@ public class CompileVal {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中action不能为空",
 					RestBusinessCode.ActionIsNull.getValue());
 		}
+		if (StringUtil.isEmpty(configCompile.getContType())) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中contType不能为空",
+					RestBusinessCode.ContTypeIsNull.getValue());
+		}
+		
+		if (StringUtil.isEmpty(configCompile.getAttrType())) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中attrType不能为空",
+					RestBusinessCode.AttrTypeIsNull.getValue());
+		}
+		if (StringUtil.isEmpty(configCompile.getTaskId())) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中taskId不能为空",
+					RestBusinessCode.TaskIdIsNull.getValue());
+		}
+		
+		if (StringUtil.isEmpty(configCompile.getContLabel())) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中contLabel不能为空",
+					RestBusinessCode.ContLabelIsNull.getValue());
+		}
+		if (StringUtil.isEmpty(configCompile.getAffairId())) {
+			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中affairId不能为空",
+					RestBusinessCode.AffairIdIsNull.getValue());
+		}
 		if (null == configCompile.getDoBlacklist()) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中doBlacklist不能为空",
 					RestBusinessCode.DoBlacklistIsNull.getValue());
@@ -476,6 +498,9 @@ public class CompileVal {
 		if (null == configCompile.getDoLog()) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中doLog不能为空",
 					RestBusinessCode.DoLogIsNull.getValue());
+		}else if ("1".equals(configCompile.getAction().toString())&&configCompile.getDoLog().toString().equals("0")) {
+			throw new RestServiceException("编译配置id为" + compileId + "的配置,动作(action)为监测(1)时doLog的值不能为0",
+					RestBusinessCode.DoLogIsWrong.getValue());
 		}
 		if (null == configCompile.getEffectiveRange() || configCompile.getEffectiveRange().equals("")) {
 			throw new RestServiceException("编译配置id为" + compileId + "的编译配置中effectiveRange不能为空",

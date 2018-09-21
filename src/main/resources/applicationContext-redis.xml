@@ -25,428 +25,59 @@
 		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
 		<property name="testOnReturn" value="${redis.testOnReturn}" />
 	</bean>
-	
-	
+
 	<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
 		<constructor-arg name="poolConfig" ref="poolConfig" />
 		<constructor-arg name="host" value="${redis.host}" />
-		<constructor-arg name="port" value="${redis.port}" type="int" />
-	</bean>
-	
-	
-	<!-- 默认使用数据库0,设置connectionFactory为非单例模式,方便选择redis数据库 -->
-	<bean id="connectionFactory0"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="0" />
-
-	<!-- p:password="" scope="prototype" -->
-	<bean id="connectionFactory1"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="1" />
-
-	<bean id="connectionFactory2"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="2" />
-
-	<!-- p:password="" scope="prototype" -->
-	<bean id="connectionFactory3"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="3" />
-
-	<bean id="connectionFactory4"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="4" />
-	<bean id="connectionFactory5"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="5" />
-	<bean id="connectionFactory6"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="6" />
-	<bean id="connectionFactory7"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="7" />
-	<bean id="connectionFactory8"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="8" />
-	<bean id="connectionFactory9"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="9" />
-	<bean id="connectionFactory10"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="10" />
-
-	<bean id="connectionFactory14"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="14" />
-
-
-	<bean id="connectionFactory15"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="15" />
-
-
-
-	<bean id="stringRedisSerializer"
-		class="org.springframework.data.redis.serializer.StringRedisSerializer" />
-
-	<bean id="redisTemplate0" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory0" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-
-	<bean id="redisTemplate1" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory1" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-
-	<bean id="redisTemplate2" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory2" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-
-	<bean id="redisTemplate3" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory3" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-	<bean id="redisTemplate4" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory4" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-	<bean id="redisTemplate5" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory5" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-	<bean id="redisTemplate6" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory6" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
+		<constructor-arg name="port" value="${redis.port}"
+			type="int" />
 	</bean>
 
 
+	<!-- <bean id="jedisCluster" class="com.nis.util.JedisClusterFactory"> -->
+	<!-- <property name="addressConfig"> -->
+	<!-- <value>classpath:jdbc.properties</value> -->
+	<!-- </property> -->
+	<!-- <property name="addressKeyPrefix" value="cluster" /> 属性文件里 key的前缀 -->
+	<!-- <property name="timeout" value="${redis.timeout}" /> -->
+	<!-- <property name="maxRedirections" value="${redis.maxRedirects}" /> -->
+	<!-- <property name="genericObjectPoolConfig" ref="poolConfig" /> -->
+	<!-- </bean> -->
 
-	<bean id="redisTemplate7" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory7" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
+	<!-- redis集群 -->
+	<bean id="jedisCluster" class="redis.clients.jedis.JedisCluster">
+		<constructor-arg index="0">
+			<set>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port1}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port2}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port3}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port4}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port5}"></constructor-arg>
+				</bean>
+				<bean class="redis.clients.jedis.HostAndPort">
+					<constructor-arg index="0" value="${redis.cluster.host1}"></constructor-arg>
+					<constructor-arg index="1" value="${redis.cluster.port6}"></constructor-arg>
+				</bean>
+			</set>
+		</constructor-arg>
+		<constructor-arg index="1" value="${redis.timeout}"></constructor-arg>
+		<constructor-arg index="2" value="${redis.maxRedirects}"></constructor-arg>
+		<constructor-arg index="3" ref="poolConfig"></constructor-arg>
 	</bean>
-	<bean id="redisTemplate8" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory8" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-	<bean id="redisTemplate9" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory9" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-	<bean id="redisTemplate10" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory10" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-
-	<bean id="redisTemplate14" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory14" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-	<bean id="redisTemplate15" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="connectionFactory15" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-		<!-- 设置开启事务 -->
-		<property name="enableTransactionSupport" value="true" />
-	</bean>
-
-
-	<!--设置没有事务的redistemplate,用于判断key是否存在 -->
-
-
-
-	<!-- 默认使用数据库0,设置connectionFactory为非单例模式,方便选择redis数据库 -->
-	<bean id="conn0"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="0" />
-
-	<!-- p:password="" scope="prototype" -->
-	<bean id="conn1"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="1" />
-
-	<bean id="conn2"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="2" />
-
-	<!-- p:password="" scope="prototype" -->
-	<bean id="conn3"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="3" />
-
-	<bean id="conn4"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="4" />
-	<bean id="conn5"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="5" />
-	<bean id="conn6"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="6" />
-	<bean id="conn7"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="7" />
-	<bean id="conn8"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="8" />
-	<bean id="conn9"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="9" />
-	<bean id="conn10"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="10" />
-
-	<bean id="conn15"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="15" />
-
-	<bean id="conn14"
-		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
-		p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="poolConfig"
-		p:database="14" />
-
-
-	<bean id="redisTemplateNoTrans0" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn0" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-
-	<bean id="redisTemplateNoTrans1" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn1" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-
-	<bean id="redisTemplateNoTrans2" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn2" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-
-	<bean id="redisTemplateNoTrans3" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn3" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-	<bean id="redisTemplateNoTrans4" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn4" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-	<bean id="redisTemplateNoTrans5" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn5" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-	<bean id="redisTemplateNoTrans6" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn6" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-
-
-
-	<bean id="redisTemplateNoTrans7" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn7" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-	<bean id="redisTemplateNoTrans8" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn8" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-	<bean id="redisTemplateNoTrans9" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn9" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-	<bean id="redisTemplateNoTrans10" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn10" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-
-
-	</bean>
-
-	<bean id="redisTemplateNoTrans15" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn15" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-	</bean>
-
-
-
-	<bean id="redisTemplateNoTrans14" class="org.springframework.data.redis.core.RedisTemplate">
-		<property name="connectionFactory" ref="conn14" />
-		<!-- 设置key和value的序列化方式,默认使用的是JdkSerializationRedisSerializer,key会被序列化为\xac\xed\x00\x056\x00 -->
-		<property name="keySerializer" ref="stringRedisSerializer" />
-		<property name="valueSerializer" ref="stringRedisSerializer" />
-		<property name="hashKeySerializer" ref="stringRedisSerializer" />
-		<property name="hashValueSerializer" ref="stringRedisSerializer" />
-	</bean>
-
-
-
 
 
 

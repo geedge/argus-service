@@ -139,6 +139,31 @@ public enum RestBusinessCode {
 	 */
 	OpTimeIsNull(4001019, "Maat配置的opTime不能为空"),
 	
+	/**
+	 * 编译配置的contType不能为空
+	 */
+	ContTypeIsNull(4001020, "Maat配置的contType不能为空"),
+	
+	/**
+	 * 编译配置的attrType不能为空
+	 */
+	AttrTypeIsNull(4001021, "Maat配置的attrType不能为空"),
+	
+	/**
+	 * 编译配置的taskId不能为空
+	 */
+	 TaskIdIsNull(4001022, "Maat配置的taskId不能为空"),
+	
+	/**
+	 * 编译配置的contLabel不能为空
+	 */
+	 ContLabelIsNull(4001023, "Maat配置的contLabel不能为空"),
+	
+	/**
+	 * 编译配置的affairId不能为空
+	*/
+	AffairIdIsNull(4001024, "Maat配置的affairId不能为空"),
+	
 	//分组配置数据完整性业务码10100~
 	
 	/**
@@ -303,6 +328,10 @@ public enum RestBusinessCode {
 	 * 回调类checksum与文件MD5值不一致
 	 */
 	CheckSumIsWrong(4001603,"checksum与文件MD5值不一致"),
+	/**
+	 * minio地址和端口不能为空
+	 */
+	MinioUrlIsNull(4001604,"minio地址和端口不能为空"),
 	
 	//配置业务格式验证 20000
 	/**
@@ -361,6 +390,11 @@ public enum RestBusinessCode {
 	 * 状态更新操作，所有配置的isValid值必须相同
 	 */
 	IsValidNonUniq(4002011, "状态更新操作，所有配置的isValid值必须相同"),
+	
+	/**
+	 * 编译配置的动作(action)为监测(1)时doLog的值不能为0
+	 */
+	DoLogIsWrong(4002012, "Maat编译配置的动作(action)为监测(1)时doLog的值不能为0"),
 	
 	/**
 	 * 配置分组中同一groupId不能重复出现多次

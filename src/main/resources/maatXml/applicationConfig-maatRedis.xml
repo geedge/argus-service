@@ -7,7 +7,7 @@
 		音频样例监测 389=0:MM_SAMPLE_AUDIO #0x186 视频样例监测 390=0:MM_SAMPLE_VIDEO #0x187 图片样例监测 
 		391=0:MM_SAMPLE_PIC #0x188 VOIP样例监测 392=0:MM_SAMPLE_VOIP -->
 
-	<p:maatType service="261;262;263;264;389;390;391;392;1025">
+	<p:maatType service="261;262;263;264;268;269;270;389;390;391;392;396;397;398">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 <!-- 			最开始调整的这个,格式不是\t;[op_time];&amp;nbsp;0;\n,后面的要求都改成这个格式,前端不好该代码,所以这个与其他的有区别 -->
@@ -138,8 +138,8 @@
 	</p:maatType>
 	<p:maatType service="520">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[keyring_id]</p:keyExpression>
-			<p:valueExpression>[keyring_id];\t;[service];\t;[keyring_name];\t;[keyring_type];\t;[private_key_file];\t;[public_key_file];\t;[expire_after];\t;[public_key_algo];\t;[crl];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[keyring_name];\t;[keyring_type];\t;[private_key_file];\t;[public_key_file];\t;[expire_after];\t;[public_key_algo];\t;[crl];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -158,8 +158,8 @@
 	</p:maatType>
 	<p:maatType service="608">
 		<p:expressions>
-			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[file_id]</p:keyExpression>
-			<p:valueExpression>[file_id];\t;[service];\t;[file_desc];\t;[content_type];\t;[content_length];\t;[file_path];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[file_desc];\t;[content_type];\t;[content_length];\t;[file_path];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -177,7 +177,7 @@
 		</p:expressions>
 	</p:maatType>
 	<p:maatType
-		service="1;2;16;17;18;19;20;21;22;23;24;26;27;30;31;32;33;34;35;36;37;128;129;130;131;132;133;134;135;136;137;138;139;140;141;142;143;144;145;147;148;149;256;257;258;259;260;267;384;385;386;387;388;395;512;513;514;515;517;521;528;544;560;576;592;750;768;848;1024;1026;1027;1028;1029;1030;1031;1040;1041;1042;1056;1057;1058;1059;1060;1152">
+			service="1;2;16;17;18;19;20;21;22;23;24;26;27;30;31;32;33;34;35;36;37;128;129;130;131;132;133;134;135;136;137;138;139;140;141;142;143;144;145;146;147;148;149;256;257;258;259;260;267;271;272;384;385;386;387;388;395;512;513;514;515;517;521;528;544;560;576;592;750;768;848;1024;1025;1026;1027;1028;1029;1030;1040;1041;1042;1056;1057;1058;1059;1060;1152">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{compile_table_name};,;[compile_id]</p:keyExpression>
 			<p:valueExpression>[compile_id];\t;[service];\t;[action];\t;[do_blacklist];\t;[do_log];\t;[effective_range];\t;[user_region];\t;[is_valid];\t;[group_num];\t;[father_cfg_id];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>

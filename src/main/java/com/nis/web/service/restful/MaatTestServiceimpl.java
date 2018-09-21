@@ -159,6 +159,13 @@ public class MaatTestServiceimpl {
 					}
 				}
 				String val = JedisUtils.get(key, redisDb);
+				FileUtils.addStrToFile("\t\t入库的key=" + key + "\n", Configurations.getStringProperty("maatTestLogPath", ""),
+						true);
+				FileUtils.addStrToFile("\t\t入库的val=" + val, Configurations.getStringProperty("maatTestLogPath", ""),
+						true);
+				FileUtils.addStrToFile("\t\t表达式" + maatXmlExpr.getValueExpression() + "\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
+
 				valArr = val.split("\\t");
 				break;
 			}
@@ -426,7 +433,7 @@ public class MaatTestServiceimpl {
 				}
 			}
 			key = keyBF.toString().toUpperCase();
-			String[] valSplit = maatXmlExpr.getValueExpression().replace(";&nbsp;0;\\n", "").replace("\\t", "")
+			String[] valSplit = maatXmlExpr.getValueExpression().replace(";&nbsp;0;\\n", "").replace(";&nbsp", "\\t").replace("\\n", "").replace("\\t", "")
 					.split(";");
 			for (String valStr : valSplit) {
 				if (valStr != null && !valStr.trim().equals("")) {
@@ -439,6 +446,14 @@ public class MaatTestServiceimpl {
 				}
 			}
 			String val = JedisUtils.get(key, redisDb).replace(" ", "\t");
+			
+			FileUtils.addStrToFile("\t\t入库的key=" + key + "\n", Configurations.getStringProperty("maatTestLogPath", ""),
+					true);
+			FileUtils.addStrToFile("\t\t入库的val=" + val, Configurations.getStringProperty("maatTestLogPath", ""),
+					true);
+			FileUtils.addStrToFile("\t\t表达式" + maatXmlExpr.getValueExpression() + "\n",
+					Configurations.getStringProperty("maatTestLogPath", ""), true);
+			
 			valArr = val.split("\\t");
 			break;
 		}

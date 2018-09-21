@@ -215,7 +215,7 @@ public class BaseRestController {
 		restResult.setMsg(msg);
 		restResult.setTraceCode(thread.getTraceCode());
 		thread.setConsumerTime(time);
-		thread.setExceptionInfo(msg);
+//		thread.setExceptionInfo(msg);
 		thread.setBusinessCode(restResult.getBusinessCode().getValue());
 		new Thread(thread).start();
 		return convert(restResult);

@@ -414,6 +414,13 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="label_proto_id" jdbcType="INTEGER" property="labelProtoId" />
+		<result column="label_proto_source" jdbcType="INTEGER" property="labelProtoSource" />
+		<result column="label_behav_id" jdbcType="INTEGER" property="labelBehavId" />
+		<result column="label_behav_source" jdbcType="INTEGER" property="labelBehavSource" />
+		<result column="label_app_id" jdbcType="INTEGER" property="labelAppId" />
+		<result column="label_app_source" jdbcType="INTEGER" property="labelAppSource" />
 	</resultMap>
 	
 	<resultMap id="NtcDdosLogMap" type="com.nis.domain.restful.NtcDdosLog">
@@ -985,6 +992,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="p2p_proto" jdbcType="VARCHAR" property="p2pProto" />
+		<result column="p2p_file_id" jdbcType="VARCHAR" property="p2pFileId" />
+		<result column="p2p_keyword" jdbcType="VARCHAR" property="p2pKeyword" />
 	</resultMap>
 	<resultMap id="NtcBgpLogMap" type="com.nis.domain.restful.NtcBgpLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
@@ -1012,4 +1023,134 @@
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
 	</resultMap>
+	
+	
+	
+	
+	
+	
+	
+	<resultMap id="MmLogoDetectionLogMap" type="com.nis.domain.restful.MmLogoDetectionLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
+		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="pid" jdbcType="VARCHAR" property="pid" />
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
+		<result column="level" jdbcType="INTEGER" property="level" />
+		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+	</resultMap>
+	<resultMap id="MmSpeakerRecognizationLogMap" type="com.nis.domain.restful.MmSpeakerRecognizationLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
+		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="pid" jdbcType="VARCHAR" property="pid" />
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
+		<result column="level" jdbcType="INTEGER" property="level" />
+		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+	</resultMap>
+	<resultMap id="MmFaceRecognizationLogMap" type="com.nis.domain.restful.MmFaceRecognizationLog">
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
+		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="pid" jdbcType="VARCHAR" property="pid" />
+		<result column="url" jdbcType="VARCHAR" property="url" />
+		<result column="log_uri" jdbcType="VARCHAR" property="logUri" />
+		<result column="referer" jdbcType="VARCHAR" property="referer" />
+		<result column="level" jdbcType="INTEGER" property="level" />
+		<result column="fd_type" jdbcType="INTEGER" property="fdType" />
+		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
+	</resultMap>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 </mapper>

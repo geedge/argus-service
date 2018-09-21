@@ -18,6 +18,8 @@ import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
 import com.nis.domain.restful.MmAvIpLog;
 import com.nis.domain.restful.MmAvUrlLog;
+import com.nis.domain.restful.MmFaceRecognizationLog;
+import com.nis.domain.restful.MmLogoDetectionLog;
 import com.nis.domain.restful.MmPicIpLog;
 import com.nis.domain.restful.MmPicUrlLog;
 import com.nis.domain.restful.MmPornAudioLevelLog;
@@ -26,14 +28,14 @@ import com.nis.domain.restful.MmSampleAudioLog;
 import com.nis.domain.restful.MmSamplePicLog;
 import com.nis.domain.restful.MmSampleVideoLog;
 import com.nis.domain.restful.MmSampleVoipLog;
+import com.nis.domain.restful.MmSpeakerRecognizationLog;
 import com.nis.domain.restful.MmVoipAccountLog;
 import com.nis.domain.restful.MmVoipIpLog;
 import com.nis.restful.RestServiceException;
-import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.util.LogJDBCByDruid;
 import com.nis.util.JsonMapper;
+import com.nis.util.LogJDBCByDruid;
 import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
@@ -701,6 +703,167 @@ public class MmLogSearchController extends BaseRestController {
 				logPage, 0);
 	}
 	
+	@RequestMapping(value = "/mmSpeakerRecognizationLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "说话人识别日志查询", httpMethod = "GET", notes = "对日志功能“说话人识别日志”提供数据基础查询服务")
+	public Map<String, ?> mmSpeakerRecognizationLogs(Page page, MmSpeakerRecognizationLog mmSpeakerRecognizationLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmSpeakerRecognizationLog> logPage = null;
+		try {
+			resetTime(mmSpeakerRecognizationLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmSpeakerRecognizationLog, MmSpeakerRecognizationLog.class, page);
+			logPage = new Page<MmSpeakerRecognizationLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmSpeakerRecognizationLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, mmSpeakerRecognizationLog,
+					getTableName(MmSpeakerRecognizationLog.class.getSimpleName() + "HiveTable", "MM_SPEAKER_RECOGNIZATION_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, MmSpeakerRecognizationLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmSpeakerRecognizationLog> List = (java.util.List<MmSpeakerRecognizationLog>) JsonMapper.fromJsonList(jsonString,
+							MmSpeakerRecognizationLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "说话人识别日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "说话人识别日志检索成功",
+				logPage, 0);
+	}
+	
+	@RequestMapping(value = "/mmLogoDetectionLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "台标识别日志查询", httpMethod = "GET", notes = "对日志功能“台标识别IP日志”提供数据基础查询服务")
+	public Map<String, ?> mmLogoDetectionLogs(Page page, MmLogoDetectionLog mmLogoDetectionLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmLogoDetectionLog> logPage = null;
+		try {
+			resetTime(mmLogoDetectionLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmLogoDetectionLog, MmLogoDetectionLog.class, page);
+			logPage = new Page<MmLogoDetectionLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmLogoDetectionLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, mmLogoDetectionLog,
+					getTableName(MmLogoDetectionLog.class.getSimpleName() + "HiveTable", "MM_LOGO_DETECTION_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, MmLogoDetectionLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmLogoDetectionLog> List = (java.util.List<MmLogoDetectionLog>) JsonMapper.fromJsonList(jsonString,
+							MmLogoDetectionLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "台标识别日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "台标识别日志检索成功",
+				logPage, 0);
+	}
+	
+	@RequestMapping(value = "/mmFaceRecognizationLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "人脸识别日志查询", httpMethod = "GET", notes = "对日志功能“人脸识别日志”提供数据基础查询服务")
+	public Map<String, ?> mmFaceRecognizationLogs(Page page, MmFaceRecognizationLog mmFaceRecognizationLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmFaceRecognizationLog> logPage = null;
+		try {
+			resetTime(mmFaceRecognizationLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmFaceRecognizationLog, MmFaceRecognizationLog.class, page);
+			logPage = new Page<MmFaceRecognizationLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmFaceRecognizationLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, mmFaceRecognizationLog,
+					getTableName(MmFaceRecognizationLog.class.getSimpleName() + "HiveTable", "MM_FACE_RECOGNIZATION_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, MmFaceRecognizationLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmFaceRecognizationLog> List = (java.util.List<MmFaceRecognizationLog>) JsonMapper.fromJsonList(jsonString,
+							MmFaceRecognizationLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "人脸识别日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "人脸识别日志检索成功",
+				logPage, 0);
+	}
 	
 	/**
 	 *判断开始和结束时间是否为null,如果为null则初始化时间

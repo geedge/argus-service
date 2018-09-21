@@ -58,16 +58,33 @@
 		resultMap="NtcPzReportMap">
 		SELECT
 		<choose>
-			<when test="page !=null and page.fields != null and page.fields != ''">
-				${page.fields}
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 1 ">
+				<choose>
+					<when test="page !=null and page.fields != null and page.fields != ''">
+						${page.fields}
+					</when>
+					<otherwise>
+						CFG_ID,SERVICE,SUM
+					</otherwise>
+				</choose>
+				FROM (SELECT CFG_ID,SERVICE,SUM(SUM) SUM
+					FROM 	
 			</when>
 			<otherwise>
-				CFG_ID,
-				<include refid="commonPorperty" />
+				<choose>
+					<when test="page !=null and page.fields != null and page.fields != ''">
+						${page.fields}
+					</when>
+					<otherwise>
+						CFG_ID,
+						<include refid="commonPorperty" />
+					</otherwise>
+				</choose>
+				FROM (SELECT CFG_ID, SERVICE, SUM(SUM) SUM ,REPORT_TIME
+					FROM 
 			</otherwise>
 		</choose>
-		FROM (SELECT CFG_ID, SERVICE, SUM(SUM) SUM ,REPORT_TIME
-			FROM 
+		
 		<choose>
 			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_PZ_STAT_HOUR
@@ -91,10 +108,10 @@
 				<![CDATA[AND SERVICE in (${searchService})]]>
 			</if>
 			<if test="searchReportStartTime != null and searchReportStartTime !=''">
-				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+				<![CDATA[AND REPORT_TIME > STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 			<if test="searchReportEndTime != null and searchReportEndTime !=''">
-				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+				<![CDATA[AND REPORT_TIME <= STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 		</where>
 		<choose>
