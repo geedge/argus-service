@@ -10,10 +10,14 @@ import com.nis.web.dao.MyBatisDao;
 @MyBatisDao
 public interface TrafficHttpStatisticDao {
     List<TrafficHttpStatistic> websiteList();
-
-	List<Map> getTypeBywebsite(@Param("webId") Integer webId);
 	
-	Map websiteTypeOthers(@Param("webType") List webType,@Param("webId") Integer webId);
-
+	//获取域名分类之后属于的网站
+	List<TrafficHttpStatistic> getDomainByWebsiteList();
 	Integer preWebsiteListCount(@Param("webId") Integer webId);
+	List<Map> getDomainByWebsiteServiceId(@Param("websiteServiceId") Integer websiteServiceId);
+	Map websiteDomainOthers(@Param("webIdList") List webIdList,@Param("websiteServiceId") Integer websiteServiceId);
+
+	List<Map> getDomainByTopicList();
+
+	List<Map> getDomainByTopicId(@Param("topicId")Object TopicId);
 }

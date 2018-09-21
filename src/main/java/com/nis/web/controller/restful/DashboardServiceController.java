@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.nis.domain.restful.dashboard.TrafficPortActiveStatistic;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,67 @@ public class DashboardServiceController extends BaseRestController {
 	protected ServicesRequestLogService servicesRequestLogService;
 	@Autowired
 	public DashboardService dashboardService;
+	
+	/**
+	 * 流量统计info滚动条数据显示 封堵监测回流丢弃
+	 */
+	@RequestMapping(value = "ntcTotalReport", method = RequestMethod.GET)
+	@ApiOperation(value = "业务总量汇聚", httpMethod = "GET", notes = "对应流量统计info滚动条数据显示")
+	public Map<String,?> ntcTotalReport(Model model, HttpServletRequest request, HttpServletResponse response) {
+
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<Map> list = new ArrayList<Map>();
+		try {
+			List<Map> resultList = dashboardService.getTotalReportList();
+				if (resultList!=null&&resultList.size() > 0) {
+					list = resultList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "业务总量汇聚实时统计数据检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "业务总量汇聚实时统计数据检索成功",list, 0);
+	}
+	/**
+	 * 流量统计活跃端口统计
+	 */
+	@RequestMapping(value = "trafficPortActive", method = RequestMethod.GET)
+	@ApiOperation(value = "活跃端口统计", httpMethod = "GET", notes = "对应流量统计活跃端口统计")
+	public Map<String,?> trafficPortActive(Model model, HttpServletRequest request, HttpServletResponse response) {
+		
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<Map> list = new ArrayList<Map>();
+		try {
+			List<TrafficPortActiveStatistic> resultList = dashboardService.getPortActiveList();
+			
+			if (resultList!=null&&resultList.size() > 0) {
+				for (TrafficPortActiveStatistic port : resultList) {
+					Map map = new HashMap();
+					
+					map.put("port", port.getPort());
+					map.put("sum", port.getSum());
+					list.add(map);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "活跃端口实时统计数据检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃端口实时统计数据检索成功",list, 0);
+	}
+	
 		
 	/**
 	 * 协议统计
@@ -92,7 +154,7 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP实时统计数据检索成功",list, 0);
 	}
 	/**
-	 * app流量分析 TOP10
+	 * app应用流量分析 TOP10
 	 */
 	@RequestMapping(value = "trafficApp", method = RequestMethod.GET)
 	@ApiOperation(value = "app流量分析统计", httpMethod = "GET", notes = "对应app流量分析实时统计查询服务。")
@@ -215,7 +277,8 @@ public class DashboardServiceController extends BaseRestController {
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			List<Map> websiteChart = dashboardService.websiteList();
+//			List<Map> websiteChart = dashboardService.websiteList();
+			List<Map> websiteChart = dashboardService.getDomainByWebsiteList();
 			if (websiteChart.size() > 0) {
 				list = websiteChart;
 			}
@@ -232,13 +295,13 @@ public class DashboardServiceController extends BaseRestController {
 	}
 	@RequestMapping(value = "trafficWebTypeChart", method = RequestMethod.GET)
 	@ApiOperation(value = "http网站分类分析统计", httpMethod = "GET", notes = "对应某个网站类型分类统计图")
-	public Map<String, ?> trafficWebTypeChart(Integer webId,Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficWebTypeChart(Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			List<Map> websiteChart = dashboardService.getTypeBywebsite(webId);
+			List<Map> websiteChart = dashboardService.getDomainByWebsiteServiceId(websiteServiceId);
 			if (websiteChart.size() > 0) {
 				list = websiteChart;
 			}
@@ -252,5 +315,28 @@ public class DashboardServiceController extends BaseRestController {
 			throw ((RestServiceException) e);
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "http网站分类分析数据检索成功",list, 0);
+	}
+	@RequestMapping(value = "trafficTopicAndDomainChart", method = RequestMethod.GET)
+	@ApiOperation(value = "http网站主题分类分析统计", httpMethod = "GET", notes = "对应某个网站主题类型分类统计图")
+	public Map<String, ?> trafficTopicAndDomainChart(Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
+		
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<Map> list = new ArrayList<Map>();
+		try {
+			List<Map> websiteChart = dashboardService.getTopicAndDomainList();
+			if (websiteChart.size() > 0) {
+				list = websiteChart;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "http网站主题分类分析数据检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "http网站主题分类分析数据检索成功",list, 0);
 	}
 }

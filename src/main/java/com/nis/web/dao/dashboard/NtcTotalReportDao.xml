@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.dashboard.NtcTotalReportDao">
+ <!--  <resultMap id="BaseResultMap" type="com.nis.domain.restful.dashboard.NtcTotalReport">
+    <id column="stat_id" jdbcType="INTEGER" property="statId" />
+    <result column="app_type" jdbcType="INTEGER" property="appType" />
+    <result column="entrance_id" jdbcType="INTEGER" property="entranceId" />
+    <result column="c2s_pkt_num" jdbcType="INTEGER" property="c2sPktNum" />
+    <result column="s2c_pkt_num" jdbcType="INTEGER" property="s2cPktNum" />
+    <result column="c2s_byte_len" jdbcType="INTEGER" property="c2sByteLen" />
+    <result column="s2c_byte_len" jdbcType="INTEGER" property="s2cByteLen" />
+    <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
+  </resultMap> -->
+<!--  <select id="appChart" resultType="java.util.HashMap">
+    SELECT app_type appType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_app_statistic
+	WHERE app_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+	GROUP BY app_type order by count desc limit 0,10
+  </select> -->
+ <select id="getTotalReportList" resultType="java.util.HashMap">
+    SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
+    SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM galaxy.ntc_total_report
+    where report_time >= DATE_SUB((SELECT MAX(report_time) FROM ntc_total_report),INTERVAL 5 MINUTE) 
+  </select>
+</mapper>
