@@ -27,7 +27,7 @@
   <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
   	SELECT ip_addr ipAddr, SUM(link_num) linkNum ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ip_active_statistic
 	WHERE stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ip_active_statistic),INTERVAL 5 MINUTE)
-	GROUP BY ip_addr ORDER BY link_num DESC limit 0,10
+	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>
   
 </mapper>

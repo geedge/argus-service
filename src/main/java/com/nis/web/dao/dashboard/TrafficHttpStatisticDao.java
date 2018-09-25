@@ -13,7 +13,7 @@ public interface TrafficHttpStatisticDao {
 	
 	//获取域名分类之后属于的网站
 	List<TrafficHttpStatistic> getDomainByWebsiteList();
-	Integer preWebsiteListCount(@Param("webId") Integer webId);
+	Integer preWebsiteListCount(@Param("websiteServiceId") Integer websiteServiceId);
 	List<Map> getDomainByWebsiteServiceId(@Param("websiteServiceId") Integer websiteServiceId);
 	Map websiteDomainOthers(@Param("webIdList") List webIdList,@Param("websiteServiceId") Integer websiteServiceId);
 
