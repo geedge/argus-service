@@ -32,7 +32,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 @Service()
 public class ConfigJedisServiceimpl implements ConfigRedisService {
 	private static Logger logger = LoggerFactory.getLogger(ConfigJedisServiceimpl.class);
-	private static final int TAPREDISDB = Configurations.getIntProperty("tapRedisDb", 7);
+	private static final int TAPREDISDB = Configurations.getIntProperty("tapRedisDb", 5);
 	// 用于在实时统计配置后面添加时间,方便读取入库时间
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 
