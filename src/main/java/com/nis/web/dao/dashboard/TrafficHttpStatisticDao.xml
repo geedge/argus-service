@@ -47,7 +47,7 @@
   </select> -->
   <!-- 根据网站分组获取子域名 -->
   <select id="getDomainByWebsiteServiceId" parameterType="java.lang.Integer" resultType="java.util.HashMap">
-	SELECT web_id webId,link_num count,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
+	SELECT web_id webId,SUM(link_num) count,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
 	FROM galaxy.traffic_http_statistic t
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
@@ -56,7 +56,7 @@
   </select>
   <!-- 根据主题分组获取子域名 -->
   <select id="getDomainByTopicId" resultType="java.util.HashMap">
-	SELECT web_id webId,link_num count,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
+	SELECT web_id webId,SUM(link_num) count,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
 	FROM galaxy.traffic_http_statistic t
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
 	where u.topic_id=#{topicId}  
