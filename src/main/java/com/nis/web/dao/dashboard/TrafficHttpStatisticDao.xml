@@ -19,6 +19,7 @@
   	SELECT SUM(link_num) count, IFNULL( website_service_id, 268435455 ) websiteServiceId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
   	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id
+	and t.web_id!=0
 	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
 	GROUP BY u.website_service_id ORDER BY count limit 0,10
   </select> 
@@ -26,6 +27,7 @@
   	SELECT SUM(link_num) count, IFNULL( topic_id, 268435455 ) topicId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
   	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id 
+	and t.web_id!=0
 	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
 	GROUP BY u.topic_id ORDER BY count limit 0,10
 	
@@ -68,6 +70,7 @@
   	SELECT SUM(link_num) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic t
   	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
+	and t.web_id!=0
 		<if test="webIdList!=null and webIdList.size()>0">
 		and t.web_id not in
 		<foreach collection="webIdList" item="singleType" index="index" open="(" close=")" separator=",">
