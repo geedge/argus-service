@@ -23,8 +23,18 @@ public class TrafficHttpStatistic {
     private Integer count;
     private Integer pktNum;
     private Integer byteLen;
+    private Integer websiteServiceId;//网站id
 
-    public Integer getCount() {
+    
+    public Integer getWesiteServiceId() {
+		return websiteServiceId;
+	}
+
+	public void setWebsiteServiceId(Integer websiteServiceId) {
+		this.websiteServiceId = websiteServiceId;
+	}
+
+	public Integer getCount() {
 		return count;
 	}
 

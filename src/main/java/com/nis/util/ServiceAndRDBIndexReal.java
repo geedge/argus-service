@@ -29,7 +29,7 @@ public class ServiceAndRDBIndexReal {
 	 * 记录哪些service可以被分组复用(只有maat类配置可以被分组复用)
 	 * Map<Service,Map<regionName,List<tableName>>
 	 */
-	private static Map<Integer,Map<String, List<String>>> serviceGroupReuseMap = new HashMap<Integer, Map<String,List<String>>>();
+	private static Map<Integer, Map<String, List<String>>> serviceGroupReuseMap = new HashMap<Integer, Map<String, List<String>>>();
 
 	/**
 	 * 第一个key是业务类型,第二个key是type(编译配置,分组配置,域配置)value是表名
@@ -57,35 +57,32 @@ public class ServiceAndRDBIndexReal {
 	private static Map<Integer, Map<String, String[]>> maatToValveMap = new HashMap<Integer, Map<String, String[]>>();
 
 	/**
-	 * 阀门保存的redis数据库Index，在seriveTable.properties中定义
+	 * 阀门保存的redis数据库Index，在nis.properties中定义
 	 */
-	private static Integer valveDBIndex = 7;
+	private static Integer valveDBIndex = Configurations.getIntProperty("tapRedisDb", 5);
 	static {
 
 		String unMaatService = Configurations.getStringProperty("unMaatService", "");
 		if (unMaatService != null && !unMaatService.trim().equals("")) {
 			String[] split = unMaatService.split(";");
 			for (String str : split) {
-			 String[] serviceAction = str.split(":");
-			 if (serviceAction.length==2) {
-				serviceActionMap.put(Integer.valueOf(serviceAction[0]),
-						Integer.valueOf(serviceAction[1]));
-			 }else{
-				 serviceActionMap.put(Integer.valueOf(serviceAction[0]),
-						null);
-			 }
-			 String serviceType = Configurations.getStringProperty(serviceAction[0], "");
-			 if (serviceType != null && !serviceType.trim().equals("")) {
-			 String[] typeArrs = serviceType.split(";");
-			 for (String typeStr : typeArrs) {
-				 String[] typeArr = typeStr.split(":");
-				 String tableNameArr[] = typeArr[1].split(",");
-				 for (String tableName : tableNameArr) {
-					 unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]),
-					 tableName.toUpperCase());
-					 }
-				 }
-			 }
+				String[] serviceAction = str.split(":");
+				if (serviceAction.length == 2) {
+					serviceActionMap.put(Integer.valueOf(serviceAction[0]), Integer.valueOf(serviceAction[1]));
+				} else {
+					serviceActionMap.put(Integer.valueOf(serviceAction[0]), null);
+				}
+				String serviceType = Configurations.getStringProperty(serviceAction[0], "");
+				if (serviceType != null && !serviceType.trim().equals("")) {
+					String[] typeArrs = serviceType.split(";");
+					for (String typeStr : typeArrs) {
+						String[] typeArr = typeStr.split(":");
+						String tableNameArr[] = typeArr[1].split(",");
+						for (String tableName : tableNameArr) {
+							unMaatSercieNameMap.put(Integer.parseInt(serviceAction[0]), tableName.toUpperCase());
+						}
+					}
+				}
 			}
 		}
 
@@ -161,17 +158,17 @@ public class ServiceAndRDBIndexReal {
 		if (!StringUtil.isEmpty(serviceRepeatedReal)) {
 			String[] serviceRepeatedRealArr = serviceRepeatedReal.split(";");
 			for (String serviceRepeated : serviceRepeatedRealArr) {
-				String [] serInfos = serviceRepeated.split(":");
-				String [] regionInfos = serInfos[1].split("[|]");
+				String[] serInfos = serviceRepeated.split(":");
+				String[] regionInfos = serInfos[1].split("[|]");
 				for (String regionInfo : regionInfos) {
-					String [] regionTabName = regionInfo.split("@");
-					String [] tableNames = regionTabName[1].split(",");
+					String[] regionTabName = regionInfo.split("@");
+					String[] tableNames = regionTabName[1].split(",");
 					for (String tableName : tableNames) {
 						Integer ser = Integer.valueOf(serInfos[0]);
-						if(serviceGroupReuseMap.containsKey(ser)){
+						if (serviceGroupReuseMap.containsKey(ser)) {
 							serviceGroupReuseMap.get(ser).get(regionTabName[0]).add(tableName);
-						}else{
-							Map<String,List<String>> regTabMap = new HashMap<String, List<String>>();
+						} else {
+							Map<String, List<String>> regTabMap = new HashMap<String, List<String>>();
 							List<String> tabList = new ArrayList<String>();
 							tabList.add(tableName);
 							regTabMap.put(regionTabName[0], tabList);
@@ -182,8 +179,6 @@ public class ServiceAndRDBIndexReal {
 			}
 		}
 	}
-
-	
 
 	public static void main(String[] args) {
 		// getUnMaatTable();
@@ -326,7 +321,7 @@ public class ServiceAndRDBIndexReal {
 		return null;
 
 	}
-	
+
 	/**
 	 * 判断service是否被分组复用 
 	 * @param service
@@ -336,8 +331,23 @@ public class ServiceAndRDBIndexReal {
 		if (service != null) {
 			return serviceGroupReuseMap.containsKey(service);
 		} else {
-			throw new ServiceRuntimeException("判断service是否是分组复用时发生了异常,异常原因:service=null", RestBusinessCode.ServiceIsNull.getValue());
+			throw new ServiceRuntimeException("判断service是否是分组复用时发生了异常,异常原因:service=null",
+					RestBusinessCode.ServiceIsNull.getValue());
 		}
+	}
+
+	/**
+	 * 验证当前service是否是向阀门添加action,service或者userregion等属性
+	 * @param service
+	 * @return
+	 */
+	public static boolean isAddASU(int service) {
+		boolean isValve = false;
+		Map<String, String[]> map2 = maatToValveMap.get(service);
+		if (map2 != null && map2.size() > 0) {
+			isValve = true;
+		}
+		return isValve;
 	}
 
 	/**
@@ -401,6 +411,7 @@ public class ServiceAndRDBIndexReal {
 	public static void setUnMaatSercieNameMap(Map<Integer, String> unMaatSercieNameMap) {
 		ServiceAndRDBIndexReal.unMaatSercieNameMap = unMaatSercieNameMap;
 	}
+
 	/**
 	 * @return the serviceGroupReuseMap
 	 */
@@ -416,7 +427,7 @@ public class ServiceAndRDBIndexReal {
 					List<String> list = new ArrayList<String>();
 					list.addAll(map.get(regionName));
 					groupReuseRegionMap.put(regionName, list);
-				}else{
+				} else {
 					groupReuseRegionMap.get(regionName).addAll(map.get(regionName));
 				}
 			}

@@ -44,6 +44,7 @@ import net.sf.json.JSONObject;
 @Service()
 public class MaatTestServiceimpl {
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final int TAPREDISDB = Configurations.getIntProperty("tapRedisDb", 5);
 
 	public void getMaatKeys(List<ConfigCompile> configCompileList) throws Exception {
 		if (configCompileList != null && configCompileList.size() > 0) {
@@ -51,9 +52,16 @@ public class MaatTestServiceimpl {
 				Integer service = configCompile.getService();
 				MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
 				List<Integer> redisDBList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+				if (ServiceAndRDBIndexReal.isAddASU(service)) {
+					if (!redisDBList.contains(TAPREDISDB)) {
+						throw new RuntimeException("业务类型:" + service + ",需要向阀门" + TAPREDISDB + "号库分发,但是当前只往"
+								+ redisDBList + "库下发,请检查阀门编号或者当前业务对应的配置文件是否正确");
+					}
+				}
 				for (Integer redisDB : redisDBList) {
 					getConfigByKey(redisDB, service, configCompile, maatXmlConfig);
 				}
+
 			}
 		}
 
@@ -152,6 +160,33 @@ public class MaatTestServiceimpl {
 					if (valStr != null && !valStr.trim().equals("")) {
 						if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
 							valStr = valStr.trim().replace("[", "").replace("]", "");
+							if (TAPREDISDB == redisDb && type != 10 && type != 11
+									&& valStr.toLowerCase().equals("op_time")) {// 域配置并且是op_time时在op_time前面添加如下内容
+								Map<String, String[]> map2 = ServiceAndRDBIndexReal.getMaatToValveMap().get(service);
+								if (map2 != null && map2.size() > 0) {
+									String[] arr = null;
+									if (type == 12) {// IP类
+										arr = map2.get("ipRegion");
+									} else if (type == 13) {// 数值类
+										arr = map2.get("numRegion");
+									} else if (type == 14) {// 字符串类
+										arr = map2.get("strRegion");
+									} else if (type == 15) {// 增强字符串类
+										arr = map2.get("strStrRegion");
+									} else if (type == 16) {// 文件摘要类
+										arr = map2.get("fileDigestRegion");
+									} else if (type == 17) {// 文件摘要类
+										arr = map2.get("fileLikeRegion");
+									} else if (type == 18) {// 文件摘要类
+										arr = map2.get("ipClientRange");
+									}
+									if (arr != null && arr.length > 0) {
+										for (String str : arr) {
+											valList.add(str.toLowerCase());
+										}
+									}
+								}
+							}
 							valList.add(valStr);
 						} else {
 							valList.add(valStr);
@@ -159,8 +194,8 @@ public class MaatTestServiceimpl {
 					}
 				}
 				String val = JedisUtils.get(key, redisDb);
-				FileUtils.addStrToFile("\t\t入库的key=" + key + "\n", Configurations.getStringProperty("maatTestLogPath", ""),
-						true);
+				FileUtils.addStrToFile("\t\t入库的key=" + key + "\n",
+						Configurations.getStringProperty("maatTestLogPath", ""), true);
 				FileUtils.addStrToFile("\t\t入库的val=" + val, Configurations.getStringProperty("maatTestLogPath", ""),
 						true);
 				FileUtils.addStrToFile("\t\t表达式" + maatXmlExpr.getValueExpression() + "\n",
@@ -171,11 +206,45 @@ public class MaatTestServiceimpl {
 			}
 		}
 		if (sysoLog(valArr, valList, obj, redisDb, key, configCompile, service)) {
+			if (TAPREDISDB == redisDb && type != 10 && type != 11) {// 域配置并且是op_time时在op_time前面添加如下内容
+				Map<String, String[]> map2 = ServiceAndRDBIndexReal.getMaatToValveMap().get(service);
+				if (map2 != null && map2.size() > 0) {
+					String[] arr = null;
+					if (type == 12) {// IP类
+						arr = map2.get("ipRegion");
+					} else if (type == 13) {// 数值类
+						arr = map2.get("numRegion");
+					} else if (type == 14) {// 字符串类
+						arr = map2.get("strRegion");
+					} else if (type == 15) {// 增强字符串类
+						arr = map2.get("strStrRegion");
+					} else if (type == 16) {// 文件摘要类
+						arr = map2.get("fileDigestRegion");
+					} else if (type == 17) {// 文件摘要类
+						arr = map2.get("fileLikeRegion");
+					} else if (type == 18) {// 文件摘要类
+						arr = map2.get("ipClientRange");
+					}
+					if (arr != null && arr.length > 0) {
+						StringBuffer sb = new StringBuffer();
+						for (String str : arr) {
+							sb.append(str.toLowerCase() + ",");
+						}
+						FileUtils.addStrToFile(
+								"\t" + sdf.format(new Date()) + " 编译配置id为" + compileId + "的配置中,在" + redisDb
+										+ "号redis库中key=" + key + "的值与实际插入的值相符(该库是阀门库并额外在optime字段前添加了两个字段"
+										+ sb.substring(0, sb.length() - 1) + ")\n",
+								Configurations.getStringProperty("maatTestLogPath", ""), true);
+						return;
+					}
+				}
+			}
 			FileUtils
 					.addStrToFile(
 							"\t" + sdf.format(new Date()) + " 编译配置id为" + compileId + "的配置中,在" + redisDb + "号redis库中key="
 									+ key + "的值与实际插入的值相符\n",
 							Configurations.getStringProperty("maatTestLogPath", ""), true);
+
 		}
 	}
 
@@ -433,8 +502,8 @@ public class MaatTestServiceimpl {
 				}
 			}
 			key = keyBF.toString().toUpperCase();
-			String[] valSplit = maatXmlExpr.getValueExpression().replace(";&nbsp;0;\\n", "").replace(";&nbsp", "\\t").replace("\\n", "").replace("\\t", "")
-					.split(";");
+			String[] valSplit = maatXmlExpr.getValueExpression().replace(";&nbsp;0;\\n", "").replace(";&nbsp", "\\t")
+					.replace("\\n", "").replace("\\t", "").split(";");
 			for (String valStr : valSplit) {
 				if (valStr != null && !valStr.trim().equals("")) {
 					if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
@@ -446,14 +515,13 @@ public class MaatTestServiceimpl {
 				}
 			}
 			String val = JedisUtils.get(key, redisDb).replace(" ", "\t");
-			
+
 			FileUtils.addStrToFile("\t\t入库的key=" + key + "\n", Configurations.getStringProperty("maatTestLogPath", ""),
 					true);
-			FileUtils.addStrToFile("\t\t入库的val=" + val, Configurations.getStringProperty("maatTestLogPath", ""),
-					true);
+			FileUtils.addStrToFile("\t\t入库的val=" + val, Configurations.getStringProperty("maatTestLogPath", ""), true);
 			FileUtils.addStrToFile("\t\t表达式" + maatXmlExpr.getValueExpression() + "\n",
 					Configurations.getStringProperty("maatTestLogPath", ""), true);
-			
+
 			valArr = val.split("\\t");
 			break;
 		}
