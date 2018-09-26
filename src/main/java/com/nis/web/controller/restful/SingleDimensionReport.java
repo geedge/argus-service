@@ -364,7 +364,7 @@ public class SingleDimensionReport extends BaseRestController {
 	*/
 	public void resetReportTime(NtcReportEntity<?> entity,Boolean isTotal) throws Exception {
 		//日志总量统计查询全部
-		if ("1".equals(entity.getSearchBusinessType())) {
+		if ("1".equals(entity.getSearchBusinessType())&&isTotal) {
 			return ;
 		}
 		if (StringUtil.isEmpty(entity.getSearchReportStartTime())&&StringUtil.isEmpty(entity.getSearchReportEndTime())) {

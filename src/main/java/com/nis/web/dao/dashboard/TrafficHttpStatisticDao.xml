@@ -3,7 +3,7 @@
 <mapper namespace="com.nis.web.dao.dashboard.TrafficHttpStatisticDao">
   <resultMap id="BaseResultMap" type="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
     <id column="stat_id" jdbcType="INTEGER" property="statId" />
-    <result column="web_type" jdbcType="INTEGER" property="webType" />
+    <result column="link_num" jdbcType="INTEGER" property="linkNum" />
     <result column="web_id" jdbcType="INTEGER" property="webId" />
     <result column="c2s_pkt_num" jdbcType="INTEGER" property="c2sPktNum" />
     <result column="s2c_pkt_num" jdbcType="INTEGER" property="s2cPktNum" />
@@ -15,34 +15,65 @@
     stat_id, web_type, web_id, c2s_pkt_num, s2c_pkt_num, c2s_byte_len, s2c_byte_len, 
     stat_time
   </sql>
-    <!--获取网站列表列表  -->
-  <select id="websiteList" resultMap="BaseResultMap">
-  	SELECT web_id webId, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
-	WHERE web_id !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
-	GROUP BY web_id ORDER BY count DESC limit 0,10
-  </select>
-  <!-- 根据网站分类 -->
-  <select id="getTypeBywebsite" parameterType="java.lang.Integer" resultType="java.util.HashMap">
-	SELECT web_type webType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
-	WHERE web_type !=0 and web_id=#{webId} and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
-	GROUP BY web_type ORDER BY count limit 0,10
-  </select>
-      <!--获取上个时间段网站流量的数据量  -->
+  <!-- 根据服务网站将域名分类 网站列表-->  <select id="getDomainByWebsiteList" resultType="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
+  	SELECT SUM(link_num) count, IFNULL( website_service_id, 268435455 ) websiteServiceId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
+  	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
+	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id
+	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
+	GROUP BY u.website_service_id ORDER BY count limit 0,10
+  </select> 
+  <!-- 根据主题将域名分类 主题列表 最近五分钟top10-->  <select id="getDomainByTopicList" resultType="java.util.HashMap">
+  	SELECT SUM(link_num) count, IFNULL( topic_id, 268435455 ) topicId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
+  	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
+	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id 
+	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
+	GROUP BY u.topic_id ORDER BY count limit 0,10
+	
+  </select> 
+	<!--获取上个时间段该网站站域名流量的数据量  -->
   <select id="preWebsiteListCount" resultType="java.lang.Integer">
-    SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count FROM galaxy.traffic_http_statistic
-	WHERE web_type !=0 and web_id=#{webId}
-	and stat_time between DATE_SUB(NOW(),INTERVAL 10 MINUTE) and DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+    SELECT SUM(link_num) count FROM galaxy.traffic_http_statistic t 
+    LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id 
+	WHERE u.website_service_id=#{websiteServiceId}
+	and stat_time between DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 10 MINUTE) and DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
   </select>
+  
+    <!--获取网站列表列表  -->
+<!--   <select id="websiteList" resultMap="BaseResultMap">
+  	SELECT web_id webId, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
+	WHERE web_id !=0 and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
+	GROUP BY web_id ORDER BY count DESC limit 0,10
+  </select> -->
+  <!-- 根据网站分组获取子域名 -->
+  <select id="getDomainByWebsiteServiceId" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+	SELECT web_id webId,SUM(link_num) count,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
+	FROM galaxy.traffic_http_statistic t
+	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
+	where u.website_service_id=#{websiteServiceId} 
+	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
+	GROUP BY t.web_id ORDER BY count limit 0,10
+  </select>
+  <!-- 根据主题分组获取子域名 -->
+  <select id="getDomainByTopicId" resultType="java.util.HashMap">
+	SELECT web_id webId,SUM(link_num) count,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
+	FROM galaxy.traffic_http_statistic t
+	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
+	where u.topic_id=#{topicId}  
+	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
+	GROUP BY t.web_id ORDER BY count limit 0,10
+  </select>
+  
   <!-- 指定网站下的TOP10之外为others -->
-    <select id="websiteTypeOthers" resultType="java.util.HashMap">
-  	SELECT (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic
-	WHERE web_type !=0 and web_id=#{webId}
-		<if test="webType!=null and webType.size()>0">
-		and bs_type not in
-		<foreach collection="webType" item="singleType" index="index" open="(" close=")" separator=",">
+    <select id="websiteDomainOthers" resultType="java.util.HashMap">
+  	SELECT SUM(link_num) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_http_statistic t
+  	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
+	where u.website_service_id=#{websiteServiceId} 
+		<if test="webIdList!=null and webIdList.size()>0">
+		and t.web_id not in
+		<foreach collection="webIdList" item="singleType" index="index" open="(" close=")" separator=",">
 				 #{singleType}
 		</foreach>
 		</if>
-	and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
+	and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
   </select>
 </mapper>
