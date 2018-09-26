@@ -47,6 +47,30 @@ public class DashboardService extends BaseService{
 	 */
 	public List<Map> getTotalReportList(){
 		List<Map> totalReportList = ntcTotalReportDao.getTotalReportList();
+		//统计带宽的流入流出 单位 五分钟 的 byte
+		List<Map> newData = ntcTotalReportDao.getNetFlowPortInfoNew();
+		List<Map> oldData = ntcTotalReportDao.getNetFlowPortInfoOld();
+		Double inoctets=0d;
+		Double outoctets=0d;
+		if(newData!=null&&newData.size()>0&&oldData!=null&&oldData.size()>0&&newData.get(0)!=null&&oldData.get(0)!=null){
+			Double newInoctets=Double.parseDouble(newData.get(0).get("inoctets").toString()) ;
+			Double newOutoctets=Double.parseDouble(newData.get(0).get("outoctets").toString()) ;
+			Double oldInoctets=Double.parseDouble(oldData.get(0).get("inoctets").toString());
+			Double oldOutoctets=Double.parseDouble(oldData.get(0).get("outoctets").toString());
+			//结果为当前五分钟减去上个五分钟
+			inoctets=newInoctets-oldInoctets;
+			outoctets=newOutoctets-oldOutoctets;
+			if(inoctets<0||outoctets<0){
+				inoctets=0d;
+				outoctets=0d;
+			}
+		}
+		if(totalReportList!=null&&totalReportList.size()>0){
+			for (Map map : totalReportList) {
+				map.put("inoctets", inoctets);
+				map.put("outoctets", outoctets);
+			}
+		}
 		
 		return totalReportList;
 	}

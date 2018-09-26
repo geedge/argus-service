@@ -19,7 +19,6 @@
   	SELECT SUM(link_num) count, IFNULL( website_service_id, 268435455 ) websiteServiceId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
   	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id
-<!-- 	and stat_time between DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 10 MINUTE) and DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)  -->
 	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
 	GROUP BY u.website_service_id ORDER BY count limit 0,10
   </select> 

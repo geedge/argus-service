@@ -8,4 +8,6 @@ import com.nis.web.dao.MyBatisDao;
 public interface NtcTotalReportDao {
 
 	List<Map> getTotalReportList();
+	List<Map> getNetFlowPortInfoNew();
+	List<Map> getNetFlowPortInfoOld();
 }
