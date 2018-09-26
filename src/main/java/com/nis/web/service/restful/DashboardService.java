@@ -226,7 +226,7 @@ public class DashboardService extends BaseService{
 				map.put("count",website.getCount());
 				map.put("pktNum",website.getPktNum());
 				map.put("byteLen",website.getByteLen());
-				preCount = trafficHttpStatisticDao.preWebsiteListCount(website.getWebId());//上个时段的量 用于与现在对比
+				preCount = trafficHttpStatisticDao.preWebsiteListCount(website.getWesiteServiceId());//上个时段的量 用于与现在对比
 				if(preCount!=null){
 					map.put("preCount",preCount);
 				}else{
