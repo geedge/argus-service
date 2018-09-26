@@ -57,9 +57,9 @@ public class ServiceAndRDBIndexReal {
 	private static Map<Integer, Map<String, String[]>> maatToValveMap = new HashMap<Integer, Map<String, String[]>>();
 
 	/**
-	 * 阀门保存的redis数据库Index，在seriveTable.properties中定义
+	 * 阀门保存的redis数据库Index，在nis.properties中定义
 	 */
-	private static Integer valveDBIndex = 7;
+	private static Integer valveDBIndex = Configurations.getIntProperty("tapRedisDb", 5);
 	static {
 
 		String unMaatService = Configurations.getStringProperty("unMaatService", "");
