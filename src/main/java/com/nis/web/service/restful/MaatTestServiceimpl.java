@@ -52,19 +52,12 @@ public class MaatTestServiceimpl {
 				Integer service = configCompile.getService();
 				MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
 				List<Integer> redisDBList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-
-				boolean isValve = false;
-				Map<String, String[]> map2 = ServiceAndRDBIndexReal.getMaatToValveMap().get(service);
-				if (map2 != null && map2.size() > 0) {
-					isValve = true;
-				}
-				if (isValve) {
+				if (ServiceAndRDBIndexReal.isAddASU(service)) {
 					if (!redisDBList.contains(TAPREDISDB)) {
 						throw new RuntimeException("业务类型:" + service + ",需要向阀门" + TAPREDISDB + "号库分发,但是当前只往"
 								+ redisDBList + "库下发,请检查阀门编号或者当前业务对应的配置文件是否正确");
 					}
 				}
-
 				for (Integer redisDB : redisDBList) {
 					getConfigByKey(redisDB, service, configCompile, maatXmlConfig);
 				}

@@ -445,6 +445,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			Jedis resource = JedisUtils.getResource(0);
 			Transaction transaction = resource.multi();
 			try {
+				Set<Integer> keySet = configMap.keySet();
 				for (Integer redisDBIndex : configMap.keySet()) {
 					if (redisDBIndex >= 0 && redisDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 6)) {
 						transaction.select(redisDBIndex);
@@ -458,6 +459,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 							if (maatConfigList != null && maatConfigList.size() > 0) {
 								for (MaatConfig maatConfig : maatConfigList) {
 									int service = maatConfig.getService();
+									if (ServiceAndRDBIndexReal.isAddASU(service)) {
+										if (!keySet.contains(TAPREDISDB)) {
+											throw new ServiceRuntimeException("业务类型:" + service + ",需要向阀门" + TAPREDISDB + "号库分发,但是当前只往"
+													+ keySet + "库下发,请检查阀门编号或者当前业务对应的配置文件是否正确",RestBusinessCode.PropertiesIsError.getValue());
+										}
+									}
+									
 									MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
 									setConfig(maatConfig, maatXmlConfig, maatVersion, service, transaction,
 											redisDBIndex);
