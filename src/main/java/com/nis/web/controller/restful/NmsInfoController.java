@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nis.domain.restful.TrafficNmsServerStatistic;
+import com.nis.domain.restful.NmsDiRuleList;
+import com.nis.domain.restful.TrafficNetflowPortInfoList;
 import com.nis.domain.restful.TrafficNmsServerStatisticList;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -58,6 +59,43 @@ public class NmsInfoController extends BaseRestController {
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报服务器状态信息成功",
 				Constants.IS_DEBUG ? trafficNmsServerStatisticList : null);
+	}
+
+	@RequestMapping(value = "/nms/v1/saveNmsDiRule", method = RequestMethod.POST)
+	@ApiOperation(value = "存储NmsDiRule接口", httpMethod = "POST", response = Map.class, notes = "接收NMS系统上报的di信息")
+	@ApiParam(value = "存储NmsDiRule接口", name = "saveServerStatus", required = true)
+	public Map<String, Object> saveNmsDiRule(@RequestBody NmsDiRuleList nmsDiRuleList, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				nmsDiRuleList);
+		try {
+
+		} catch (Exception e) {
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"上报NmsDiRule信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
+		}
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报NmsDiRule信息成功",
+				Constants.IS_DEBUG ? nmsDiRuleList : null);
+	}
+
+	@RequestMapping(value = "/nms/v1/rafficNetflowPortInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "存储trafficNetflowPortInfo接口", httpMethod = "POST", response = Map.class, notes = "接收NMS系统上报的trafficNetflowPort信息")
+	@ApiParam(value = "存储trafficNetflowPortInfo接口", name = "saveTrafficNetflowPortInfo", required = true)
+	public Map<String, Object> saveTrafficNetflowPortInfo(
+			@RequestBody TrafficNetflowPortInfoList trafficNetflowPortInfoList, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				trafficNetflowPortInfoList);
+		try {
+
+		} catch (Exception e) {
+			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+					"上报trafficNetflowPort信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
+		}
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"上报trafficNetflowPort信息成功", Constants.IS_DEBUG ? trafficNetflowPortInfoList : null);
 	}
 
 }
