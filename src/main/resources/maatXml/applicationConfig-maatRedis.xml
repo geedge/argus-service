@@ -139,7 +139,7 @@
 	<p:maatType service="520">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[keyring_name];\t;[keyring_type];\t;[private_key_file];\t;[public_key_file];\t;[expire_after];\t;[public_key_algo];\t;[crl];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[keyring_name];\t;[keyring_type];\t;[private_key_file];\t;[public_key_file];\t;[expire_after];\t;[public_key_algo];\t;[crl];\t;[is_valid];\t;[redisFile_private_key_file];\t;[redisFile_public_key_file];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>

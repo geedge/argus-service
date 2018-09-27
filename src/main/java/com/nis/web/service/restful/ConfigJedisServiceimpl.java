@@ -21,6 +21,7 @@ import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Configurations;
+import com.nis.util.File2Redis;
 import com.nis.util.JedisUtils;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
@@ -89,10 +90,36 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												}
 												StringBuffer valBF = new StringBuffer();
 												String[] valSplit = maatXmlExpr.getValueExpression().split(";");
+												List<String> urlList = new ArrayList<String>();
 												for (String valStr : valSplit) {
 													if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
 														valStr = valStr.trim().replace("[", "").replace("]", "");
-														valBF.append(map.get(valStr));
+//														if (service == 520) {
+//															if (valStr.equals("private_key_file")
+//																	|| valStr.equals("public_key_file")) {
+//																String fileUrl = map.get(valStr);
+//																urlList.add(fileUrl);
+//															}
+//														}
+//														if(valStr.equals("op_time")) {
+//															if (urlList.size() > 0) {
+//																for (String fileUrl : urlList) {
+//																	String key = File2Redis.file2Redis(fileUrl, transaction);
+//																	logger.info("向{}号redis数据库添加了一条文件配置,key是{}",redisDBIndex,key);
+//																	valBF.append(key);
+//																	valBF.append("\t");
+//																}
+//															}
+//														}
+														
+														if(valStr.contains("redisFile_")) {
+															String key = File2Redis.file2Redis(map.get(valStr), transaction);
+															logger.info("向{}号redis数据库添加了一条文件配置,key是{}",redisDBIndex,key);
+															valBF.append(key);
+															//valBF.append("\t");
+														}else {
+															valBF.append(map.get(valStr));
+														}
 													} else if (valStr.equals("&nbsp")) {
 														valBF.append(" ");
 													} else if (valStr.equals("\\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
@@ -270,7 +297,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						&& redisStatisticsRealDBIndex < Configurations.getIntProperty("maxRedisDBIndex", 16)) {
 					List<MaatConfig> list = configMap.get(redisDBIndex);
 					if (list != null && list.size() > 0) {
-						transaction.select(redisStatisticsRealDBIndex);//选择实时统计库
+						transaction.select(redisStatisticsRealDBIndex);// 选择实时统计库
 						String redisStatisticsReal = Configurations.getStringProperty("redis-statisticsReal",
 								"[COMPILE_ID];\t;[SERVICE];\t;[ACTION];\t;[CONT_TYPE];\t;[ATTR_TYPE];\t;[CONT_LABEL];\t;[TASK_ID];\t;[AFFAIR_ID];\t;[DO_BLACKLIST];\t;[DO_LOG];\t;[EFFECTIVE_RANGE];\t;[START_TIME];\t;[END_TIME];\t;[USER_REGION];\t;[IS_VALID];\t;[GROUP_NUM];\t;[FATHER_CFG_ID];\t;[OP_TIME]");
 						String[] redisStatisticsRealArr = redisStatisticsReal.split(";");
@@ -461,11 +488,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 									int service = maatConfig.getService();
 									if (ServiceAndRDBIndexReal.isAddASU(service)) {
 										if (!keySet.contains(TAPREDISDB)) {
-											throw new ServiceRuntimeException("业务类型:" + service + ",需要向阀门" + TAPREDISDB + "号库分发,但是当前只往"
-													+ keySet + "库下发,请检查阀门编号或者当前业务对应的配置文件是否正确",RestBusinessCode.PropertiesIsError.getValue());
+											throw new ServiceRuntimeException(
+													"业务类型:" + service + ",需要向阀门" + TAPREDISDB + "号库分发,但是当前只往" + keySet
+															+ "库下发,请检查阀门编号或者当前业务对应的配置文件是否正确",
+													RestBusinessCode.PropertiesIsError.getValue());
 										}
 									}
-									
+
 									MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
 									setConfig(maatConfig, maatXmlConfig, maatVersion, service, transaction,
 											redisDBIndex);
@@ -695,7 +724,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 								}
 							}
 						}
-					} else if (isReuse && (type == 12 || type == 13 || type == 14|| type == 15|| type == 18)) {// 将数据往临时库复制一份,无论临时库里有没有都可以直接写,有则覆盖,不影响
+					} else if (isReuse && (type == 12 || type == 13 || type == 14 || type == 15 || type == 18)) {// 将数据往临时库复制一份,无论临时库里有没有都可以直接写,有则覆盖,不影响
 						int tmpStorageReuseRegionDB = Configurations.getIntProperty("tmpStorageReuseRegionDB", 15);
 						transaction.select(tmpStorageReuseRegionDB);
 						transaction.set(maatKey.toUpperCase(), valBF.toString());
