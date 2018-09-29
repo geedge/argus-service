@@ -30,7 +30,7 @@
 		<repository>
 			<id>nexus</id>
 			<name>Team Nexus Repository</name>
-			<url>http://10.0.6.30:8044/content/groups/public</url>
+			<url>http://192.168.10.125:8099/content/groups/public</url>
 		</repository>
 		<!-- <repository> <id>nexus</id> <name>Team Nexus Repository</name> <url>http://json-lib.sourceforge.net/</url> 
 			</repository> -->
@@ -562,7 +562,7 @@
 		<dependency>
 			<groupId>org.csource</groupId>
 			<artifactId>fastdfs-client-java</artifactId>
-			<version>1.27-SNAPSHOT</version>
+			<version>1.27</version>
 		</dependency>
 
 
