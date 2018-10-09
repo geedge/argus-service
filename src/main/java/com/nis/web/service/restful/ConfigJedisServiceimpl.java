@@ -90,7 +90,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 												}
 												StringBuffer valBF = new StringBuffer();
 												String[] valSplit = maatXmlExpr.getValueExpression().split(";");
-												List<String> urlList = new ArrayList<String>();
+//												List<String> urlList = new ArrayList<String>();
 												for (String valStr : valSplit) {
 													if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
 														valStr = valStr.trim().replace("[", "").replace("]", "");

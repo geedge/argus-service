@@ -159,7 +159,7 @@
 	<p:maatType service="608">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[file_desc];\t;[content_type];\t;[content_length];\t;[file_path];\t;[is_valid];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[file_desc];\t;[content_type];\t;[content_length];\t;[file_path];\t;[is_valid];\t;[redisFile_file_path];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
