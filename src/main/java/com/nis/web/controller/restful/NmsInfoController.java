@@ -20,6 +20,8 @@ import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
+import com.nis.web.service.restful.NmsDiRuleService;
+import com.nis.web.service.restful.TrafficNetflowPortInfoService;
 import com.nis.web.service.restful.TrafficNmsServerStatisticService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -33,6 +35,10 @@ public class NmsInfoController extends BaseRestController {
 	protected ServicesRequestLogService servicesRequestLogService;
 	@Autowired
 	TrafficNmsServerStatisticService trafficNmsServerStatisticService;
+	@Autowired
+	NmsDiRuleService nmsDiRuleService;
+	@Autowired
+	TrafficNetflowPortInfoService trafficNetflowPortInfoService;
 
 	@RequestMapping(value = "/nms/v1/saveServerStatus", method = RequestMethod.POST)
 	@ApiOperation(value = "存储NMS系统上报的服务器状态接口", httpMethod = "POST", response = Map.class, notes = "接收NMS系统上报的服务器状态信息")
@@ -70,7 +76,13 @@ public class NmsInfoController extends BaseRestController {
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				nmsDiRuleList);
 		try {
-
+			if (nmsDiRuleList != null && nmsDiRuleList.getNmsDiRuleList() != null
+					&& nmsDiRuleList.getNmsDiRuleList().size() > 0) {
+				nmsDiRuleService.saveNmsDiRuleInfo(nmsDiRuleList.getNmsDiRuleList());
+			} else {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start, "参数nmsDiRuleList不能为空",
+						RestBusinessCode.missing_args.getValue());
+			}
 		} catch (Exception e) {
 			throw new RestServiceException(thread, System.currentTimeMillis() - start,
 					"上报NmsDiRule信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
@@ -89,6 +101,14 @@ public class NmsInfoController extends BaseRestController {
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				trafficNetflowPortInfoList);
 		try {
+			if (trafficNetflowPortInfoList != null && trafficNetflowPortInfoList.getTrafficNetflowPortInfoList() != null
+					&& trafficNetflowPortInfoList.getTrafficNetflowPortInfoList().size() > 0) {
+				trafficNetflowPortInfoService
+						.saveTrafficNetflowPortInfo(trafficNetflowPortInfoList.getTrafficNetflowPortInfoList());
+			} else {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"参数trafficNetflowPortInfoList不能为空", RestBusinessCode.missing_args.getValue());
+			}
 
 		} catch (Exception e) {
 			throw new RestServiceException(thread, System.currentTimeMillis() - start,

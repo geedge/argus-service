@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.TrafficNetflowPortInfoDao">
+	<insert id="insert" parameterType="trafficNetflowPortInfo">
+		INSERT INTO
+		traffic_netflow_port_info(PORT ,
+		NODE_NAME ,
+		NODE_IP ,
+		PORT_DESC,
+		BANDWIDTH ,
+		INOCTETS ,
+		OUTOCTETS ,
+		INOCTETS_SPEED ,
+		OUTOCTETS_SPEED ,
+		INPKTS_SPEED ,
+		OUTPKTS_SPEED ,
+		RECV_TIME
+		) VALUES (
+		#{port},
+		#{nodeName},
+		#{nodeIp},
+		#{portDesc},
+		#{bandwidth},
+		#{inoctets},
+		#{outoctets},
+		#{inoctetsSpeed},
+		#{outoctetsSpeed},
+		#{inpktsSpeed},
+		#{outpktsSpeed},
+		#{recvTime})
+	</insert>
+</mapper>

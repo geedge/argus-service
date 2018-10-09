@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nis.web.dao.NmsDiRuleDao">
+	<insert id="insert" parameterType="nmsDiRule">
+		INSERT INTO
+		nms_di_rule(detection_info_id ,
+		serviceindex ,
+		servicecode ,
+		servicedesc,
+		agedtime ,
+		clientnum ,
+		refluxport ,
+		rulenumber ,
+		usedrulenum ,
+		leftrulenum ,
+		hittotalnum ,
+		detectioned_state ,
+		seq_id ,
+		detection_set_info_id ,
+		data_check_time ,
+		data_arrive_time ,
+		data_check_time_digital ,
+		data_arrive_time_digital
+		) VALUES (
+		#{detectionInfoId},
+		#{serviceIndex},
+		#{serviceCode},
+		#{serviceDesc},
+		#{agedTime},
+		#{clientNum},
+		#{refluxPort},
+		#{ruleNumber},
+		#{usedRuleNum},
+		#{leftRuleNum},
+		#{hitTotalNum},
+		#{detectionedState},
+		#{seqId},
+		#{detectionSetInfoId},
+		#{dataCheckTime},
+		#{dataArriveTime},
+		#{dataCheckTimeDigital},
+		#{dataArriveTimeDigital})
+	</insert>
+</mapper>
