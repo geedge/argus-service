@@ -13,14 +13,15 @@ import com.nis.restful.ServiceRuntimeException;
 import redis.clients.jedis.Transaction;
 
 public class File2Redis {
+	private static String fileProtocol = Configurations.getStringProperty("fileProtocol", "minio://");
 
 	public static String file2Redis(String url, Transaction transaction) {
 		try {
 			byte[] fileByte = downLoadFromUrl(url);
 			String md5 = MD5Utils.getMd5ByIS(new ByteArrayInputStream(fileByte));
-			String key = "redis://_FILE_" + md5;
+			String key = "__FILE_" + md5;
 			transaction.set(key.getBytes(), fileByte);
-			return key;
+			return fileProtocol + key;
 		} catch (Exception e) {
 			throw new ServiceRuntimeException("保存文件到redis发生了异常:" + e.getMessage(),
 					RestBusinessCode.SaveFileToRedisError.getValue());
@@ -45,6 +46,5 @@ public class File2Redis {
 		baosOutputStream.flush();
 		return baosOutputStream.toByteArray();
 	}
-
 
 }
