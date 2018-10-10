@@ -1022,6 +1022,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="as_num" jdbcType="VARCHAR" property="asNum" />
+		<result column="route" jdbcType="VARCHAR" property="route" />
 	</resultMap>
 	
 	<resultMap id="MmLogoDetectionLogMap" type="com.nis.domain.restful.MmLogoDetectionLog">

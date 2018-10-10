@@ -17,7 +17,7 @@ public class NtcBgpLog extends LogEntity<NtcBgpLog> {
     @ApiModelProperty(value="BGP消息类型", required=true)
     protected Integer type;
     @ApiModelProperty(value="自治系统号", required=true)
-    protected String asNumber;
+    protected String asNum;
     @ApiModelProperty(value="路由信息", required=true)
     protected String route;
     
@@ -27,11 +27,11 @@ public class NtcBgpLog extends LogEntity<NtcBgpLog> {
     public Integer getType() {
 		return type;
 	}
-    public void setAsNumber(String asNumber) {
-    	this.asNumber = asNumber;
+    public void setAsNum(String asNum) {
+    	this.asNum = asNum;
     }
-    public String getAsNumber() {
-		return asNumber;
+    public String getAsNum() {
+		return asNum;
 	}
     public void setRoute(String route) {
 		this.route = route;
