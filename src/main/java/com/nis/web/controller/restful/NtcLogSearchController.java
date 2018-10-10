@@ -31,6 +31,8 @@ import com.nis.domain.restful.NtcP2pLog;
 import com.nis.domain.restful.NtcPptpLog;
 import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
+import com.nis.domain.restful.NtcStreamMediaLog;
+import com.nis.domain.restful.NtcVoipLog;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
@@ -968,7 +970,115 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "BGP日志检索成功",
 				ntcBgpLogPage, 0);
 	}
+	
+	@RequestMapping(value = "/ntcVoipLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "NTC VoIP日志查询", httpMethod = "GET", notes = "对日志功能“NTC VoIP日志”提供数据基础查询服务")
+	public Map<String, ?> ntcVoipLogs(Page page, NtcVoipLog ntcVoipLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<NtcVoipLog> logPage = null;
+		try {
+			resetTime(ntcVoipLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcVoipLog, NtcVoipLog.class, page);
+			logPage = new Page<NtcVoipLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcVoipLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, ntcVoipLog,
+					getTableName(NtcVoipLog.class.getSimpleName() + "HiveTable", "NTC_VOIP_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcVoipLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcVoipLog> List = (java.util.List<NtcVoipLog>) JsonMapper.fromJsonList(jsonString,
+							NtcVoipLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "NTC VoIP日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "NTC VoIP日志检索成功",
+				logPage, 0);
+	}
 		
+	@RequestMapping(value = "/ntcStreamMediaLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "流媒体协议日志查询", httpMethod = "GET", notes = "对日志功能“流媒体协议日志”提供数据基础查询服务")
+	public Map<String, ?> ntcStreamMediaLogs(Page page, NtcStreamMediaLog ntcStreamMediaLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<NtcStreamMediaLog> logPage = null;
+		try {
+			resetTime(ntcStreamMediaLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcStreamMediaLog, NtcStreamMediaLog.class, page);
+			logPage = new Page<NtcStreamMediaLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcStreamMediaLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, ntcStreamMediaLog,
+					getTableName(NtcStreamMediaLog.class.getSimpleName() + "HiveTable", "NTC_STREAM_MEDIA_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamMediaLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcStreamMediaLog> List = (java.util.List<NtcStreamMediaLog>) JsonMapper.fromJsonList(jsonString,
+							NtcStreamMediaLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "流媒体协议日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流媒体协议日志检索成功",
+				logPage, 0);
+	}
+	
 	/**
 	 *判断开始和结束时间是否为null,如果为null则初始化时间
 	 * @param entity

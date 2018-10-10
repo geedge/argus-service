@@ -1,6 +1,7 @@
 package com.nis.domain.restful;
 
 import com.nis.domain.LogEntity;
+import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
  * 
@@ -13,6 +14,30 @@ import com.nis.domain.LogEntity;
 public class NtcBgpLog extends LogEntity<NtcBgpLog> {
 
 	private static final long serialVersionUID = -990806269407561021L;
-
-	
+    @ApiModelProperty(value="BGP消息类型", required=true)
+    protected Integer type;
+    @ApiModelProperty(value="自治系统号", required=true)
+    protected String asNumber;
+    @ApiModelProperty(value="路由信息", required=true)
+    protected String route;
+    
+    public void setType(Integer type) {
+		this.type = type;
+	}
+    public Integer getType() {
+		return type;
+	}
+    public void setAsNumber(String asNumber) {
+    	this.asNumber = asNumber;
+    }
+    public String getAsNumber() {
+		return asNumber;
+	}
+    public void setRoute(String route) {
+		this.route = route;
+	}
+    public String getRoute() {
+		return route;
+	}
+    
 }

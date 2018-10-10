@@ -45,8 +45,12 @@
 												<xs:enumeration value="Date"></xs:enumeration>
 												<xs:enumeration value="Number"></xs:enumeration>
 												<xs:enumeration value="IP">
-													<![CDATA[IP类型数据，如果格式可能为4OVER6或6OVER4,需要添加isSrcInfo="true"
-													]]>
+													<xs:annotation>
+														<xs:documentation>
+														<![CDATA[IP类型数据，如果格式可能为4OVER6或6OVER4,需要添加isSrcInfo="true"
+															]]>
+														</xs:documentation>		
+													</xs:annotation>										
 												</xs:enumeration>
 												<xs:enumeration value="Port"></xs:enumeration>
 											</xs:restriction>

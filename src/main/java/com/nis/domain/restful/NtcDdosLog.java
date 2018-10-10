@@ -31,6 +31,8 @@ public class NtcDdosLog  extends LogEntity<NtcDdosLog> {
     protected String attackTotalByte;
     @ApiModelProperty(value = "攻击流量是否被丢弃", required = true)
     protected Integer isBlcok;
+    
+    protected String searchIsBlcok; //攻击流量是否被丢弃
 	public Integer getAttackType() {
 		return attackType;
 	}
@@ -80,4 +82,11 @@ public class NtcDdosLog  extends LogEntity<NtcDdosLog> {
 		this.isBlcok = isBlcok;
 	}    
 
+	public String getSearchIsBlcok() {
+		return searchIsBlcok;
+	}
+	
+	public void setSearchIsBlcok(String searchIsBlcok) {
+		this.searchIsBlcok = searchIsBlcok;
+	}
 }
