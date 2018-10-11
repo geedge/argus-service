@@ -386,7 +386,7 @@ public class MaatTestServiceimpl {
 							maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
 					dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
 				} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
-					dstStr = dstStr.substring(dstStr.indexOf("group"));
+//					dstStr = dstStr.substring(dstStr.indexOf("group"));
 				}
 			}
 			switch (commonSourceFieldCfg.getFieldType()) {
@@ -562,7 +562,7 @@ public class MaatTestServiceimpl {
 				if (!isNum(attrName)) {
 					String beanVal = map.get(attrName);
 					String redisVal = valArr[i];
-					if (beanVal == null || redisVal == null || !beanVal.trim().equals(redisVal.trim())) {
+					if (!attrName.contains("redisFile")&&(beanVal == null || redisVal == null || !beanVal.trim().equals(redisVal.trim()))) {
 						FileUtils.addStrToFile(
 								"\t" + sdf.format(new Date()) + " error:" + redisDb + "号redis库中key=" + key + "的值第" + i
 										+ "位" + attrName + "的值:" + redisVal + "与实际传的值不一样,实际值是:{}\n",

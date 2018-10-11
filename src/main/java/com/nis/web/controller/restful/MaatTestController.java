@@ -84,27 +84,30 @@ public class MaatTestController {
 		FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "开始删除业务类型" + serviceType + "下的maat配置" + configId + "\n",
 				Configurations.getStringProperty("maatTestLogPath", ""), true);
 
-//		Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer, Map<Integer, List<Long>>>();
-//		Iterator<Integer> serviceIterator = compileMap.keySet().iterator();
-//		while (serviceIterator.hasNext()) {
-//			Integer service = Integer.valueOf(serviceIterator.next().toString());
-//			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
-//			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
-//				for (Integer dbIndex : dbIndexList) {
-//					if (restMap.containsKey(dbIndex)) {
-//						restMap.get(dbIndex).put(service, compileMap.get(service));
-//					} else {
-//						Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-//						map.put(service, compileMap.get(service));
-//						restMap.put(dbIndex, map);
-//					}
-//				}
-//			} else {
-//				FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:获取业务类型" + service + "对应的redisDb失败\n",
-//						Configurations.getStringProperty("maatTestLogPath", ""), true);
-//				return "error";
-//			}
-//		}
+		// Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer,
+		// Map<Integer, List<Long>>>();
+		// Iterator<Integer> serviceIterator = compileMap.keySet().iterator();
+		// while (serviceIterator.hasNext()) {
+		// Integer service = Integer.valueOf(serviceIterator.next().toString());
+		// List<Integer> dbIndexList =
+		// ServiceAndRDBIndexReal.getRedisDBByService(service);
+		// if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+		// for (Integer dbIndex : dbIndexList) {
+		// if (restMap.containsKey(dbIndex)) {
+		// restMap.get(dbIndex).put(service, compileMap.get(service));
+		// } else {
+		// Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
+		// map.put(service, compileMap.get(service));
+		// restMap.put(dbIndex, map);
+		// }
+		// }
+		// } else {
+		// FileUtils.addStrToFile(sdf.format(new Date()) + "\t" + "error:获取业务类型" +
+		// service + "对应的redisDb失败\n",
+		// Configurations.getStringProperty("maatTestLogPath", ""), true);
+		// return "error";
+		// }
+		// }
 		try {
 			if (!configRedisService.delMaatConfig(compileMap)) {
 				FileUtils.addStrToFile(
@@ -153,7 +156,7 @@ public class MaatTestController {
 							configCompileList.add(getConfigCompile(ser));
 						}
 						String jsonString = JsonMapper.toJsonString(configCompileList);
-						FileUtils.addStrToFile("下发的json串是"+jsonString+"\n",
+						FileUtils.addStrToFile("下发的json串是" + jsonString + "\n",
 								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
@@ -180,7 +183,7 @@ public class MaatTestController {
 							configCompileList.add(getConfigCompile(service));
 						}
 						String jsonString = JsonMapper.toJsonString(configCompileList);
-						FileUtils.addStrToFile("下发的json串是"+jsonString+"\n",
+						FileUtils.addStrToFile("下发的json串是" + jsonString + "\n",
 								Configurations.getStringProperty("maatTestLogPath", ""), true);
 						// 保存测试配置
 						configSourcesService.saveMaatConfig(thread, start, configCompileList, sb);
@@ -260,11 +263,11 @@ public class MaatTestController {
 				List<NumRegion> numList = new ArrayList<NumRegion>();
 				List<StrRegion> strList = new ArrayList<StrRegion>();
 				List<DigestRegion> digestList = new ArrayList<DigestRegion>();
-//				configCompile.setIpRegionList(ipList);
-//				configCompile.setNumRegionList(numList);
-//				configCompile.setStrRegionList(strList);
-//				configCompile.setDigestRegionList(digestList);
-//				configCompile.setIpClientRangeList(ipList);
+				// configCompile.setIpRegionList(ipList);
+				// configCompile.setNumRegionList(numList);
+				// configCompile.setStrRegionList(strList);
+				// configCompile.setDigestRegionList(digestList);
+				// configCompile.setIpClientRangeList(ipList);
 				if (tableType == 12 || tableType == 18) {
 					ipList = new ArrayList<IpRegion>();
 					if (tableNameArr.length == 1) {
@@ -381,9 +384,9 @@ public class MaatTestController {
 		strRegion.setGroupId(groupId);
 		strRegion.setRegionId(configRedisService.getIncrId("SEQ_REGIONID"));
 		strRegion.setTableName(ServiceAndRDBIndexReal.getMaatTableName(service, type, tableName));
-		if(type==15) {
-			strRegion.setDistrict("增强字符串测试groupid"+groupId);
-		}else {
+		if (type == 15) {
+			strRegion.setDistrict("增强字符串测试groupid" + groupId);
+		} else {
 			strRegion.setDistrict("");
 		}
 		strRegion.setKeywords("keywords,UUID:" + UUID.randomUUID());
@@ -522,6 +525,7 @@ public class MaatTestController {
 
 	/**
 	 * 组装json串,然后下发配置,在验证配置是否正确,然后删除配置
+	 * 
 	 * @param service
 	 * @param saveCount
 	 * @param map
@@ -536,62 +540,72 @@ public class MaatTestController {
 				jsonString.append("[");
 				for (int i = 0; i < saveCount; i++) {
 					jsonString.append("{");
+					List<String> srcList = new ArrayList<String>();
 					for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
 						String fieldType = commonSourceFieldCfg.getFieldType();
 						String srcName = commonSourceFieldCfg.getSrcName();
-						jsonString.append("\"");
-						jsonString.append(srcName);
-						jsonString.append("\":");
-						if (fieldType.equals("String")) {
-							if (srcName.toLowerCase().equals("service")) {
-								jsonString.append("\"" + service + "\"");
-							} else if (srcName.toLowerCase().equals("dstfile")) {
-								jsonString.append(
-										"\"http://10.0.6.249/group1/M00/00/02/CgAG-VtziqWAIzafAAITEbfJ8Zw992.jpg\"");
-							} else {
-								jsonString.append("\"" + UUID.randomUUID() + "\"");
-							}
-						} else if (fieldType.equals("Number")) {
-							if (srcName.toLowerCase().equals("addrtype")) {
-								jsonString.append("4");
-							} else if (srcName.toLowerCase().equals("action")) {
-								jsonString.append(ServiceAndRDBIndexReal.getActionByService(service));
-							} else if (srcName.toLowerCase().equals("protocol")) {
-								jsonString.append("0");
-							} else if (srcName.toLowerCase().equals("direction")) {
-								jsonString.append("0");
-							} else if (srcName.toLowerCase().equals("location")) {
-								jsonString.append("1");
-							} else if (srcName.toLowerCase().equals("isvalid")) {
-								jsonString.append("1");
-							} else if (srcName.toLowerCase().equals("cfgid")||srcName.toLowerCase().equals("keyringid")||srcName.toLowerCase().equals("fileid")) {
-								Long incrId = configRedisService.getIncrId("seq_compileid");
-								compileIdList.add(incrId);
-								jsonString.append(incrId);
-							} else {
-								if (commonSourceFieldCfg.getDefaultVal() != null) {
-									jsonString.append(commonSourceFieldCfg.getDefaultVal());
+						String dstName = commonSourceFieldCfg.getDstName();
+						if (!srcList.contains(srcName)) {
+							jsonString.append("\"");
+							jsonString.append(srcName);
+							jsonString.append("\":");
+							if (fieldType.equals("String")) {
+								if (srcName.toLowerCase().equals("service")) {
+									jsonString.append("\"" + service + "\"");
+//								} else if (dstName.toLowerCase().contains("redisfile")) {
+//									jsonString.append(
+//											"\"http://192.168.10.205:9000/maat-redis/201810284141049-212b64ca-5b5d-4b13-873e-c57868b4b46b.jpg\"");
 								} else {
-									jsonString.append(System.currentTimeMillis());
+//									jsonString.append("\"" + UUID.randomUUID() + "\"");
+									jsonString.append(
+											"\"http://192.168.10.205:9000/maat-redis/201810284141049-212b64ca-5b5d-4b13-873e-c57868b4b46b.jpg\"");
 								}
+							} else if (fieldType.equals("Number")) {
+								if (srcName.toLowerCase().equals("addrtype")) {
+									jsonString.append("4");
+								} else if (srcName.toLowerCase().equals("action")) {
+									jsonString.append(ServiceAndRDBIndexReal.getActionByService(service));
+								} else if (srcName.toLowerCase().equals("protocol")) {
+									jsonString.append("0");
+								} else if (srcName.toLowerCase().equals("direction")) {
+									jsonString.append("0");
+								} else if (srcName.toLowerCase().equals("location")) {
+									jsonString.append("1");
+								} else if (srcName.toLowerCase().equals("isvalid")) {
+									jsonString.append("1");
+								} else if (srcName.toLowerCase().equals("cfgid")
+										|| srcName.toLowerCase().equals("keyringid")
+										|| srcName.toLowerCase().equals("fileid")) {
+									Long incrId = configRedisService.getIncrId("seq_compileid");
+									compileIdList.add(incrId);
+									jsonString.append(incrId);
+								} else {
+									if (commonSourceFieldCfg.getDefaultVal() != null) {
+										jsonString.append(commonSourceFieldCfg.getDefaultVal());
+									} else {
+										jsonString.append(System.currentTimeMillis());
+									}
+								}
+							} else if (fieldType.equals("IP")) {
+								if (srcName.toLowerCase().equals("srcip")) {
+									jsonString.append("\"1.1.1.1\"");
+								} else {
+									jsonString.append("\"2.2.2.2\"");
+								}
+							} else if (fieldType.equals("Port")) {
+								jsonString.append("\"80\"");
+							} else if (fieldType.equals("Date")) {
+								jsonString.append("\"" + sdf.format(new Date()) + "\"");
 							}
-						} else if (fieldType.equals("IP")) {
-							if (srcName.toLowerCase().equals("srcip")) {
-								jsonString.append("\"1.1.1.1\"");
-							} else {
-								jsonString.append("\"2.2.2.2\"");
-							}
-						} else if (fieldType.equals("Port")) {
-							jsonString.append("\"80\"");
-						} else if (fieldType.equals("Date")) {
-							jsonString.append("\"" + sdf.format(new Date()) + "\"");
+							jsonString.append(",");
 						}
-						jsonString.append(",");
+						srcList.add(srcName);
 					}
 					String str = jsonString.substring(0, jsonString.lastIndexOf(","));
 					jsonString.setLength(0);
 					jsonString.append(str);
 					jsonString.append("},");
+
 				}
 				String jsonStr = jsonString.substring(0, jsonString.lastIndexOf(","));
 				jsonStr += "]";
