@@ -14,9 +14,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<packaging>war</packaging>
-	<name>galaxy</name>
-	<groupId>com.nis.springmvc</groupId>
-	<artifactId>galaxy</artifactId>
+	<name>galaxy-service</name>
+	<groupId>com.nis.galaxy</groupId>
+	<artifactId>galaxy-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<!-- 仓库地址构建 -->
 	<repositories>
@@ -30,7 +30,7 @@
 		<repository>
 			<id>nexus</id>
 			<name>Team Nexus Repository</name>
-			<url>http://10.0.6.30:8044/content/groups/public</url>
+			<url>http://192.168.10.125:8099/content/groups/public</url>
 		</repository>
 		<!-- <repository> <id>nexus</id> <name>Team Nexus Repository</name> <url>http://json-lib.sourceforge.net/</url> 
 			</repository> -->
@@ -562,7 +562,7 @@
 		<dependency>
 			<groupId>org.csource</groupId>
 			<artifactId>fastdfs-client-java</artifactId>
-			<version>1.27-SNAPSHOT</version>
+			<version>1.27</version>
 		</dependency>
 
 

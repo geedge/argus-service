@@ -482,7 +482,7 @@ public class ConfigSourcesService extends BaseService {
 									maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
 							dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
 						} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
-							dstStr = dstStr.substring(dstStr.indexOf("group"));
+							//dstStr = dstStr.substring(dstStr.indexOf("group"));
 						}
 					}
 					switch (commonSourceFieldCfg.getFieldType()) {

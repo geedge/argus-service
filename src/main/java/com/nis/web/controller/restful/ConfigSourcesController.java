@@ -29,6 +29,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.FileUtils;
+import com.nis.util.MinioUtil;
 import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
@@ -289,16 +290,20 @@ public class ConfigSourcesController extends BaseRestController {
 					throw new RestServiceException("checksum与文件MD5值不一致", RestBusinessCode.CheckSumIsWrong.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
-				// NameValuePair[] meta_list = new NameValuePair[5];
-				// meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
-				// meta_list[1] = new NameValuePair("fileLength",
-				// String.valueOf(file.getSize()));
-				// meta_list[2] = new NameValuePair("fileExt", ext);
-				// meta_list[3] = new NameValuePair("fileAuthor", "rkg");
-				// meta_list[4] = new NameValuePair("fileMd5", md5);
 				logger.info("-----------------调用接口上传文件---------------");
-				filePath = FileManager.upload(fdsfile, null);
+				if(Constants.IS_USE_MINIO){
+					filePath = MinioUtil.uploadFile(file.getInputStream(), file.getOriginalFilename(), ext);
+				}else{
+					FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
+					// NameValuePair[] meta_list = new NameValuePair[5];
+					// meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
+					// meta_list[1] = new NameValuePair("fileLength",
+					// String.valueOf(file.getSize()));
+					// meta_list[2] = new NameValuePair("fileExt", ext);
+					// meta_list[3] = new NameValuePair("fileAuthor", "rkg");
+					// meta_list[4] = new NameValuePair("fileMd5", md5);
+					filePath = FileManager.upload(fdsfile, null);
+				}
 			}
 		}catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -337,6 +342,7 @@ public class ConfigSourcesController extends BaseRestController {
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				file, null);
 		JSONObject resultObject = new JSONObject();
+		String filePath="";
 		try {
 			if (file == null) {
 				throw new RestServiceException("请上传获取摘要的文件到file参数", RestBusinessCode.FileIsNull.getValue());
@@ -353,9 +359,20 @@ public class ConfigSourcesController extends BaseRestController {
 							RestBusinessCode.CheckSumIsWrong.getValue());
 				}
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
-				FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
 				logger.info("-----------------调用接口上传文件---------------");
-				String filePath = FileManager.upload(fdsfile, null);
+				if(Constants.IS_USE_MINIO){
+					filePath = MinioUtil.uploadFile(file.getInputStream(), file.getOriginalFilename(), ext);
+				}else{
+					FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
+					// NameValuePair[] meta_list = new NameValuePair[5];
+					// meta_list[0] = new NameValuePair("fileName", file.getOriginalFilename());
+					// meta_list[1] = new NameValuePair("fileLength",
+					// String.valueOf(file.getSize()));
+					// meta_list[2] = new NameValuePair("fileExt", ext);
+					// meta_list[3] = new NameValuePair("fileAuthor", "rkg");
+					// meta_list[4] = new NameValuePair("fileMd5", md5);
+					filePath = FileManager.upload(fdsfile, null);
+				}
 				resultObject.put("accessUrl", filePath);
 			}
 		}catch (IOException e) {

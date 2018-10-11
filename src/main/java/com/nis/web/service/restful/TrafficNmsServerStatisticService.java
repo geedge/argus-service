@@ -21,6 +21,5 @@ public class TrafficNmsServerStatisticService {
 			trafficNmsServerStatisticDao.insertAbnormalMachine(trafficNmsServerStatistic.getId(),
 					trafficNmsServerStatistic.getAbnormalMachineList());
 		}
-		Integer.parseInt(null);
 	}
 }

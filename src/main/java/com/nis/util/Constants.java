@@ -203,5 +203,8 @@ public final class Constants {
 	 * 样例文件存放目录
 	 */
 	public static final String MM_SAMPLE_DST_PATH = Configurations.getStringProperty("mmSampleDstPath", "/home/mesasoft/{tableType}/full/{fileName}");
-	
+	/**
+	 *是否使用Minio
+	 */
+	public static final Boolean IS_USE_MINIO = Configurations.getBooleanProperty("isUseMinio", true);
 }

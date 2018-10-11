@@ -620,6 +620,15 @@ public enum RestBusinessCode {
 	 * Redis关联关系库中未找到配置对应的redisdb信息
 	 */
 	RedisDBRelationNotExistsInRedis(5003005,"Redis关联关系库中未找到配置对应的redisdb信息"),
+	/**
+	 * 保存文件到redis发生了异常
+	 */
+	SaveFileToRedisError(5003006,"保存文件到redis发生了异常"),
+	
+	
+	
+	
+	
 	
 	/**
 	 * Map中缺少编译配置信息
