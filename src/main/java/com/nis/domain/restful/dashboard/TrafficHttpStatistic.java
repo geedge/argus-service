@@ -9,20 +9,20 @@ public class TrafficHttpStatistic {
 
     private Integer webId;
 
-    private Integer c2sPktNum;
+    private Long c2sPktNum;
 
-    private Integer s2cPktNum;
+    private Long s2cPktNum;
 
-    private Integer c2sByteLen;
+    private Long c2sByteLen;
 
-    private Integer s2cByteLen;
+    private Long s2cByteLen;
 
     private Date statTime;
     
     // 自定义字段
-    private Integer count;
-    private Integer pktNum;
-    private Integer byteLen;
+    private Long count;
+    private Long pktNum;
+    private Long byteLen;
     private Integer websiteServiceId;//网站id
 
     
@@ -34,29 +34,6 @@ public class TrafficHttpStatistic {
 		this.websiteServiceId = websiteServiceId;
 	}
 
-	public Integer getCount() {
-		return count;
-	}
-
-	public void setCount(Integer count) {
-		this.count = count;
-	}
-
-	public Integer getPktNum() {
-		return pktNum;
-	}
-
-	public void setPktNum(Integer pktNum) {
-		this.pktNum = pktNum;
-	}
-
-	public Integer getByteLen() {
-		return byteLen;
-	}
-
-	public void setByteLen(Integer byteLen) {
-		this.byteLen = byteLen;
-	}
 
 	public Integer getStatId() {
         return statId;
@@ -82,39 +59,67 @@ public class TrafficHttpStatistic {
         this.webId = webId;
     }
 
-    public Integer getC2sPktNum() {
-        return c2sPktNum;
-    }
+    public Long getC2sPktNum() {
+		return c2sPktNum;
+	}
 
-    public void setC2sPktNum(Integer c2sPktNum) {
-        this.c2sPktNum = c2sPktNum;
-    }
+	public void setC2sPktNum(Long c2sPktNum) {
+		this.c2sPktNum = c2sPktNum;
+	}
 
-    public Integer getS2cPktNum() {
-        return s2cPktNum;
-    }
+	public Long getS2cPktNum() {
+		return s2cPktNum;
+	}
 
-    public void setS2cPktNum(Integer s2cPktNum) {
-        this.s2cPktNum = s2cPktNum;
-    }
+	public void setS2cPktNum(Long s2cPktNum) {
+		this.s2cPktNum = s2cPktNum;
+	}
 
-    public Integer getC2sByteLen() {
-        return c2sByteLen;
-    }
+	public Long getC2sByteLen() {
+		return c2sByteLen;
+	}
 
-    public void setC2sByteLen(Integer c2sByteLen) {
-        this.c2sByteLen = c2sByteLen;
-    }
+	public void setC2sByteLen(Long c2sByteLen) {
+		this.c2sByteLen = c2sByteLen;
+	}
 
-    public Integer getS2cByteLen() {
-        return s2cByteLen;
-    }
+	public Long getS2cByteLen() {
+		return s2cByteLen;
+	}
 
-    public void setS2cByteLen(Integer s2cByteLen) {
-        this.s2cByteLen = s2cByteLen;
-    }
+	public void setS2cByteLen(Long s2cByteLen) {
+		this.s2cByteLen = s2cByteLen;
+	}
 
-    public Date getStatTime() {
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+	public Long getPktNum() {
+		return pktNum;
+	}
+
+	public void setPktNum(Long pktNum) {
+		this.pktNum = pktNum;
+	}
+
+	public Long getByteLen() {
+		return byteLen;
+	}
+
+	public void setByteLen(Long byteLen) {
+		this.byteLen = byteLen;
+	}
+
+	public Integer getWebsiteServiceId() {
+		return websiteServiceId;
+	}
+
+	public Date getStatTime() {
         return statTime;
     }
 

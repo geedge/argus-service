@@ -6,10 +6,10 @@
     <result column="bs_type" jdbcType="INTEGER" property="bsType" />
     <result column="os_type" jdbcType="INTEGER" property="osType" />
     <result column="entrance_id" jdbcType="INTEGER" property="entranceId" />
-    <result column="c2s_pkt_num" jdbcType="INTEGER" property="c2sPktNum" />
-    <result column="s2c_pkt_num" jdbcType="INTEGER" property="s2cPktNum" />
-    <result column="c2s_byte_len" jdbcType="INTEGER" property="c2sByteLen" />
-    <result column="s2c_byte_len" jdbcType="INTEGER" property="s2cByteLen" />
+    <result column="c2s_pkt_num" jdbcType="BIGINT" property="c2sPktNum" />
+    <result column="s2c_pkt_num" jdbcType="BIGINT" property="s2cPktNum" />
+    <result column="c2s_byte_len" jdbcType="BIGINT" property="c2sByteLen" />
+    <result column="s2c_byte_len" jdbcType="BIGINT" property="s2cByteLen" />
     <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
   </resultMap>
   <sql id="Base_Column_List">
@@ -19,19 +19,19 @@
   <!--获取操作系统列表TOP10  -->
   <select id="systemList" resultMap="BaseResultMap">
     SELECT os_type osType, SUM(link_num) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
-	WHERE os_type !=0 and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic),INTERVAL 5 MINUTE)
+	WHERE os_type !=0 and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic WHERE os_type != 0),INTERVAL 5 MINUTE)
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--获取上个时间段操作系统的数据量  -->
   <select id="preSystemListCount" resultType="java.lang.Integer">
     SELECT SUM(link_num) count FROM galaxy.traffic_ua_statistic
 	WHERE os_type !=0 and os_type=#{osType}
-	and stat_time between DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic),INTERVAL 10 MINUTE) and DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic),INTERVAL 5 MINUTE)
+	and stat_time between DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic WHERE os_type != 0),INTERVAL 10 MINUTE) and DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic),INTERVAL 5 MINUTE)
   </select>
   <!-- 根据操作系统获取浏览器分类 -->
   <select id="getBrowserBySystem" parameterType="java.lang.Integer" resultType="java.util.HashMap">
     SELECT bs_type bsType, SUM(link_num) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ua_statistic
-	WHERE bs_type !=0 and os_type=#{osType} and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic),INTERVAL 5 MINUTE)
+	WHERE bs_type !=0 and os_type=#{osType} and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic WHERE bs_type != 0),INTERVAL 5 MINUTE)
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--浏览器TOP10后所有为others -->
@@ -44,7 +44,7 @@
 				 #{singleType}
 		</foreach>
 		</if>
-	and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic),INTERVAL 5 MINUTE)
+	and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ua_statistic WHERE bs_type != 0),INTERVAL 5 MINUTE)
   </select>
   
   <!--获取浏览器列表TOP10  -->

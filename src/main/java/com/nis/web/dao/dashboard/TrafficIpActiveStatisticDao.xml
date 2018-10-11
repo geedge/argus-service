@@ -5,11 +5,11 @@
     <id column="stat_id" jdbcType="INTEGER" property="statId" />
     <result column="ip_addr" jdbcType="VARCHAR" property="ipAddr" />
     <result column="area_id" jdbcType="INTEGER" property="areaId" />
-    <result column="link_num" jdbcType="INTEGER" property="linkNum" />
-    <result column="c2s_pkt_num" jdbcType="INTEGER" property="c2sPktNum" />
-    <result column="s2c_pkt_num" jdbcType="INTEGER" property="s2cPktNum" />
-    <result column="c2s_byte_len" jdbcType="INTEGER" property="c2sByteLen" />
-    <result column="s2c_byte_len" jdbcType="INTEGER" property="s2cByteLen" />
+    <result column="link_num" jdbcType="BIGINT" property="linkNum" />
+    <result column="c2s_pkt_num" jdbcType="BIGINT" property="c2sPktNum" />
+    <result column="s2c_pkt_num" jdbcType="BIGINT" property="s2cPktNum" />
+    <result column="c2s_byte_len" jdbcType="BIGINT" property="c2sByteLen" />
+    <result column="s2c_byte_len" jdbcType="BIGINT" property="s2cByteLen" />
     <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
   </resultMap>
   <sql id="Base_Column_List">

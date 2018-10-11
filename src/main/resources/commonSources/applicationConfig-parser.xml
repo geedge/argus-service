@@ -9,9 +9,8 @@
 		#0x04	IP地址丢弃		4=0:INLINE_IP_CB
 		#0x19	IPSec丢弃		25=0:INLINE_IP_CB
 		#0x1C	GRE 丢弃		28=0:INLINE_IP_CB
-		#0x05	DDOS流量丢弃	5=0:DDOS_PROTECT_TARGET_IP_CB 
 	-->
-	<t:commonSource serviceIds="3,4,25,28,5">
+	<t:commonSource serviceIds="3,4,25,28">
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
@@ -28,6 +27,28 @@
 		<t:field fieldType="Number" srcName="direction" dstName="direction" isRequired="true" range="0-1"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	<!-- 
+		#0x05	DDOS流量丢弃	5=0:DDOS_PROTECT_TARGET_IP_CB 
+	-->
+	<t:commonSource serviceIds="5">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
+		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
+		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="^([4|6]{1})|46|64|10$"/>
+		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true" isSrcInfo="true"/>
+		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true" isSrcInfo="true"/>
+		<t:field fieldType="Port" srcName="srcPort" dstName="src_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Port" srcName="maskSrcPort" dstName="mask_src_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="IP" srcName="dstIp" dstName="dst_ip" isRequired="true"/>
+		<t:field fieldType="IP" srcName="maskDstIp" dstName="mask_dst_ip"  isRequired="true"/>
+		<t:field fieldType="Port" srcName="dstPort" dstName="dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Port" srcName="maskDstPort" dstName="mask_dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Number" srcName="protocol" dstName="protocol" isRequired="true" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="direction" dstName="direction" isRequired="true" range="0-1"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+		<t:field fieldType="String" srcName="userRegion" dstName="user_region" isRequired="true"/>
 	</t:commonSource>
 	<!--
 		#0x105	音频样例阻断	261=0:MM_SAMPLE_AUDIO

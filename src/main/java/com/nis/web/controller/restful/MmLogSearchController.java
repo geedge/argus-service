@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import com.nis.domain.Page;
 import com.nis.domain.restful.MmAvIpLog;
 import com.nis.domain.restful.MmAvUrlLog;
 import com.nis.domain.restful.MmFaceRecognizationLog;
+import com.nis.domain.restful.MmFileDigestLog;
 import com.nis.domain.restful.MmLogoDetectionLog;
 import com.nis.domain.restful.MmPicIpLog;
 import com.nis.domain.restful.MmPicUrlLog;
@@ -275,7 +277,7 @@ public class MmLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "图片URL日志检索成功",
 				logPage, 0);
 	}
-	
+	@Deprecated
 	@RequestMapping(value = "/mmVoipIpLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "VoIP IP日志查询", httpMethod = "GET", notes = "对日志功能“VoIP IP日志”提供数据基础查询服务")
 	public Map<String, ?> mmVoipIpLogs(Page page, MmVoipIpLog mmVoipIpLog, Model model, HttpServletRequest request,
@@ -329,6 +331,7 @@ public class MmLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VoIP IP日志检索成功",
 				logPage, 0);
 	}
+	@Deprecated
 	@RequestMapping(value = "/mmVoipAccountLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "VoIP Account日志查询", httpMethod = "GET", notes = "对日志功能“VoIP Account日志”提供数据基础查询服务")
 	public Map<String, ?> mmVoipAccountLogs(Page page, MmVoipAccountLog mmVoipLog, Model model, HttpServletRequest request,
@@ -862,6 +865,60 @@ public class MmLogSearchController extends BaseRestController {
 			throw ((RestServiceException) e);
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "人脸识别日志检索成功",
+				logPage, 0);
+	}
+	
+	@RequestMapping(value = "/mmFileDigestLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "文件摘要日志查询", httpMethod = "GET", notes = "对日志功能“文件摘要日志”提供数据基础查询服务")
+	public Map<String, ?> mmFileDigestLogs(Page page, MmFileDigestLog mmFileDigestLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+
+		Page<MmFileDigestLog> logPage = null;
+		try {
+			resetTime(mmFileDigestLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, mmFileDigestLog, MmFileDigestLog.class, page);
+			logPage = new Page<MmFileDigestLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(MmFileDigestLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, mmFileDigestLog,
+					getTableName(MmFileDigestLog.class.getSimpleName() + "HiveTable", "MM_FILE_DIGEST_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, MmFileDigestLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<MmFileDigestLog> List = (java.util.List<MmFileDigestLog>) JsonMapper.fromJsonList(jsonString,
+							MmFileDigestLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "文件摘要日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "文件摘要日志检索成功",
 				logPage, 0);
 	}
 	
