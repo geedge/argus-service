@@ -4,13 +4,12 @@
   <resultMap id="BaseResultMap" type="com.nis.domain.restful.dashboard.TrafficPortActiveStatistic">
     <id column="stat_id" jdbcType="INTEGER" property="statId" />
     <result column="port" jdbcType="INTEGER" property="port" />
-    <result column="sum" jdbcType="INTEGER" property="sum" />
+    <result column="sum" jdbcType="BIGINT" property="sum" />
     <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
   </resultMap>
   
  <select id="getPortActiveList" resultMap="BaseResultMap">
     SELECT port ,SUM(sum) sum from galaxy.traffic_port_active_statistic
-    
 	WHERE stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_port_active_statistic),INTERVAL 5 MINUTE)
 	GROUP BY port order by sum limit 0,10
   </select>

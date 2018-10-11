@@ -6,7 +6,7 @@ public class TrafficPortActiveStatistic {
 //流量统计之活跃端口统计
 	private Integer statId;
 	private Integer port;
-	private Integer sum;
+	private Long sum;
 	private Date statTime;
 	  
 	public Integer getStatId() {
@@ -21,10 +21,10 @@ public class TrafficPortActiveStatistic {
 	public void setPort(Integer port) {
 		this.port = port;
 	}
-	public Integer getSum() {
+	public Long getSum() {
 		return sum;
 	}
-	public void setSum(Integer sum) {
+	public void setSum(Long sum) {
 		this.sum = sum;
 	}
 	public Date getStatTime() {
