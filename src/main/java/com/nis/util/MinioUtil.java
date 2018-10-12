@@ -33,7 +33,7 @@ public class MinioUtil {
 			} else {
 				minioClient = new MinioClient(minio_url);
 			}
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMDDHHMMss");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
 			String ymd = sdf.format(new Date());
 			String objectName = ymd + "-" + fileName;
 			minioClient.putObject(minio_bucketName, objectName, inputStream, inputStream.available(), contentType);
