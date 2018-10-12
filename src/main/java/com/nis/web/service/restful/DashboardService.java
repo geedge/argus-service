@@ -84,14 +84,59 @@ public class DashboardService extends BaseService{
 	 * 分页查询活跃IPtop100
 	 * @return
 	 */
-	public  Page<TrafficIpActiveStatistic> getList(Page<TrafficIpActiveStatistic> page,TrafficIpActiveStatistic entry){
+	public  Page<TrafficIpActiveStatistic> getIpList(Page<TrafficIpActiveStatistic> page,TrafficIpActiveStatistic entry){
 			// 设置分页参数
 			entry.setPage(page);
 			// 执行分页查询
-			page.setList(trafficIpActiveStatisticDao.getList(entry));
+			page.setList(trafficIpActiveStatisticDao.getIpList(entry));
 			return page;
 	}
-	
+	public List<HashMap> ipActiveFiveMinute(){
+		
+		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart();
+		ArrayList<HashMap> listMap=new ArrayList<HashMap>();
+		if(list!=null&&list.size()>0) {
+			for (LinkedHashMap map : list) {
+				HashMap m = new HashMap();
+				if(map.get("ipAddr")!=null) {
+					String ipAddr = (String) map.get("ipAddr");
+					m.put("ipAddr", ipAddr);
+					ArrayList<TrafficIpActiveStatistic>  ipList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipAddr);
+					List linkList = new ArrayList();
+					List timeList = new ArrayList();
+					if(ipList!=null&&ipList.size()>0) {
+						for (TrafficIpActiveStatistic ip : ipList) {
+							if(ip.getLinkNum()!=null&&ip.getTime()!=null) {
+								linkList.add(ip.getLinkNum());
+								timeList.add(ip.getTime());
+							}
+						}
+					}
+					m.put("linkNum",linkList);
+					m.put("statTime",timeList);
+					listMap.add(m);
+				}
+			}
+		}
+		
+		return listMap;
+	}
+	public List<HashMap> ipActiveOneHour(){
+		
+		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart();
+		ArrayList<HashMap> listMap=new ArrayList<HashMap>();
+		if(list!=null&&list.size()>0) {
+			for (LinkedHashMap map : list) {
+				if(map.get("ipAddr")!=null) {
+					String ipAddr = (String) map.get("ipAddr");
+					ArrayList<HashMap> iplList = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr);
+					listMap.add(iplList.get(0));
+				}
+			}
+		}
+		
+		return listMap;
+	}
 	public List<LinkedHashMap> ipActiveChart(){
 		
 		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart();
