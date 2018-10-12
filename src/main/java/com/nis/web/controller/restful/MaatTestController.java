@@ -294,14 +294,16 @@ public class MaatTestController {
 					}
 					configCompile.setNumRegionList(numList);
 				} else if (tableType == 14 || tableType == 15) {
-					strList = new ArrayList<StrRegion>();
-
+//					strList = new ArrayList<StrRegion>();
 					if (tableNameArr.length == 1) {
 						strList.add(getStrRegion(service, tableType, groupId, null));
 					} else {
 						for (String tableName : tableNameArr) {
 							strList.add(getStrRegion(service, tableType, groupId, tableName));
 						}
+					}
+					if(configCompile.getStrRegionList()!=null&&configCompile.getStrRegionList().size()>0) {
+						strList.addAll(configCompile.getStrRegionList());//因为字符串和增强字符串使用的是一个strlist所以这里把这俩的值放在一块
 					}
 					configCompile.setStrRegionList(strList);
 				} else if (tableType == 16) {
