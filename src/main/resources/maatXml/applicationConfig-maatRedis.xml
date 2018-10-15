@@ -11,7 +11,7 @@
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 <!-- 			最开始调整的这个,格式不是\t;[op_time];&amp;nbsp;0;\n,后面的要求都改成这个格式,前端不好该代码,所以这个与其他的有区别 -->
-			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[op_time];\t;[service];\t;[level];&amp;nbsp;0;\t;[file_id];\t;[redisFile_dst_file];\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[action];\t;[level];\t;[redisFile_dst_file];\t;[dst_file_md5];\t;[is_valid];\t;&amp;nbsp;0;\n</p:valueExpression>
 <!-- 			<p:valueExpression>[cfg_id];\t;[is_valid];\t;[dst_file];\t;[dst_file_md5];\t;[time_stamp];&amp;nbsp;[level];\t;[file_id];\n</p:valueExpression> -->
 		</p:expressions>
 		<p:sequences>

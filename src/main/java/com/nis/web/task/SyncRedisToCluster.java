@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,6 @@ import com.nis.web.service.restful.ConfigJedisServiceimpl;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.Tuple;
 import redis.clients.util.JedisClusterCRC16;
 
@@ -39,7 +37,7 @@ public class SyncRedisToCluster {
 	// private JedisSentinelPool jedisSentinelPool;
 
 	// @Scheduled(cron = "0/3 * * * * ?")
-	//@Scheduled(cron = "${syncRedisToClusterCron}")
+	@Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
 		try {
 			// keys("EFFECTIVE_RULE*");
