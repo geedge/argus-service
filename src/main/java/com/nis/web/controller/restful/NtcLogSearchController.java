@@ -31,7 +31,7 @@ import com.nis.domain.restful.NtcP2pLog;
 import com.nis.domain.restful.NtcPptpLog;
 import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
-import com.nis.domain.restful.NtcStreamMediaLog;
+import com.nis.domain.restful.NtcStreamingMediaLog;
 import com.nis.domain.restful.NtcVoipLog;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
@@ -1027,29 +1027,29 @@ public class NtcLogSearchController extends BaseRestController {
 		
 	@RequestMapping(value = "/ntcStreamMediaLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "流媒体协议日志查询", httpMethod = "GET", notes = "对日志功能“流媒体协议日志”提供数据基础查询服务")
-	public Map<String, ?> ntcStreamMediaLogs(Page page, NtcStreamMediaLog ntcStreamMediaLog, Model model, HttpServletRequest request,
+	public Map<String, ?> ntcStreamMediaLogs(Page page, NtcStreamingMediaLog ntcStreamMediaLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 
-		Page<NtcStreamMediaLog> logPage = null;
+		Page<NtcStreamingMediaLog> logPage = null;
 		try {
 			resetTime(ntcStreamMediaLog);
-			ntcLogService.queryConditionCheck(auditLogThread, start, ntcStreamMediaLog, NtcStreamMediaLog.class, page);
-			logPage = new Page<NtcStreamMediaLog>();
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcStreamMediaLog, NtcStreamingMediaLog.class, page);
+			logPage = new Page<NtcStreamingMediaLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcStreamMediaLog.class.getSimpleName(), page.getOrderBy());
+				orderBy = Page.getOrderBySql(NtcStreamingMediaLog.class.getSimpleName(), page.getOrderBy());
 			} else {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcStreamMediaLog,
-					getTableName(NtcStreamMediaLog.class.getSimpleName() + "HiveTable", "NTC_STREAM_MEDIA_LOG"),
+					getTableName(NtcStreamingMediaLog.class.getSimpleName() + "HiveTable", "NTC_STREAM_MEDIA_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamMediaLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamingMediaLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -1057,8 +1057,8 @@ public class NtcLogSearchController extends BaseRestController {
 				List list = tableMapping.get("obj");
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
-					List<NtcStreamMediaLog> List = (java.util.List<NtcStreamMediaLog>) JsonMapper.fromJsonList(jsonString,
-							NtcStreamMediaLog.class);
+					List<NtcStreamingMediaLog> List = (java.util.List<NtcStreamingMediaLog>) JsonMapper.fromJsonList(jsonString,
+							NtcStreamingMediaLog.class);
 					logPage.setList(List);
 					logPage.setCount(List.size());
 
