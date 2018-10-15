@@ -292,7 +292,7 @@ public class ConfigSourcesController extends BaseRestController {
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 				logger.info("-----------------调用接口上传文件---------------");
 				if(Constants.IS_USE_MINIO){
-					filePath = MinioUtil.uploadFile(file.getInputStream(), file.getOriginalFilename(), ext);
+					filePath = MinioUtil.uploadFile(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
 				}else{
 					FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
 					// NameValuePair[] meta_list = new NameValuePair[5];
@@ -361,7 +361,7 @@ public class ConfigSourcesController extends BaseRestController {
 				String ext = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
 				logger.info("-----------------调用接口上传文件---------------");
 				if(Constants.IS_USE_MINIO){
-					filePath = MinioUtil.uploadFile(file.getInputStream(), file.getOriginalFilename(), ext);
+					filePath = MinioUtil.uploadFile(file.getInputStream(), file.getOriginalFilename(), file.getContentType());
 				}else{
 					FastDFSFile fdsfile = new FastDFSFile(file.getBytes(), file.getOriginalFilename(), ext);
 					// NameValuePair[] meta_list = new NameValuePair[5];

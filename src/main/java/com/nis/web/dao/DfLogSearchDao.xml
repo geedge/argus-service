@@ -1165,7 +1165,7 @@
 		<result column="called_number" jdbcType="VARCHAR" property="calledNumber" />
 	</resultMap>
 	
-	<resultMap id="NtcStreamMediaLogMap" type="com.nis.domain.restful.NtcStreamMediaLog">
+	<resultMap id="NtcStreamMediaLogMap" type="com.nis.domain.restful.NtcStreamingMediaLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
 		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
 		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />

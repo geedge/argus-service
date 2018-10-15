@@ -45,17 +45,21 @@ public class SyncRedisToCluster {
 			String clusterMaatVersionStr = jedisCluster.get("MAAT_VERSION");
 			String redisMaatVersionStr = JedisUtils.get("MAAT_VERSION", redisStatisticsRealDBIndex);
 			if (clusterMaatVersionStr != null && !clusterMaatVersionStr.trim().equals("")) {
-				Integer clusterMaatVersion = Integer.valueOf(clusterMaatVersionStr);
-				Integer redisMaatVersion = Integer.valueOf(redisMaatVersionStr);
-				if (redisMaatVersion < clusterMaatVersion) {// 如果主从库比集群库的版本号小则下发全量
-					logger.info("redis集群中的MAAT_VERSION为大于配置库中的MAAT_VERSION,开始执行全量同步");
-					syncAllData(redisMaatVersionStr);
-				} else if (redisMaatVersion > clusterMaatVersion) {// 获取增量的数据
-					logger.info("redis集群中的MAAT_VERSION为小于配置库中的MAAT_VERSION,开始执行增量同步,score是{}-{}", clusterMaatVersion,
-							+redisMaatVersion);
-					syncData(clusterMaatVersion.doubleValue(), redisMaatVersion.doubleValue(), redisMaatVersionStr);
+				if (redisMaatVersionStr != null && !redisMaatVersionStr.trim().equals("")) {
+					Integer clusterMaatVersion = Integer.valueOf(clusterMaatVersionStr);
+					Integer redisMaatVersion = Integer.valueOf(redisMaatVersionStr);
+					if (redisMaatVersion < clusterMaatVersion) {// 如果主从库比集群库的版本号小则下发全量
+						logger.info("redis集群中的MAAT_VERSION为大于配置库中的MAAT_VERSION,开始执行全量同步");
+						syncAllData(redisMaatVersionStr);
+					} else if (redisMaatVersion > clusterMaatVersion) {// 获取增量的数据
+						logger.info("redis集群中的MAAT_VERSION为小于配置库中的MAAT_VERSION,开始执行增量同步,score是{}-{}",
+								clusterMaatVersion, +redisMaatVersion);
+						syncData(clusterMaatVersion.doubleValue(), redisMaatVersion.doubleValue(), redisMaatVersionStr);
+					} else {
+						logger.info("redis集群中的MAAT_VERSION与配置库中的MAAT_VERSION相等,暂不执行配置同步操作");
+					}
 				} else {
-					logger.info("redis集群中的MAAT_VERSION与配置库中的MAAT_VERSION相等,暂不执行配置同步操作");
+					logger.info("redis-{}号库中MAAT_VERSION为null,说明没有配置,暂时不执行配置同步",redisStatisticsRealDBIndex);
 				}
 			} else {
 				logger.info("redis集群中的MAAT_VERSION为null,开始执行全量同步");
@@ -70,7 +74,7 @@ public class SyncRedisToCluster {
 		try {
 			Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
 			for (Map.Entry<String, JedisPool> entry : clusterNodes.entrySet()) {
-				
+
 				Jedis jedis = entry.getValue().getResource();
 				// 判断非从节点(因为若主从复制，从节点会跟随主节点的变化而变化)
 				if (!jedis.info("replication").contains("role:slave")) {
@@ -95,7 +99,7 @@ public class SyncRedisToCluster {
 									.toArray(new String[integerListEntry.getValue().size()]));
 							// jedisCluster.del(integerListEntry.getValue()
 							// .toArray(new String[integerListEntry.getValue().size()]));
-							logger.debug("从redis集群{}删除key={},成功", entry.getKey(),integerListEntry.getValue());
+							logger.debug("从redis集群{}删除key={},成功", entry.getKey(), integerListEntry.getValue());
 						}
 					}
 				}
