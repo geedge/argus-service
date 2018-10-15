@@ -37,7 +37,7 @@ public class SyncRedisToCluster {
 	// private JedisSentinelPool jedisSentinelPool;
 
 	// @Scheduled(cron = "0/3 * * * * ?")
-	@Scheduled(cron = "${syncRedisToClusterCron}")
+	// @Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
 		try {
 			// keys("EFFECTIVE_RULE*");
@@ -59,11 +59,17 @@ public class SyncRedisToCluster {
 						logger.info("redis集群中的MAAT_VERSION与配置库中的MAAT_VERSION相等,暂不执行配置同步操作");
 					}
 				} else {
-					logger.info("redis-{}号库中MAAT_VERSION为null,说明没有配置,暂时不执行配置同步",redisStatisticsRealDBIndex);
+					logger.info("redis配置库中MAAT_VERSION为null,但是redis集群中的MAAT_VERSION为{},集群与配置库的数据不同步,开始删除集群中的配置",
+							clusterMaatVersionStr);
+					delClusterData();
 				}
 			} else {
-				logger.info("redis集群中的MAAT_VERSION为null,开始执行全量同步");
-				syncAllData(redisMaatVersionStr);
+				if (redisMaatVersionStr != null && !redisMaatVersionStr.trim().equals("")) {
+					logger.info("redis配置库中的MAAT_VERSION为{},redis集群中的MAAT_VERSION为null,开始执行全量同步", redisMaatVersionStr);
+					syncAllData(redisMaatVersionStr);
+				} else {
+					logger.info("redis配置库中和redis集群中的MAAT_VERSION都为null,暂时不执行全量同步");
+				}
 			}
 		} catch (Exception e) {
 			logger.error("同步配置库配置到3A-redisCluster失败,失败原因:{}", ExceptionUtil.getExceptionMsg(e));
@@ -132,8 +138,8 @@ public class SyncRedisToCluster {
 		return keys;
 	}
 
-	public void syncAllData(String version) {
-		// 先清空集群库配置数据
+	public void delClusterData() {
+		// 清空集群库配置数据
 		if (jedisCluster.exists("MAAT_UPDATE_STATUS")) {
 			jedisCluster.del("MAAT_UPDATE_STATUS");
 			logger.info("删除MAAT_UPDATE_STATUS成功");
@@ -146,6 +152,10 @@ public class SyncRedisToCluster {
 		logger.info("删除EFFECTIVE_RULE*成功");
 		deleteRedisKeyStartWith("OBSOLETE_RULE*");
 		logger.info("删除OBSOLETE_RULE*成功");
+	}
+
+	public void syncAllData(String version) {
+		delClusterData();
 		syncData(null, null, version);
 	}
 
