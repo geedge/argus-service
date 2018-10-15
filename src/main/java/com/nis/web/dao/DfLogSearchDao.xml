@@ -456,7 +456,7 @@
 		<result column="attack_max_bps" jdbcType="VARCHAR" property="attackMaxBps" />
 		<result column="attack_total_pkt" jdbcType="VARCHAR" property="attackTotalPkt" />
 		<result column="attack_total_byte" jdbcType="VARCHAR" property="attackTotalByte" />
-		<result column="is_blcok" jdbcType="INTEGER" property="isBlcok" />
+		<result column="is_block" jdbcType="INTEGER" property="isBlock" />
 	</resultMap>
 	<resultMap id="DkBehaviorLogMap" type="com.nis.domain.restful.DkBehaviorLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
@@ -966,6 +966,7 @@
 		<result column="resp_header" jdbcType="VARCHAR" property="respHeader" />
 		<result column="req_body" jdbcType="VARCHAR" property="reqBody" />
 		<result column="resp_body" jdbcType="VARCHAR" property="respBody" />
+		<result column="web_site" jdbcType="VARCHAR" property="webSite" />
 	</resultMap>
 	<resultMap id="NtcP2pLogMap" type="com.nis.domain.restful.NtcP2pLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />

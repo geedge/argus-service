@@ -52,8 +52,8 @@
 		</p:expressions>
 	</p:maatType>
 	<!-- #0x03 IP地址丢弃 3=0:INLINE_IP_CB #0x04 IP地址丢弃 4=0:INLINE_IP_CB #0x19 IPSec丢弃 
-		25=0:INLINE_IP_CB #0x1C GRE 丢弃 28=0:INLINE_IP_CB -->
-	<p:maatType service="3;4;25;28">
+		25=0:INLINE_IP_CB #0x1C GRE 丢弃 28=0:INLINE_IP_CB #0X112	VOIP动态阻断 丢弃 274=0:MM_DYN_VOIP_DROP-->
+	<p:maatType service="3;4;25;28;274">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
 			<p:valueExpression>[cfg_id];\t;0;\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[is_valid];\t;[action];\t;[service];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
