@@ -24,6 +24,9 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
 public class GroupReuse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	// ASN-IP阻断和监测不用传service和ipregion.userRegion字段,当是app协议ip业务时需要传入ipregion.userRegion字段
+	@ApiModelProperty(value = "业务ID", required = true)
+	private Integer service;
 
 	@ApiModelProperty(value = "字符串域分组列表", access = "", required = true)
 	private List<StrRegion> strRegionList;
@@ -80,4 +83,11 @@ public class GroupReuse implements Serializable {
 		this.numRegionList = numRegionList;
 	}
 
+	public Integer getService() {
+		return service;
+	}
+
+	public void setService(Integer service) {
+		this.service = service;
+	}
 }
