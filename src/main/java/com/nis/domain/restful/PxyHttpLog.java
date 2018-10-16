@@ -40,7 +40,7 @@ public class PxyHttpLog  extends LogEntity<PxyHttpLog> {
     @ApiModelProperty(value="原始应答体", required=true)
     protected String respBody;
     @ApiModelProperty(value="域名", required=true)
-    protected String webSite;
+    protected String website;
     
 	public String getUrl() {
 		return url;
@@ -120,11 +120,11 @@ public class PxyHttpLog  extends LogEntity<PxyHttpLog> {
 	public void setRespBody(String respBody) {
 		this.respBody = respBody;
 	}
-	public String getWebSite() {
-		return webSite;
+	public String getWebsite() {
+		return website;
 	}
 	
-	public void setWebSite(String webSite) {
-		this.webSite = webSite;
+	public void setWebsite(String website) {
+		this.website = website;
 	}
 }

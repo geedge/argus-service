@@ -1047,7 +1047,7 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcStreamMediaLog,
-					getTableName(NtcStreamingMediaLog.class.getSimpleName() + "HiveTable", "NTC_STREAM_MEDIA_LOG"),
+					getTableName(NtcStreamingMediaLog.class.getSimpleName() + "HiveTable", "NTC_STREAMING_MEDIA_LOG"),
 					getCol2Col(), orderBy, null);
 			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamingMediaLog.class, "foundTime",
 					"recvTime");

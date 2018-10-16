@@ -966,7 +966,7 @@
 		<result column="resp_header" jdbcType="VARCHAR" property="respHeader" />
 		<result column="req_body" jdbcType="VARCHAR" property="reqBody" />
 		<result column="resp_body" jdbcType="VARCHAR" property="respBody" />
-		<result column="web_site" jdbcType="VARCHAR" property="webSite" />
+		<result column="website" jdbcType="VARCHAR" property="website" />
 	</resultMap>
 	<resultMap id="NtcP2pLogMap" type="com.nis.domain.restful.NtcP2pLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
@@ -1165,7 +1165,7 @@
 		<result column="called_number" jdbcType="VARCHAR" property="calledNumber" />
 	</resultMap>
 	
-	<resultMap id="NtcStreamMediaLogMap" type="com.nis.domain.restful.NtcStreamingMediaLog">
+	<resultMap id="NtcStreamingMediaLogMap" type="com.nis.domain.restful.NtcStreamingMediaLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
 		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
 		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
