@@ -409,6 +409,15 @@ public enum RestBusinessCode {
 	 * 域配置中的tableName不是分组复用的域表
 	 */
 	TableNameUnReuse(4002102, "域配置中tableName不是分组复用的域表"),
+	/**
+	 * 分组复用域配置下发到阀门时userRegion不能为空
+	 */
+	ReUseUserRegionIsNull(4002102, "域配置需要下发到阀门，userRegion不能为空"),
+	
+	/**
+	 * 添加分组复用域配置时,service只能为空或1028
+	 */
+	ReUseServiceRange(4002102, "添加分组复用域配置时,service只能为空或1028"),
 	
 	/**
 	 *数值域配置的lowBoundary值不在有效范围内

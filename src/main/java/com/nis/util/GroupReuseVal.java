@@ -97,6 +97,22 @@ public class GroupReuseVal {
 				for (IpRegion ipRegion : ipRegionList) {
 					// if (groupReuse.getIsValid() != 0 &&
 					// !regionGroupIdList.contains(ipRegion.getGroupId())) {
+					if (!StringUtil.isEmpty(groupReuse.getService())) {
+						if (groupReuse.getService().intValue()!=1028) {
+							throw new RestServiceException("ipRegionList中的regionId为"
+								+ ipRegion.getRegionId()
+								+ "的域配置的service只能为空或1028",
+								RestBusinessCode.ReUseServiceRange
+										.getValue());
+						}
+						if (StringUtil.isEmpty(ipRegion.getUserRegion())) {
+							throw new RestServiceException("ipRegionList中的regionId为"
+								+ ipRegion.getRegionId()
+								+ "的域配置需要下发到阀门，userRegion不能为空",
+								RestBusinessCode.ReUseUserRegionIsNull
+										.getValue());
+						}
+					}
 					
 					if (!StringUtil.isEmpty(ipRegion.getTableName())	
 							&& !groupReuseRegionMap.get("ipRegion").contains(ipRegion.getTableName())) {
