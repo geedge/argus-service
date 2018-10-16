@@ -862,8 +862,10 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
 			}
+			maatConfig.setService(groupReuse.getService());
 			list.add(maatConfig);
 		}
+	
 		// 调用接口入redis
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
 		configRedisService.saveGroupReuseConfig(list);

@@ -1445,7 +1445,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	}
 
 	private void addTmpReion(List<Map<String, String>> regionMapList, MaatXmlConfig maatXmlConfig,
-			Transaction transaction, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex) {
+			Transaction transaction, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex, int service) {
 		if (regionMapList != null && regionMapList.size() > 0) {
 			for (Map<String, String> map : regionMapList) {
 				List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
@@ -1488,6 +1488,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						for (String valStr : valSplit) {
 							if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
 								valStr = valStr.trim().replace("[", "").replace("]", "");
+								if (valStr.toLowerCase().equals("op_time") && type == 12) {
+									String user_region = map.get("user_region");
+									valBF.append(user_region + "\t");
+								}
 								String val = map.get(valStr);
 								if (val != null) {
 									valBF.append(val);
@@ -1500,6 +1504,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 											"未从map中获取到" + valStr + "的值,无法拼接redisValue,请检查数据或配置文件是否正确",
 											RestBusinessCode.NotFoundValueByKey.getValue());
 								}
+
 							} else if (valStr.equals("&nbsp")) {
 								valBF.append(" ");
 							} else if (valStr.equals("\\t")) {// xml中是字符串的\t这里判断的时候需要转义为\\t,但是添加的时候需要添加\t不是\\t
@@ -1580,11 +1585,11 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				for (MaatConfig maatConfig : configList) {
 					MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(37);// maat类配置的表达式都一样,这里因为没有service所以就随便取了一个
 					addTmpReion(maatConfig.getIpRegionMapList(), maatXmlConfig, transaction, 12,
-							tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex, maatConfig.getService());
 					addTmpReion(maatConfig.getNumRegionMapList(), maatXmlConfig, transaction, 13,
-							tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex, maatConfig.getService());
 					addTmpReion(maatConfig.getStrRegionMapList(), maatXmlConfig, transaction, 14,
-							tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex, maatConfig.getService());
 				}
 			} else {
 				throw new ServiceRuntimeException("添加分组复用域配置时,未发现对应的配置信息,请检查配置参数是否正确",
