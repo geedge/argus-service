@@ -2,7 +2,9 @@ package com.nis.domain.restful.dashboard;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nis.domain.BaseEntity;
+import com.nis.util.JsonDateSerializer;
 
 public class TrafficIpActiveStatistic extends BaseEntity<TrafficIpActiveStatistic> {
     /**
@@ -27,8 +29,19 @@ public class TrafficIpActiveStatistic extends BaseEntity<TrafficIpActiveStatisti
     private Long s2cByteLen;
 
     private Date statTime;
+    
+    private String time;
+    
 
-    public Integer getStatId() {
+    public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
+	public Integer getStatId() {
         return statId;
     }
 
@@ -91,7 +104,7 @@ public class TrafficIpActiveStatistic extends BaseEntity<TrafficIpActiveStatisti
 	public void setS2cByteLen(Long s2cByteLen) {
 		this.s2cByteLen = s2cByteLen;
 	}
-
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getStatTime() {
         return statTime;
     }
