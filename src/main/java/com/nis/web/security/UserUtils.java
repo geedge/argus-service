@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
 import org.apache.shiro.session.InvalidSessionException;
@@ -18,7 +19,6 @@ import com.nis.domain.SysOffice;
 import com.nis.domain.SysRole;
 import com.nis.domain.SysUser;
 import com.nis.util.CacheUtils;
-import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.util.TreeUtil;
 import com.nis.web.dao.SysAreaDao;

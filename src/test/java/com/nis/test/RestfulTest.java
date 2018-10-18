@@ -8,6 +8,7 @@
 */
 package com.nis.test;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.nis.domain.ControlLog;
 import com.nis.domain.Page;
-import com.nis.util.StringUtil;
+
 
 /** 
 * @ClassName: RestfulTest 

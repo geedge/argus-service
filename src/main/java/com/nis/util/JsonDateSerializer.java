@@ -17,7 +17,8 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.nis.util.DateUtil;
+import com.zdjizhi.utils.*;
+
 
 /**
  * @ClassName: JsonDateSerializer.java 
@@ -36,7 +37,7 @@ public class JsonDateSerializer extends JsonSerializer<Date> {
 			throws IOException, JsonProcessingException {
 		// TODO Auto-generated method stub
 		//gen.writeString(sdf.format(date));
-		gen.writeString(DateUtil.getFormatDate(date, DateUtil.YYYY_MM_DD_HH24_MM_SS));
+		gen.writeString(com.zdjizhi.utils.DateUtils.getFormatDate(date, com.zdjizhi.utils.DateUtils.YYYY_MM_DD_HH24_MM_SS));
 	}
 
 }

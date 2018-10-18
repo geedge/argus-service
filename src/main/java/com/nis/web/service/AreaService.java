@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.nis.domain.SysArea;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.SysAreaDao;
 import com.nis.web.security.UserUtils;
 

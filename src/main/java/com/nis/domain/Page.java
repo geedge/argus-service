@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.CookieUtil;
+import com.zdjizhi.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
@@ -20,8 +22,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
-import com.nis.util.CookieUtil;
-import com.nis.util.StringUtil;
 import com.nis.web.service.SpringContextHolder;
 
 /**

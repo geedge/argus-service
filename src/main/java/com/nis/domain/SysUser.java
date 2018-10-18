@@ -8,8 +8,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import com.nis.util.Collections3;
-import com.nis.util.StringUtil;
-import com.nis.util.StringUtils;
 import com.nis.util.excel.ExcelField;
 import com.nis.util.excel.fieldtype.RoleListType;
 

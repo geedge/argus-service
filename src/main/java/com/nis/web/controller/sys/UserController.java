@@ -22,7 +22,7 @@ import com.nis.domain.Page;
 import com.nis.domain.SysRole;
 import com.nis.domain.SysUser;
 import com.nis.util.DateUtils;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.util.excel.ExportExcel;
 import com.nis.web.controller.BaseController;

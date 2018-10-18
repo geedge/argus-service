@@ -16,6 +16,7 @@ import com.nis.listener.SystemConfigListener;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.web.service.restful.ConfigSourcesService;
+import com.zdjizhi.utils.StringUtil;
 
 public class CompileVal {
 
@@ -63,10 +64,11 @@ public class CompileVal {
 			}
 
 			if (!isUpdate) {
-				if (configCompile.getIsValid() != 1)
+				if (configCompile.getIsValid() != 1) {
+
 					throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置在添加时不能为无效",
 							RestBusinessCode.IsValidIsT.getValue());
-				{
+
 				}
 			} else {
 				throw new RestServiceException("编译配置id为" + configCompile.getCompileId() + "的配置在修改时不能为有效",

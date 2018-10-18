@@ -30,7 +30,7 @@ public class JsonDateDeserializer extends JsonDeserializer<Date> {
 		// TODO Auto-generated method stub
 		Date date = null;
 		if (null!=p&&!"".equals(p.getText())) {
-			date = DateUtil.convertStringToDate(p.getText(), DateUtil.YYYY_MM_DD_HH24_MM_SS);
+			date = com.zdjizhi.utils.DateUtils.convertStringToDate(p.getText(), com.zdjizhi.utils.DateUtils.YYYY_MM_DD_HH24_MM_SS);
 		}
 		return date;
 	}

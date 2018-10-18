@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,6 @@ import com.nis.util.Constants;
 import com.nis.util.DateUtils;
 import com.nis.util.LogJDBCByDruid;
 import com.nis.util.JsonMapper;
-import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.HiveSqlService;
@@ -168,7 +168,7 @@ public class LogController extends BaseRestController {
 	 * @throws Exception
 	 */
 	public void resetTime(LogEntity<?> entity) throws Exception {
-		if (StringUtil.isEmpty(entity.getSearchFoundStartTime())&&StringUtil.isEmpty(entity.getSearchFoundEndTime())) {
+		if (StringUtil.isEmpty(entity.getSearchFoundStartTime())&& StringUtil.isEmpty(entity.getSearchFoundEndTime())) {
 			Map<String, String> map = DateUtils.getLocalTime(entity.getSearchFoundStartTime(),
 					entity.getSearchFoundEndTime(), Constants.LOG_LOCAL_TIME, "minute");
 			entity.setSearchFoundStartTime(map.get("startTime"));

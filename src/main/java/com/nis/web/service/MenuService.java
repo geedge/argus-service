@@ -10,7 +10,7 @@ import com.nis.domain.SysMenu;
 import com.nis.domain.SysUser;
 import com.nis.util.CacheUtils;
 import com.nis.util.LogUtils;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.SysMenuDao;
 import com.nis.web.security.UserUtils;
 

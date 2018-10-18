@@ -2,12 +2,12 @@ package com.nis.util;
 
 import java.util.Properties;
 
+import com.zdjizhi.crypt.AESUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 
-import com.nis.crypt.AESUtil;
 
 public class PropertyPlaceholderConfigurerCrypt extends PropertyPlaceholderConfigurer {
 

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -146,9 +147,9 @@ public class HiveJDBC {
 				if (!StringUtil.isEmpty(value)) {
 					// 如果是日期类型的属性需要把时间戳转换成日期，如果时间戳为0直接把值设置为null
 					if (null != columnList && columnList.contains(filedName.toLowerCase())) {
-						long time = 0l;
+						long time = 0L;
 						time = Long.parseLong(value.toString());
-						map.put(filedName, time == 0l ? null : new Date(time * 1000));
+						map.put(filedName, time == 0L ? null : new Date(time * 1000));
 						// map.put(filedName, new
 						// Date(Long.parseLong("1476583810000")));
 					} else {

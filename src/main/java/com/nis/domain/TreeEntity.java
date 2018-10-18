@@ -4,7 +4,8 @@ package com.nis.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.nis.util.Reflections;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
+
 
 /**
  * 数据Entity类

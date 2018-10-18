@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.nis.web.service.AuditLogThread;
+import com.zdjizhi.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,6 @@ import com.nis.domain.restful.ConfigFile;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.MD5Utils;
-import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.ServicesRequestLogService;
 import com.wordnik.swagger.annotations.Api;
@@ -152,10 +152,14 @@ public class ConfigFileController extends BaseRestController {
 				throw new RestServiceException(thread,System.currentTimeMillis()-start,"文件下载失败");
 			} finally {  
 		        try {
-		        	if (bis != null)  
-				           bis.close();  
-			        if (bos != null)  
-			           bos.close();
+		        	if (bis != null) {
+						bis.close();
+					}
+
+			        if (bos != null)  {
+						bos.close();
+					}
+
 				} catch (Exception e2) {
 					thread.setExceptionInfo(e2.getMessage()+" "+e2.getCause());
 					logger.error(e2.toString());

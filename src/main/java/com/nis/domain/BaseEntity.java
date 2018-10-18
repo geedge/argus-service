@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,7 +13,6 @@ import com.google.common.collect.Maps;
 import com.nis.supcan.SupCol;
 import com.nis.supcan.SupTreeList;
 import com.nis.util.Configurations;
-import com.nis.util.StringUtil;
 import com.nis.web.security.UserUtils;
 
 /**

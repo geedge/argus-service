@@ -23,7 +23,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
 import com.nis.util.Constants;
 import com.nis.util.LogJDBCByDruid;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.util.redis.SaveRedisThread;
 
 public class HiveSqlService {

@@ -4,6 +4,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import com.zdjizhi.utils.IPUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -12,7 +13,6 @@ import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Service;
 
 import com.nis.util.Constants;
-import com.nis.util.IpUtil;
 import com.nis.util.StringUtils;
 
 
@@ -28,7 +28,7 @@ public class FormAuthenticationFilter extends org.apache.shiro.web.filter.authc.
 		}
 		boolean rememberMe = isRememberMe(request);
 		
-		String host =IpUtil.getIpAddr((HttpServletRequest)request);
+		String host = IPUtil.getIpAddr((HttpServletRequest)request);
 		String captcha = getCaptcha(request);
 		boolean mobile = isMobileLogin(request);
 		return new UsernamePasswordToken(username, password.toCharArray(), rememberMe, host, captcha, mobile);

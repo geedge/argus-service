@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.nis.web.service.AuditLogThread;
+import com.zdjizhi.utils.StringUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,6 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
-import com.nis.util.StringUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.SystemFunStatusService;

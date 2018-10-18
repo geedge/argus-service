@@ -14,7 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.nis.domain.Page;
 import com.nis.domain.SysDataDictionaryName;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.controller.BaseController;
 
 @Controller

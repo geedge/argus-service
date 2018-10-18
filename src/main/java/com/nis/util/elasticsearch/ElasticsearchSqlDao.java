@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
@@ -34,7 +35,6 @@ import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
 import com.nis.util.Constants;
 import com.nis.util.JsonMapper;
-import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.util.httpclient.HttpClientUtil;
 import com.nis.web.service.SpringContextHolder;

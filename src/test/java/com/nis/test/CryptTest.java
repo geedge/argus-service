@@ -2,10 +2,10 @@ package com.nis.test;
 
 
 
+import com.zdjizhi.crypt.AESUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.junit.Test;
 
-import com.nis.crypt.AESUtil;
 
 public class CryptTest {
 	

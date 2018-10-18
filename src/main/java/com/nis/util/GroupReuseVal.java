@@ -11,6 +11,7 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.web.service.restful.ConfigSourcesService;
+import com.zdjizhi.utils.StringUtil;
 
 public class GroupReuseVal {
 
@@ -27,7 +28,7 @@ public class GroupReuseVal {
 				hasRegionFlag = true;
 				List<NumRegion> numRegionList = groupReuse.getNumRegionList();
 				for (NumRegion numRegion : numRegionList) {
-					if (!StringUtil.isEmpty(numRegion.getTableName())	
+					if (!StringUtil.isEmpty(numRegion.getTableName())
 							&& !groupReuseRegionMap.get("numRegion").contains(numRegion.getTableName())) {
 						throw new RestServiceException("numRegionList中的regionId为"
 								+ numRegion.getRegionId()

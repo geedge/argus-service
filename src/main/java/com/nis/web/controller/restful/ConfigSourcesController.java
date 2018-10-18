@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.StringUtil;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -30,7 +31,6 @@ import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.FileUtils;
 import com.nis.util.MinioUtil;
-import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;

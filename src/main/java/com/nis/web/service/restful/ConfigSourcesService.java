@@ -42,7 +42,7 @@ import com.nis.util.GroupReuseVal;
 import com.nis.util.JsonMapper;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.BaseService;
 
@@ -297,8 +297,10 @@ public class ConfigSourcesService extends BaseService {
 		Map<String, String> dstMap = new HashMap<String, String>();
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
-			if ("serialVersionUID".equals(field.getName()))
+			if ("serialVersionUID".equals(field.getName())) {
 				continue;
+			}
+
 			String dstName = CamelUnderlineUtil.camelToUnderline(field.getName());
 			PropertyDescriptor pd;
 			pd = new PropertyDescriptor(field.getName(), clazz);

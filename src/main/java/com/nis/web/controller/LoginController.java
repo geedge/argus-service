@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.CookieUtil;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
-import com.nis.util.CookieUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.security.IdGen;
 import com.nis.web.security.SystemAuthorizingRealm.Principal;

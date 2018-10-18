@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -32,7 +33,6 @@ import com.nis.domain.SysUser;
 import com.nis.util.Configurations;
 import com.nis.util.Encodes;
 import com.nis.util.LogUtils;
-import com.nis.util.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.util.TreeUtil;
 import com.nis.web.service.SystemService;

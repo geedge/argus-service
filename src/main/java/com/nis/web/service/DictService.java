@@ -3,14 +3,14 @@ package com.nis.web.service;
 import java.util.Date;
 import java.util.List;
 
+import com.zdjizhi.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
 import com.nis.domain.SysDataDictionaryItem;
 import com.nis.domain.SysDataDictionaryName;
-import com.nis.util.DateUtil;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.SysDictDao;
 import com.nis.web.security.UserUtils;
 
@@ -52,7 +52,7 @@ public class DictService extends BaseService {
 		}else {//修改
 			
 			//累加修改记录
-			String newRevision = "用户"+UserUtils.getUser().getName()+",在"+DateUtil.getCurrentDate(DateUtil.YYYY_MM_DD_HH24_MM_SS)+"修改！";
+			String newRevision = "用户"+UserUtils.getUser().getName()+",在"+ DateUtils.getCurrentDate(DateUtils.YYYY_MM_DD_HH24_MM_SS)+"修改！";
 			StringBuilder revisionBuilder = new StringBuilder(newRevision);
 			String oldRevision = sysDictName.getRevision();
 			if(!StringUtil.isBlank(oldRevision)){

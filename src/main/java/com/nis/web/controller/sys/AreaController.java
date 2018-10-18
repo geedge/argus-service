@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nis.domain.SysArea;
-import com.nis.util.StringUtil;
+
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseController;
 

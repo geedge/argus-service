@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.nis.domain.SysRole;
 import com.nis.domain.SysUser;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.SysRoleDao;
 import com.nis.web.security.UserUtils;
 

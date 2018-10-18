@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nis.domain.TreeEntity;
 import com.nis.exceptions.ServiceException;
 import com.nis.util.Reflections;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.dao.TreeDao;
 

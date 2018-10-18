@@ -22,7 +22,7 @@ import com.nis.domain.Page;
 import com.nis.domain.restful.NtcReportEntity;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.util.elasticsearch.ElasticsearchSqlDao;
 
 /**

@@ -37,7 +37,7 @@ import com.nis.util.JedisUtils;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 
 import net.sf.json.JSONObject;
 

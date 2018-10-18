@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.method.HandlerMethod;
 

@@ -13,6 +13,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,6 @@ import com.nis.util.FileUtils;
 import com.nis.util.JsonMapper;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
-import com.nis.util.StringUtil;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.ConfigRedisService;

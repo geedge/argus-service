@@ -20,7 +20,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.nis.domain.SysOffice;
 import com.nis.domain.SysUser;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseController;
 import com.nis.web.security.UserUtils;

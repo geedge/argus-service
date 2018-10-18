@@ -12,7 +12,7 @@ import com.nis.domain.Page;
 import com.nis.domain.SysUser;
 import com.nis.exceptions.ServiceException;
 import com.nis.util.CacheUtils;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.dao.UserDao;
 import com.nis.web.security.UserUtils;

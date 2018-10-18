@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import com.zdjizhi.utils.IPUtil;
+import com.zdjizhi.utils.TimeConstants;
 import org.apache.commons.io.FileUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +26,7 @@ import com.nis.domain.SysUser;
 import com.nis.domain.WebServiceClient;
 import com.nis.util.Configurations;
 import com.nis.util.DateUtils;
-import com.nis.util.IpUtil;
-import com.nis.util.StringUtil;
-import com.nis.util.TimeConstants;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.SrcIpDao;
 import com.nis.web.dao.SysOfficeDao;
 import com.nis.web.dao.UserDao;
@@ -69,7 +69,7 @@ public class SystemService extends BaseService{
 	}
 	
 	public List<SrcIp> ipLookUp(String ip) {
-		return srcIpDao.getIpInfo(IpUtil.getIpHostDesimal(ip));
+		return srcIpDao.getIpInfo(IPUtil.getIpHostDesimal(ip));
 	}
 	
 	

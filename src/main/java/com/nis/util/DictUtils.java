@@ -3,6 +3,7 @@ package com.nis.util;
 import java.util.List;
 import java.util.Map;
 
+import com.zdjizhi.utils.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.collect.Lists;

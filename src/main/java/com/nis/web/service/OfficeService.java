@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.nis.domain.SysOffice;
 import com.nis.util.DictUtils;
-import com.nis.util.StringUtil;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.SysOfficeDao;
 import com.nis.web.security.UserUtils;
 @Service

@@ -1,5 +1,7 @@
 package com.nis.util;
 
+import com.zdjizhi.utils.StringUtil;
+
 import java.io.File;
 import java.util.Map;
 import java.util.Properties;
