@@ -42,19 +42,20 @@
 			</form:select>
 			
 			
+			<label>请求内容：</label><input id="requestContent" name="requestContent" type="text" class="input-mini" value="<c:out value="${swaggerLog.requestContent}"></c:out>"/>
 			<label>TRACECODE：</label><input id="traceCode" name="traceCode" type="text" maxlength="30" class="input-mini" value="${swaggerLog.traceCode}"/>
 			<label>BUSINESSCODE：</label><input id="businessCode" name="businessCode" type="text" maxlength="30" class="input-mini" value="${swaggerLog.businessCode}"/>
 			<label>异常信息：</label><input id="exceptionInfo" name="exceptionInfo" type="text" maxlength="500" class="input-mini" value="${swaggerLog.exceptionInfo}"/>
 			<label>请求ip：</label><input id="requestIp" name="requestIp" type="text" maxlength="50" class="input-mini" value="${swaggerLog.requestIp}"/>
 			<label>服务端ip：</label><input id="serverIp" name="serverIp" type="text" maxlength="50" class="input-mini" value="${swaggerLog.serverIp}"/>
 		</div><div style="margin-top:8px;">
-			<label>请求日期范围：&nbsp;</label><input id="beginDate" name="beginDate" type="text" readonly="readonly" maxlength="20" class="input-mini Wdate"
-				value="<fmt:formatDate value="${swaggerLog.beginDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
-			<label>&nbsp;--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label><input id="endDate" name="endDate" type="text" readonly="readonly" maxlength="20" class="input-mini Wdate"
-				value="<fmt:formatDate value="${swaggerLog.endDate}" pattern="yyyy-MM-dd"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>&nbsp;&nbsp;
+			<label>请求日期范围：&nbsp;</label><input id="beginDate"  name="beginDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+				value="<fmt:formatDate value="${swaggerLog.beginDate}" pattern="yyyy-MM-dd HH:mm:ss"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>
+			<label>&nbsp;--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label><input id="endDate" name="endDate" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate"
+				value="<fmt:formatDate value="${swaggerLog.endDate}" pattern="yyyy-MM-dd HH:mm:ss"/>" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',isShowClear:false});"/>&nbsp;&nbsp;
 			&nbsp;<label for="exception">
 			
-			<input id="exception" name="exception" type="checkbox"${swaggerLog.exception eq '1'?' checked':''} value="1"/>只查询异常信息</label>
+			<input id="exception" name="exception" type="checkbox" ${swaggerLog.exception eq '1'?' checked':''} value="1"/>只查询异常信息</label>
 			
 			&nbsp;&nbsp;&nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>&nbsp;&nbsp;<label style="color: red">默认<strong style="font-size: 20px;">不显示查询类</strong>日志,如需显示请选择操作行为</label>
 		</div>

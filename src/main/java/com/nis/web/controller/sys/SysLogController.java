@@ -3,6 +3,7 @@ package com.nis.web.controller.sys;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,8 +28,16 @@ public class SysLogController extends BaseController {
 
 	@RequiresPermissions("sys:swaggerLogList:view")
 	@RequestMapping(value = "swaggerLogList")
-	public String swaggerLogList(SwaggerLog swaggerLog, HttpServletRequest request, HttpServletResponse response, Model model) {
-		Page<SwaggerLog> page = swaggerLogService.findSwaggerLogPage(new Page<SwaggerLog>(request, response), swaggerLog);
+	public String swaggerLogList(SwaggerLog swaggerLog, HttpServletRequest request, HttpServletResponse response,
+			Model model) {
+		if (swaggerLog.getOpAction() != null && swaggerLog.getOpAction() == 4) {
+			swaggerLog.setTableName("services_log_request_log");
+		} else {
+			swaggerLog.setTableName("services_config_request_log");
+		}
+		swaggerLog.setRequestContent(StringEscapeUtils.unescapeHtml4(swaggerLog.getRequestContent()));
+		Page<SwaggerLog> page = swaggerLogService.findSwaggerLogPage(new Page<SwaggerLog>(request, response),
+				swaggerLog);
 		model.addAttribute("page", page);
 		return "/sys/swaggerLogList";
 	}

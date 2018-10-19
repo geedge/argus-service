@@ -17,7 +17,7 @@ public class SwaggerLog extends BaseEntity<SwaggerLog> {
 	private String serverIp;
 	private String traceCode;
 	private String requestUri;
-
+	private String tableName;
 	private String exception;// 界面的异常信息框
 
 	private Date beginDate; // 开始日期
@@ -149,6 +149,14 @@ public class SwaggerLog extends BaseEntity<SwaggerLog> {
 
 	public void setRequestUri(String requestUri) {
 		this.requestUri = requestUri;
+	}
+
+	public String getTableName() {
+		return tableName;
+	}
+
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
 	}
 
 }

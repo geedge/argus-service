@@ -37,39 +37,47 @@ public class SyncRedisToCluster {
 	// private JedisSentinelPool jedisSentinelPool;
 
 	// @Scheduled(cron = "0/3 * * * * ?")
-	// @Scheduled(cron = "${syncRedisToClusterCron}")
+//	 @Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
 		try {
-			// keys("EFFECTIVE_RULE*");
-			// keys("OBSOLETE_RULE*");
-			String clusterMaatVersionStr = jedisCluster.get("MAAT_VERSION");
-			String redisMaatVersionStr = JedisUtils.get("MAAT_VERSION", redisStatisticsRealDBIndex);
-			if (clusterMaatVersionStr != null && !clusterMaatVersionStr.trim().equals("")) {
-				if (redisMaatVersionStr != null && !redisMaatVersionStr.trim().equals("")) {
-					Integer clusterMaatVersion = Integer.valueOf(clusterMaatVersionStr);
-					Integer redisMaatVersion = Integer.valueOf(redisMaatVersionStr);
-					if (redisMaatVersion < clusterMaatVersion) {// 如果主从库比集群库的版本号小则下发全量
-						logger.info("redis集群中的MAAT_VERSION为大于配置库中的MAAT_VERSION,开始执行全量同步");
-						syncAllData(redisMaatVersionStr);
-					} else if (redisMaatVersion > clusterMaatVersion) {// 获取增量的数据
-						logger.info("redis集群中的MAAT_VERSION为小于配置库中的MAAT_VERSION,开始执行增量同步,score是{}-{}",
-								clusterMaatVersion, +redisMaatVersion);
-						syncData(clusterMaatVersion.doubleValue(), redisMaatVersion.doubleValue(), redisMaatVersionStr);
+			String rpopRedisList = rpopRedisList("SyncRedisToCluster");
+			if (rpopRedisList != null) {//避免集群环境下同一秒钟所有的机器都执行这个定时任务
+				// keys("EFFECTIVE_RULE*");
+				// keys("OBSOLETE_RULE*");
+				String clusterMaatVersionStr = jedisCluster.get("MAAT_VERSION");
+				String redisMaatVersionStr = JedisUtils.get("MAAT_VERSION", redisStatisticsRealDBIndex);
+				if (clusterMaatVersionStr != null && !clusterMaatVersionStr.trim().equals("")) {
+					if (redisMaatVersionStr != null && !redisMaatVersionStr.trim().equals("")) {
+						Integer clusterMaatVersion = Integer.valueOf(clusterMaatVersionStr);
+						Integer redisMaatVersion = Integer.valueOf(redisMaatVersionStr);
+						if (redisMaatVersion < clusterMaatVersion) {// 如果主从库比集群库的版本号小则下发全量
+							logger.info("redis集群中的MAAT_VERSION为大于配置库中的MAAT_VERSION,开始执行全量同步");
+							syncAllData(redisMaatVersionStr);
+						} else if (redisMaatVersion > clusterMaatVersion) {// 获取增量的数据
+							logger.info("redis集群中的MAAT_VERSION为小于配置库中的MAAT_VERSION,开始执行增量同步,score是{}-{}",
+									clusterMaatVersion, +redisMaatVersion);
+							syncData(clusterMaatVersion.doubleValue(), redisMaatVersion.doubleValue(),
+									redisMaatVersionStr);
+						} else {
+							logger.info("redis集群中的MAAT_VERSION与配置库中的MAAT_VERSION相等,暂不执行配置同步操作");
+						}
 					} else {
-						logger.info("redis集群中的MAAT_VERSION与配置库中的MAAT_VERSION相等,暂不执行配置同步操作");
+						logger.info("redis配置库中MAAT_VERSION为null,但是redis集群中的MAAT_VERSION为{},集群与配置库的数据不同步,开始删除集群中的配置",
+								clusterMaatVersionStr);
+						delClusterData();
 					}
 				} else {
-					logger.info("redis配置库中MAAT_VERSION为null,但是redis集群中的MAAT_VERSION为{},集群与配置库的数据不同步,开始删除集群中的配置",
-							clusterMaatVersionStr);
-					delClusterData();
+					if (redisMaatVersionStr != null && !redisMaatVersionStr.trim().equals("")) {
+						logger.info("redis配置库中的MAAT_VERSION为{},redis集群中的MAAT_VERSION为null,开始执行全量同步",
+								redisMaatVersionStr);
+						syncAllData(redisMaatVersionStr);
+					} else {
+						logger.info("redis配置库中和redis集群中的MAAT_VERSION都为null,暂时不执行全量同步");
+					}
 				}
+				lpushRedisList("SyncRedisToCluster", "1");
 			} else {
-				if (redisMaatVersionStr != null && !redisMaatVersionStr.trim().equals("")) {
-					logger.info("redis配置库中的MAAT_VERSION为{},redis集群中的MAAT_VERSION为null,开始执行全量同步", redisMaatVersionStr);
-					syncAllData(redisMaatVersionStr);
-				} else {
-					logger.info("redis配置库中和redis集群中的MAAT_VERSION都为null,暂时不执行全量同步");
-				}
+				logger.info("没有从rediscluster中获取到SyncRedisToCluster的值,暂时不执行数据同步!");
 			}
 		} catch (Exception e) {
 			logger.error("同步配置库配置到3A-redisCluster失败,失败原因:{}", ExceptionUtil.getExceptionMsg(e));
@@ -188,6 +196,31 @@ public class SyncRedisToCluster {
 		jedisCluster.set("MAAT_VERSION", verion);
 		logger.info("更新了redis集群中的MAAT_VERSION,更新后值是{}", verion);
 		logger.info("向redis集群同步数据成功");
+	}
+
+	/**
+	 * 存储Redis队列，顺序存储
+	 * 
+	 * @param key
+	 *            redis键名
+	 * @param value
+	 *            键值
+	 */
+	public void lpushRedisList(String key, String value) {
+		// LPUSH SyncRedisToCluster "1"
+		jedisCluster.lpush(key, value);
+		logger.info("向redis集群的{}中lpush了一个值{}", key, value);
+	}
+
+	/**
+	 * 移除并获取列表最后一个元素
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public String rpopRedisList(String key) {
+		// RPOP SyncRedisToCluster
+		return jedisCluster.rpop(key);
 	}
 
 }

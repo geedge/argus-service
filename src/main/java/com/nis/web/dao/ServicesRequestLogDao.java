@@ -16,6 +16,8 @@ import com.nis.domain.restful.ServicesRequestLogBean;
 public interface ServicesRequestLogDao {
 
 	int insert(ServicesRequestLog record);
+	int insertConfigLog(ServicesRequestLog record);
+	int insertLogLog(ServicesRequestLog record);
 	
 	public void deleteById(Long id);
 

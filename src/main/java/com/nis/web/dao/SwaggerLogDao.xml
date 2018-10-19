@@ -5,7 +5,7 @@
 	<select id="findList" resultType="swaggerLog">
 		SELECT
 		a.*
-		FROM services_request_log a
+		FROM ${tableName} a
 		WHERE a.request_time BETWEEN
 		#{beginDate} AND #{endDate}
 

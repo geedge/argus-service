@@ -51,8 +51,13 @@ public class ServicesRequestLogService {
 	@Autowired
 	public ServicesRequestLogDao servicesRequestLogDao;
 
-	private void saveLog(ServicesRequestLog log) {
-		servicesRequestLogDao.insert(log);
+	private void saveLog(ServicesRequestLog log, boolean isPzLog) {
+		if (isPzLog) {
+			servicesRequestLogDao.insertConfigLog(log);
+		} else {
+			servicesRequestLogDao.insertLogLog(log);
+		}
+
 	}
 
 	/**
@@ -66,8 +71,7 @@ public class ServicesRequestLogService {
 	 * @param queryString
 	 *            request中的参数
 	 * @param contextPath
-	 *            request中的参数
-	 *            响应
+	 *            request中的参数 响应
 	 * @param operator
 	 *            操作人
 	 * @param version
@@ -82,13 +86,13 @@ public class ServicesRequestLogService {
 	 *            请求到达服务器时间
 	 * @param consumerTime
 	 *            耗时 void
-	 * @throws UnknownHostException 
+	 * @throws UnknownHostException
 	 * @exception @since
 	 *                1.0.0
 	 */
 	public void saveRequestLog(String requestAddr, String requestURI, String queryString, String contextPath,
 			String operator, String version, int opAction, Date opTime, Object content, Date requestTime,
-			long consumerTime, int businessCode, String exceptionInfo,String traceCode) {
+			long consumerTime, int businessCode, String exceptionInfo, String traceCode) {
 		logger.info("开始记录日志---");
 		logger.info("请求IP---" + requestAddr);
 		logger.info("请求路径---" + requestURI);
@@ -107,36 +111,37 @@ public class ServicesRequestLogService {
 		log.setTraceCode(traceCode);
 		log.setRequestURI(requestURI);
 		try {
-			if(Constants.SERVCER_HOST!=null){
+			if (Constants.SERVCER_HOST != null) {
 				log.setServerIp(Constants.SERVCER_HOST);
-			}else if(isWindows()){
-				Constants.SERVCER_HOST=InetAddress.getLocalHost().getHostAddress();
+			} else if (isWindows()) {
+				Constants.SERVCER_HOST = InetAddress.getLocalHost().getHostAddress();
 				log.setServerIp(Constants.SERVCER_HOST);
-			}else{
-				InetAddress ip=null;
-				boolean bFindIP=false;
-				Enumeration<NetworkInterface> netInterfaces=(Enumeration<NetworkInterface>)
-						NetworkInterface.getNetworkInterfaces();
-				while(netInterfaces.hasMoreElements()){
-					if(bFindIP){
+			} else {
+				InetAddress ip = null;
+				boolean bFindIP = false;
+				Enumeration<NetworkInterface> netInterfaces = (Enumeration<NetworkInterface>) NetworkInterface
+						.getNetworkInterfaces();
+				while (netInterfaces.hasMoreElements()) {
+					if (bFindIP) {
 						break;
 					}
-					NetworkInterface ni=(NetworkInterface)netInterfaces.nextElement();
-					Enumeration<InetAddress> ips=ni.getInetAddresses();
-					while(ips.hasMoreElements()){
-						ip=(InetAddress)ips.nextElement();
-						if(ip.isSiteLocalAddress()&&!ip.isLoopbackAddress()&&ip.getHostAddress().indexOf(":")==-1){
-							bFindIP=true;
+					NetworkInterface ni = (NetworkInterface) netInterfaces.nextElement();
+					Enumeration<InetAddress> ips = ni.getInetAddresses();
+					while (ips.hasMoreElements()) {
+						ip = (InetAddress) ips.nextElement();
+						if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress()
+								&& ip.getHostAddress().indexOf(":") == -1) {
+							bFindIP = true;
 							break;
 						}
 					}
 				}
-				if(null !=ip){
-					Constants.SERVCER_HOST=ip.getHostAddress();
+				if (null != ip) {
+					Constants.SERVCER_HOST = ip.getHostAddress();
 					log.setServerIp(ip.getHostAddress());
 				}
 			}
-			
+
 		} catch (UnknownHostException e) {
 			logger.error("无法获取当前服务器ip");
 			e.printStackTrace();
@@ -173,19 +178,25 @@ public class ServicesRequestLogService {
 			}
 
 		}
-		this.saveLog(log);
+		if (log.getRequestURI() == null || log.getRequestURI().toLowerCase().contains("service/log")) {
+			this.saveLog(log, false);
+		} else {
+			this.saveLog(log, true);
+		}
 		logger.info("记录日志完成---");
 	}
-	public boolean isWindows(){
-		boolean isWindows=false;
-		if(System.getProperty("os.name").toLowerCase().indexOf("windows")>-1){
-			isWindows=true;
+
+	public boolean isWindows() {
+		boolean isWindows = false;
+		if (System.getProperty("os.name").toLowerCase().indexOf("windows") > -1) {
+			isWindows = true;
 		}
 		return isWindows;
 	}
+
 	/**
-	 * 直接从数据源获取connection保存日志的方法，用saveLog()方法就行 save(这里用一句话描述这个方法的作用)
-	 * (这里描述这个方法适用条件 – 可选)
+	 * 直接从数据源获取connection保存日志的方法，用saveLog()方法就行 save(这里用一句话描述这个方法的作用) (这里描述这个方法适用条件
+	 * – 可选)
 	 * 
 	 * @param data
 	 * @throws IllegalArgumentException
@@ -302,7 +313,7 @@ public class ServicesRequestLogService {
 	public void deleteById(String id) {
 		String[] split = id.split(",");
 		for (String str : split) {
-			if(!str.equals("")){
+			if (!str.equals("")) {
 				servicesRequestLogDao.deleteById(Long.parseLong(str));
 			}
 		}
