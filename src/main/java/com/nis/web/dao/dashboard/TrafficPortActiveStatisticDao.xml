@@ -10,7 +10,7 @@
   
  <select id="getPortActiveList" resultMap="BaseResultMap">
     SELECT port ,SUM(sum) sum from galaxy.traffic_port_active_statistic
-	WHERE stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_port_active_statistic),INTERVAL 5 MINUTE)
-	GROUP BY port order by sum limit 0,10
+	WHERE stat_time = (SELECT MAX(stat_time) FROM galaxy.traffic_port_active_statistic)
+	GROUP BY port order by sum desc limit 0,10
   </select>
 </mapper>

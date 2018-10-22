@@ -19,15 +19,15 @@
  <select id="getTotalReportList" resultType="java.util.HashMap">
     SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
     SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM galaxy.ntc_total_report
-    where report_time >= DATE_SUB((SELECT MAX(report_time) FROM galaxy.ntc_total_report),INTERVAL 5 MINUTE) 
+    where report_time = (SELECT MAX(report_time) FROM galaxy.ntc_total_report)
   </select>
  <select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
     SELECT SUM(INOCTETS) inoctets ,SUM(OUTOCTETS) outoctets FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO
-    where RECV_TIME >= DATE_SUB((SELECT MAX(RECV_TIME) FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO),INTERVAL 4 MINUTE) 
+    where RECV_TIME = (SELECT MAX(RECV_TIME) FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO)
   </select>
+  <!-- 获取上个时间段的数据 -->
  <select id="getNetFlowPortInfoOld" resultType="java.util.HashMap">
     SELECT SUM(INOCTETS) inoctets ,SUM(OUTOCTETS) outoctets FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO
-    where RECV_TIME between DATE_SUB((SELECT MAX(RECV_TIME) FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO),INTERVAL 9 MINUTE) 
-    and DATE_SUB((SELECT MAX(RECV_TIME) FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO),INTERVAL 4 MINUTE)
+    where RECV_TIME = DATE_SUB((SELECT MAX(RECV_TIME) FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO),INTERVAL 5 MINUTE) 
   </select>
 </mapper>

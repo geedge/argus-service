@@ -19,17 +19,17 @@
   	SELECT SUM(link_num) count, IFNULL( website_service_id, 268435455 ) websiteServiceId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
   	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id
-	and t.web_id!=0
-	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 5 MINUTE)
-	GROUP BY u.website_service_id ORDER BY count limit 0,10
+	where t.web_id!=0
+	and t.stat_time = (SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0)
+	GROUP BY u.website_service_id ORDER BY count desc limit 0,10
   </select> 
   <!-- 根据主题将域名分类 主题列表 最近五分钟top10-->  <select id="getDomainByTopicList" resultType="java.util.HashMap">
   	SELECT SUM(link_num) count, IFNULL( topic_id, 268435455 ) topicId ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen 
   	FROM galaxy.TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id 
-	and t.web_id!=0
-	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 5 MINUTE)
-	GROUP BY u.topic_id ORDER BY count limit 0,10
+	where t.web_id!=0
+	and t.stat_time =(SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0)
+	GROUP BY u.topic_id ORDER BY count desc limit 0,10
 	
   </select> 
 	<!--获取上个时间段该网站站域名流量的数据量  -->
@@ -37,7 +37,7 @@
     SELECT SUM(link_num) count FROM galaxy.traffic_http_statistic t 
     LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id = u.id 
 	WHERE u.website_service_id=#{websiteServiceId}
-	and stat_time between DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 10 MINUTE) and DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic),INTERVAL 5 MINUTE)
+	and stat_time = DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 5 MINUTE)
   </select>
   
     <!--获取网站列表列表  -->
@@ -52,8 +52,8 @@
 	FROM galaxy.traffic_http_statistic t
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
-	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 5 MINUTE)
-	GROUP BY t.web_id ORDER BY count limit 0,10
+	and t.stat_time =(SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0)
+	GROUP BY t.web_id ORDER BY count desc limit 0,10
   </select>
   <!-- 根据主题分组获取子域名 -->
   <select id="getDomainByTopicId" resultType="java.util.HashMap">
@@ -61,8 +61,8 @@
 	FROM galaxy.traffic_http_statistic t
 	LEFT JOIN galaxy.ui_website_domain_topic u ON t.web_id=u.id
 	where u.topic_id=#{topicId}  
-	and t.stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 5 MINUTE)
-	GROUP BY t.web_id ORDER BY count limit 0,10
+	and t.stat_time = (SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0)
+	GROUP BY t.web_id ORDER BY count desc limit 0,10
   </select>
   
   <!-- 指定网站下的TOP10之外为others -->
@@ -77,6 +77,6 @@
 				 #{singleType}
 		</foreach>
 		</if>
-	and stat_time >= DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0),INTERVAL 5 MINUTE)
+	and stat_time =(SELECT MAX(stat_time) FROM galaxy.traffic_http_statistic WHERE web_id != 0)
   </select>
 </mapper>
