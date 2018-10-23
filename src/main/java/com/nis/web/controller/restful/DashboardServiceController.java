@@ -73,17 +73,11 @@ public class DashboardServiceController extends BaseRestController {
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			List<TrafficPortActiveStatistic> resultList = dashboardService.getPortActiveList();
-			
-			if (resultList!=null&&resultList.size() > 0) {
-				for (TrafficPortActiveStatistic port : resultList) {
-					Map map = new HashMap();
-					
-					map.put("port", port.getPort());
-					map.put("sum", port.getSum());
-					list.add(map);
-				}
+			List<Map> resultList = dashboardService.getPortActiveList();
+			if(resultList!=null&&resultList.size()>0) {
+				list=resultList;
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());

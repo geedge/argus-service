@@ -74,10 +74,32 @@ public class DashboardService extends BaseService{
 		
 		return totalReportList;
 	}
-	public List<TrafficPortActiveStatistic> getPortActiveList(){
+	/**
+	 * 当前时间五分钟数据
+	 * @return
+	 */
+	public List<Map> getPortActiveList(){
+		List<Map> list = new ArrayList<Map>();
 		List<TrafficPortActiveStatistic> portActiveList = trafficPortActiveStatisticDao.getPortActiveList();
-		
-		return portActiveList;
+		//上个时间五分钟数据
+		if(portActiveList!=null&&portActiveList.size()>0) {
+			for (TrafficPortActiveStatistic port : portActiveList) {
+				if(port.getPort()!=null) {
+					Map map = new HashMap();
+					
+					map.put("port", port.getPort());
+					map.put("sum", port.getSum());
+					TrafficPortActiveStatistic portActiveOld = trafficPortActiveStatisticDao.getPortActiveOld(port.getPort());
+					if(portActiveOld!=null&&portActiveOld.getSum()!=null){
+						map.put("preSum",portActiveOld.getSum());
+					}else{
+						map.put("preSum",0);
+					}
+					list.add(map);
+				}
+			}
+		}
+		return list;
 	}
 	
 	/**
