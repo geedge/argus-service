@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/include/taglib.jsp"%>
 <html>
 <head>
-	<title>swagger日志管理</title>	
+	<title>业务行为日志</title>
 	<script type="text/javascript">
 		$(document).ready(function(){
 // 			$(".tooltips").tooltip();
@@ -15,6 +15,14 @@
 	    	return false;
 	    }
 	</script>
+	<style type="text/css">
+		.popover {
+			width:auto;
+			max-width:800px;
+		}
+
+	</style>
+
 </head>
 <body>
 <!-- 	<ul class="nav nav-tabs"> -->
@@ -74,8 +82,8 @@
 <%-- 					 data-placement="top">	${fn:substring(swaggerLog.requestContent,0,20) }</a>	 --%>
 
 
-						<a  title="${fn:escapeXml(swaggerLog.requestContent) }" data-container="body" data-toggle="popover"
-						 data-placement="bottom">	${fn:substring(swaggerLog.requestContent,0,20) }</a>	
+						<a  data-title="Info"  data-html="true" data-content="<div style='word-wrap:break-word;word-break:break-all;'>${fns:escapeHtml(swaggerLog.requestContent) }</div>" mdata-container="body" data-toggle="popover"
+						 data-placement="bottom">	${fn:substring(swaggerLog.requestContent,0,40) }</a>
 				</td>
 				<td>${swaggerLog.traceCode}</td>
 				<td>${swaggerLog.businessCode}</td>
