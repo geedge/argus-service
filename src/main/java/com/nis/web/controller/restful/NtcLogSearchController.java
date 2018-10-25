@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.zdjizhi.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +24,7 @@ import com.nis.domain.restful.NtcFtpLog;
 import com.nis.domain.restful.NtcHttpLog;
 import com.nis.domain.restful.NtcIpLog;
 import com.nis.domain.restful.NtcIpsecLog;
+import com.nis.domain.restful.NtcKeywordsUrlLog;
 import com.nis.domain.restful.NtcL2tpLog;
 import com.nis.domain.restful.NtcMailLog;
 import com.nis.domain.restful.NtcOpenvpnLog;
@@ -35,11 +35,10 @@ import com.nis.domain.restful.NtcSslLog;
 import com.nis.domain.restful.NtcStreamingMediaLog;
 import com.nis.domain.restful.NtcVoipLog;
 import com.nis.restful.RestServiceException;
-import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
-import com.nis.util.LogJDBCByDruid;
 import com.nis.util.JsonMapper;
+import com.nis.util.LogJDBCByDruid;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.HiveSqlService;
@@ -47,6 +46,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.NtcLogService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * @ClassName:NtcLogSearchController
@@ -1076,6 +1076,60 @@ public class NtcLogSearchController extends BaseRestController {
 			throw ((RestServiceException) e);
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流媒体协议日志检索成功",
+				logPage, 0);
+	}
+	
+	@RequestMapping(value = "/ntcKeywordsUrlLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "NTC关键字转URL日志查询", httpMethod = "GET", notes = "对日志功能“NTC关键字转URL日志”提供数据基础查询服务")
+	public Map<String, ?> ntcKeywordsUrlLogs(Page page, NtcKeywordsUrlLog ntcKeywordsUrlLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
+				request, null);
+		
+		Page<NtcStreamingMediaLog> logPage = null;
+		try {
+			resetTime(ntcKeywordsUrlLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcKeywordsUrlLog, NtcKeywordsUrlLog.class, page);
+			logPage = new Page<NtcStreamingMediaLog>();
+			logPage.setPageNo(page.getPageNo());
+			logPage.setPageSize(page.getPageSize());
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcStreamingMediaLog.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "found_Time";
+			}
+			String sql = HiveSqlService.getSql(page, ntcKeywordsUrlLog,
+					getTableName(NtcKeywordsUrlLog.class.getSimpleName() + "HiveTable", "NTC_KEYWORDS_URL_LOG"),
+					getCol2Col(), orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamingMediaLog.class, "foundTime",
+					"recvTime");
+			if (tableMapping == null) {
+				logPage.setList(new ArrayList());
+			} else {
+				List list = tableMapping.get("obj");
+				if (list.size() > 0) {
+					String jsonString = JsonMapper.toJsonString(list);
+					List<NtcStreamingMediaLog> List = (java.util.List<NtcStreamingMediaLog>) JsonMapper.fromJsonList(jsonString,
+							NtcStreamingMediaLog.class);
+					logPage.setList(List);
+					logPage.setCount(List.size());
+					
+				} else {
+					logPage.setList(new ArrayList());
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "NTC关键字转URL日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "NTC关键字转URL日志检索成功",
 				logPage, 0);
 	}
 	
