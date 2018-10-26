@@ -1087,23 +1087,23 @@ public class NtcLogSearchController extends BaseRestController {
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
 				request, null);
 		
-		Page<NtcStreamingMediaLog> logPage = null;
+		Page<NtcKeywordsUrlLog> logPage = null;
 		try {
 			resetTime(ntcKeywordsUrlLog);
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcKeywordsUrlLog, NtcKeywordsUrlLog.class, page);
-			logPage = new Page<NtcStreamingMediaLog>();
+			logPage = new Page<NtcKeywordsUrlLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcStreamingMediaLog.class.getSimpleName(), page.getOrderBy());
+				orderBy = Page.getOrderBySql(NtcKeywordsUrlLog.class.getSimpleName(), page.getOrderBy());
 			} else {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcKeywordsUrlLog,
 					getTableName(NtcKeywordsUrlLog.class.getSimpleName() + "HiveTable", "NTC_KEYWORDS_URL_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamingMediaLog.class, "foundTime",
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcKeywordsUrlLog.class, "foundTime",
 					"recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
@@ -1111,8 +1111,8 @@ public class NtcLogSearchController extends BaseRestController {
 				List list = tableMapping.get("obj");
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
-					List<NtcStreamingMediaLog> List = (java.util.List<NtcStreamingMediaLog>) JsonMapper.fromJsonList(jsonString,
-							NtcStreamingMediaLog.class);
+					List<NtcKeywordsUrlLog> List = (java.util.List<NtcKeywordsUrlLog>) JsonMapper.fromJsonList(jsonString,
+							NtcKeywordsUrlLog.class);
 					logPage.setList(List);
 					logPage.setCount(List.size());
 					

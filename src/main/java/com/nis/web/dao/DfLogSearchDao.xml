@@ -46,6 +46,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 	</resultMap>
 
 	<resultMap id="NtcHttpLogMap" type="com.nis.domain.restful.NtcHttpLog">
@@ -73,6 +77,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="req_hdr_file" jdbcType="VARCHAR" property="reqHdrFile" />
@@ -112,6 +120,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="rd" jdbcType="INTEGER" property="rd" />
 		<result column="qr" jdbcType="INTEGER" property="qr" />
@@ -153,6 +165,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="mail_proto" jdbcType="VARCHAR" property="mailProto" />
 		<result column="mail_from" jdbcType="VARCHAR" property="mailFrom" />
@@ -189,6 +205,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="sni" jdbcType="VARCHAR" property="sni" />
@@ -223,6 +243,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
 		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
@@ -255,6 +279,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="tunnel_type" jdbcType="INTEGER" property="tunnelType" />
 		<result column="encrypt_mode" jdbcType="INTEGER" property="encryptMode" />
@@ -286,6 +314,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="encrypt_mode" jdbcType="VARCHAR" property="encryptMode" />
@@ -319,6 +351,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="ex_protocol" jdbcType="INTEGER" property="exProtocol" />
 		<result column="isakmp_mode" jdbcType="INTEGER" property="isakmpMode" />
@@ -350,6 +386,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="version" jdbcType="VARCHAR" property="version" />
 		<result column="host_key" jdbcType="VARCHAR" property="hostKey" />
@@ -384,6 +424,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 
 		<result column="ftp_url" jdbcType="VARCHAR" property="ftpUrl" />
 		<result column="ftp_content" jdbcType="VARCHAR" property="ftpContent" />
@@ -414,6 +458,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="label_proto_id" jdbcType="INTEGER" property="labelProtoId" />
 		<result column="label_proto_source" jdbcType="INTEGER" property="labelProtoSource" />
@@ -448,6 +496,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="attack_type" jdbcType="INTEGER" property="attackType" />
 		<result column="attack_start_time" jdbcType="TIMESTAMP" property="attackStartTime" />
@@ -483,6 +535,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="label_proto_id" jdbcType="INTEGER" property="labelProtoId" />
 		<result column="label_os_id" jdbcType="INTEGER" property="labelOsId" />
@@ -519,6 +575,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -553,6 +613,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -587,6 +651,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -621,6 +689,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -656,6 +728,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -697,6 +773,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -739,6 +819,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -774,6 +858,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -808,6 +896,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -842,6 +934,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -876,6 +972,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -911,6 +1011,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -952,6 +1056,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="req_line" jdbcType="VARCHAR" property="reqLine" />
@@ -993,6 +1101,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="p2p_proto" jdbcType="VARCHAR" property="p2pProto" />
 		<result column="p2p_file_id" jdbcType="VARCHAR" property="p2pFileId" />
@@ -1023,6 +1135,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="type" jdbcType="INTEGER" property="type" />
 		<result column="as_num" jdbcType="VARCHAR" property="asNum" />
@@ -1054,6 +1170,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -1088,6 +1208,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -1122,6 +1246,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -1156,6 +1284,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="duation" jdbcType="VARCHAR" property="duation" />
 		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
@@ -1190,6 +1322,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="protocol" jdbcType="VARCHAR" property="protocol" />
@@ -1220,6 +1356,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="pid" jdbcType="VARCHAR" property="pid" />
 		<result column="url" jdbcType="VARCHAR" property="url" />
@@ -1254,6 +1394,10 @@
 		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
 		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
 		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="website" jdbcType="VARCHAR" property="website" />

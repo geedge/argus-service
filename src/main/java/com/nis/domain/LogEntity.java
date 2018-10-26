@@ -89,6 +89,16 @@ public abstract class LogEntity<T> implements Serializable {
 	@ApiModelProperty(value = "现场日志文件地址", required = true)
 	protected String sceneFile;
 	
+	@ApiModelProperty(value = "串联设备链路号", required = true)
+	protected Long linkId;	
+	@ApiModelProperty(value = "原始二层封装格式", required = true)
+	protected Integer encapType;
+	@ApiModelProperty(value = "MAC_IN_MAC的内层源MAC", required = true)
+	protected String innerSmac;
+	@ApiModelProperty(value = "MAC_IN_MAC的内层目标MAC", required = true)
+	protected String innerDmac;
+	
+	
 	protected String searchCfgId;//配置id
 	protected String searchTransProto;//协议类型
 	protected String searchDIp;//服务端ip地址
@@ -521,5 +531,38 @@ public abstract class LogEntity<T> implements Serializable {
 	public String getSceneFile() {
 		return sceneFile;
 	}
+
+	public Long getLinkId() {
+		return linkId;
+	}
+
+	public void setLinkId(Long linkId) {
+		this.linkId = linkId;
+	}
+
+	public Integer getEncapType() {
+		return encapType;
+	}
+
+	public void setEncapType(Integer encapType) {
+		this.encapType = encapType;
+	}
+
+	public String getInnerSmac() {
+		return innerSmac;
+	}
+
+	public void setInnerSmac(String innerSmac) {
+		this.innerSmac = innerSmac;
+	}
+
+	public String getInnerDmac() {
+		return innerDmac;
+	}
+
+	public void setInnerDmac(String innerDmac) {
+		this.innerDmac = innerDmac;
+	}
+	
 	
 }
