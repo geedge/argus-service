@@ -1445,7 +1445,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	}
 
 	private void addTmpReion(List<Map<String, String>> regionMapList, MaatXmlConfig maatXmlConfig,
-			Transaction transaction, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex, Integer service) {
+			Transaction transaction, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex, Integer service1) {
 		if (regionMapList != null && regionMapList.size() > 0) {
 			for (Map<String, String> map : regionMapList) {
 				List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
@@ -1488,8 +1488,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 						for (String valStr : valSplit) {
 							if (!StringUtils.isEmpty(valStr) && valStr.trim().startsWith("[")) {
 								valStr = valStr.trim().replace("[", "").replace("]", "");
-								if (service != null && service.intValue() == 1028
-										&& valStr.toLowerCase().equals("op_time") && type == 12) {
+								// if (service != null && service.intValue() == 1028
+								// && valStr.toLowerCase().equals("op_time") && type == 12) {
+								if (valStr.toLowerCase().equals("op_time") && type == 12) {
 									String user_region = map.get("user_region");
 									valBF.append(user_region + "\t");
 								}

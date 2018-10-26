@@ -18,8 +18,11 @@ public class TrafficNmsServerStatisticService {
 	public void saveNmsInfo(List<TrafficNmsServerStatistic> trafficNmsServerList) {
 		for (TrafficNmsServerStatistic trafficNmsServerStatistic : trafficNmsServerList) {
 			trafficNmsServerStatisticDao.insert(trafficNmsServerStatistic);
-			trafficNmsServerStatisticDao.insertAbnormalMachine(trafficNmsServerStatistic.getId(),
-					trafficNmsServerStatistic.getAbnormalMachineList());
+			if (trafficNmsServerStatistic.getAbnormalMachineList() != null
+					&& trafficNmsServerStatistic.getAbnormalMachineList().size() > 0) {
+				trafficNmsServerStatisticDao.insertAbnormalMachine(trafficNmsServerStatistic.getId(),
+						trafficNmsServerStatistic.getAbnormalMachineList());
+			}
 		}
 	}
 }

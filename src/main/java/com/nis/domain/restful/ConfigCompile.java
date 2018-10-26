@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.nis.util.JsonDateDeserializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
@@ -50,11 +52,11 @@ public class ConfigCompile implements Serializable {
 	private Integer doLog;
 	@ApiModelProperty(value = "生效范围", required = true)
 	private String effectiveRange;
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty(value = "开始时间", required = true)
 	private Date startTime;
 	@ApiModelProperty(value = "结束时间", required = true)
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date endTime;
 	@ApiModelProperty(value = "用户自定义域", required = true)
 	private String userRegion;
@@ -65,7 +67,7 @@ public class ConfigCompile implements Serializable {
 	@ApiModelProperty(value = "父配置ID", required = true)
 	private Long fatherCfgId;
 	@ApiModelProperty(value = "操作时间", required = true)
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date opTime;
 
 	@ApiModelProperty(value = "编译分组关系列表", required = true)
@@ -79,13 +81,13 @@ public class ConfigCompile implements Serializable {
 
 	@ApiModelProperty(value = "数值域分组列表", required = true)
 	private List<NumRegion> numRegionList;
-	
+
 	@ApiModelProperty(value = "摘要域分组列表", required = true)
 	private List<DigestRegion> digestRegionList;
-	
+
 	@ApiModelProperty(value = "生效范围IP域分组列表", required = true)
 	private List<IpRegion> ipClientRangeList;
-	
+
 	public Long getCompileId() {
 		return compileId;
 	}
@@ -193,10 +195,10 @@ public class ConfigCompile implements Serializable {
 		this.effectiveRange = effectiveRange;
 	}
 
-
 	/**
 	 * @return startTime
 	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public Date getStartTime() {
 		return startTime;
 	}
@@ -205,6 +207,7 @@ public class ConfigCompile implements Serializable {
 	 * @param startTime
 	 *            要设置的 startTime
 	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setStartTime(Date startTime) {
 		this.startTime = startTime;
 	}
@@ -212,6 +215,7 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return endTime
 	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public Date getEndTime() {
 		return endTime;
 	}
@@ -220,6 +224,7 @@ public class ConfigCompile implements Serializable {
 	 * @param endTime
 	 *            要设置的 endTime
 	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
@@ -287,6 +292,7 @@ public class ConfigCompile implements Serializable {
 	/**
 	 * @return opTime
 	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public Date getOpTime() {
 		return opTime;
 	}
@@ -295,6 +301,7 @@ public class ConfigCompile implements Serializable {
 	 * @param opTime
 	 *            要设置的 opTime
 	 */
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setOpTime(Date opTime) {
 		this.opTime = opTime;
 	}
@@ -359,7 +366,7 @@ public class ConfigCompile implements Serializable {
 	public void setNumRegionList(List<NumRegion> numRegionList) {
 		this.numRegionList = numRegionList;
 	}
-	
+
 	public List<DigestRegion> getDigestRegionList() {
 		return digestRegionList;
 	}
@@ -391,5 +398,5 @@ public class ConfigCompile implements Serializable {
 	public void setIpClientRangeList(List<IpRegion> ipClientRangeList) {
 		this.ipClientRangeList = ipClientRangeList;
 	}
-	
+
 }

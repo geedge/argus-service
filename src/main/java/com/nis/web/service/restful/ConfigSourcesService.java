@@ -864,7 +864,7 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
 			}
-			maatConfig.setService(groupReuse.getService());
+			//maatConfig.setService(groupReuse.getService());
 			list.add(maatConfig);
 		}
 	
