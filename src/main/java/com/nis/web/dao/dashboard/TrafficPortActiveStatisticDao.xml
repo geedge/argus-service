@@ -7,16 +7,22 @@
     <result column="sum" jdbcType="BIGINT" property="sum" />
     <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
   </resultMap>
+  
+  
+  <!-- 获取最大时间 -->
+	<select id="getMaxStatTime" resultMap="BaseResultMap">
+		SELECT MAX(stat_time) statTime FROM galaxy.traffic_port_active_statistic
+	</select>
   <!-- 获取当前时间五分钟数据 -->
  <select id="getPortActiveList" resultMap="BaseResultMap">
     SELECT port ,SUM(sum) sum from galaxy.traffic_port_active_statistic
-	WHERE stat_time = (SELECT MAX(stat_time) FROM galaxy.traffic_port_active_statistic)
+	WHERE stat_time = #{statTime}
 	GROUP BY port order by sum desc limit 0,10
   </select>
   <!-- 获取上个时间段的数据 -->
-  <select id="getPortActiveOld" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="getPortActiveOld" resultMap="BaseResultMap">
   	SELECT SUM(sum) sum from galaxy.traffic_port_active_statistic
-	WHERE port=#{port} and stat_time = DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_port_active_statistic),INTERVAL 5 MINUTE) 
+	WHERE port=#{port} and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE) 
 	GROUP BY port ORDER BY sum DESC limit 0,10
   </select>
 </mapper>

@@ -17,38 +17,41 @@
     stat_time
   </sql>
   <!-- 活跃IPTOP列表 -->
-  <select id="getIpList" resultMap="BaseResultMap">
+<!--   <select id="getIpList" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List"/>
     from galaxy.traffic_ip_active_statistic
+  </select> -->
+    <!-- IP流量统计五分钟-->
+  <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficIpActiveStatistic">
+  	SELECT MAX(stat_time) statTime FROM galaxy.traffic_ip_active_statistic
+  </select>
+    <!-- IP流量统计五分钟-->
+  <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
+  	SELECT ip_addr ipAddr, SUM(link_num) linkNum FROM galaxy.traffic_ip_active_statistic
+	WHERE stat_time = #{statTime}
+	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>
   
     <!-- IP流量统计一小时内每隔五分钟数据-->
-  <select id="ipActiveFiveMinute" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
 	select IFNULL(p.maxNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
-	(select date_sub(date_format((select MAX(stat_time) from traffic_ip_active_statistic), '%Y-%m-%d %H:%i' ),interval @mycnt :=@mycnt + 5 MINUTE) min5
+	(select date_sub(#{statTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
 	from (SELECT @mycnt:=-5) m, traffic_ip_active_statistic limit 12) a
 	LEFT JOIN (
 	SELECT date_format(stat_time, '%Y-%m-%d %H:%i') timestamp, max(link_num) maxNum FROM traffic_ip_active_statistic 
-	WHERE ip_addr=#{ipAddr} AND stat_time > DATE_SUB((select MAX(stat_time) from traffic_ip_active_statistic), INTERVAL 1 HOUR) 
+	WHERE ip_addr=#{ipAddr} AND stat_time > DATE_SUB(#{statTime,jdbcType=TIMESTAMP}, INTERVAL 1 HOUR) 
 	GROUP by timestamp
 	) p 
 	on date_format(p.timestamp,'%Y-%m-%d %H:%i')=date_format(a.min5,'%Y-%m-%d %H:%i')
 	ORDER by time
   </select>
     <!-- IP流量统计一小时-->
-  <select id="ipActiveOneHour" parameterType="java.lang.String" resultType="java.util.HashMap">
+  <select id="ipActiveOneHour" resultType="java.util.HashMap">
 	SELECT ip_addr ipAddr,area_id areaId, link_num linkNum ,c2s_pkt_num c2sPktNum,s2c_pkt_num s2cPktNum,c2s_byte_len c2sByteLen,s2c_byte_len s2cByteLen,date_format(stat_time, '%Y-%m-%d %H:%i:%s') statTime FROM galaxy.traffic_ip_active_statistic
 	WHERE ip_addr=#{ipAddr}
-	and stat_time > DATE_SUB((SELECT MAX(stat_time) FROM galaxy.traffic_ip_active_statistic),INTERVAL 1 HOUR)
+	and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
 	ORDER BY linkNum DESC LIMIT 1
-  </select>
-  
-    <!-- IP流量统计五分钟-->
-  <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
-  	SELECT ip_addr ipAddr, SUM(link_num) linkNum ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_ip_active_statistic
-	WHERE stat_time = (SELECT MAX(stat_time) FROM galaxy.traffic_ip_active_statistic)
-	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>
   
 </mapper>

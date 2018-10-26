@@ -1,5 +1,6 @@
 package com.nis.web.dao.dashboard;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -9,20 +10,22 @@ import com.nis.domain.restful.dashboard.TrafficUaStatistic;
 import com.nis.web.dao.MyBatisDao;
 @MyBatisDao
 public interface TrafficUaStatisticDao {
-
-    List<TrafficUaStatistic> systemList();
-
-	List<Map> getBrowserBySystem(@Param("osType") Integer osType);
-
-	List<TrafficUaStatistic> browserList();
-
-	List<Map> getSystemBybrowser(@Param("bsType") Integer bsType);
 	
-	Map systemOthers(@Param("bsType") List bsType,@Param("osType") Integer osType);
+	TrafficUaStatistic getMaxStatTime();
 
-	Map browserOthers(@Param("osType") List osType,@Param("bsType") Integer bsType);
+    List<TrafficUaStatistic> systemList(@Param("statTime") Date statTime);
+
+	List<Map> getBrowserBySystem(@Param("osType") Integer osType,@Param("statTime") Date statTime);
+
+	List<TrafficUaStatistic> browserList(@Param("statTime") Date statTime);
+
+	List<Map> getSystemBybrowser(@Param("bsType") Integer bsType,@Param("statTime") Date statTime);
 	
-	Integer preSystemListCount(@Param("osType") Integer osType);
+	Map systemOthers(@Param("bsType") List bsType,@Param("osType") Integer osType,@Param("statTime") Date statTime);
 
-	Integer preBrowserListCount(@Param("bsType") Integer bsType);
+	Map browserOthers(@Param("osType") List osType,@Param("bsType") Integer bsType,@Param("statTime") Date statTime);
+	
+	Integer preSystemListCount(@Param("osType") Integer osType,@Param("statTime") Date statTime);
+
+	Integer preBrowserListCount(@Param("bsType") Integer bsType,@Param("statTime") Date statTime);
 }

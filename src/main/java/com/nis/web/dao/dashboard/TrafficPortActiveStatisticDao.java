@@ -1,5 +1,6 @@
 package com.nis.web.dao.dashboard;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import com.nis.web.dao.MyBatisDao;
 @MyBatisDao
 public interface TrafficPortActiveStatisticDao {
 
-	List<TrafficPortActiveStatistic> getPortActiveList();
-	TrafficPortActiveStatistic getPortActiveOld(@Param("port")Integer port);
+	TrafficPortActiveStatistic getMaxStatTime();
+	List<TrafficPortActiveStatistic> getPortActiveList(@Param("statTime")Date statTime);
+	TrafficPortActiveStatistic getPortActiveOld(@Param("port")Integer port,@Param("statTime")Date statTime);
 }
