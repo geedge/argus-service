@@ -641,6 +641,15 @@ public class Page<T> {
 	public int getMaxResults(){
 		return getPageSize();
 	}
+	
+	
+	
+	
+	public void setLast(int last) {
+		this.last = last;
+	}
+
+
 	/**
 	 * @Title: getFiledsSql
 	 * @Description: 将fields的属性名称替换为字段名称

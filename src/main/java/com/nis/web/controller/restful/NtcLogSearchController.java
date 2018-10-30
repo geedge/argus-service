@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
+import com.nis.domain.restful.DkBehaviorLog;
 import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcDdosLog;
@@ -61,7 +62,7 @@ import com.zdjizhi.utils.StringUtil;
 public class NtcLogSearchController extends BaseRestController {
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
-	
+
 	@Autowired
 	protected NtcLogService ntcLogService;
 
@@ -70,8 +71,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcIpLogs(Page page, NtcIpLog ntcIpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 		Page<NtcIpLog> ntcIpLogPage = null;
 		try {
 			resetTime(ntcIpLog);
@@ -85,38 +86,39 @@ public class NtcLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-//			ResultSet rs = HiveSqlService.getResultSet(page, ntcIpLog,
-//					getTableName(NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
-//					getCol2Col(), orderBy, null);
-//			Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs, NtcIpLog.class, "foundTime",
-//					"recvTime");
+			// ResultSet rs = HiveSqlService.getResultSet(page, ntcIpLog,
+			// getTableName(NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+			// getCol2Col(), orderBy, null);
+			// Map<String, List> tableMapping = HiveJDBC.tableMapping(page, null, rs,
+			// NtcIpLog.class, "foundTime",
+			// "recvTime");
 			String sql = HiveSqlService.getSql(page, ntcIpLog,
-					getTableName(NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null,sql , NtcIpLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcIpLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcIpLogPage.setList(new ArrayList<NtcIpLog>());
 			} else {
 				List<Object> list = new ArrayList<Object>();
 				list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcIpLog> List = (java.util.List<NtcIpLog>) JsonMapper.fromJsonList(jsonString,
 							NtcIpLog.class);
 					ntcIpLogPage.setList(List);
 					ntcIpLogPage.setCount(List.size());
-//					ntcIpLogPage
-//							.setCount(
-//									HiveSqlService.getHivePageCount(ntcIpLog, null,
-//											getTableName(
-//													NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
-//											getCol2Col(), null));
+					// ntcIpLogPage
+					// .setCount(
+					// HiveSqlService.getHivePageCount(ntcIpLog, null,
+					// getTableName(
+					// NtcIpLog.class.getSimpleName() + "HiveTable", "ntc_ip_log"),
+					// getCol2Col(), null));
 				} else {
 					ntcIpLogPage.setList(new ArrayList());
 					ntcIpLogPage.setCount(0L);
@@ -140,8 +142,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcHttpLogs(Page page, NtcHttpLog ntcHttpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcHttpLog> ntcHttpLogPage = null;
 		try {
@@ -157,19 +159,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcHttpLog,
-					getTableName(NtcHttpLog.class.getSimpleName() + "HiveTable", "ntc_http_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcHttpLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcHttpLog.class.getSimpleName() + "HiveTable", "ntc_http_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcHttpLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcHttpLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcHttpLog> List = (java.util.List<NtcHttpLog>) JsonMapper.fromJsonList(jsonString,
@@ -200,8 +202,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcDnsLogs(Page page, NtcDnsLog ntcDnsLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcDnsLog> ntcDnsLogPage = null;
 		try {
@@ -217,19 +219,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcDnsLog,
-					getTableName(NtcDnsLog.class.getSimpleName() + "HiveTable", "ntc_dns_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcDnsLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcDnsLog.class.getSimpleName() + "HiveTable", "ntc_dns_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcDnsLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcDnsLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcDnsLog> List = (java.util.List<NtcDnsLog>) JsonMapper.fromJsonList(jsonString,
@@ -260,8 +262,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcMailLogs(Page page, NtcMailLog ntcMailLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcMailLog> ntcMailLogPage = null;
 		try {
@@ -277,19 +279,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcMailLog,
-					getTableName(NtcMailLog.class.getSimpleName() + "HiveTable", "ntc_mail_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcMailLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcMailLog.class.getSimpleName() + "HiveTable", "ntc_mail_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcMailLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcMailLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcMailLog> List = (java.util.List<NtcMailLog>) JsonMapper.fromJsonList(jsonString,
@@ -320,8 +322,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcSslLogs(Page page, NtcSslLog ntcSslLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcSslLog> ntcSslLogPage = null;
 		try {
@@ -337,19 +339,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcSslLog,
-					getTableName(NtcSslLog.class.getSimpleName() + "HiveTable", "ntc_ssl_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcSslLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcSslLog.class.getSimpleName() + "HiveTable", "ntc_ssl_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcSslLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcSslLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcSslLog> List = (java.util.List<NtcSslLog>) JsonMapper.fromJsonList(jsonString,
@@ -380,8 +382,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcPptpLogs(Page page, NtcPptpLog ntcPptpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcPptpLog> ntcPptpLogPage = null;
 		try {
@@ -397,19 +399,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcPptpLog,
-					getTableName(NtcPptpLog.class.getSimpleName() + "HiveTable", "ntc_pptp_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcPptpLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcPptpLog.class.getSimpleName() + "HiveTable", "ntc_pptp_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcPptpLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcPptpLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcPptpLog> List = (java.util.List<NtcPptpLog>) JsonMapper.fromJsonList(jsonString,
@@ -439,8 +441,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcL2tpLogs(Page page, NtcL2tpLog ntcL2tpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcL2tpLog> ntcL2tpLogPage = null;
 		try {
@@ -456,19 +458,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcL2tpLog,
-					getTableName(NtcL2tpLog.class.getSimpleName() + "HiveTable", "ntc_l2tp_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcL2tpLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcL2tpLog.class.getSimpleName() + "HiveTable", "ntc_l2tp_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcL2tpLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcL2tpLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcL2tpLog> List = (java.util.List<NtcL2tpLog>) JsonMapper.fromJsonList(jsonString,
@@ -499,8 +501,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcOpenvpnLogs(Page page, NtcOpenvpnLog ntcOpenvpnLog, Model model,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcOpenvpnLog> ntcOpenvpnLogPage = null;
 		try {
@@ -516,19 +518,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcOpenvpnLog,
-					getTableName(NtcOpenvpnLog.class.getSimpleName() + "HiveTable", "ntc_openvpn_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcOpenvpnLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcOpenvpnLog.class.getSimpleName() + "HiveTable", "ntc_openvpn_log"), getCol2Col(),
+					orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcOpenvpnLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcOpenvpnLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcOpenvpnLog> List = (java.util.List<NtcOpenvpnLog>) JsonMapper.fromJsonList(jsonString,
@@ -559,8 +561,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcIpsecLogs(Page page, NtcIpsecLog ntcIpsecLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcIpsecLog> ntcIpsecLogPage = null;
 		try {
@@ -576,19 +578,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcIpsecLog,
-					getTableName(NtcIpsecLog.class.getSimpleName() + "HiveTable", "ntc_ipsec_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcIpsecLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcIpsecLog.class.getSimpleName() + "HiveTable", "ntc_ipsec_log"), getCol2Col(),
+					orderBy, null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcIpsecLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcIpsecLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcIpsecLog> List = (java.util.List<NtcIpsecLog>) JsonMapper.fromJsonList(jsonString,
@@ -619,8 +621,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcSshLogs(Page page, NtcSshLog ntcSshLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcSshLog> ntcSshLogPage = null;
 		try {
@@ -636,19 +638,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcSshLog,
-					getTableName(NtcSshLog.class.getSimpleName() + "HiveTable", "ntc_ssh_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcSshLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcSshLog.class.getSimpleName() + "HiveTable", "ntc_ssh_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcSshLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcSshLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcSshLog> List = (java.util.List<NtcSshLog>) JsonMapper.fromJsonList(jsonString,
@@ -679,8 +681,8 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcFtpLogs(Page page, NtcFtpLog ntcFtpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcFtpLog> ntcFtpLogPage = null;
 		try {
@@ -696,19 +698,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcFtpLog,
-					getTableName(NtcFtpLog.class.getSimpleName() + "HiveTable", "ntc_ftp_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcFtpLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcFtpLog.class.getSimpleName() + "HiveTable", "ntc_ftp_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcFtpLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcFtpLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcFtpLog> List = (java.util.List<NtcFtpLog>) JsonMapper.fromJsonList(jsonString,
@@ -732,13 +734,14 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "FTP日志检索成功",
 				ntcFtpLogPage, 0);
 	}
+
 	@RequestMapping(value = "/ntcAppLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "App日志查询", httpMethod = "GET", notes = "对应配置为“App管理”，存储动作为阻断与监测的命中日志。对日志功能“APP策略日志”提供数据基础查询服务")
 	public Map<String, ?> ntcAppLogs(Page page, NtcAppLog ntcAppLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcAppLog> ntcAppLogPage = null;
 		try {
@@ -754,19 +757,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcAppLog,
-					getTableName(NtcAppLog.class.getSimpleName() + "HiveTable", "ntc_app_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcAppLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcAppLog.class.getSimpleName() + "HiveTable", "ntc_app_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcAppLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcAppLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcAppLog> List = (java.util.List<NtcAppLog>) JsonMapper.fromJsonList(jsonString,
@@ -790,13 +793,14 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App日志检索成功",
 				ntcAppLogPage, 0);
 	}
+
 	@RequestMapping(value = "/ntcDdosLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "DDos日志查询", httpMethod = "GET", notes = "对应配置为“DDOS日志监控”，存储动作为丢弃的命中日志。对日志功能“DDOS日志监控”提供数据基础查询服务")
 	public Map<String, ?> ntcDdosLogs(Page page, NtcDdosLog ntcDdosLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcDdosLog> ntcDdosLogPage = null;
 		try {
@@ -812,19 +816,19 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcDdosLog,
-					getTableName(NtcDdosLog.class.getSimpleName() + "HiveTable", "ntc_ddos_log"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcDdosLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcDdosLog.class.getSimpleName() + "HiveTable", "ntc_ddos_log"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcDdosLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcDdosLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcDdosLog> List = (java.util.List<NtcDdosLog>) JsonMapper.fromJsonList(jsonString,
@@ -848,14 +852,14 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "DDos日志检索成功",
 				ntcDdosLogPage, 0);
 	}
-	
+
 	@RequestMapping(value = "/ntcP2pLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "P2P日志查询", httpMethod = "GET", notes = "对应配置为“文件传输管理-P2P”，存储动作为阻断的命中日志。对日志功能“文件传输管理-P2P日志”提供数据基础查询服务")
 	public Map<String, ?> ntcP2pLogs(Page page, NtcP2pLog ntcP2pLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcP2pLog> ntcP2pLogPage = null;
 		try {
@@ -870,22 +874,22 @@ public class NtcLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			
+
 			String sql = HiveSqlService.getSql(page, ntcP2pLog,
-					getTableName(NtcP2pLog.class.getSimpleName() + "HiveTable", "ntc_p2p_log"),
-					getCol2Col(), orderBy, null);
-			
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcP2pLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcP2pLog.class.getSimpleName() + "HiveTable", "ntc_p2p_log"), getCol2Col(), orderBy,
+					null);
+
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcP2pLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcP2pLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcP2pLog> List = (java.util.List<NtcP2pLog>) JsonMapper.fromJsonList(jsonString,
@@ -909,14 +913,14 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "P2P日志检索成功",
 				ntcP2pLogPage, 0);
 	}
-	
+
 	@RequestMapping(value = "/ntcBgpLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "BGP日志查询", httpMethod = "GET", notes = "对应配置为“其他-BGP”，存储动作为阻断和监测的命中日志。对日志功能“BGP日志”提供数据基础查询服务")
 	public Map<String, ?> ntcBgpLogs(Page page, NtcBgpLog ntcBgpLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcBgpLog> ntcBgpLogPage = null;
 		try {
@@ -931,22 +935,22 @@ public class NtcLogSearchController extends BaseRestController {
 			} else {
 				orderBy = "found_Time";
 			}
-			
+
 			String sql = HiveSqlService.getSql(page, ntcBgpLog,
-					getTableName(NtcBgpLog.class.getSimpleName() + "HiveTable", "ntc_bgp_log"),
-					getCol2Col(), orderBy, null);
-			
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcBgpLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcBgpLog.class.getSimpleName() + "HiveTable", "ntc_bgp_log"), getCol2Col(), orderBy,
+					null);
+
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcBgpLog.class,
+					"foundTime", "recvTime");
 			if (tableMapping == null) {
 				ntcBgpLogPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
-//				if (tableMapping.get("obj").size() > page.getPageSize()) {
-//					list = tableMapping.get("obj").subList(0, page.getPageSize());
-//				} else {
-//					list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
-//				}
+				// if (tableMapping.get("obj").size() > page.getPageSize()) {
+				// list = tableMapping.get("obj").subList(0, page.getPageSize());
+				// } else {
+				// list = tableMapping.get("obj").subList(0, tableMapping.get("obj").size());
+				// }
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
 					List<NtcBgpLog> List = (java.util.List<NtcBgpLog>) JsonMapper.fromJsonList(jsonString,
@@ -970,14 +974,14 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "BGP日志检索成功",
 				ntcBgpLogPage, 0);
 	}
-	
+
 	@RequestMapping(value = "/ntcVoipLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "NTC VoIP日志查询", httpMethod = "GET", notes = "对日志功能“NTC VoIP日志”提供数据基础查询服务")
 	public Map<String, ?> ntcVoipLogs(Page page, NtcVoipLog ntcVoipLog, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcVoipLog> logPage = null;
 		try {
@@ -993,10 +997,10 @@ public class NtcLogSearchController extends BaseRestController {
 				orderBy = "found_Time";
 			}
 			String sql = HiveSqlService.getSql(page, ntcVoipLog,
-					getTableName(NtcVoipLog.class.getSimpleName() + "HiveTable", "NTC_VOIP_LOG"),
-					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcVoipLog.class, "foundTime",
-					"recvTime");
+					getTableName(NtcVoipLog.class.getSimpleName() + "HiveTable", "NTC_VOIP_LOG"), getCol2Col(), orderBy,
+					null);
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcVoipLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
 			} else {
@@ -1024,19 +1028,20 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "NTC VoIP日志检索成功",
 				logPage, 0);
 	}
-		
+
 	@RequestMapping(value = "/ntcStreamMediaLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "流媒体协议日志查询", httpMethod = "GET", notes = "对日志功能“流媒体协议日志”提供数据基础查询服务")
-	public Map<String, ?> ntcStreamMediaLogs(Page page, NtcStreamingMediaLog ntcStreamMediaLog, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Map<String, ?> ntcStreamMediaLogs(Page page, NtcStreamingMediaLog ntcStreamMediaLog, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
 		Page<NtcStreamingMediaLog> logPage = null;
 		try {
 			resetTime(ntcStreamMediaLog);
-			ntcLogService.queryConditionCheck(auditLogThread, start, ntcStreamMediaLog, NtcStreamingMediaLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcStreamMediaLog, NtcStreamingMediaLog.class,
+					page);
 			logPage = new Page<NtcStreamingMediaLog>();
 			logPage.setPageNo(page.getPageNo());
 			logPage.setPageSize(page.getPageSize());
@@ -1049,16 +1054,16 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcStreamMediaLog,
 					getTableName(NtcStreamingMediaLog.class.getSimpleName() + "HiveTable", "NTC_STREAMING_MEDIA_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcStreamingMediaLog.class, "foundTime",
-					"recvTime");
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcStreamingMediaLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
-					List<NtcStreamingMediaLog> List = (java.util.List<NtcStreamingMediaLog>) JsonMapper.fromJsonList(jsonString,
-							NtcStreamingMediaLog.class);
+					List<NtcStreamingMediaLog> List = (java.util.List<NtcStreamingMediaLog>) JsonMapper
+							.fromJsonList(jsonString, NtcStreamingMediaLog.class);
 					logPage.setList(List);
 					logPage.setCount(List.size());
 
@@ -1075,18 +1080,18 @@ public class NtcLogSearchController extends BaseRestController {
 			}
 			throw ((RestServiceException) e);
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流媒体协议日志检索成功",
-				logPage, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流媒体协议日志检索成功", logPage,
+				0);
 	}
-	
+
 	@RequestMapping(value = "/ntcKeywordsUrlLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "NTC关键字转URL日志查询", httpMethod = "GET", notes = "对日志功能“NTC关键字转URL日志”提供数据基础查询服务")
-	public Map<String, ?> ntcKeywordsUrlLogs(Page page, NtcKeywordsUrlLog ntcKeywordsUrlLog, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Map<String, ?> ntcKeywordsUrlLogs(Page page, NtcKeywordsUrlLog ntcKeywordsUrlLog, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET,
-				request, null);
-		
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+
 		Page<NtcKeywordsUrlLog> logPage = null;
 		try {
 			resetTime(ntcKeywordsUrlLog);
@@ -1103,19 +1108,23 @@ public class NtcLogSearchController extends BaseRestController {
 			String sql = HiveSqlService.getSql(page, ntcKeywordsUrlLog,
 					getTableName(NtcKeywordsUrlLog.class.getSimpleName() + "HiveTable", "NTC_KEYWORDS_URL_LOG"),
 					getCol2Col(), orderBy, null);
-			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql, NtcKeywordsUrlLog.class, "foundTime",
-					"recvTime");
+			Map<String, List<Object>> tableMapping = new LogJDBCByDruid().tableMapping(page, null, sql,
+					NtcKeywordsUrlLog.class, "foundTime", "recvTime");
 			if (tableMapping == null) {
 				logPage.setList(new ArrayList());
 			} else {
 				List list = tableMapping.get("obj");
 				if (list.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(list);
-					List<NtcKeywordsUrlLog> List = (java.util.List<NtcKeywordsUrlLog>) JsonMapper.fromJsonList(jsonString,
-							NtcKeywordsUrlLog.class);
+					List<NtcKeywordsUrlLog> List = (java.util.List<NtcKeywordsUrlLog>) JsonMapper
+							.fromJsonList(jsonString, NtcKeywordsUrlLog.class);
 					logPage.setList(List);
-					logPage.setCount(List.size());
-					
+					Long hivePageCount = HiveSqlService.getLogCount(ntcKeywordsUrlLog,
+							getTableName(NtcKeywordsUrlLog.class.getSimpleName() + "HiveTable", "NTC_KEYWORDS_URL_LOG"),
+							getCol2Col());
+
+					logPage.setLast(getLastPageNum(hivePageCount.intValue(), page.getPageSize()));
+					logPage.setCount(hivePageCount);
 				} else {
 					logPage.setList(new ArrayList());
 				}
@@ -1132,14 +1141,16 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "NTC关键字转URL日志检索成功",
 				logPage, 0);
 	}
-	
+
 	/**
-	 *判断开始和结束时间是否为null,如果为null则初始化时间
+	 * 判断开始和结束时间是否为null,如果为null则初始化时间
+	 * 
 	 * @param entity
 	 * @throws Exception
 	 */
 	public void resetTime(LogEntity<?> entity) throws Exception {
-		if (StringUtil.isEmpty(entity.getSearchFoundStartTime())&& StringUtil.isEmpty(entity.getSearchFoundEndTime())) {
+		if (StringUtil.isEmpty(entity.getSearchFoundStartTime())
+				&& StringUtil.isEmpty(entity.getSearchFoundEndTime())) {
 			Map<String, String> map = DateUtils.getLocalTime(entity.getSearchFoundStartTime(),
 					entity.getSearchFoundEndTime(), Constants.LOG_LOCAL_TIME, "minute");
 			entity.setSearchFoundStartTime(map.get("startTime"));
@@ -1149,6 +1160,7 @@ public class NtcLogSearchController extends BaseRestController {
 
 	/**
 	 * 将searchFoundStartTime,searchFoundEndTime与foundTime进行关联
+	 * 
 	 * @return
 	 */
 	public Map<String, Map<String, String>> getCol2Col() {

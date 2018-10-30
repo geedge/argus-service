@@ -140,6 +140,7 @@ public class BaseRestController {
 
 	/**
 	 * 不将日志插入到数据库中,只返回到前台
+	 * 
 	 * @param time
 	 * @param request
 	 * @param response
@@ -215,7 +216,7 @@ public class BaseRestController {
 		restResult.setMsg(msg);
 		restResult.setTraceCode(thread.getTraceCode());
 		thread.setConsumerTime(time);
-//		thread.setExceptionInfo(msg);
+		// thread.setExceptionInfo(msg);
 		thread.setBusinessCode(restResult.getBusinessCode().getValue());
 		new Thread(thread).start();
 		return convert(restResult);
@@ -223,6 +224,7 @@ public class BaseRestController {
 
 	/**
 	 * 日志结果响应格式规范
+	 * 
 	 * @param auditLogThread
 	 * @param executedTime
 	 * @param request
@@ -408,4 +410,11 @@ public class BaseRestController {
 		return Configurations.getStringProperty(key, defaultTableName);
 	}
 
+	protected int getLastPageNum(int totalCount, int pageSize) {
+		int pageNum = totalCount / pageSize;
+		if (totalCount % pageSize > 0) {
+			pageNum++;
+		}
+		return pageNum;
+	}
 }

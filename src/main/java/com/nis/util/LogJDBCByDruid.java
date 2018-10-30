@@ -29,11 +29,18 @@ import com.nis.web.service.SpringContextHolder;
 
 /**
  * 
- * <p>Title: HiveJDBCByDruid</p>
- * <p>Description: 使用druid连接池对hive进行查询并解析结果</p>
- * <p>Company: IIE</p>
+ * <p>
+ * Title: HiveJDBCByDruid
+ * </p>
+ * <p>
+ * Description: 使用druid连接池对hive进行查询并解析结果
+ * </p>
+ * <p>
+ * Company: IIE
+ * </p>
+ * 
  * @author rkg
- * @date 2018年8月20日 
+ * @date 2018年8月20日
  *
  */
 public class LogJDBCByDruid {
@@ -169,6 +176,7 @@ public class LogJDBCByDruid {
 
 	/**
 	 * 反射获取类中date类型的字段名称
+	 * 
 	 * @param type
 	 * @return
 	 * @throws Exception
@@ -240,7 +248,8 @@ public class LogJDBCByDruid {
 		return map;
 
 	}
-	public  ResultSet query(String sql) throws Exception {
+
+	public ResultSet query(String sql) throws Exception {
 		conn = getConnection();
 		logger.info("连接数据中心日志库成功--------------------------");
 		st = conn.createStatement();
@@ -250,9 +259,30 @@ public class LogJDBCByDruid {
 		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
 		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
 		rs = st.executeQuery(sql);
-		logger.info("执行查询语句成功sql={}",sql);
+		logger.info("执行查询语句成功sql={}", sql);
 		return rs;
 
+	}
+
+	public long getCount(String sql) throws Exception {
+		try {
+			conn = getConnection();
+			st = conn.createStatement();
+			rs = st.executeQuery(sql);
+			String countStr = null;
+			while (rs.next()) {
+				countStr = rs.getObject(1).toString();
+				break;
+			}
+			if (countStr == null || countStr.trim().equals("")) {
+				logger.info("获取数据中心日志总条数成功总共===================0条配置");
+				return 0l;
+			} else {
+				return Long.valueOf(countStr);
+			}
+		} finally {
+			closeConn();
+		}
 	}
 
 }
