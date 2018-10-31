@@ -18,16 +18,17 @@ import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
+import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.LogJDBCByDruid;
 import com.zdjizhi.utils.StringUtil;
-import com.nis.util.redis.SaveRedisThread;
-
-public class HiveSqlService {
-	private final static Logger logger = LoggerFactory.getLogger(HiveSqlService.class);
+@Service
+public class LogDataService {
+	private final static Logger logger = LoggerFactory.getLogger(LogDataService.class);
 	static DruidDataSource datasource = null;
 	Connection conn = null;
 	ResultSet rs = null;
@@ -35,32 +36,47 @@ public class HiveSqlService {
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
 
-	private static Map<String, String> getFiledsType(Object o) {
-		Field[] fields = o.getClass().getSuperclass().getDeclaredFields();
-		Field[] superfields = o.getClass().getDeclaredFields();
-		Map<String, String> infoMap = new HashMap<String, String>();
-		for (int i = 0; i < fields.length; i++) {
-			infoMap.put(fields[i].getName(), fields[i].getType().toString().replace("class", ""));
-		}
-		for (int i = 0; i < superfields.length; i++) {
-			infoMap.put(superfields[i].getName(), superfields[i].getType().toString().replace("class", ""));
-		}
-		return infoMap;
+	private static Map<String, Map<String, String>> col2col = new HashMap<String, Map<String, String>>();
+	static {
+		Map<String, String> startMap = new HashMap<String, String>();
+		startMap.put("start", "foundTime");
+		col2col.put("searchFoundStartTime", startMap);
+		Map<String, String> endMap = new HashMap<String, String>();
+		endMap.put("end", "foundTime");
+		col2col.put("searchFoundEndTime", endMap);
 	}
 
-	public static String getSql(Page page, Object bean, String tableName, Map<String, Map<String, String>> col2col,
-			String orderBy, String searchActiveSys) throws Exception {
+	private String getTableName(String key, String defaultTableName) {
 		if (Constants.ISUSECLICKHOUSE) {
-			return getSqlByClickHouse(page, bean, tableName, col2col, orderBy, searchActiveSys);
-		} else {
-			return getSqlByHive(page, bean, tableName, col2col, orderBy, searchActiveSys);
+			key = key.replace("HiveTable", "ClickHouseTable");
 		}
+		return Configurations.getStringProperty(key, defaultTableName);
 	}
 
-	public static String getSqlByClickHouse(Page page, Object bean, String tableName,
-			Map<String, Map<String, String>> col2col, String orderBy, String searchActiveSys) throws Exception {
+	public <T> void getData(Page<T> page, Object obj) throws Exception {
+		String className = obj.getClass().getSimpleName();
+		String tableName = getTableName(className + "HiveTable", "");
+		if (tableName == null || tableName.trim().equals("")) {
+			throw new RuntimeException("日志类" + className + "对应的表名为空,请检查配置文件");
+		}
+		String orderBy = "";
+		if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+			orderBy = Page.getOrderBySql(className, page.getOrderBy());
+		} else {
+			orderBy = " found_Time desc";
+		}
+		if (Constants.ISUSECLICKHOUSE) {
+			getDataFromClickHouse(page, obj, tableName, className, orderBy);
+		} else {
+			getDataFromHive(page, obj, tableName, className, orderBy);
+		}
+
+	}
+
+	public <T> void getDataFromClickHouse(Page<T> page, Object bean, String tableName, String className, String orderBy)
+			throws Exception {
 		tableName = tableName.toLowerCase();
-		String showColmun = getFiledsSql(bean.getClass().getSimpleName(), page.getFields());
+		String showColmun = getFiledsSql(className, page.getFields());
 		StringBuffer sql = new StringBuffer();
 		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
 		if (null == showColmun || showColmun.equals("")) {
@@ -78,6 +94,10 @@ public class HiveSqlService {
 		}
 		sql.setLength(0);
 		sql.append(" select " + sqlTrim.toLowerCase() + "  from " + tableName.toLowerCase() + " t ");
+
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("select count(1) from " + tableName + "  ");
+
 		StringBuffer whereSB = new StringBuffer();
 		if (!StringUtil.isEmpty(bean)) {
 			Class<?> clazz = bean.getClass();
@@ -95,7 +115,6 @@ public class HiveSqlService {
 							setFieldValue(bean, key, value.toString().trim());
 							if (key.endsWith("Time")) {// 日期开始或结束的字段
 								if (col2col.containsKey(key)) {
-									Long partition = Long.parseLong(sdf2.format(sdf.parse(value.toString().trim())));
 									value = sdf.parse(value.toString().trim()).getTime() / 1000;
 									if (col2col.get(key).get("start") != null) {
 										whereSB.append(" and "
@@ -112,7 +131,6 @@ public class HiveSqlService {
 									key = key.replace("search", "");
 									key = key.substring(0, 1).toLowerCase() + key.substring(1);
 								}
-
 								// clickhouse写法
 								String type = filedsType.get(key).trim();
 								if (type.equals("java.lang.String")) {
@@ -139,7 +157,10 @@ public class HiveSqlService {
 		if (whereSB.length() > 0) {
 			int indexOf = whereSB.indexOf("and") + "and".length();
 			sql.append(" where " + whereSB.substring(indexOf));
+			countSql.append(" where " + whereSB.substring(indexOf));
+
 		}
+
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 		if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
 			sql.append(" order by " + orderBy.toLowerCase());
@@ -147,14 +168,13 @@ public class HiveSqlService {
 			sql.append(" order by " + orderBy.toLowerCase() + " desc");
 		}
 		sql.append("  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
-
-		return sql.toString();
+		searchFromDataCenter(page, bean, sql, countSql);
 	}
 
-	public static String getSqlByHive(Page page, Object bean, String tableName,
-			Map<String, Map<String, String>> col2col, String orderBy, String searchActiveSys) throws Exception {
+	public <T> void getDataFromHive(Page<T> page, Object bean, String tableName, String className, String orderBy)
+			throws Exception {
 		tableName = tableName.toLowerCase();
-		String showColmun = getFiledsSql(bean.getClass().getSimpleName(), page.getFields());
+		String showColmun = getFiledsSql(className, page.getFields());
 		StringBuffer sql = new StringBuffer();
 		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
 		if (null == showColmun || showColmun.equals("")) {
@@ -179,10 +199,12 @@ public class HiveSqlService {
 		sql.append(" select " + sqlTrim.toLowerCase() + "  from (select " + sqlTrim.toLowerCase()
 				+ ",row_number() over(partition by found_time_partition " + orderBy + ") as row_num from "
 				+ tableName.toLowerCase() + " ");
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("select count(1) from " + tableName + "  ");
+
 		StringBuffer whereSB = new StringBuffer();
 		if (!StringUtil.isEmpty(bean)) {
 			Class<?> clazz = bean.getClass();
-			Map<String, String> filedsType = null;
 			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
 				// 获取所有的字段包括public,private,protected,private
 				// Field[] fields = bean.getClass().getDeclaredFields();
@@ -266,198 +288,38 @@ public class HiveSqlService {
 
 			}
 		}
-
 		if (whereSB.length() > 0) {
 			int indexOf = whereSB.indexOf("and") + "and".length();
 			sql.append(" where " + whereSB.substring(indexOf));
+			countSql.append(" where " + whereSB.substring(indexOf));
+
 		}
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize() + 1;
 		Integer endNum = startNum - 1 + page.getPageSize();
 		sql.append("  ) t   where row_Num between " + startNum + " and " + endNum);
-		logger.info("获取数据中心日志sql==================={}", sql);
-		return sql.toString();
+		searchFromDataCenter(page, bean, sql, countSql);
 	}
 
-	public static Long getLogCount(Object bean, String tableName, Map<String, Map<String, String>> col2col) throws Exception {
-		if (Constants.ISUSECLICKHOUSE) {
-			return getLogCountFromClickHouse(bean, tableName, col2col);
-		} else {
-			return getLogCountFromHive(bean, tableName, col2col);
-		}
-	}
-
-	public static Long getLogCountFromClickHouse(Object bean, String tableName,
-			Map<String, Map<String, String>> col2col) throws Exception {
-		tableName = tableName.toLowerCase();
-		StringBuffer sql = new StringBuffer();
-		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
-		sql.append("select count(1) from " + tableName + "  ");
-		StringBuffer whereSB = new StringBuffer();
-		if (!StringUtil.isEmpty(bean)) {
-			Class<?> clazz = bean.getClass();
-			Map<String, String> filedsType = null;
-			filedsType = getFiledsType(bean);
-			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
-				Field[] fields = clazz.getDeclaredFields();
-				for (int i = 0; i < fields.length; i++) {
-					// 现在gwall日志表结构中只有数值和字符串两种类型,数值都是int类型没有bigint所以不需要加L,
-					Field f = fields[i];
-					String key = f.getName();// 获取字段名
-					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
-						Object value = getFieldValue(bean, key);
-						if (!StringUtil.isEmpty(value)) {
-							setFieldValue(bean, key, value.toString().trim());
-							if (key.endsWith("Time")) {// 日期开始或结束的字段
-								if (col2col.containsKey(key)) {
-									Long partition = Long.parseLong(sdf2.format(sdf.parse(value.toString().trim())));
-									value = sdf.parse(value.toString().trim()).getTime() / 1000;
-									if (col2col.get(key).get("start") != null) {
-										whereSB.append(" and "
-												+ filedAndColumnMap.get(col2col.get(key).get("start")).toLowerCase()
-												+ ">=" + value);
-									} else {
-										whereSB.append(" and "
-												+ filedAndColumnMap.get(col2col.get(key).get("end")).toLowerCase() + "<"
-												+ value);
-									}
-								}
-							} else {
-								if (key.toLowerCase().startsWith("search")) {
-									key = key.replace("search", "");
-									key = key.substring(0, 1).toLowerCase() + key.substring(1);
-								}
-
-								// clickhouse写法
-								String type = filedsType.get(key).trim();
-								if (type.equals("java.lang.String")) {
-									String field = filedAndColumnMap.get(key).toLowerCase();
-									if (field.equals("url")) {
-										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
-									} else {
-										whereSB.append(" and " + field + "='" + value.toString().trim() + "'");
-									}
-								} else if (type.equals("java.lang.Integer") || type.equals("int")
-										|| type.equals("java.lang.Long") || type.equals("long")) {
-									whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "="
-											+ value.toString().trim());
-								}
-
-							}
-						}
-
-					}
-				}
-
-			}
-		}
-		if (whereSB.length() > 0) {
-			int indexOf = whereSB.indexOf("and") + "and".length();
-			sql.append(" where " + whereSB.substring(indexOf));
-		}
-		logger.info("获取数据中心日志总条数sql==================" + sql.toString());
-		Long count = new LogJDBCByDruid().getCount(sql.toString());
-		return count;
-	}
-
-	public static Long getLogCountFromHive(Object bean, String tableName, Map<String, Map<String, String>> col2col)
+	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
-		tableName = tableName.toLowerCase();
-		StringBuffer sql = new StringBuffer();
-		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
-		sql.append("select count(1) from " + tableName + "  ");
-		StringBuffer whereSB = new StringBuffer();
-		if (bean != null) {
-			Class<?> clazz = bean.getClass();
-			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
-				// 获取所有的字段包括public,private,protected,private
-				// Field[] fields = bean.getClass().getDeclaredFields();
-				Field[] fields = clazz.getDeclaredFields();
-				Long foundTimePartStart = null;
-				Long foundTimePartEnd = null;
-				for (int i = 0; i < fields.length; i++) {
-					// 现在gwall日志表结构中只有数值和字符串两种类型,数值都是int类型没有bigint所以不需要加L,
-					Field f = fields[i];
-					String key = f.getName();// 获取字段名
-					String typeName = f.getType().getName();
-					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
-						Object value = getFieldValue(bean, key);
-						if (!StringUtil.isEmpty(value)) {
-							setFieldValue(bean, key, value.toString().trim());
-							if (key.endsWith("Time")) {// 日期开始或结束的字段
-								if (col2col.containsKey(key)) {
-									Long partition = Long.parseLong(sdf2.format(sdf.parse(value.toString().trim())));
-									value = sdf.parse(value.toString().trim()).getTime() / 1000;
-									if (key.toLowerCase().equals("searchfoundstarttime")) {
-										foundTimePartStart = partition;
-									}
-									if (key.toLowerCase().equals("searchfoundendtime")) {
-										foundTimePartEnd = partition;
-									}
-									if (col2col.get(key).get("start") != null) {
-										// sql.append(" and " +
-										// filedAndColumnMap.get(col2col.get(key).get("start"))
-										// + ">=to_date('" +
-										// value.toString().trim()
-										// + "','yyyy-mm-dd HH24:mi:ss')");
-										whereSB.append(" and "
-												+ filedAndColumnMap.get(col2col.get(key).get("start")).toLowerCase()
-												+ ">=" + value);
-									} else {
-										// sql.append(" and " +
-										// filedAndColumnMap.get(col2col.get(key).get("end"))
-										// + "<=to_date('" +
-										// value.toString().trim()
-										// + "','yyyy-mm-dd HH24:mi:ss')");
-										whereSB.append(" and "
-												+ filedAndColumnMap.get(col2col.get(key).get("end")).toLowerCase() + "<"
-												+ value);
-									}
-								}
-							} else {
-								if (key.toLowerCase().startsWith("search")) {
-									key = key.replace("search", "");
-									key = key.substring(0, 1).toLowerCase() + key.substring(1);
-								}
-
-								if (typeName.equals("java.lang.String")) {
-									String field = filedAndColumnMap.get(key);
-									if (field.equals("url")) {
-										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
-									} else {
-										whereSB.append(" and " + field + "='" + value.toString().trim() + "'");
-									}
-								} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
-									whereSB.append(
-											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim());
-
-								} else if (typeName.equals("java.lang.Long") || typeName.equals("long")) {
-									whereSB.append(
-											" and " + filedAndColumnMap.get(key) + "=" + value.toString().trim() + "L");
-								}
-
-							}
-						}
-
-					}
-				}
-				if (null != foundTimePartStart) {
-					// sql.append(" and found_time_partition>=" + foundTimePartStart + "L");
-					whereSB.append(" and found_time_partition>=" + foundTimePartStart);
-				}
-				if (null != foundTimePartEnd) {
-					// sql.append(" and found_time_partition<" + foundTimePartEnd + "L");
-					whereSB.append(" and found_time_partition<=" + foundTimePartEnd);
-				}
-
-			}
+		new LogJDBCByDruid().getTableData(page, selSql.toString(), bean.getClass());
+		if (page.getList() != null && page.getList().size() > 0) {
+			new LogJDBCByDruid().getCount(page, countSql.toString());
 		}
-		if (whereSB.length() > 0) {
-			int indexOf = whereSB.indexOf("and") + "and".length();
-			sql.append(" where " + whereSB.substring(indexOf));
+
+	}
+
+	private static Map<String, String> getFiledsType(Object o) {
+		Field[] fields = o.getClass().getSuperclass().getDeclaredFields();
+		Field[] superfields = o.getClass().getDeclaredFields();
+		Map<String, String> infoMap = new HashMap<String, String>();
+		for (int i = 0; i < fields.length; i++) {
+			infoMap.put(fields[i].getName(), fields[i].getType().toString().replace("class", ""));
 		}
-		logger.info("获取数据中心日志总条数sql==================" + sql.toString());
-		Long count = new LogJDBCByDruid().getCount(sql.toString());
-		return count;
+		for (int i = 0; i < superfields.length; i++) {
+			infoMap.put(superfields[i].getName(), superfields[i].getType().toString().replace("class", ""));
+		}
+		return infoMap;
 	}
 
 	public static String getFiledsSql(String mapName, String fileds) throws Exception {

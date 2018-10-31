@@ -24,16 +24,17 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.nis.domain.LogEntity;
 import com.nis.domain.restful.ConfigCommonSource;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestConstants;
 import com.nis.restful.RestResult;
 import com.nis.restful.RestServiceException;
-import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * @ClassName: BaseRestController
@@ -402,19 +403,19 @@ public class BaseRestController {
 		return thread;
 
 	}
-
-	protected String getTableName(String key, String defaultTableName) {
-		if (Constants.ISUSECLICKHOUSE) {
-			key = key.replace("HiveTable", "ClickHouseTable");
+	/**
+	 * 判断开始和结束时间是否为null,如果为null则初始化时间
+	 * 
+	 * @param entity
+	 * @throws Exception
+	 */
+	protected void resetTime(LogEntity<?> entity) throws Exception {
+		if (StringUtil.isEmpty(entity.getSearchFoundStartTime())
+				&& StringUtil.isEmpty(entity.getSearchFoundEndTime())) {
+			Map<String, String> map = DateUtils.getLocalTime(entity.getSearchFoundStartTime(),
+					entity.getSearchFoundEndTime(), Constants.LOG_LOCAL_TIME, "minute");
+			entity.setSearchFoundStartTime(map.get("startTime"));
+			entity.setSearchFoundEndTime(map.get("endTime"));
 		}
-		return Configurations.getStringProperty(key, defaultTableName);
-	}
-
-	protected int getLastPageNum(int totalCount, int pageSize) {
-		int pageNum = totalCount / pageSize;
-		if (totalCount % pageSize > 0) {
-			pageNum++;
-		}
-		return pageNum;
 	}
 }

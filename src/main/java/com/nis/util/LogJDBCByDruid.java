@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.zdjizhi.utils.StringUtil;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -23,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.jolbox.bonecp.BoneCPDataSource;
 import com.nis.domain.Page;
 import com.nis.web.service.SpringContextHolder;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * 
@@ -62,25 +61,17 @@ public class LogJDBCByDruid {
 	}
 
 	/**
-	 * 将结果利用反射映射成对象集合
+	 * 根据sql从数据中心中获取日志并set到list中
 	 * 
-	 * @param rs
-	 *            resultSet
+	 * @param page
+	 * @param sql
 	 * @param entityClass
-	 *            实体类
-	 * @param obj
-	 *            那些字段需要转换为date类型(由于数据中心表结构中没有date类型数据,其日期用long型表示,界面中需要显示yyyy-MM-dd
-	 *            hh:mm:ss形式,所以需要将long转换为date)
-	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, List<Object>> tableMapping(Page<?> page, String redisKey, String sql, Class<?> entityClass,
-			Object... obj) throws Exception {
-		Map<String, List<Object>> mapList = new HashMap<String, List<Object>>();
+	public <T> void getTableData(Page<T> page, String sql, Class<?> entityClass) throws Exception {
+		List<T> listObject = new ArrayList<T>();
 		try {
 			Map<String, String> filedAndColumnMap = getColumn2FiledMap(entityClass);
-			List<Object> listString = new ArrayList<Object>();
-			List<Object> listObject = new ArrayList<Object>();
 			// 不从Object... obj中获取需要date类型的字段了,调用的时候容易漏写,改为反射获取date类型的字段
 			List<String> columnList = getDateColumn(entityClass);
 			conn = getConnection();
@@ -100,8 +91,6 @@ public class LogJDBCByDruid {
 							long time = 0L;
 							time = Long.parseLong(value.toString());
 							map.put(filedName, time == 0L ? null : new Date(time * 1000));
-							// map.put(filedName, new
-							// Date(Long.parseLong("1476583810000")));
 						} else {
 							map.put(filedName, value);
 						}
@@ -109,48 +98,16 @@ public class LogJDBCByDruid {
 						map.put(filedName, null);
 					}
 				}
-				listString.add(JsonMapper.toJsonString(map2Obj(map, entityClass)));
-				listObject.add(map2Obj(map, entityClass));
+				listObject.add((T) map2Obj(map, entityClass));
 			}
-			if (null == listString || listString.size() == 0 || null == listObject || listObject.size() == 0) {
-				return null;
+			if (null == listObject || listObject.size() == 0) {
+				page.setList(new ArrayList());
 			} else {
-				// 暂时没有往缓存写的操作
-				// if (Constants.IS_OPEN_REDIS && Constants.DATACENTER_OPEN_REDIS) {
-				// new SaveRedisListThread(redisKey, listString, Constants.HIVE_EXPIRE).start();
-				// }
-			}
-			if (Constants.ISUSECLICKHOUSE) {// sql查询时已经分页了
-				mapList.put("str", listString);
-				mapList.put("obj", listObject);
-			} else {
-				// sublist包前不包后,0-30实际获取的是0-29的数据
-				Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
-				Integer endNum = startNum - 1 + page.getPageSize() + 1;
-				if (listString.size() >= startNum) {
-					if (listString.size() >= endNum) {
-						mapList.put("str", listString.subList(startNum, endNum));
-					} else {
-						mapList.put("str", listString.subList(startNum, listString.size()));
-					}
-
-				} else {
-					mapList.put("str", new ArrayList<Object>());
-				}
-				if (listObject.size() >= startNum) {
-					if (listObject.size() >= endNum) {
-						mapList.put("obj", listObject.subList(startNum, endNum));
-					} else {
-						mapList.put("obj", listObject.subList(startNum, listObject.size()));
-					}
-				} else {
-					mapList.put("obj", new ArrayList<Object>());
-				}
+				page.setList(listObject);
 			}
 		} finally {
 			closeConn();
 		}
-		return mapList;
 	}
 
 	public void closeConn() {
@@ -249,22 +206,7 @@ public class LogJDBCByDruid {
 
 	}
 
-	public ResultSet query(String sql) throws Exception {
-		conn = getConnection();
-		logger.info("连接数据中心日志库成功--------------------------");
-		st = conn.createStatement();
-		// logger.info("开始选择{}数据库--------------------------", Constants.HIVEDBNAME);
-		// String hiveAName = "use " + Constants.HIVEDBNAME;
-		// st.execute(hiveAName);
-		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
-		// logger.info("选择数据库{}成功,开始执行查询", Constants.HIVEDBNAME);
-		rs = st.executeQuery(sql);
-		logger.info("执行查询语句成功sql={}", sql);
-		return rs;
-
-	}
-
-	public long getCount(String sql) throws Exception {
+	public <T> void getCount(Page<T> page, String sql) throws Exception {
 		try {
 			conn = getConnection();
 			st = conn.createStatement();
@@ -276,13 +218,24 @@ public class LogJDBCByDruid {
 			}
 			if (countStr == null || countStr.trim().equals("")) {
 				logger.info("获取数据中心日志总条数成功总共===================0条配置");
-				return 0l;
+				page.setCount(0l);
+				page.setLast(1);
 			} else {
-				return Long.valueOf(countStr);
+				Long count = Long.valueOf(countStr);
+				page.setCount(count);
+				page.setLast(getLastPageNum(count.intValue(), page.getPageSize()));
 			}
 		} finally {
 			closeConn();
 		}
+	}
+
+	private int getLastPageNum(int totalCount, int pageSize) {
+		int pageNum = totalCount / pageSize;
+		if (totalCount % pageSize > 0) {
+			pageNum++;
+		}
+		return pageNum;
 	}
 
 }
