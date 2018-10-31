@@ -5,6 +5,8 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.nis.util.JsonDateDeserializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class NmsDiRule implements Serializable {
@@ -154,19 +156,19 @@ public class NmsDiRule implements Serializable {
 	public void setDetectionSetInfoId(long detectionSetInfoId) {
 		this.detectionSetInfoId = detectionSetInfoId;
 	}
-
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public Date getDataCheckTime() {
 		return dataCheckTime;
 	}
-
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setDataCheckTime(Date dataCheckTime) {
 		this.dataCheckTime = dataCheckTime;
 	}
-
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public Date getDataArriveTime() {
 		return dataArriveTime;
 	}
-
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setDataArriveTime(Date dataArriveTime) {
 		this.dataArriveTime = dataArriveTime;
 	}

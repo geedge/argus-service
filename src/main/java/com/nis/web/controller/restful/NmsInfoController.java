@@ -91,7 +91,7 @@ public class NmsInfoController extends BaseRestController {
 				Constants.IS_DEBUG ? nmsDiRuleList : null);
 	}
 
-	@RequestMapping(value = "/nms/v1/rafficNetflowPortInfo", method = RequestMethod.POST)
+	@RequestMapping(value = "/nms/v1/trafficNetflowPortInfo", method = RequestMethod.POST)
 	@ApiOperation(value = "存储trafficNetflowPortInfo接口", httpMethod = "POST", response = Map.class, notes = "接收NMS系统上报的trafficNetflowPort信息")
 	@ApiParam(value = "存储trafficNetflowPortInfo接口", name = "saveTrafficNetflowPortInfo", required = true)
 	public Map<String, Object> saveTrafficNetflowPortInfo(

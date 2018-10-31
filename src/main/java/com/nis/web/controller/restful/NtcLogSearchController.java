@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
-import com.nis.domain.restful.DkBehaviorLog;
 import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcDdosLog;

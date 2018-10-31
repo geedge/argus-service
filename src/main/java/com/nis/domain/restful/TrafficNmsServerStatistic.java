@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.nis.util.JsonDateDeserializer;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -36,11 +38,11 @@ public class TrafficNmsServerStatistic implements Serializable {
 	private Integer abnormal;//
 	@ApiModelProperty(value = "abnormalMachineList", notes = "异常主机列表")
 	private List<AbnormalMachine> abnormalMachineList;
-
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public Date getCommitTime() {
 		return commitTime;
 	}
-
+	@JsonDeserialize(using = JsonDateDeserializer.class)
 	public void setCommitTime(Date commitTime) {
 		this.commitTime = commitTime;
 	}
