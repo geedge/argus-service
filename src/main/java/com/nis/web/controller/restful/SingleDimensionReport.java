@@ -1,12 +1,11 @@
 package com.nis.web.controller.restful;
 
-import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.zdjizhi.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +18,7 @@ import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
+import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcReportEntity;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
@@ -32,6 +32,8 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.NtcReportService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.zdjizhi.utils.DateUtil;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * 
@@ -355,6 +357,33 @@ public class SingleDimensionReport extends BaseRestController {
 				0);
 	}
 
+	@RequestMapping(value = "/ntcRadiusReport", method = RequestMethod.GET)
+	@ApiOperation(value = "用户行为统计查询服务", httpMethod = "GET", notes = "用户行为统计查询服务，基于用户名或接入IP维度聚合")
+	public Map<String, ?> ntcRadiusReport(NtcRadiusReport ntcRadiusReport, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		List dataList = null;
+		try {
+			
+			
+			ntcReportService.checkNtcRadiusReportCondition(saveLogThread, start, ntcRadiusReport);
+			setGroupType(ntcRadiusReport);
+			dataList= ntcReportService.findNtcRadiusReport(ntcRadiusReport);
+		} catch (Exception e) {
+			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(saveLogThread, System.currentTimeMillis() - start, "用户行为统计查询失败");
+			}
+			throw ((RestServiceException) e);
+		}
+
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "用户行为统计查询成功", dataList,
+				0);
+	}
 	/**
 	* @Description:
 	* @author (zdx)
@@ -393,5 +422,25 @@ public class SingleDimensionReport extends BaseRestController {
 		}
 	}
 	
-	
+	/**
+	 * @Description:
+	 * @author(zdx)
+	 * @date 2018年10月31日 下午2:43:13
+	 * @param ntcRadiusReport
+	 * @throws Exception
+	 */
+	public void setGroupType(NtcRadiusReport ntcRadiusReport) throws Exception {
+		String groupType ="";
+		Long times = DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportEndTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS)-DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportStartTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS);
+		if (times<=24*60*60L) {
+			groupType ="hour";
+		}else{
+			if (times<=30*24*60*60L) {
+				groupType ="day";
+			}else {
+				groupType ="month";
+			}
+		}
+		ntcRadiusReport.setGroupType(groupType);
+	}
 }

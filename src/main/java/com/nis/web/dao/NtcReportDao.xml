@@ -50,6 +50,13 @@
 		<result column="SUM" jdbcType="BIGINT" property="sum" />
 		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
 	</resultMap>
+	<resultMap id="NtcRadiusReportMap" type="com.nis.domain.restful.NtcRadiusReport">
+		<result column="ACCOUNT" jdbcType="VARCHAR" property="account" />
+		<result column="NAS_IP" jdbcType="VARCHAR" property="nasIp" />
+		<result column="SUM" jdbcType="BIGINT" property="sum" />
+		<result column="REPORT_TIME" jdbcType="TIMESTAMP" property="reportTime" />
+	</resultMap>
+	
 	<sql id="commonPorperty">
 		SERVICE,SUM,REPORT_TIME
 	</sql>
@@ -600,5 +607,114 @@
 				ORDER BY ${page.orderBy}
 			</when>
 		</choose>
+	</select>
+	
+	<select id="findNasIpList" parameterType="com.nis.domain.restful.NtcRadiusReport"
+		resultMap="NtcRadiusReportMap">
+		select nas_ip,sum(num) num from ntc_radius_report 
+		<where>
+		<choose>
+			<when test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</when>
+			<otherwise>
+				and REPORT_TIME>=DATE_SUB(now(), INTERVAL 1 DAY) 
+			</otherwise>
+		</choose>
+		
+		</where>
+		group by NAS_IP order by num desc;
+	</select>
+	<select id="findAccounList" parameterType="com.nis.domain.restful.NtcRadiusReport"
+		resultMap="NtcRadiusReportMap">
+		select account,sum(num) num from ntc_radius_report 
+		<where>
+		<choose>
+			<when test="searchReportStartTime != null and searchReportStartTime !=''">
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+			</when>
+			<otherwise>
+				and REPORT_TIME>DATE_SUB(now(), INTERVAL 1 DAY) 
+			</otherwise>
+		</choose>
+		
+		</where>
+		group by account order by num desc;
+	</select>
+	
+	<select id="findNtcRadiusReport" parameterType="com.nis.domain.restful.NtcRadiusReport"
+		resultMap="NtcRadiusReportMap">
+		SELECT
+			<if test="searchAccount != null and searchAccount !=''">
+				nas_ip,
+			</if>
+			<if test="searchNasIp != null and searchNasIp !=''">
+				account,
+			</if>
+			<choose>
+				<when test="groupType!= null and groupType!='' and groupType == 'day'">
+					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
+				</when>
+				<when test="groupType!= null and groupType!='' and groupType == 'month'">
+					DATE_FORMAT(REPORT_TIME, '%Y-%m')
+				</when>				
+				<otherwise>
+					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d %H')
+				</otherwise>
+			</choose>
+			REPORT_TIME,sum(num) num
+		FROM ntc_radius_report
+		<where>
+			<if test="searchAccount != null and searchAccount !=''">
+				<![CDATA[AND account =#{searchAccount}]]>
+			</if>
+			<if test="searchNasIp != null and searchNasIp !=''">
+				<![CDATA[AND nas_ip =#{searchNasIp}]]>
+			</if>
+			<choose>
+				<when test="searchReportStartTime != null and searchReportStartTime !=''">
+					<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+				</when>
+				<otherwise>
+					<![CDATA[AND REPORT_TIME>DATE_SUB(now(), INTERVAL 1 DAY) ]]>
+				</otherwise>
+			</choose>
+		</where>
+			
+		GROUP BY
+			<if test="searchAccount != null and searchAccount !=''">
+				<![CDATA[nas_ip]]>
+			</if>
+			<if test="searchNasIp != null and searchNasIp !=''">
+				<![CDATA[account]]>
+			</if>
+			,
+			<choose>
+				<when test="groupType!= null and groupType!='' and groupType == 'day'">
+					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
+				</when>
+				<when test="groupType!= null and groupType!='' and groupType == 'month'">
+					DATE_FORMAT(REPORT_TIME, '%Y-%m')
+				</when>				
+				<otherwise>
+					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d %H')
+				</otherwise>
+			</choose>
+			
+			
+		ORDER BY
+			<choose>
+				<when test="groupType!= null and groupType!='' and groupType == 'day'">
+					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
+				</when>
+				<when test="groupType!= null and groupType!='' and groupType == 'month'">
+					DATE_FORMAT(REPORT_TIME, '%Y-%m')
+				</when>				
+				<otherwise>
+					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d %H')
+				</otherwise>
+			</choose>
+
+ 		ASC
 	</select>
 </mapper>

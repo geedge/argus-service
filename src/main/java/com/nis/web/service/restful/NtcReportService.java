@@ -14,6 +14,7 @@ import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
+import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
@@ -101,5 +102,26 @@ public class NtcReportService extends BaseLogService {
 		entity.setPage(page);
 		page.setList(dao.findNtcEntranceReport(entity));
 		return page;
+	}
+	
+	
+	
+	public List findNtcRadiusReport(NtcRadiusReport entity) throws Exception {
+		List resultList = null;
+		
+		if ("1".equals(entity.getSearchBusinessType())) {
+			resultList = new ArrayList<Map>();
+			Map<String, List<NtcRadiusReport>> restMap = new HashMap<String, List<NtcRadiusReport>>();
+			List<NtcRadiusReport> accountList =dao.findAccounList(entity);
+			restMap.put("accountList", accountList);
+			List<NtcRadiusReport> nasIpList =dao.findNasIpList(entity);
+			restMap.put("nasIpList", nasIpList);
+			resultList.add(restMap);
+		}else{
+			resultList = dao.findNtcRadiusReport(entity);
+		}
+		
+		return resultList;
+
 	}
 }
