@@ -26,6 +26,7 @@ import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.util.LogJDBCByDruid;
 import com.zdjizhi.utils.StringUtil;
+
 @Service
 public class LogDataService {
 	private final static Logger logger = LoggerFactory.getLogger(LogDataService.class);
@@ -93,10 +94,10 @@ public class LogDataService {
 			sqlTrim = sqlTrim.substring(0, sqlTrim.length() - 1);
 		}
 		sql.setLength(0);
-		sql.append(" select " + sqlTrim.toLowerCase() + "  from " + tableName.toLowerCase() + " t ");
-
+		sql.append(" select " + sqlTrim.toLowerCase() + "  from " + tableName.toLowerCase() + " t where ");
+		StringBuffer whereFoundTime = new StringBuffer();
 		StringBuffer countSql = new StringBuffer();
-		countSql.append("select count(1) from " + tableName + "  ");
+		countSql.append("select count(1) from " + tableName + " where ");
 
 		StringBuffer whereSB = new StringBuffer();
 		if (!StringUtil.isEmpty(bean)) {
@@ -117,11 +118,11 @@ public class LogDataService {
 								if (col2col.containsKey(key)) {
 									value = sdf.parse(value.toString().trim()).getTime() / 1000;
 									if (col2col.get(key).get("start") != null) {
-										whereSB.append(" and "
+										whereFoundTime.append(" and "
 												+ filedAndColumnMap.get(col2col.get(key).get("start")).toLowerCase()
 												+ ">=" + value);
 									} else {
-										whereSB.append(" and "
+										whereFoundTime.append(" and "
 												+ filedAndColumnMap.get(col2col.get(key).get("end")).toLowerCase() + "<"
 												+ value);
 									}
@@ -154,14 +155,44 @@ public class LogDataService {
 
 			}
 		}
-		if (whereSB.length() > 0) {
+		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
+		StringBuffer foundTimeSql = new StringBuffer();
+		foundTimeSql.append("select distinct found_time  from " + tableName + " where ");
+		if (whereSB.length() == 0) {// 没有其他查询条件只有默认的found_time条件
+			if (whereFoundTime.length() > 0) {
+				int indexOf = whereFoundTime.indexOf("and") + "and".length();
+				countSql.append(whereFoundTime.substring(indexOf));
+				
+				foundTimeSql.append(whereFoundTime.substring(indexOf));
+				if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
+					foundTimeSql.append(" order by " + orderBy.toLowerCase());
+				} else {
+					foundTimeSql.append(" order by " + orderBy.toLowerCase() + " desc");
+				}
+				
+				foundTimeSql.append("  limit " + startNum + "," + page.getPageSize());
+				sql.append(" found_time in(" + foundTimeSql + ") ");
+			}else {
+				throw new RuntimeException("从clickhouse的"+tableName+"表查询时,必须要有一个where条件");
+			}
+		} else {
+			int foundIndexOf = whereFoundTime.append(whereSB).indexOf("and") + "and".length();
+			countSql.append(whereFoundTime.substring(foundIndexOf));
+			
+			
+			foundTimeSql.append(whereFoundTime.substring(foundIndexOf));
+			if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
+				foundTimeSql.append(" order by " + orderBy.toLowerCase());
+			} else {
+				foundTimeSql.append(" order by " + orderBy.toLowerCase() + " desc");
+			}
+			foundTimeSql.append("  limit " + startNum + "," + page.getPageSize());
+			
+			
 			int indexOf = whereSB.indexOf("and") + "and".length();
-			sql.append(" where " + whereSB.substring(indexOf));
-			countSql.append(" where " + whereSB.substring(indexOf));
-
+			sql.append(whereSB.substring(indexOf) + " and found_time in(" + foundTimeSql + ") ");
 		}
 
-		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 		if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
 			sql.append(" order by " + orderBy.toLowerCase());
 		} else {
