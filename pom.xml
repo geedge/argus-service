@@ -17,7 +17,7 @@
     <name>galaxy-service</name>
     <groupId>com.nis.galaxy</groupId>
     <artifactId>galaxy-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>Release-1.3</version>
     <!-- 仓库地址构建 -->
     <repositories>
 
@@ -37,54 +37,41 @@
 
     <build>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.xsd</include>
+                    <include>**/*.yml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
 
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.mmdb</include>
+                    <include>**/*.dat</include>
+                    <include>**/*.sh</include>
+                    <include>**/*.bat</include>
+                    <include>**/*.sql</include>
+                </includes>
+            </resource>
 
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
 
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <!-- copy-dependency plugin -->
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.apache.maven.plugins</groupId>
-                                        <artifactId>maven-dependency-plugin</artifactId>
-                                        <versionRange>[1.0.0,)</versionRange>
-                                        <goals>
-                                            <goal>copy-dependencies</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore />
-                                    </action>
-                                </pluginExecution>
+    </resources>
 
-                                <!-- mybatis-generator-plugin -->
-                                <!-- <pluginExecution> -->
-                                <!-- <pluginExecutionFilter> -->
-                                <!-- <groupId>org.mybatis.generator</groupId> -->
-                                <!-- <artifactId>mybatis-generator-maven-plugin</artifactId> -->
-                                <!-- <versionRange>[1.3.2,)</versionRange> -->
-                                <!-- <goals> -->
-                                <!-- <goal>generate</goal> -->
-                                <!-- </goals> -->
-                                <!-- </pluginExecutionFilter> -->
-                                <!-- <action> -->
-                                <!-- <ignore /> -->
-                                <!-- </action> -->
-                                <!-- </pluginExecution> -->
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                        <encoding>UTF-8</encoding>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <!-- <plugin> -->
             <!-- <groupId>org.mybatis.generator</groupId> -->
@@ -127,7 +114,7 @@
 
             <!-- </plugin> -->
 
-            <plugin>
+           <!-- <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
                 <version>jar</version>
@@ -142,6 +129,9 @@
                     <contextPath>/</contextPath>
                 </configuration>
             </plugin>
+-->
+
+            <!-- Compiler 插件, 设定JDK版本 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -152,6 +142,43 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+
+            <!-- resource插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+
+            <!-- install插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+            </plugin>
+
+            <!-- clean插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.6.1</version>
+            </plugin>
+
+            <!-- ant插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+            </plugin>
+
+            <!-- dependency插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
+            </plugin>
+
+
         </plugins>
     </build>
 
@@ -571,5 +598,82 @@
         </dependency>
 
     </dependencies>
+
+    <profiles>
+        <!--init db-->
+        <profile>
+            <id>init-db</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.dbunit</groupId>
+                    <artifactId>dbunit</artifactId>
+                    <version>2.4.8</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi</artifactId>
+                    <version>3.2-FINAL</version>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.7</version>
+                        <configuration>
+                            <target>
+
+                                <!-- mysql -->
+                                <property name="dbunit.datatype" value="org.dbunit.ext.mysql.MySqlDataTypeFactory" />
+
+                                <!-- mssql
+                                <property name="dbunit.datatype" value="org.dbunit.ext.mssql.MsSqlDataTypeFactory" /> -->
+
+                                <!-- oracle
+                                <property name="dbunit.datatype" value="org.dbunit.ext.oracle.Oracle10DataTypeFactory" /> -->
+
+                                <property file="src/main/resources/deploy-producer.properties" />
+
+                                <sql driver="${jdbc.deploy.driver}" url="${jdbc.deploy.url}" userid="${jdbc.deploy.username}" password="${jdbc.deploy.password}"
+                                     onerror="continue" encoding="${maven.compiler.encoding}">
+                                    <classpath refid="maven.test.classpath" />
+                                    <!--<transaction src="db/init/galaxy_stru_${jdbc.type}.sql"/>
+                                    <transaction src="db/init/galaxy_stru_ui_${jdbc.type}.sql"/>
+                                    <transaction src="db/init/galaxy_data_${jdbc.type}.sql"/>-->
+                                    <transaction src="db/test/galaxy_test_${jdbc.type}.sql"/>
+                                </sql>
+
+
+
+                                <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="maven.test.classpath" />
+
+                                <!-- mysql、mssql -->
+                                <dbunit driver="${jdbc.deploy.driver}" url="${jdbc.deploy.url}" userid="${jdbc.deploy.username}"
+                                        password="${jdbc.deploy.password}">
+
+                                    <!-- oracle
+                                    <dbunit driver="${jdbc.driver}" url="${jdbc.url}" userid="${jdbc.username}"
+                                        password="${jdbc.password}" schema="${jdbc.username}" > -->
+
+                                    <dbconfig>
+                                        <property name="datatypeFactory" value="${dbunit.datatype}" />
+                                    </dbconfig>
+                                    <classpath refid="maven.test.classpath" />
+
+                                    <operation type="INSERT" src="db/test/galaxy_test_data.xls" format="xls" transaction="true"/>
+
+                                </dbunit>
+                            </target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+
+        </profile>
+
+    </profiles>
 
 </project>
