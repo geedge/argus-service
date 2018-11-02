@@ -5,10 +5,8 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +14,6 @@ import java.util.Map;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
@@ -27,16 +23,22 @@ import com.nis.util.Constants;
 import com.nis.util.LogJDBCByDruid;
 import com.zdjizhi.utils.StringUtil;
 
+/**
+ * 从clickhouse或者hive中查询数据并set到page.list返回给界面
+ * 
+ * @author rkg
+ *
+ */
 @Service
 public class LogDataService {
-	private final static Logger logger = LoggerFactory.getLogger(LogDataService.class);
+	// private final static Logger logger =
+	// LoggerFactory.getLogger(LogDataService.class);
 	static DruidDataSource datasource = null;
 	Connection conn = null;
 	ResultSet rs = null;
 	Statement st = null;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
-
 	private static Map<String, Map<String, String>> col2col = new HashMap<String, Map<String, String>>();
 	static {
 		Map<String, String> startMap = new HashMap<String, String>();
@@ -47,6 +49,13 @@ public class LogDataService {
 		col2col.put("searchFoundEndTime", endMap);
 	}
 
+	/**
+	 * 根据类名加对应的标识获取hive或者clickhouse中对应的表名
+	 * 
+	 * @param key
+	 * @param defaultTableName
+	 * @return
+	 */
 	private String getTableName(String key, String defaultTableName) {
 		if (Constants.ISUSECLICKHOUSE) {
 			key = key.replace("HiveTable", "ClickHouseTable");
@@ -54,28 +63,51 @@ public class LogDataService {
 		return Configurations.getStringProperty(key, defaultTableName);
 	}
 
+	/**
+	 * 根据page及obj对象中的属性值,利用反射拼接对应的查询sql(支持分页,排序) 和计算总量的sql并去对应的数据库中查询,
+	 * 并将结果set到page对象中,返回给界面展示
+	 * 
+	 * @param page
+	 * @param obj
+	 * @throws Exception
+	 */
 	public <T> void getData(Page<T> page, Object obj) throws Exception {
 		String className = obj.getClass().getSimpleName();
 		String tableName = getTableName(className + "HiveTable", "");
 		if (tableName == null || tableName.trim().equals("")) {
 			throw new RuntimeException("日志类" + className + "对应的表名为空,请检查配置文件");
 		}
-		String orderBy = "";
+		String orderBy = " order by ";
 		if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-			orderBy = Page.getOrderBySql(className, page.getOrderBy());
+			orderBy = orderBy + Page.getOrderBySql(className, page.getOrderBy());
 		} else {
-			orderBy = " found_Time desc";
+			orderBy = orderBy + "found_Time desc ";
 		}
 		if (Constants.ISUSECLICKHOUSE) {
-			getDataFromClickHouse(page, obj, tableName, className, orderBy);
+			getDataFromClickHouse(page, obj, tableName, className, orderBy.toLowerCase());
 		} else {
-			getDataFromHive(page, obj, tableName, className, orderBy);
+			getDataFromHive(page, obj, tableName, className, orderBy.toLowerCase());
 		}
 
 	}
 
-	public <T> void getDataFromClickHouse(Page<T> page, Object bean, String tableName, String className, String orderBy)
-			throws Exception {
+	/**
+	 * 从clickhouse中查询数据,注意clickhouse区分大小写,目前和百分点商定都是用小写
+	 * 
+	 * @param page
+	 *            里面含有pagesize和pageno,order by
+	 * @param bean
+	 *            日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
+	 * @param tableName
+	 *            表名
+	 * @param className
+	 *            类名
+	 * @param orderBy
+	 *            orderby条件
+	 * @throws Exception
+	 */
+	private <T> void getDataFromClickHouse(Page<T> page, Object bean, String tableName, String className,
+			String orderBy) throws Exception {
 		tableName = tableName.toLowerCase();
 		String showColmun = getFiledsSql(className, page.getFields());
 		StringBuffer sql = new StringBuffer();
@@ -162,47 +194,43 @@ public class LogDataService {
 			if (whereFoundTime.length() > 0) {
 				int indexOf = whereFoundTime.indexOf("and") + "and".length();
 				countSql.append(whereFoundTime.substring(indexOf));
-				
-				foundTimeSql.append(whereFoundTime.substring(indexOf));
-				if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
-					foundTimeSql.append(" order by " + orderBy.toLowerCase());
-				} else {
-					foundTimeSql.append(" order by " + orderBy.toLowerCase() + " desc");
-				}
-				
-				foundTimeSql.append("  limit " + startNum + "," + page.getPageSize());
+
+				foundTimeSql.append(whereFoundTime.substring(indexOf) + orderBy.toLowerCase() + "  limit " + startNum
+						+ "," + page.getPageSize());
 				sql.append(" found_time in(" + foundTimeSql + ") ");
-			}else {
-				throw new RuntimeException("从clickhouse的"+tableName+"表查询时,必须要有一个where条件");
+			} else {
+				throw new RuntimeException("从clickhouse的" + tableName + "表查询时,必须要有一个where条件");
 			}
 		} else {
 			int foundIndexOf = whereFoundTime.append(whereSB).indexOf("and") + "and".length();
 			countSql.append(whereFoundTime.substring(foundIndexOf));
-			
-			
-			foundTimeSql.append(whereFoundTime.substring(foundIndexOf));
-			if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
-				foundTimeSql.append(" order by " + orderBy.toLowerCase());
-			} else {
-				foundTimeSql.append(" order by " + orderBy.toLowerCase() + " desc");
-			}
-			foundTimeSql.append("  limit " + startNum + "," + page.getPageSize());
-			
-			
+
+			foundTimeSql.append(whereFoundTime.substring(foundIndexOf) + orderBy.toLowerCase() + "  limit " + startNum
+					+ "," + page.getPageSize());
+
 			int indexOf = whereSB.indexOf("and") + "and".length();
 			sql.append(whereSB.substring(indexOf) + " and found_time in(" + foundTimeSql + ") ");
 		}
-
-		if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
-			sql.append(" order by " + orderBy.toLowerCase());
-		} else {
-			sql.append(" order by " + orderBy.toLowerCase() + " desc");
-		}
-		sql.append("  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
+		sql.append(orderBy.toLowerCase() + "  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
 		searchFromDataCenter(page, bean, sql, countSql);
 	}
 
-	public <T> void getDataFromHive(Page<T> page, Object bean, String tableName, String className, String orderBy)
+	/**
+	 * 从hive中查询数据
+	 * 
+	 * @param page
+	 *            里面含有pagesize和pageno,order by
+	 * @param bean
+	 *            日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
+	 * @param tableName
+	 *            表名
+	 * @param className
+	 *            类名
+	 * @param orderBy
+	 *            orderby条件
+	 * @throws Exception
+	 */
+	private <T> void getDataFromHive(Page<T> page, Object bean, String tableName, String className, String orderBy)
 			throws Exception {
 		tableName = tableName.toLowerCase();
 		String showColmun = getFiledsSql(className, page.getFields());
@@ -220,11 +248,6 @@ public class LogDataService {
 		String sqlTrim = sql.toString().trim();
 		if (sqlTrim.endsWith(",")) {
 			sqlTrim = sqlTrim.substring(0, sqlTrim.length() - 1);
-		}
-		if (orderBy.toLowerCase().contains("asc") || orderBy.toLowerCase().contains("desc")) {
-			orderBy = " order by " + orderBy;
-		} else {
-			orderBy = " order by " + orderBy + " desc ";
 		}
 		sql.setLength(0);
 		sql.append(" select " + sqlTrim.toLowerCase() + "  from (select " + sqlTrim.toLowerCase()
@@ -331,18 +354,35 @@ public class LogDataService {
 		searchFromDataCenter(page, bean, sql, countSql);
 	}
 
+	/**
+	 * 执行sql
+	 * 
+	 * @param page
+	 * @param bean
+	 * @param selSql
+	 * @param countSql
+	 * @throws Exception
+	 */
 	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
-		new LogJDBCByDruid().getTableData(page, selSql.toString(), bean.getClass());
-		if (page.getList() != null && page.getList().size() > 0) {
-			new LogJDBCByDruid().getCount(page, countSql.toString());
+		new LogJDBCByDruid().getTableData(page, selSql.toString().toLowerCase(), bean.getClass());
+		if (Constants.ISOPENLOGCOUNTANDLAST) {
+			if (page.getList() != null && page.getList().size() > 0) {
+				new LogJDBCByDruid().getCount(page, countSql.toString().toLowerCase());
+			}
 		}
 
 	}
 
-	private static Map<String, String> getFiledsType(Object o) {
-		Field[] fields = o.getClass().getSuperclass().getDeclaredFields();
-		Field[] superfields = o.getClass().getDeclaredFields();
+	/**
+	 * 利用反射获取class中各个属性的数据类型,key是属性名称,value是数据类型
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	private static Map<String, String> getFiledsType(Object obj) {
+		Field[] fields = obj.getClass().getSuperclass().getDeclaredFields();
+		Field[] superfields = obj.getClass().getDeclaredFields();
 		Map<String, String> infoMap = new HashMap<String, String>();
 		for (int i = 0; i < fields.length; i++) {
 			infoMap.put(fields[i].getName(), fields[i].getType().toString().replace("class", ""));
@@ -353,16 +393,23 @@ public class LogDataService {
 		return infoMap;
 	}
 
-	public static String getFiledsSql(String mapName, String fileds) throws Exception {
-		String[] fieldsColoumn = null;
-		// 所有字段名
-		List<String> columnList = new ArrayList<String>();
-		// 所有属性名
-		List<String> propertyList = new ArrayList<String>();
-		// 属性名称为key，字段名称为value
-		Map<String, String> columnMap = new HashMap<String, String>();
-
+	/**
+	 * 将fileds中的字段根据DfLogSearchDao.xml中对应的resultMap转换为数据库中的字段
+	 * 
+	 * @param mapName
+	 * @param fileds与界面商定好的是传日志类中的对象名(界面没有表结构不知道对象属性对应的数据库字段名称是什么),不是数据库中的字段名
+	 * @return
+	 * @throws Exception
+	 */
+	private static String getFiledsSql(String mapName, String fileds) throws Exception {
 		if (!StringUtil.isBlank(fileds)) {
+			String[] fieldsColoumn = null;
+			// 所有字段名
+			List<String> columnList = new ArrayList<String>();
+			// 所有属性名
+			List<String> propertyList = new ArrayList<String>();
+			// 属性名称为key，字段名称为value
+			Map<String, String> columnMap = new HashMap<String, String>();
 			// 解析Fileds的字段/属性名称
 			fieldsColoumn = fileds.split(",");
 
@@ -399,7 +446,13 @@ public class LogDataService {
 		return fileds;
 	}
 
-	public static Map<String, String> getFiledAndColumnMap(Class<?> clazz) {
+	/**
+	 * 根据class从DfLogSearchDao.xml中获取对应的resultMap里column与property的关系,key是property
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	private static Map<String, String> getFiledAndColumnMap(Class<?> clazz) {
 		Map<String, String> map = new HashMap<String, String>();
 		SqlSessionFactory sqlSessionFactory = SpringContextHolder.getBean(SqlSessionFactory.class);
 		ResultMap resultMap = sqlSessionFactory.getConfiguration().getResultMap(clazz.getSimpleName() + "Map");
@@ -436,7 +489,7 @@ public class LogDataService {
 	}
 
 	/**
-	 * 利用发射调用bean.set方法将value设置到字段
+	 * 利用反射调用bean.set方法将value设置到字段
 	 * 
 	 * @param bean
 	 * @param fieldName
@@ -456,63 +509,4 @@ public class LogDataService {
 		method.invoke(bean, value);
 	}
 
-	/**
-	 * 比较开始时间或者结束时间是否比当前系统时间早48小时
-	 * 
-	 * @param startTime
-	 *            开始时间
-	 * @param endTime
-	 *            结束时间
-	 * @return
-	 * @throws ParseException
-	 */
-	public static boolean ifTimeGreaterThan48(String startTime, String endTime) throws Exception {
-		logger.info("ifTimeGreaterThan48方法开始" + System.currentTimeMillis());
-		if (null != startTime && !startTime.equals("") && null != endTime && !endTime.equals("")) {// 开始和结束时间都不为空
-			Date startDate = sdf.parse(startTime);
-			Date endDate = sdf.parse(endTime);
-			if (startDate.getTime() < endDate.getTime()) {// 开始时间比结束时间早
-				logger.info("ifTimeGreaterThan48方法结束" + System.currentTimeMillis());
-				return gt48(endTime);
-			} else {// 开始时间比结束时间晚,不符合一般情况
-				logger.info("ifTimeGreaterThan48方法结束" + System.currentTimeMillis());
-				return false;
-			}
-		} else if (null != endTime && !endTime.equals("")) {// 开始时间为空,结束时间不为空
-			logger.info("ifTimeGreaterThan48方法结束" + System.currentTimeMillis());
-			return gt48(endTime);
-		} else if (null != startTime && !startTime.equals("")) {// 结束时间为空,开始时间不为空
-			logger.info("ifTimeGreaterThan48方法结束" + System.currentTimeMillis());
-			return gt48(startTime);
-		} else {// 开始和结束时间都为空
-			logger.info("ifTimeGreaterThan48方法结束" + System.currentTimeMillis());
-			return false;
-		}
-
-	}
-
-	public static boolean gt48(String eqTime) throws ParseException {
-		logger.info("gt48方法开始" + System.currentTimeMillis());
-		Date eqDate = sdf.parse(eqTime);
-		Long dateNum = eqDate.getTime();
-		Long currentDate = new Date().getTime();
-		Long time = 0l;
-		if (dateNum < currentDate) {
-			time = currentDate - dateNum;// 获取结束时间与当前系统时间的时间差毫秒数
-		} else {
-			logger.info("gt48方法结束" + System.currentTimeMillis());
-			return false;// 结束时间比当前系统时间晚,不符合从数据中心查询数据要求(当前日期48小时前数据从数据中心查询)
-		}
-		double hours = time.doubleValue() / (1000 * 60 * 60);
-		Long datacenterTime = Constants.DATACENTER_TIME;
-		double doubleValue = datacenterTime.doubleValue();
-		if (hours > doubleValue) {
-			logger.info("gt48方法结束" + System.currentTimeMillis());
-			return true;// 符合要求
-		} else {
-			logger.info("gt48方法结束" + System.currentTimeMillis());
-			return false;
-		}
-
-	}
 }

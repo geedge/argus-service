@@ -29,10 +29,10 @@ import com.zdjizhi.utils.StringUtil;
 /**
  * 
  * <p>
- * Title: HiveJDBCByDruid
+ * Title: LogJDBCByDruid
  * </p>
  * <p>
- * Description: 使用druid连接池对hive进行查询并解析结果
+ * Description: 使用druid连接池对hive或clickhouse进行查询并解析结果
  * </p>
  * <p>
  * Company: IIE
@@ -49,7 +49,7 @@ public class LogJDBCByDruid {
 	ResultSet rs = null;
 	Statement st = null;
 
-	public static Connection getConnection() throws SQLException {
+	private static Connection getConnection() throws SQLException {
 		if (datasource == null) {
 			if (Constants.ISUSECLICKHOUSE) {
 				datasource = (DruidDataSource) SpringContextHolder.getBean("ClickHouseDataSourceByDruid");
@@ -105,12 +105,16 @@ public class LogJDBCByDruid {
 			} else {
 				page.setList(listObject);
 			}
+			logger.info("执行日志查询语句成功,sql={}", sql);
 		} finally {
 			closeConn();
 		}
 	}
 
-	public void closeConn() {
+	/**
+	 * 关闭数据库连接
+	 */
+	private void closeConn() {
 		try {
 			if (rs != null) {
 				rs.close();
@@ -138,7 +142,7 @@ public class LogJDBCByDruid {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<String> getDateColumn(Class<?> type) throws Exception {
+	private static List<String> getDateColumn(Class<?> type) throws Exception {
 		List<String> columnList = new ArrayList<String>();
 		BeanInfo beanInfo = Introspector.getBeanInfo(type);
 		PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
@@ -153,7 +157,15 @@ public class LogJDBCByDruid {
 		return columnList;
 	}
 
-	public static Object map2Obj(Map<String, Object> map, Class<?> beanClass) throws Exception {
+	/**
+	 * 将map中的数据利用反射set到Class中,并返回设置好值的对象
+	 * 
+	 * @param map
+	 * @param beanClass
+	 * @return
+	 * @throws Exception
+	 */
+	private static Object map2Obj(Map<String, Object> map, Class<?> beanClass) throws Exception {
 		BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
 		Object obj = beanClass.newInstance();
 		PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
@@ -194,7 +206,13 @@ public class LogJDBCByDruid {
 		return obj;
 	}
 
-	public static Map<String, String> getColumn2FiledMap(Class<?> clazz) {
+	/**
+	 * 根据class从DfLogSearchDao.xml中获取对应的resultMap里column与property的关系,key是column
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	private static Map<String, String> getColumn2FiledMap(Class<?> clazz) {
 		Map<String, String> map = new HashMap<String, String>();
 		SqlSessionFactory sqlSessionFactory = SpringContextHolder.getBean(SqlSessionFactory.class);
 		ResultMap resultMap = sqlSessionFactory.getConfiguration().getResultMap(clazz.getSimpleName() + "Map");
@@ -206,10 +224,19 @@ public class LogJDBCByDruid {
 
 	}
 
+	/**
+	 * 执行count的sql并将结果和计算的last的值set到page对象中
+	 * 
+	 * @param page
+	 * @param sql
+	 * @throws Exception
+	 */
 	public <T> void getCount(Page<T> page, String sql) throws Exception {
 		try {
 			conn = getConnection();
+			logger.info("连接数据中心日志库成功--------------------------");
 			st = conn.createStatement();
+			logger.info("开始执行查询日志总条数sql={}", sql);
 			rs = st.executeQuery(sql);
 			String countStr = null;
 			while (rs.next()) {
@@ -217,11 +244,12 @@ public class LogJDBCByDruid {
 				break;
 			}
 			if (countStr == null || countStr.trim().equals("")) {
-				logger.info("获取数据中心日志总条数成功总共===================0条配置");
+				logger.info("获取数据中心日志总条数成功,总共0条日志,sql={}", sql);
 				page.setCount(0l);
 				page.setLast(1);
 			} else {
 				Long count = Long.valueOf(countStr);
+				logger.info("获取数据中心日志总条数成功,总共{}条日志,sql={}", count, sql);
 				page.setCount(count);
 				page.setLast(getLastPageNum(count.intValue(), page.getPageSize()));
 			}

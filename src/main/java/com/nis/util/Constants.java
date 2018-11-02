@@ -196,6 +196,10 @@ public final class Constants {
 	 * 日志查询是否使用clickhouse,否则使用hive
 	 */
 	public static final Boolean ISUSECLICKHOUSE = Configurations.getBooleanProperty("isUseClickHouse", true);
+	/**
+	 * 是否开启日志查询count和last功能
+	 */
+	public static final Boolean ISOPENLOGCOUNTANDLAST = Configurations.getBooleanProperty("isOpenLogCountAndLast", true);
 	
 	public static final String DIGEST_GEN_TOOL_PATH = Configurations.getStringProperty("digest.gen.tool.path", "maat-redis/digest_gen");
 
