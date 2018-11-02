@@ -383,7 +383,7 @@ public abstract class BaseLogService {
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数错误");
 		}
-		if (timeCount!=2) {
+		if (timeCount==1) {
 			logger.error(RestBusinessCode.config_integrity_error.getErrorReason()+",searchReportStartTime和searchReportEndTime参数必须同时填写");
 			thread.setExceptionInfo("searchReportStartTime和searchReportEndTime参数必须同时填写");
 			throw new RestServiceException(thread,

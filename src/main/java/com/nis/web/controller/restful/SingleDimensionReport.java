@@ -430,17 +430,16 @@ public class SingleDimensionReport extends BaseRestController {
 	 * @throws Exception
 	 */
 	public void setGroupType(NtcRadiusReport ntcRadiusReport) throws Exception {
-		String groupType ="";
-		Long times = DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportEndTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS)-DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportStartTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS);
-		if (times<=24*60*60L) {
-			groupType ="hour";
-		}else{
-			if (times<=30*24*60*60L) {
+		String groupType ="hour";
+		if (!(StringUtil.isEmpty(ntcRadiusReport.getSearchReportStartTime())&&StringUtil.isEmpty(ntcRadiusReport.getSearchReportEndTime()))) {
+			Long times = DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportEndTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS)-DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportStartTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS);
+			if (times>0&&times<=30*24*60*60L) {
 				groupType ="day";
-			}else {
+			}else if(times>30*24*60*60L){
 				groupType ="month";
 			}
 		}
+		
 		ntcRadiusReport.setGroupType(groupType);
 	}
 }
