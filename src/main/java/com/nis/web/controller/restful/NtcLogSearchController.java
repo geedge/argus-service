@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcBgpLog;
+import com.nis.domain.restful.NtcCollectVoipLog;
 import com.nis.domain.restful.NtcDdosLog;
 import com.nis.domain.restful.NtcDnsLog;
 import com.nis.domain.restful.NtcFtpLog;
@@ -32,6 +33,7 @@ import com.nis.domain.restful.NtcStreamingMediaLog;
 import com.nis.domain.restful.NtcVoipLog;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.DateUtils;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.LogDataService;
@@ -39,6 +41,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.NtcLogService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * @ClassName:NtcLogSearchController
@@ -505,5 +508,35 @@ public class NtcLogSearchController extends BaseRestController {
 				0);
 	}
 
+	@RequestMapping(value = "/ntcCollectVoipLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "VoIp泛收日志查询", httpMethod = "GET", notes = "对日志功能“VoIp泛收日志查询”提供数据基础查询服务")
+	public Map<String, ?> ntcCollectVoipLogs(Page page, NtcCollectVoipLog ntcCollectVoipLog, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
 
+		try {
+			if (StringUtil.isEmpty(ntcCollectVoipLog.getSearchFoundStartTime())
+					&& StringUtil.isEmpty(ntcCollectVoipLog.getSearchFoundEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null,
+						null, Constants.LOG_LOCAL_TIME, "minute");
+				ntcCollectVoipLog.setSearchFoundStartTime(map.get("startTime"));
+				ntcCollectVoipLog.setSearchFoundEndTime(map.get("endTime"));
+			}
+			
+			ntcLogService.collectConditionCheck(auditLogThread, start,ntcCollectVoipLog, NtcCollectVoipLog.class, page);
+			logDataService.getData(page, ntcCollectVoipLog);
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			if (!(e instanceof RestServiceException)) {
+				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VoIp泛收日志检索失败");
+			}
+			throw ((RestServiceException) e);
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VoIp泛收日志检索成功", page,
+				0);
+	}
 }

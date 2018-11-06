@@ -1403,4 +1403,34 @@
 		<result column="website" jdbcType="VARCHAR" property="website" />
 		
 	</resultMap>
+	
+	<resultMap id="NtcCollectVoipLogMap" type="com.nis.domain.restful.NtcCollectVoipLog">
+		<result column="pid" jdbcType="VARCHAR" property="pid" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="voip_rotocol" jdbcType="VARCHAR" property="voipProtocol" />
+		<result column="rtp_d_ip" jdbcType="VARCHAR" property="rtpDIp" />
+		<result column="rtp_s_ip" jdbcType="VARCHAR" property="rtpSIp" />
+		<result column="rtp_d_port" jdbcType="VARCHAR" property="rtpDPort" />
+		<result column="rtp_s_port" jdbcType="VARCHAR" property="rtpSPort" />
+		<result column="from_to_store_ip" jdbcType="VARCHAR" property="fromToStoreIp" />
+		<result column="from_to_store_url" jdbcType="VARCHAR" property="fromToStoreUrl" />
+		<result column="to_from_store_ip" jdbcType="VARCHAR" property="toFromStoreIp" />
+		<result column="to_from_store_url" jdbcType="VARCHAR" property="toFromStoreUrl" />
+		<result column="duation" jdbcType="VARCHAR" property="duation" />
+		<result column="sip_d_ip" jdbcType="VARCHAR" property="sipDIp" />
+		<result column="sip_s_ip" jdbcType="VARCHAR" property="sipSIp" />
+		<result column="sip_d_port" jdbcType="INTEGER" property="sipDPort" />
+		<result column="sip_s_port" jdbcType="INTEGER" property="sipSPort" />
+		<result column="call_id" jdbcType="VARCHAR" property="callId" />
+		<result column="request_uri" jdbcType="VARCHAR" property="requestUri" />
+		<result column="calling_account" jdbcType="VARCHAR" property="callingAccount" />
+		<result column="called_account" jdbcType="VARCHAR" property="calledAccount" />
+		<result column="contacts" jdbcType="VARCHAR" property="contacts" />
+		<result column="route" jdbcType="VARCHAR" property="route" />
+		<result column="record_route" jdbcType="VARCHAR" property="recordRoute" />
+		<result column="user_agent" jdbcType="VARCHAR" property="userAgent" />
+		<result column="server" jdbcType="VARCHAR" property="server" />
+	</resultMap>
 </mapper>
