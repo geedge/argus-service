@@ -1,5 +1,21 @@
 package com.nis.web.service;
 
+import com.nis.domain.LogEntity;
+import com.nis.domain.Page;
+import com.nis.domain.restful.NtcCollectVoipLog;
+import com.nis.domain.restful.NtcRadiusReport;
+import com.nis.domain.restful.NtcReportEntity;
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.RestServiceException;
+import com.nis.util.elasticsearch.ElasticsearchSqlDao;
+import com.zdjizhi.utils.StringUtil;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -8,22 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.ibatis.mapping.ResultMap;
-import org.apache.ibatis.mapping.ResultMapping;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.nis.domain.LogEntity;
-import com.nis.domain.Page;
-import com.nis.domain.restful.NtcReportEntity;
-import com.nis.restful.RestBusinessCode;
-import com.nis.restful.RestServiceException;
-import com.zdjizhi.utils.StringUtil;
-import com.nis.util.elasticsearch.ElasticsearchSqlDao;
 
 /**
  * 基础日志Service基类
@@ -249,7 +249,7 @@ public abstract class BaseLogService {
 	 * @param page
 	 */
 	public void collectConditionCheck(AuditLogThread thread, long start, NtcCollectVoipLog entity, Class clazz,
-									Page page) {
+									  Page page) {
 		logger.info("请求参数校验开始----" + System.currentTimeMillis());
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundEndTime())) {
