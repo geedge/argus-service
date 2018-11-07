@@ -245,7 +245,7 @@ public class LogDataService {
 		} else {
 			sql.append(showColmun);
 		}
-		String sqlTrim = sql.toString().trim();
+		String sqlTrim= sql.toString().trim();
 		if (sqlTrim.endsWith(",")) {
 			sqlTrim = sqlTrim.substring(0, sqlTrim.length() - 1);
 		}
@@ -365,7 +365,7 @@ public class LogDataService {
 	 */
 	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
-		new LogJDBCByDruid().getTableData(page, selSql.toString().toLowerCase(), bean.getClass());
+		new LogJDBCByDruid().getTableData(page, selSql.toString(), bean.getClass());
 		if (Constants.ISOPENLOGCOUNTANDLAST) {
 			if (page.getList() != null && page.getList().size() > 0) {
 				new LogJDBCByDruid().getCount(page, countSql.toString().toLowerCase());

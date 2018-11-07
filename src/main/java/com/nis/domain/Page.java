@@ -518,7 +518,7 @@ public class Page<T> {
 	 */
 	public Page<T> setList(List<T> list) {
 		this.list = list;
-		initialize();
+//		initialize();
 		return this;
 	}
 
