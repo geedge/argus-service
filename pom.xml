@@ -32,9 +32,6 @@
 
 
 
-
-
-
     <build>
 
         <resources>
@@ -639,9 +636,9 @@
                                 <sql driver="${jdbc.deploy.driver}" url="${jdbc.deploy.url}" userid="${jdbc.deploy.username}" password="${jdbc.deploy.password}"
                                      onerror="continue" encoding="${maven.compiler.encoding}">
                                     <classpath refid="maven.test.classpath" />
-                                    <!--<transaction src="db/init/galaxy_stru_${jdbc.type}.sql"/>
+                                    <transaction src="db/init/galaxy_stru_${jdbc.type}.sql"/>
                                     <transaction src="db/init/galaxy_stru_ui_${jdbc.type}.sql"/>
-                                    <transaction src="db/init/galaxy_data_${jdbc.type}.sql"/>-->
+                                    <transaction src="db/init/galaxy_data_${jdbc.type}.sql"/>
                                     <transaction src="db/test/galaxy_test_${jdbc.type}.sql"/>
                                 </sql>
 

@@ -1,24 +1,18 @@
 package com.nis.listener;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.ServletContextEvent;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.context.ContextLoaderListener;
-
 import com.nis.domain.restful.CompileAndGroupRelations;
 import com.nis.domain.restful.GroupAndRegionRelations;
 import com.nis.domain.restful.MaatRelation;
 import com.nis.util.Configurations;
 import com.nis.web.service.SpringContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.context.ContextLoaderListener;
+
+import javax.servlet.ServletContextEvent;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 项目启动时加载数据字典
@@ -46,6 +40,8 @@ public class CompileGroupRegionRela extends ContextLoaderListener {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+
 	}
 
 	private void getAllId(RedisTemplate<String, String> redisTemplate, int redisDBIndex) {
