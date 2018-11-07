@@ -645,12 +645,8 @@
 	<select id="findNtcRadiusReport" parameterType="com.nis.domain.restful.NtcRadiusReport"
 		resultMap="NtcRadiusReportMap">
 		SELECT
-			<if test="searchAccount != null and searchAccount !=''">
 				nas_ip,
-			</if>
-			<if test="searchNasIp != null and searchNasIp !=''">
 				account,
-			</if>
 			<choose>
 				<when test="groupType!= null and groupType!='' and groupType == 'day'">
 					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
@@ -665,10 +661,10 @@
 			REPORT_TIME,sum(num) num
 		FROM ntc_radius_report
 		<where>
-			<if test="searchAccount != null and searchAccount !=''">
+			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 and searchAccount != null and searchAccount !=''">
 				<![CDATA[AND account =#{searchAccount}]]>
 			</if>
-			<if test="searchNasIp != null and searchNasIp !=''">
+			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 and searchNasIp != null and searchNasIp !=''">
 				<![CDATA[AND nas_ip =#{searchNasIp}]]>
 			</if>
 			<choose>
@@ -682,11 +678,11 @@
 		</where>
 			
 		GROUP BY
-			<if test="searchAccount != null and searchAccount !=''">
-				<![CDATA[nas_ip]]>
+			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2">
+				<![CDATA[account,nas_ip]]>
 			</if>
-			<if test="searchNasIp != null and searchNasIp !=''">
-				<![CDATA[account]]>
+			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+				<![CDATA[nas_ip,account]]>
 			</if>
 			,
 			<choose>
