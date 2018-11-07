@@ -81,7 +81,7 @@ public class NtcCollectVoipLog implements Serializable{
 	protected String searchRtpDIp;//RTP服务端ip
 	protected String searchRtpSIp;//RTP客户端ip
 	protected String searchSipDIp;//SIP服务端ip
-	protected String searchDipDIp;//SIP客户端ip
+	protected String searchSipSIp;//SIP客户端ip
 	protected String searchCapIp;//处理机IP
 	protected String searchFoundStartTime;//开始发现时间
 	protected String searchFoundEndTime;//结束发现时间
@@ -394,12 +394,12 @@ public class NtcCollectVoipLog implements Serializable{
 		this.searchSipDIp = searchSipDIp;
 	}
 	@JsonIgnore
-	public String getSearchDipDIp() {
-		return searchDipDIp;
+	public String getSearchSipSIp() {
+		return searchSipSIp;
 	}
 
-	public void setSearchDipDIp(String searchDipDIp) {
-		this.searchDipDIp = searchDipDIp;
+	public void setSearchSipSIp(String searchSipSIp) {
+		this.searchSipSIp = searchSipSIp;
 	}
 	@JsonIgnore
 	public String getSearchCapIp() {
