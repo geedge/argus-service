@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
-import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcReportEntity;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -242,6 +241,62 @@ public abstract class BaseLogService {
 
 	}
 	/**
+	 * 验证日志查询条件格式是否正确
+	 * @param thread
+	 * @param start
+	 * @param entity
+	 * @param clazz
+	 * @param page
+	 */
+	public void collectConditionCheck(AuditLogThread thread, long start, NtcCollectVoipLog entity, Class clazz,
+									Page page) {
+		logger.info("请求参数校验开始----" + System.currentTimeMillis());
+		try {
+			if (!StringUtil.isBlank(entity.getSearchFoundEndTime())) {
+				sdf.setLenient(false);
+				sdf.parse(entity.getSearchFoundEndTime());
+			}
+		} catch (ParseException e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式格式");
+		}
+
+		try {
+			if (!StringUtil.isBlank(entity.getSearchFoundStartTime())) {
+				sdf.setLenient(false);
+				sdf.parse(entity.getSearchFoundStartTime());
+			}
+		} catch (ParseException e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数错误");
+		}
+
+		try {
+			checkCloumnIsExist(thread, start, clazz, page);
+		} catch (RestServiceException e) {
+			logger.error(e);
+			throw e;
+		} catch (Exception e) {
+			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error(e);
+			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求参数错误");
+		}
+		logger.info("请求参数校验结束----" + System.currentTimeMillis());
+
+	}
+	/**
 	 * 
 	 * @Description:
 	 * @author (zdx)
@@ -294,6 +349,14 @@ public abstract class BaseLogService {
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数错误");
+		}
+		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
+			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
+			thread.setExceptionInfo("searchBusinessType参数格式错误");
+			throw new RestServiceException(thread,
+					System.currentTimeMillis() - start,
+					"searchBusinessType参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
 		}
 		
 		logger.info("实时报表统计查询参数校验结束----" + System.currentTimeMillis());
@@ -367,7 +430,7 @@ public abstract class BaseLogService {
 			logger.error(e);
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数错误");
 		}
-		
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
 				sdf.parse(entity.getSearchReportEndTime());
@@ -391,8 +454,8 @@ public abstract class BaseLogService {
 					"searchReportStartTime和searchReportEndTime参数必须同时填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
-		
-		
+
+
 		//根据用户查看IP趋势时(searchBusinessType=2)，用户名必需填写
 		if ("2".equals(entity.getSearchBusinessType())&&StringUtil.isEmpty(entity.getSearchAccount())) {
 			logger.error(RestBusinessCode.config_integrity_error.getErrorReason()+",searchBusinessType=2时searchAccount参数必须填写");
@@ -402,7 +465,7 @@ public abstract class BaseLogService {
 					"searchBusinessType=2时searchAccount参数必须填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
-		
+
 		//根据用户查看IP趋势时(searchBusinessType=3)，用户名必需填写
 		if ("3".equals(entity.getSearchBusinessType())&&StringUtil.isEmpty(entity.getSearchNasIp())) {
 			logger.error(RestBusinessCode.config_integrity_error.getErrorReason()+",searchBusinessType=3时searchNasIp参数必须填写");
@@ -412,11 +475,11 @@ public abstract class BaseLogService {
 					"searchBusinessType=3时searchNasIp参数必须填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
-		
+
 		logger.info("用户行为日志统计参数校验结束----" + System.currentTimeMillis());
 
-	}	
-	
+	}
+
 	/**
 	 * 
 	 * @Title: getJedisKey
