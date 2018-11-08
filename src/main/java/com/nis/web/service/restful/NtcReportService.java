@@ -1,5 +1,7 @@
 package com.nis.web.service.restful;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +110,6 @@ public class NtcReportService extends BaseLogService {
 	
 	public List findNtcRadiusReport(NtcRadiusReport entity) throws Exception {
 		List resultList = null;
-		
 		if ("1".equals(entity.getSearchBusinessType())) {
 			resultList = new ArrayList<Map>();
 			Map<String, List<NtcRadiusReport>> restMap = new HashMap<String, List<NtcRadiusReport>>();
@@ -118,10 +119,33 @@ public class NtcReportService extends BaseLogService {
 			restMap.put("nasIpList", nasIpList);
 			resultList.add(restMap);
 		}else{
-			resultList = dao.findNtcRadiusReport(entity);
+			resultList = new ArrayList<NtcRadiusReport>();
+			List<NtcRadiusReport> list = dao.findNtcRadiusReport(entity);
+			
+			String regionName = "nasIp";
+			if ("3".equals(entity.getSearchBusinessType())) {
+				regionName="account";
+			}
+			PropertyDescriptor pd= new PropertyDescriptor(regionName, NtcRadiusReport.class);
+			Method method = pd.getReadMethod();
+			NtcRadiusReport temp = null;
+			Object tempVal =null;
+			for (int i = 0; i < list.size(); i++) {
+				if (i>0) {
+					NtcRadiusReport obj = list.get(i);
+					Object objVal = method.invoke(obj);
+					if (objVal!=null && tempVal!=null && !objVal.toString().equals(tempVal.toString())) {
+						temp = obj;
+						tempVal = method.invoke(temp);
+						resultList.add(obj);
+					}
+				}else{
+					temp = list.get(i);
+					tempVal = method.invoke(temp);
+					resultList.add(list.get(i));
+				}
+			}
 		}
-		
 		return resultList;
-
 	}
 }

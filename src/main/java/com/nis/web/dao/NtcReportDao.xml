@@ -645,20 +645,7 @@
 	<select id="findNtcRadiusReport" parameterType="com.nis.domain.restful.NtcRadiusReport"
 		resultMap="NtcRadiusReportMap">
 		SELECT
-				nas_ip,
-				account,
-			<choose>
-				<when test="groupType!= null and groupType!='' and groupType == 'day'">
-					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
-				</when>
-				<when test="groupType!= null and groupType!='' and groupType == 'month'">
-					DATE_FORMAT(REPORT_TIME, '%Y-%m')
-				</when>				
-				<otherwise>
-					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d %H')
-				</otherwise>
-			</choose>
-			REPORT_TIME,sum(num) num
+				*
 		FROM ntc_radius_report
 		<where>
 			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 and searchAccount != null and searchAccount !=''">
@@ -676,41 +663,7 @@
 				</otherwise>
 			</choose>
 		</where>
-			
-		GROUP BY
-			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2">
-				<![CDATA[account,nas_ip]]>
-			</if>
-			<if test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
-				<![CDATA[nas_ip,account]]>
-			</if>
-			,
-			<choose>
-				<when test="groupType!= null and groupType!='' and groupType == 'day'">
-					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
-				</when>
-				<when test="groupType!= null and groupType!='' and groupType == 'month'">
-					DATE_FORMAT(REPORT_TIME, '%Y-%m')
-				</when>				
-				<otherwise>
-					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d %H')
-				</otherwise>
-			</choose>
-			
-			
 		ORDER BY
-			<choose>
-				<when test="groupType!= null and groupType!='' and groupType == 'day'">
-					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d')
-				</when>
-				<when test="groupType!= null and groupType!='' and groupType == 'month'">
-					DATE_FORMAT(REPORT_TIME, '%Y-%m')
-				</when>				
-				<otherwise>
-					DATE_FORMAT(REPORT_TIME, '%Y-%m-%d %H')
-				</otherwise>
-			</choose>
-
- 		ASC
+ 			REPORT_TIME	ASC
 	</select>
 </mapper>
