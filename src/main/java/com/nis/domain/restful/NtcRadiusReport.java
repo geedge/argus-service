@@ -1,10 +1,13 @@
 package com.nis.domain.restful;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 public class NtcRadiusReport implements Serializable{
@@ -21,7 +24,7 @@ public class NtcRadiusReport implements Serializable{
 	protected Long num;
 	@JsonInclude(value = Include.NON_NULL)
 	@ApiModelProperty(value = "统计时间", required = true)
-	protected String reportTime;
+	protected Date reportTime;
 
 	/**
 	 * 业务类型：1:用户名和接口IP列表 2:根据用户，统计IP变化趋势 3：IP根据，统计用户变化趋势
@@ -59,12 +62,12 @@ public class NtcRadiusReport implements Serializable{
 	public void setNum(Long num) {
 		this.num = num;
 	}
-
-	public String getReportTime() {
+	@JsonSerialize(using = JsonDateSerializer.class)
+	public Date getReportTime() {
 		return reportTime;
 	}
 
-	public void setReportTime(String reportTime) {
+	public void setReportTime(Date reportTime) {
 		this.reportTime = reportTime;
 	}
 
