@@ -1,4 +1,4 @@
-package com.nis.util;
+package com.nis.web.dao.impl;
 
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -20,9 +20,11 @@ import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
+import com.nis.util.Constants;
 import com.nis.web.service.SpringContextHolder;
 import com.zdjizhi.utils.StringUtil;
 
@@ -42,6 +44,7 @@ import com.zdjizhi.utils.StringUtil;
  * @date 2018年8月20日
  *
  */
+@Repository
 public class LogJDBCByDruid {
 	private final static Logger logger = LoggerFactory.getLogger(LogJDBCByDruid.class);
 	static DruidDataSource datasource = null;
