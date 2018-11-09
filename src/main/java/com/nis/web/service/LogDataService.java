@@ -11,6 +11,8 @@ import java.util.Map;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,9 +30,8 @@ import com.zdjizhi.utils.StringUtil;
  */
 @Service
 public class LogDataService {
-	// private final static Logger logger =
-	// LoggerFactory.getLogger(LogDataService.class);
-	
+	private final static Logger logger = LoggerFactory.getLogger(LogDataService.class);
+
 	@Autowired
 	private LogJDBCByDruid logJDBCByDruid;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -186,13 +187,14 @@ public class LogDataService {
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 		StringBuffer foundTimeSql = new StringBuffer();
 		foundTimeSql.append("select  found_time  from " + tableName + " where ");
+		Integer limitCount = startNum + page.getPageSize();
 		if (whereSB.length() == 0) {// 没有其他查询条件只有默认的found_time条件
 			if (whereFoundTime.length() > 0) {
 				int indexOf = whereFoundTime.indexOf("and") + "and".length();
 				countSql.append(whereFoundTime.substring(indexOf));
 
-				foundTimeSql.append(whereFoundTime.substring(indexOf) + orderBy.toLowerCase() + "  limit " + startNum
-						+ "," + page.getPageSize());
+				foundTimeSql
+						.append(whereFoundTime.substring(indexOf) + orderBy.toLowerCase() + "  limit " + limitCount);
 				sql.append(" found_time in(" + foundTimeSql + ") ");
 			} else {
 				throw new RuntimeException("从clickhouse的" + tableName + "表查询时,必须要有一个where条件");
@@ -200,9 +202,8 @@ public class LogDataService {
 		} else {
 			int foundIndexOf = whereFoundTime.append(whereSB).indexOf("and") + "and".length();
 			countSql.append(whereFoundTime.substring(foundIndexOf));
-
-			foundTimeSql.append(whereFoundTime.substring(foundIndexOf) + orderBy.toLowerCase() + "  limit " + startNum
-					+ "," + page.getPageSize());
+			foundTimeSql
+					.append(whereFoundTime.substring(foundIndexOf) + orderBy.toLowerCase() + "  limit " + limitCount);
 
 			int indexOf = whereSB.indexOf("and") + "and".length();
 			sql.append(whereSB.substring(indexOf) + " and found_time in(" + foundTimeSql + ") ");
@@ -241,7 +242,7 @@ public class LogDataService {
 		} else {
 			sql.append(showColmun);
 		}
-		String sqlTrim= sql.toString().trim();
+		String sqlTrim = sql.toString().trim();
 		if (sqlTrim.endsWith(",")) {
 			sqlTrim = sqlTrim.substring(0, sqlTrim.length() - 1);
 		}
@@ -361,12 +362,13 @@ public class LogDataService {
 	 */
 	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
-//		new LogJDBCByDruid().getTableData(page, selSql.toString(), bean.getClass());
-		logJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
-		if (Constants.ISOPENLOGCOUNTANDLAST) {
-			if (page.getList() != null && page.getList().size() > 0) {
-				logJDBCByDruid.getCount(page, countSql.toString().toLowerCase());
-			}
+//		if (Constants.ISOPENLOGCOUNTANDLAST) {
+			logJDBCByDruid.getCount(page, countSql.toString().toLowerCase());
+//		}
+		if (page.getCount() > 0) {
+			logJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
+		} else {
+			logger.info("没有查询到数据,sql={}",countSql.toString().toLowerCase());
 		}
 
 	}
