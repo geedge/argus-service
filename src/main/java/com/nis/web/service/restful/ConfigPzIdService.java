@@ -16,7 +16,6 @@ import com.nis.domain.restful.ConfigPzIdSource;
 import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.ConfigPzIdDao;
 import com.nis.web.service.BaseLogService;
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion.Static;
 
 /**
  * @ClassName:ConfigPzIdService

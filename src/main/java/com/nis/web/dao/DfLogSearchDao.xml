@@ -1409,7 +1409,7 @@
 		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
 		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
 		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
-		<result column="voip_rotocol" jdbcType="VARCHAR" property="voipProtocol" />
+		<result column="voip_protocol" jdbcType="VARCHAR" property="voipProtocol" />
 		<result column="rtp_d_ip" jdbcType="VARCHAR" property="rtpDIp" />
 		<result column="rtp_s_ip" jdbcType="VARCHAR" property="rtpSIp" />
 		<result column="rtp_d_port" jdbcType="VARCHAR" property="rtpDPort" />

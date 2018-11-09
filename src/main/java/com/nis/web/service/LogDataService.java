@@ -2,9 +2,6 @@ package com.nis.web.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +11,13 @@ import java.util.Map;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
-import com.nis.util.LogJDBCByDruid;
+import com.nis.web.dao.impl.LogJDBCByDruid;
 import com.zdjizhi.utils.StringUtil;
 
 /**
@@ -33,10 +30,9 @@ import com.zdjizhi.utils.StringUtil;
 public class LogDataService {
 	// private final static Logger logger =
 	// LoggerFactory.getLogger(LogDataService.class);
-	static DruidDataSource datasource = null;
-	Connection conn = null;
-	ResultSet rs = null;
-	Statement st = null;
+	
+	@Autowired
+	private LogJDBCByDruid logJDBCByDruid;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
 	private static Map<String, Map<String, String>> col2col = new HashMap<String, Map<String, String>>();
@@ -189,7 +185,7 @@ public class LogDataService {
 		}
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 		StringBuffer foundTimeSql = new StringBuffer();
-		foundTimeSql.append("select distinct found_time  from " + tableName + " where ");
+		foundTimeSql.append("select  found_time  from " + tableName + " where ");
 		if (whereSB.length() == 0) {// 没有其他查询条件只有默认的found_time条件
 			if (whereFoundTime.length() > 0) {
 				int indexOf = whereFoundTime.indexOf("and") + "and".length();
@@ -365,10 +361,11 @@ public class LogDataService {
 	 */
 	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
-		new LogJDBCByDruid().getTableData(page, selSql.toString(), bean.getClass());
+//		new LogJDBCByDruid().getTableData(page, selSql.toString(), bean.getClass());
+		logJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
 		if (Constants.ISOPENLOGCOUNTANDLAST) {
 			if (page.getList() != null && page.getList().size() > 0) {
-				new LogJDBCByDruid().getCount(page, countSql.toString().toLowerCase());
+				logJDBCByDruid.getCount(page, countSql.toString().toLowerCase());
 			}
 		}
 
