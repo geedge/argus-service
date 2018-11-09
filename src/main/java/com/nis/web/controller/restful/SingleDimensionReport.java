@@ -369,7 +369,6 @@ public class SingleDimensionReport extends BaseRestController {
 			
 			
 			ntcReportService.checkNtcRadiusReportCondition(saveLogThread, start, ntcRadiusReport);
-			setGroupType(ntcRadiusReport);
 			dataList= ntcReportService.findNtcRadiusReport(ntcRadiusReport);
 		} catch (Exception e) {
 			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
@@ -420,26 +419,5 @@ public class SingleDimensionReport extends BaseRestController {
 			entity.setSearchReportStartTime(map.get("startTime"));
 			entity.setSearchReportEndTime(map.get("endTime"));
 		}
-	}
-	
-	/**
-	 * @Description:
-	 * @author(zdx)
-	 * @date 2018年10月31日 下午2:43:13
-	 * @param ntcRadiusReport
-	 * @throws Exception
-	 */
-	public void setGroupType(NtcRadiusReport ntcRadiusReport) throws Exception {
-		String groupType ="hour";
-		if (!(StringUtil.isEmpty(ntcRadiusReport.getSearchReportStartTime())&&StringUtil.isEmpty(ntcRadiusReport.getSearchReportEndTime()))) {
-			Long times = DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportEndTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS)-DateUtil.convertStringToTimestamp(ntcRadiusReport.getSearchReportStartTime(), DateUtil.YYYY_MM_DD_HH24_MM_SS);
-			if (times>24*60*60L&&times<=30*24*60*60L) {
-				groupType ="day";
-			}else if(times>30*24*60*60L){
-				groupType ="month";
-			}
-		}
-		
-		ntcRadiusReport.setGroupType(groupType);
 	}
 }
