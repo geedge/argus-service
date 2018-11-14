@@ -26,6 +26,7 @@ DROP TABLE IF EXISTS `ntc_lwhh_report`;
 DROP TABLE IF EXISTS `ntc_lwhh_stat_daily`;
 DROP TABLE IF EXISTS `ntc_lwhh_stat_hour`;
 DROP TABLE IF EXISTS `pz_control_report`;
+DROP TABLE IF EXISTS `ntc_device_info`;
 DROP TABLE IF EXISTS `ntc_pz_report`;
 DROP TABLE IF EXISTS `ntc_pz_stat_daily`;
 DROP TABLE IF EXISTS `ntc_pz_stat_hour`;
@@ -386,6 +387,18 @@ CREATE TABLE `pz_control_report` (
   `report_time` datetime DEFAULT NULL,
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+
+
+/*Table structure for table `ntc_device_info` */
+CREATE TABLE `ntc_device_info` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `entrance_id` INT(11) NOT NULL,
+  `link_id` INT(11) NOT NULL,
+  `manager_ip` VARCHAR(128) NOT NULL,
+  `create_time` DATETIME DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 
 
