@@ -1428,6 +1428,7 @@
 		<result column="calling_account" jdbcType="VARCHAR" property="callingAccount" />
 		<result column="called_account" jdbcType="VARCHAR" property="calledAccount" />
 		<result column="contacts" jdbcType="VARCHAR" property="contacts" />
+		<result column="via" jdbcType="VARCHAR" property="via" />
 		<result column="route" jdbcType="VARCHAR" property="route" />
 		<result column="record_route" jdbcType="VARCHAR" property="recordRoute" />
 		<result column="user_agent" jdbcType="VARCHAR" property="userAgent" />
