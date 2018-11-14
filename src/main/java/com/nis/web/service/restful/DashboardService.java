@@ -58,23 +58,21 @@ public class DashboardService extends BaseService{
 		}
 		Map maxRecvtTime = ntcTotalReportDao.getMaxRecvTime();
 		List<Map> newData = new ArrayList<Map>();
-		List<Map> oldData = new ArrayList<Map>();
+//		List<Map> oldData = new ArrayList<Map>();
 		if(maxRecvtTime!=null&&maxRecvtTime.get("recvTime")!=null) {
 			Date recvTime = (Date) maxRecvtTime.get("recvTime");
 			newData = ntcTotalReportDao.getNetFlowPortInfoNew(recvTime);
-			oldData = ntcTotalReportDao.getNetFlowPortInfoOld(recvTime);
+//			oldData = ntcTotalReportDao.getNetFlowPortInfoOld(recvTime);
 		}
 		//统计带宽的流入流出 单位 五分钟 的 byte
 		Double inoctets=0d;
 		Double outoctets=0d;
-		if(newData!=null&&newData.size()>0&&oldData!=null&&oldData.size()>0&&newData.get(0)!=null&&oldData.get(0)!=null){
+		if(newData!=null&&newData.size()>0&&newData.get(0)!=null){
 			Double newInoctets=Double.parseDouble(newData.get(0).get("inoctets").toString()) ;
 			Double newOutoctets=Double.parseDouble(newData.get(0).get("outoctets").toString()) ;
-			Double oldInoctets=Double.parseDouble(oldData.get(0).get("inoctets").toString());
-			Double oldOutoctets=Double.parseDouble(oldData.get(0).get("outoctets").toString());
 			//结果为当前五分钟减去上个五分钟
-			inoctets=newInoctets-oldInoctets;
-			outoctets=newOutoctets-oldOutoctets;
+			inoctets=newInoctets;
+			outoctets=newOutoctets;
 			if(inoctets<0||outoctets<0){
 				inoctets=0d;
 				outoctets=0d;
