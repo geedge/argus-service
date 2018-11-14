@@ -161,7 +161,7 @@
 	<p:maatType service="520">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[keyring_name];\t;[keyring_type];\t;[private_key_file];\t;[public_key_file];\t;[expire_after];\t;[public_key_algo];\t;[crl];\t;[is_valid];\t;[redisFile_private_key_file];\t;[redisFile_public_key_file];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[keyring_name];\t;[keyring_type];\t;[private_key_file];\t;[public_key_file];\t;[expire_after];\t;[public_key_algo];\t;[crl];\t;[is_valid];\t;[redisFile_private_key_file];\t;[redisFile_public_key_file];\t;[op_time];&amp;nbsp;0</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -181,7 +181,7 @@
 	<p:maatType service="608">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[service];\t;[file_desc];\t;[content_type];\t;[content_length];\t;[file_path];\t;[is_valid];\t;[redisFile_file_path];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[service];\t;[file_desc];\t;[content_type];\t;[content_length];\t;[file_path];\t;[is_valid];\t;[redisFile_file_path];\t;[op_time];&amp;nbsp;0</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -203,7 +203,7 @@
 	<p:maatType service="640">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[cert_name];\t;[cert_file];\t;[is_valid];\t;[redisFile_private_cert_file];\t;[service];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[cert_name];\t;[redisFile_private_cert_file];\t;[is_valid];\t;[service];\t;[op_time];&amp;nbsp;0</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>
@@ -224,7 +224,7 @@
 	<p:maatType service="641">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[cert_id];\t;[crl_file];\t;[is_valid];\t;[redisFile_private_crl_file];\t;[service];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;[cert_id];\t;[redisFile_private_crl_file];\t;[is_valid];\t;[service];\t;[op_time];&amp;nbsp;0</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>

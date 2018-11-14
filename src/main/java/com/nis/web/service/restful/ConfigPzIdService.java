@@ -5,6 +5,7 @@ package com.nis.web.service.restful;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.restful.ConfigPzIdSource;
-import com.zdjizhi.utils.StringUtil;
 import com.nis.web.dao.ConfigPzIdDao;
 import com.nis.web.service.BaseLogService;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * @ClassName:ConfigPzIdService
@@ -33,26 +34,45 @@ public class ConfigPzIdService extends BaseLogService {
 	 */
 	@Autowired
 	protected ConfigPzIdDao dao;
-	
+
 	@Autowired
 	ConfigRedisService configRedisService;
-	
+
 	private static Map<String, String> sourceNameMap = new HashMap<String, String>();
 	static {
 		sourceNameMap.put("CONFIG_COMPILE", "SEQ_COMPILEID");
 		sourceNameMap.put("CONFIG_GROUP", "SEQ_GROUPID");
 		sourceNameMap.put("CONFIG_REGION", "SEQ_REGIONID");
 	}
-	
-	public ConfigPzIdSource getConfigPzIdList(ConfigPzIdSource entity){
+
+	public ConfigPzIdSource getConfigPzIdListOld(ConfigPzIdSource entity) {
 		List<Long> pzIdList = new ArrayList<Long>();
 		entity.setSourceName(entity.getSourceName().toUpperCase());
-		String seqName= StringUtil.isEmpty(sourceNameMap.get(entity.getSourceName()))?"SEQ_COMPILEID":sourceNameMap.get(entity.getSourceName());
+		String seqName = StringUtil.isEmpty(sourceNameMap.get(entity.getSourceName())) ? "SEQ_COMPILEID"
+				: sourceNameMap.get(entity.getSourceName());
 		for (int i = 0; i < entity.getNum(); i++) {
-//			pzIdList.add(dao.getConfigPzIdList(entity)); //直接从数据库序列号获取
+			// pzIdList.add(dao.getConfigPzIdList(entity)); //直接从数据库序列号获取
 			pzIdList.add(configRedisService.getIncrId(seqName));
 		}
 		entity.setPzIdList(pzIdList);
 		return entity;
 	}
+
+	public ConfigPzIdSource getConfigPzIdList(ConfigPzIdSource entity) {
+		List<Long> pzIdList = new LinkedList<Long>();
+		entity.setSourceName(entity.getSourceName().toUpperCase());
+		String seqName = StringUtil.isEmpty(sourceNameMap.get(entity.getSourceName())) ? "SEQ_COMPILEID"
+				: sourceNameMap.get(entity.getSourceName());
+		long endNum = configRedisService.getIncrById(seqName, entity.getNum());
+		
+		long startNum=endNum-entity.getNum();
+		
+		for (long i = endNum; i > startNum; i--) {
+			// pzIdList.add(dao.getConfigPzIdList(entity)); //直接从数据库序列号获取
+			pzIdList.add(i);
+		}
+		entity.setPzIdList(pzIdList);
+		return entity;
+	}
+
 }

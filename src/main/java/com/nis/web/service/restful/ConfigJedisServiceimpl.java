@@ -8,6 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +25,15 @@ import com.nis.domain.restful.MaatConfig;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Configurations;
+import com.nis.util.Constants;
 import com.nis.util.File2Redis;
 import com.nis.util.JedisUtils;
 import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
@@ -763,6 +770,12 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		return id;
 	}
 
+	public Long getIncrById(String key, int num) {
+		Long id = JedisUtils.incrBy(key, num, 0);
+		logger.info("从0号redis数据库获取{}成功,自增后的值是{}", key, id);
+		return id;
+	}
+
 	@Override
 	public boolean delUnMaatConfig(Map<Integer, Map<Integer, List<Long>>> idMap, boolean isInvalid) {
 		if (idMap != null && idMap.size() > 0) {
@@ -1445,7 +1458,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	}
 
 	private void addTmpReion(List<Map<String, String>> regionMapList, MaatXmlConfig maatXmlConfig,
-			Transaction transaction, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex, Integer service1) {
+			Transaction transaction, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex ) throws Exception {
+
 		if (regionMapList != null && regionMapList.size() > 0) {
 			for (Map<String, String> map : regionMapList) {
 				List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
@@ -1569,6 +1583,51 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				}
 			}
 		}
+	
+	}
+
+	private void addTmpReionByPipeLine(List<Map<String, String>> regionMapList, MaatXmlConfig maatXmlConfig,
+			Pipeline pipelined, int type, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex) throws Exception {
+		if (regionMapList != null && regionMapList.size() > 0) {
+			int execNum = Constants.MAXTHREADNUM;
+			// 每10000条数据开启一条线程
+			int threadSize = Constants.EVERTHREADNUM;
+			// 总数据条数
+			int dataSize = regionMapList.size();
+			// 线程数
+			int countSize = dataSize / threadSize ;
+			// 定义标记,过滤threadNum为整数
+			boolean special = dataSize % threadSize == 0;
+			if (!special && dataSize > threadSize) {
+				countSize++;
+			}
+			if (countSize < execNum) {
+				execNum = countSize;
+			}
+			// 创建一个线程池
+			ExecutorService exec = Executors.newFixedThreadPool(execNum);
+			// 定义一个任务集合
+			List<Callable<Integer>> tasks = new ArrayList<Callable<Integer>>();
+			Callable<Integer> task = null;
+			List<Map<String, String>> cutList = null;
+			// 确定每条线程的数据
+			for (int i = 0; i < countSize; i++) {
+				cutList = regionMapList.subList(threadSize * i,
+						threadSize * (i + 1) > dataSize ? dataSize : threadSize * (i + 1));
+				final List<Map<String, String>> listStr = cutList;
+				task = new SaveRegionThreadByPipeline(listStr, maatXmlConfig, pipelined, type, tmpStorageReuseRegionDB,
+						idRelaRedisDBIndex);
+				// 这里提交的任务容器列表和返回的Future列表存在顺序对应的关系
+				tasks.add(task);
+			}
+			List<Future<Integer>> results;
+			results = exec.invokeAll(tasks);
+//			for (Future<Integer> future : results) {
+//				logger.info("SaveRegionThread添加分组复用域配置线程执行结果:" + future.get());
+//			}
+			// 关闭线程池
+			exec.shutdown();
+		}
 	}
 
 	/**
@@ -1587,11 +1646,11 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				for (MaatConfig maatConfig : configList) {
 					MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(37);// maat类配置的表达式都一样,这里因为没有service所以就随便取了一个
 					addTmpReion(maatConfig.getIpRegionMapList(), maatXmlConfig, transaction, 12,
-							tmpStorageReuseRegionDB, idRelaRedisDBIndex, maatConfig.getService());
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex );
 					addTmpReion(maatConfig.getNumRegionMapList(), maatXmlConfig, transaction, 13,
-							tmpStorageReuseRegionDB, idRelaRedisDBIndex, maatConfig.getService());
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex );
 					addTmpReion(maatConfig.getStrRegionMapList(), maatXmlConfig, transaction, 14,
-							tmpStorageReuseRegionDB, idRelaRedisDBIndex, maatConfig.getService());
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex );
 				}
 			} else {
 				throw new ServiceRuntimeException("添加分组复用域配置时,未发现对应的配置信息,请检查配置参数是否正确",
@@ -1607,6 +1666,56 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			transaction.discard();
 			String error = "保存分组复用maat类域配置发生了异常" + e.getMessage();
 			logger.error(error);
+			throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
+		} finally {
+			// 释放连接到连接池
+			JedisUtils.returnResource(resource);
+		}
+	}
+
+	public boolean saveGroupReuseConfigByPipeLine(List<MaatConfig> configList) {
+		Jedis resource = JedisUtils.getResource(0);
+		Pipeline pipelined = resource.pipelined();
+		try {
+			if (configList != null && configList.size() > 0) {
+				int tmpStorageReuseRegionDB = Configurations.getIntProperty("tmpStorageReuseRegionDB", 15);
+				int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
+				pipelined.select(tmpStorageReuseRegionDB);
+				pipelined.multi();
+				for (MaatConfig maatConfig : configList) {
+					MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(37);// maat类配置的表达式都一样,这里因为没有service所以就随便取了一个
+					addTmpReionByPipeLine(maatConfig.getIpRegionMapList(), maatXmlConfig, pipelined, 12,
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+					addTmpReionByPipeLine(maatConfig.getNumRegionMapList(), maatXmlConfig, pipelined, 13,
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+					addTmpReionByPipeLine(maatConfig.getStrRegionMapList(), maatXmlConfig, pipelined, 14,
+							tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+				}
+			} else {
+				throw new ServiceRuntimeException("添加分组复用域配置时,未发现对应的配置信息,请检查配置参数是否正确",
+						RestBusinessCode.ConfigSourceIsNull.getValue());
+			}
+			Response<List<Object>> exec = pipelined.exec();
+			pipelined.sync();// 关闭pipeline
+			// 结束pipeline，并开始从相应中获得数据
+			// List<Object> responses = exec.get();
+			// if (responses == null || responses.isEmpty()) {
+			// throw new RuntimeException("Pipeline error: no response...");
+			// }
+			// for (Object resp : responses) {
+			// System.out.println("Response:" + resp.toString());// 注意，此处resp的类型为Long
+			// }
+
+			return true;
+		} catch (JedisConnectionException e) {
+			String error = "连接redis异常,保存分组复用maat类域配置失败" + e.getMessage();
+			logger.error(error);
+			throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
+		} catch (Exception e) {
+
+			String error = "保存分组复用maat类域配置发生了异常" + e.getMessage();
+			logger.error(error);
+			// pipelined.discard();
 			throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 		} finally {
 			// 释放连接到连接池
@@ -1836,6 +1945,52 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 
 	}
 
+	private void removeReuseReionByPipelined(long groupId, List<String> regionList, Pipeline pipelined,
+			MaatXmlConfig maatXmlConfig, int tmpStorageReuseRegionDB, int idRelaRedisDBIndex) throws Exception {
+		if (regionList != null && regionList.size() > 0) {
+			int execNum = Constants.MAXTHREADNUM;
+			// 每10000条数据开启一条线程
+			int threadSize = Constants.EVERTHREADNUM;
+			// 总数据条数
+			int dataSize = regionList.size();
+			// 线程数
+			int countSize = dataSize / threadSize + 1;
+			// 定义标记,过滤threadNum为整数
+			boolean special = dataSize % threadSize == 0;
+			if (!special && dataSize > threadSize) {
+				countSize++;
+			}
+			if (countSize < execNum) {
+				execNum = countSize;
+			}
+			// 创建一个线程池
+			ExecutorService exec = Executors.newFixedThreadPool(execNum);
+			// 定义一个任务集合
+			List<Callable<Integer>> tasks = new ArrayList<Callable<Integer>>();
+			Callable<Integer> task = null;
+			List<String> cutList = null;
+			// 确定每条线程的数据
+			for (int i = 0; i < countSize; i++) {
+				cutList = regionList.subList(threadSize * i,
+						threadSize * (i + 1) > dataSize ? dataSize : threadSize * (i + 1));
+				final List<String> listStr = cutList;
+				task = new DelRegionThreadByPipeline(groupId, listStr, pipelined, maatXmlConfig, tmpStorageReuseRegionDB,
+						idRelaRedisDBIndex);
+				// 这里提交的任务容器列表和返回的Future列表存在顺序对应的关系
+				tasks.add(task);
+			}
+			List<Future<Integer>> results;
+			results = exec.invokeAll(tasks);
+			for (Future<Integer> future : results) {
+				logger.info("DelRegionThread删除分组复用域配置线程执行结果:" + future.get());
+			}
+			// 关闭线程池
+			exec.shutdown();
+
+		}
+
+	}
+
 	@Override
 	public boolean delGroupReuseConfig(Map<Long, List<String>> groupAndRegionMap) {
 		Jedis resource = JedisUtils.getResource(0);
@@ -1871,6 +2026,52 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			logger.error(error);
 			throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 		} finally {
+			// 释放连接到连接池
+			JedisUtils.returnResource(resource);
+		}
+	}
+
+	public boolean delGroupReuseConfigByPipeline(Map<Long, List<String>> groupAndRegionMap) {
+		Jedis resource = JedisUtils.getResource(0);
+		Pipeline pipelined = resource.pipelined();
+		// Transaction transaction = resource.multi();
+		try {
+			if (groupAndRegionMap != null && groupAndRegionMap.size() > 0) {
+				int tmpStorageReuseRegionDB = Configurations.getIntProperty("tmpStorageReuseRegionDB", 15);
+				int idRelaRedisDBIndex = Configurations.getIntProperty("idRelaRedisDBIndex", 15);
+				pipelined.select(tmpStorageReuseRegionDB);
+				MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(37);// maat类配置的表达式都一样,这里因为没有service所以就随便取了一个
+				for (Long groupId : groupAndRegionMap.keySet()) {
+					List<String> regionList = groupAndRegionMap.get(groupId);
+					if (regionList != null && regionList.size() > 0) {
+						removeReuseReionByPipelined(groupId, regionList, pipelined, maatXmlConfig,
+								tmpStorageReuseRegionDB, idRelaRedisDBIndex);
+					} else {
+						throw new ServiceRuntimeException("删除分组复用域配置时,参数都为空,请检查配置参数是否正确",
+								RestBusinessCode.ConfigSourceIsNull.getValue());
+					}
+				}
+				Response<List<Object>> exec = pipelined.exec();
+				pipelined.sync();// 关闭pipeline
+				return true;
+			} else {
+				throw new ServiceRuntimeException("单独删除分组复用配置的域配置时,参数为空,请检查",
+						RestBusinessCode.ConfigSourceIsNull.getValue());
+
+			}
+
+		} catch (JedisConnectionException e) {
+			String error = "连接redis异常,删除分组复用maat类域配置失败" + e.getMessage();
+			logger.error(error);
+			// pipelined.discard();
+			throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
+		} catch (Exception e) {
+			String error = "删除分组复用maat类域配置发生了异常" + e.getMessage();
+			logger.error(error);
+			// pipelined.discard();
+			throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
+		} finally {
+
 			// 释放连接到连接池
 			JedisUtils.returnResource(resource);
 		}
@@ -1917,9 +2118,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					logger.info("向{}号redis数据库更新了MAAT_VERSION_TIMER,内容是{},SCORES是{}", redisDBIndex, maatVersion, score);
 				}
 			}
-
 		}
-
 	}
 
 }

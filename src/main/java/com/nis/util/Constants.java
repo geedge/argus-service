@@ -211,4 +211,6 @@ public final class Constants {
 	 *是否使用Minio
 	 */
 	public static final Boolean IS_USE_MINIO = Configurations.getBooleanProperty("isUseMinio", true);
+	public static final int MAXTHREADNUM = Configurations.getIntProperty("maxThreadNum", 10);
+	public static final int EVERTHREADNUM = Configurations.getIntProperty("everThreadNum", 10000);
 }

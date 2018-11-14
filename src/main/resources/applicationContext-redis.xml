@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	   xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
-	   xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
-	   xmlns:tool="http://www.springframework.org/schema/tool" xmlns:aop="http://www.springframework.org/schema/aop"
-	   xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
-	   xsi:schemaLocation="
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:tool="http://www.springframework.org/schema/tool" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
 		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
@@ -16,7 +16,7 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
 	<!-- 加载配置文件,不知道为啥不能加载redis.properties的内容,先把redis.properties里面的内容放到jdbc.properties里面吧 -->
 	<context:property-placeholder
-			ignore-unresolvable="true" location="classpath:jdbc.properties" />
+		ignore-unresolvable="true" location="classpath:jdbc.properties" />
 
 	<bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property name="maxIdle" value="${redis.maxIdle}" />
@@ -24,13 +24,18 @@
 		<property name="maxWaitMillis" value="${redis.maxWaitMillis}" />
 		<property name="testOnBorrow" value="${redis.testOnBorrow}" />
 		<property name="testOnReturn" value="${redis.testOnReturn}" />
+		<!-- <property name="timeOut" value="${redis.timeout}" /> -->
 	</bean>
 
 	<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
 		<constructor-arg name="poolConfig" ref="poolConfig" />
 		<constructor-arg name="host" value="${redis.host}" />
 		<constructor-arg name="port" value="${redis.port}"
-						 type="int" />
+			type="int" />
+		<constructor-arg name="timeout" value="${redis.timeout}"
+			type="int" />
+<!-- 		<constructor-arg name="password" value="${redis.pass}"/> -->
+
 	</bean>
 
 

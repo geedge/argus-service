@@ -11,10 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -871,6 +874,7 @@ public class ConfigSourcesService extends BaseService {
 		// 调用接口入redis
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
 		configRedisService.saveGroupReuseConfig(list);
+//		configRedisService.saveGroupReuseConfigByPipeLine(list);
 	}
 
 	/**
@@ -936,6 +940,7 @@ public class ConfigSourcesService extends BaseService {
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
 		// 所有的都删除成功返回true
 		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
+//			if (!configRedisService.delGroupReuseConfigByPipeline(reuseMap)) {
 			throw new ServiceRuntimeException("删除分组利用域配置时出现异常，具体原因不详，请联系管理员",
 					RestBusinessCode.service_runtime_error.getValue());
 		}

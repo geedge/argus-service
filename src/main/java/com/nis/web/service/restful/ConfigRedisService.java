@@ -35,6 +35,12 @@ public interface ConfigRedisService {
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
 	public boolean saveGroupReuseConfig( List<MaatConfig> configList);
+	/**
+	 * 使用pipeline方式,分组复用域配置新增接口,value是配置集合
+	 * @param configList
+	 * @return 成功返回true,失败返回false或抛出异常
+	 */
+	public boolean saveGroupReuseConfigByPipeLine( List<MaatConfig> configList);
 
 	/**
 	 * 获取指定key的自增长值
@@ -42,6 +48,13 @@ public interface ConfigRedisService {
 	 * @return
 	 */
 	public Long getIncrId(String key);
+	/**
+	 * 批量获取接口,利用java进行遍历,比从redis中自增要快很多
+	 * @param key
+	 * @param num
+	 * @return
+	 */
+	public Long getIncrById(String key,int num);
 
 	/**
 	 * 删除非maat类配置,第一个key是redisDBIndex,第二个key是业务类型,value是配置id集合
@@ -64,5 +77,11 @@ public interface ConfigRedisService {
 	 * @return
 	 */
 	public boolean delGroupReuseConfig( Map<Long, List<String>> reuseMap);
+	/**
+	 * 使用pipeline方式删除分组复用的域配置
+	 * @param reuseMap key是groupId,value是"tableName,regionId"
+	 * @return
+	 */
+	public boolean delGroupReuseConfigByPipeline( Map<Long, List<String>> reuseMap);
 
 }

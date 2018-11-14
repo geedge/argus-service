@@ -17,10 +17,11 @@ import com.nis.web.service.SpringContextHolder;
 public class JedisUtils {
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
 	private static JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
-
 	/**
 	 * 获取缓存
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return 值
 	 */
 	public static String get(String key, int redisDb) {
@@ -34,7 +35,8 @@ public class JedisUtils {
 				logger.debug("get {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败", RestBusinessCode.KeyNotExistsInRedis.getValue());
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败",
+					RestBusinessCode.KeyNotExistsInRedis.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -43,7 +45,9 @@ public class JedisUtils {
 
 	/**
 	 * 获取缓存
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return 值
 	 */
 	public static Object getObject(String key, int redisDb) {
@@ -56,7 +60,8 @@ public class JedisUtils {
 				logger.debug("getObject {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败", RestBusinessCode.KeyNotExistsInRedis.getValue());
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败",
+					RestBusinessCode.KeyNotExistsInRedis.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -64,14 +69,15 @@ public class JedisUtils {
 	}
 
 	/**
-	* <b>可以作为获取唯一id的方法</b><br/>
-	* 将key对应的value加上指定的值，只有value可以转为数字时该方法才可用
-	* 
-	* @param String
-	*            key
-	* @param long number 要减去的值
-	* @return long 相加后的值
-	* */
+	 * <b>可以作为获取唯一id的方法</b><br/>
+	 * 将key对应的value加上指定的值，只有value可以转为数字时该方法才可用
+	 * 
+	 * @param String
+	 *            key
+	 * @param long
+	 *            number 要减去的值
+	 * @return long 相加后的值
+	 */
 	public static long incrBy(String key, long number, int redisDb) {
 		Jedis jedis = getResource(redisDb);
 		long len = jedis.incrBy(key, number);
@@ -81,9 +87,13 @@ public class JedisUtils {
 
 	/**
 	 * 设置缓存
-	 * @param key 键
-	 * @param value 值
-	 * @param cacheSeconds 超时时间，0为不超时
+	 * 
+	 * @param key
+	 *            键
+	 * @param value
+	 *            值
+	 * @param cacheSeconds
+	 *            超时时间，0为不超时
 	 * @return
 	 */
 	public static String set(String key, String value, int cacheSeconds, int redisDb) {
@@ -97,7 +107,8 @@ public class JedisUtils {
 			}
 			logger.debug("set {} = {}", key, value);
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("向" + redisDb + "号redisDB中设置zset失败,key=" + key + ",value=" + value, RestBusinessCode.ZsetFailed.getValue());
+			throw new ServiceRuntimeException("向" + redisDb + "号redisDB中设置zset失败,key=" + key + ",value=" + value,
+					RestBusinessCode.ZsetFailed.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -106,7 +117,9 @@ public class JedisUtils {
 
 	/**
 	 * 获取List缓存
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return 值
 	 */
 	public static List<String> getList(String key, int redisDb) {
@@ -119,7 +132,8 @@ public class JedisUtils {
 				logger.debug("getList {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败", RestBusinessCode.KeyNotExistsInRedis.getValue());
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败",
+					RestBusinessCode.KeyNotExistsInRedis.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -128,7 +142,9 @@ public class JedisUtils {
 
 	/**
 	 * 获取List缓存
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return 值
 	 */
 	public static List<Object> getObjectList(String key, int redisDb) {
@@ -145,7 +161,8 @@ public class JedisUtils {
 				logger.debug("getObjectList {} = {}", key, value);
 			}
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败", RestBusinessCode.KeyNotExistsInRedis.getValue());
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取" + key + "对应的值失败",
+					RestBusinessCode.KeyNotExistsInRedis.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -154,7 +171,9 @@ public class JedisUtils {
 
 	/**
 	 * 缓存是否存在
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return
 	 */
 	public static boolean exists(String key, int redisDb) {
@@ -165,7 +184,8 @@ public class JedisUtils {
 			result = jedis.exists(key);
 			logger.debug("exists {}", key);
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中判断" + key + "是否存在失败", RestBusinessCode.ExistsKeyFailed.getValue());
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中判断" + key + "是否存在失败",
+					RestBusinessCode.ExistsKeyFailed.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -174,7 +194,9 @@ public class JedisUtils {
 
 	/**
 	 * 缓存是否存在
-	 * @param key 键
+	 * 
+	 * @param key
+	 *            键
 	 * @return
 	 */
 	public static boolean existsObject(String key, int redisDb) {
@@ -185,7 +207,8 @@ public class JedisUtils {
 			result = jedis.exists(getBytesKey(key));
 			logger.debug("existsObject {}", key);
 		} catch (Exception e) {
-			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中判断" + key + "是否存在失败", RestBusinessCode.ExistsKeyFailed.getValue());
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中判断" + key + "是否存在失败",
+					RestBusinessCode.ExistsKeyFailed.getValue());
 		} finally {
 			returnResource(jedis);
 		}
@@ -194,20 +217,24 @@ public class JedisUtils {
 
 	/**
 	 * 获取资源
+	 * 
 	 * @return
 	 * @throws JedisException
 	 */
 	public static Jedis getResource(int redisDb) throws JedisException {
 		Jedis jedis = null;
 		if (jedisPool == null) {
-			throw new ServiceRuntimeException("redis连接池为空,请联系管理员检查程序",RestBusinessCode.CannotConnectionRedis.getValue());
+			throw new ServiceRuntimeException("redis连接池为空,请联系管理员检查程序",
+					RestBusinessCode.CannotConnectionRedis.getValue());
 		}
 		try {
 			jedis = jedisPool.getResource();
 			jedis.select(redisDb);
 		} catch (JedisException e) {
 			returnBrokenResource(jedis);
-			throw new ServiceRuntimeException("获取redis连接失败,请联系管理员检查程序", RestBusinessCode.CannotConnectionRedis.getValue());
+			logger.error("获取redis连接失败,异常信息:{}" ,ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException("获取redis连接失败,请联系管理员检查程序",
+					RestBusinessCode.CannotConnectionRedis.getValue());
 		}
 		return jedis;
 
@@ -215,6 +242,7 @@ public class JedisUtils {
 
 	/**
 	 * 归还资源
+	 * 
 	 * @param jedis
 	 * @param isBroken
 	 */
@@ -226,6 +254,7 @@ public class JedisUtils {
 
 	/**
 	 * 释放资源
+	 * 
 	 * @param jedis
 	 * @param isBroken
 	 */
@@ -237,6 +266,7 @@ public class JedisUtils {
 
 	/**
 	 * 获取byte[]类型Key
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -250,6 +280,7 @@ public class JedisUtils {
 
 	/**
 	 * Object转换byte[]类型
+	 * 
 	 * @param key
 	 * @return
 	 */
@@ -259,6 +290,7 @@ public class JedisUtils {
 
 	/**
 	 * byte[]型转换Object
+	 * 
 	 * @param key
 	 * @return
 	 */
