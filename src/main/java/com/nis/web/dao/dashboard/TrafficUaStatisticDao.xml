@@ -33,7 +33,7 @@
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
   </select>
   <!-- 根据操作系统获取浏览器分类 -->
-  <select id="getBrowserBySystem" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+  <select id="getBrowserBySystem" resultType="java.util.HashMap">
     SELECT bs_type bsType, SUM(link_num) count  FROM galaxy.traffic_ua_statistic
 	WHERE bs_type !=0 and os_type=#{osType} and stat_time = #{statTime}
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
@@ -64,7 +64,7 @@
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
   </select>
   <!-- 根据浏览器获取操作系统分类 -->
-  <select id="getSystemBybrowser" parameterType="java.lang.Integer" resultType="java.util.HashMap">
+  <select id="getSystemBybrowser" resultType="java.util.HashMap">
     SELECT os_type osType, SUM(link_num) count  FROM galaxy.traffic_ua_statistic
 	WHERE os_type !=0 and bs_type=#{bsType} and stat_time = #{statTime}
 	GROUP BY os_type ORDER BY count DESC limit 0,10
