@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -51,6 +52,16 @@ public class MaatTestServiceimpl {
 			for (ConfigCompile configCompile : configCompileList) {
 				Integer service = configCompile.getService();
 				MaatXmlConfig maatXmlConfig = ReadMaatXmlUtil.getMaatConfigByService(service);
+				Map<String, String[]> tapFieldMap = ServiceAndRDBIndexReal.getMaatToValveMap().get(service);
+				//用于判断是否是入阀门时添加的额外字段
+				Map<String, String> keyMap = new HashMap<String, String>();
+				Iterator iterator =  tapFieldMap.keySet().iterator();
+				while (iterator.hasNext()) {
+					String [] tapFields = tapFieldMap.get(iterator.next().toString());
+					for (String obj : tapFields) {
+						keyMap.put(CamelUnderlineUtil.underlineToCamel(obj).toLowerCase(), obj.toLowerCase());
+					}
+				}
 				List<Integer> redisDBList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 				if (ServiceAndRDBIndexReal.isAddASU(service)) {
 					if (!redisDBList.contains(TAPREDISDB)) {
@@ -59,7 +70,7 @@ public class MaatTestServiceimpl {
 					}
 				}
 				for (Integer redisDB : redisDBList) {
-					getConfigByKey(redisDB, service, configCompile, maatXmlConfig);
+					getConfigByKey(redisDB, service, configCompile, maatXmlConfig,keyMap);
 				}
 
 			}
@@ -68,57 +79,57 @@ public class MaatTestServiceimpl {
 	}
 
 	public void getConfigByKey(Integer redisDB, Integer service, ConfigCompile configCompile,
-			MaatXmlConfig maatXmlConfig) throws Exception {
+			MaatXmlConfig maatXmlConfig,Map<String, String> keyMap) throws Exception {
 		if (maatXmlConfig != null && configCompile != null) {
 			Long compileId = configCompile.getCompileId();
 			validData(service, 10, compileId, configCompile.getCompileId(), redisDB, null, maatXmlConfig, configCompile,
-					configCompile);
+					configCompile,keyMap);
 
 			List<ConfigGroupRelation> groupRelationList = configCompile.getGroupRelationList();
 			for (ConfigGroupRelation configGroupRelation : groupRelationList) {
 				validData(service, 11, compileId, configGroupRelation.getGroupId(), redisDB, null, maatXmlConfig,
-						configGroupRelation, configCompile);
+						configGroupRelation, configCompile,keyMap);
 			}
 
 			List<IpRegion> ipRegionList = configCompile.getIpRegionList();
 			for (IpRegion ipRegion : ipRegionList) {
 				validData(service, 12, compileId, ipRegion.getRegionId(), redisDB, ipRegion.getTableName(),
-						maatXmlConfig, ipRegion, configCompile);
+						maatXmlConfig, ipRegion, configCompile,keyMap);
 			}
 			List<NumRegion> numRegionList = configCompile.getNumRegionList();
 			for (NumRegion numRegion : numRegionList) {
 				validData(service, 13, compileId, numRegion.getRegionId(), redisDB, numRegion.getTableName(),
-						maatXmlConfig, numRegion, configCompile);
+						maatXmlConfig, numRegion, configCompile,keyMap);
 			}
 
 			List<StrRegion> strRegionList = configCompile.getStrRegionList();
 			for (StrRegion strRegion : strRegionList) {
 				if (strRegion.getDistrict() == null || strRegion.getDistrict().trim().equals("")) {
 					validData(service, 14, compileId, strRegion.getRegionId(), redisDB, strRegion.getTableName(),
-							maatXmlConfig, strRegion, configCompile);
+							maatXmlConfig, strRegion, configCompile,keyMap);
 				} else {
 					validData(service, 15, compileId, strRegion.getRegionId(), redisDB, strRegion.getTableName(),
-							maatXmlConfig, strRegion, configCompile);
+							maatXmlConfig, strRegion, configCompile,keyMap);
 				}
 			}
 
 			List<DigestRegion> digestRegionList = configCompile.getDigestRegionList();
 			for (DigestRegion digestRegion : digestRegionList) {
 				validData(service, 16, compileId, digestRegion.getRegionId(), redisDB, digestRegion.getTableName(),
-						maatXmlConfig, digestRegion, configCompile);
+						maatXmlConfig, digestRegion, configCompile,keyMap);
 			}
 
 			List<IpRegion> ipClientRangeList = configCompile.getIpClientRangeList();
 			for (IpRegion ipRegion : ipClientRangeList) {
 				validData(service, 18, compileId, ipRegion.getRegionId(), redisDB, ipRegion.getTableName(),
-						maatXmlConfig, ipRegion, configCompile);
+						maatXmlConfig, ipRegion, configCompile,keyMap);
 			}
 
 		}
 	}
 
 	public void validData(Integer service, Integer type, Long compileId, Long id, Integer redisDb, String tableName,
-			MaatXmlConfig maatXmlConfig, Object obj, ConfigCompile configCompile) throws Exception {
+			MaatXmlConfig maatXmlConfig, Object obj, ConfigCompile configCompile,Map<String, String> keyMap) throws Exception {
 		List<MaatXmlExpr> expressionList = maatXmlConfig.getExpressionList();
 		String[] valArr = null;
 		String key = null;
@@ -205,7 +216,7 @@ public class MaatTestServiceimpl {
 				break;
 			}
 		}
-		if (sysoLog(valArr, valList, obj, redisDb, key, configCompile, service)) {
+		if (sysoLog(valArr, valList, obj, redisDb, key, configCompile, service,keyMap)) {
 			if (TAPREDISDB == redisDb && type != 10 && type != 11) {// 域配置并且是op_time时在op_time前面添加如下内容
 				Map<String, String[]> map2 = ServiceAndRDBIndexReal.getMaatToValveMap().get(service);
 				if (map2 != null && map2.size() > 0) {
@@ -249,7 +260,7 @@ public class MaatTestServiceimpl {
 	}
 
 	private boolean sysoLog(String[] valArr, List<String> valList, Object obj, Integer redisDb, String key,
-			ConfigCompile configCompile, Integer service) throws Exception {
+			ConfigCompile configCompile, Integer service,Map<String, String> keyMap) throws Exception {
 
 		if (valList == null || valList.size() == 0) {
 			FileUtils.addStrToFile(
@@ -274,8 +285,8 @@ public class MaatTestServiceimpl {
 			if (!attrName.toLowerCase().equals("op_time")) {
 				String filedName = CamelUnderlineUtil.underlineToCamel(attrName);
 				String beanVal = null;
-				if (filedName.toLowerCase().equals("service") || filedName.toLowerCase().equals("action")
-						|| filedName.toLowerCase().equals("userregion")) {
+				//分发到阀门库添加的额外字段值从编译配置中获取
+				if (keyMap.containsKey(filedName.toLowerCase())) {
 					beanVal = getFieldValueByFieldName(filedName, configCompile);
 				} else {
 					beanVal = getFieldValueByFieldName(filedName, obj);
