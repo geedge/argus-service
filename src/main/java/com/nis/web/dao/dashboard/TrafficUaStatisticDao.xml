@@ -43,7 +43,7 @@
   	SELECT SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE bs_type !=0 and os_type=#{osType}
 		<if test="bsType!=null and bsType.size()>0">
-		and os_type not in
+		and bs_type not in
 		<foreach collection="bsType" item="singleType" index="index" open="(" close=")" separator=",">
 				 #{singleType}
 		</foreach>
@@ -74,7 +74,7 @@
   	SELECT SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE os_type !=0 and bs_type=#{bsType}
 		<if test="osType!=null and osType.size()>0">
-		and bs_type not in
+		and os_type not in
 		<foreach collection="osType" item="singleType" index="index" open="(" close=")" separator=",">
 				 #{singleType}
 		</foreach>

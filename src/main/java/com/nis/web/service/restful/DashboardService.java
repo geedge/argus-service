@@ -271,11 +271,13 @@ public class DashboardService extends BaseService{
 					for (Map map : list) {
 						bsType.add(map.get("bsType"));
 					}
-					Map others = new HashMap();
-					others = trafficUaStatisticDao.systemOthers(bsType,osType,statTime);
-					if(others!=null&&others.size()>0){
-					others.put("bsType", "-1");
-					list.add(others);
+					if(list.size()>10) {
+						Map others = new HashMap();
+						others = trafficUaStatisticDao.systemOthers(bsType,osType,statTime);
+						if(others!=null&&others.size()>0){
+							others.put("bsType", "-1");
+							list.add(others);
+						}
 					}
 				}
 		}
@@ -320,11 +322,13 @@ public class DashboardService extends BaseService{
 				for (Map map : list) {
 					osType.add(map.get("osType"));
 				}
-				Map others = new HashMap();
-				others = trafficUaStatisticDao.browserOthers(osType,bsType,statTime);
-				if(others!=null&&others.size()>0){
-				others.put("osType", "-1");
-				list.add(others);
+				if(list.size()>10) {
+					Map others = new HashMap();
+					others = trafficUaStatisticDao.browserOthers(osType,bsType,statTime);
+					if(others!=null&&others.size()>0){
+						others.put("osType", "-1");
+						list.add(others);
+					}
 				}
 			}	
 		}
@@ -372,11 +376,13 @@ public class DashboardService extends BaseService{
 				for (Map map : list) {
 					webIdList.add(map.get("webId"));
 				}
-				Map others = new HashMap();
-				others = trafficHttpStatisticDao.websiteDomainOthers(webIdList,websiteServiceId,statTime);
-				if(others!=null&&others.size()>0){
-					others.put("webId", "-1");
-					list.add(others);
+				if(list.size()>10) {
+					Map others = new HashMap();
+					others = trafficHttpStatisticDao.websiteDomainOthers(webIdList,websiteServiceId,statTime);
+					if(others!=null&&others.size()>0){
+						others.put("webId", "-1");
+						list.add(others);
+					}
 				}
 			}	
 		}
