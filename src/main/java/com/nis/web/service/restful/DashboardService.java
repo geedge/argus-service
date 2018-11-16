@@ -59,8 +59,8 @@ public class DashboardService extends BaseService{
 		Map maxRecvtTime = ntcTotalReportDao.getMaxRecvTime();
 		List<Map> newData = new ArrayList<Map>();
 //		List<Map> oldData = new ArrayList<Map>();
-		if(maxRecvtTime!=null&&maxRecvtTime.get("recvTime")!=null) {
-			Date recvTime = (Date) maxRecvtTime.get("recvTime");
+		if(maxRecvtTime!=null&&maxRecvtTime.get("statTime")!=null) {
+			Date recvTime = (Date) maxRecvtTime.get("statTime");
 			newData = ntcTotalReportDao.getNetFlowPortInfoNew(recvTime);
 //			oldData = ntcTotalReportDao.getNetFlowPortInfoOld(recvTime);
 		}

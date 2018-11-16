@@ -13,6 +13,6 @@ public interface NtcTotalReportDao {
 	NtcTotalReport getMaxReportTime();
 	Map getMaxRecvTime();
 	List<Map> getTotalReportList(@Param("reportTime") Date reportTime);
-	List<Map> getNetFlowPortInfoNew(@Param("statTime") Date recvTime);
+	List<Map> getNetFlowPortInfoNew(@Param("statTime") Date statTime);
 //	List<Map> getNetFlowPortInfoOld(@Param("recvTime") Date recvTime);
 }

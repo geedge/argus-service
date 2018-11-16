@@ -22,7 +22,7 @@
   </select>
      <!-- 获取带宽最近时间并且有效 -->
   <select id="getMaxRecvTime" resultType="java.util.HashMap">
-  	SELECT MAX(stat_time) recvTime FROM traffic_trans_statistic
+  	SELECT MAX(stat_time) statTime FROM traffic_trans_statistic
   </select>
  <select id="getTotalReportList" resultType="java.util.HashMap">
     SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
@@ -35,7 +35,7 @@
   </select>
   <!-- 获取上个时间段的数据 -->
 <!--  <select id="getNetFlowPortInfoOld" resultType="java.util.HashMap">
-    SELECT IFNULL(SUM(INOCTETS),0) inoctets ,IFNULL(SUM(OUTOCTETS),0) outoctets FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO
+    SELECT IFNULL(SUM(INOCTETS),0) inoctets ,IFNULL(SUM(OUTOCTETS),0) outoctets FROM TRAFFIC_NETFLOW_PORT_INFO
     where RECV_TIME = DATE_SUB(#{recvTime},INTERVAL 5 MINUTE) 
   </select>-->
 </mapper>
