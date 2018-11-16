@@ -12,30 +12,30 @@
     <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
   </resultMap> -->
 <!--  <select id="appChart" resultType="java.util.HashMap">
-    SELECT app_type appType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM galaxy.traffic_app_statistic
+    SELECT app_type appType, (SUM(c2s_pkt_num)+SUM(s2c_pkt_num)+SUM(c2s_byte_len)+SUM(s2c_byte_len)) count ,(SUM(c2s_pkt_num)+SUM(s2c_pkt_num)) pktNum,(SUM(c2s_byte_len)+SUM(s2c_byte_len)) byteLen FROM traffic_app_statistic
 	WHERE app_type !=0 and stat_time >= DATE_SUB(NOW(),INTERVAL 5 MINUTE)
 	GROUP BY app_type order by count desc limit 0,10
   </select> -->
      <!-- 获取最近时间并且有效 -->
   <select id="getMaxReportTime" resultType="com.nis.domain.restful.dashboard.NtcTotalReport">
-  	SELECT MAX(report_time) reportTime FROM galaxy.ntc_total_report
+  	SELECT MAX(report_time) reportTime FROM ntc_total_report
   </select>
      <!-- 获取带宽最近时间并且有效 -->
   <select id="getMaxRecvTime" resultType="java.util.HashMap">
-  	SELECT MAX(stat_time) recvTime FROM galaxy.traffic_trans_statistic
+  	SELECT MAX(stat_time) recvTime FROM traffic_trans_statistic
   </select>
  <select id="getTotalReportList" resultType="java.util.HashMap">
     SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
-    SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM galaxy.ntc_total_report
+    SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM ntc_total_report
     where report_time = #{reportTime}
   </select>
  <select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
-    SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM galaxy.traffic_trans_statistic
+    SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
     where stat_time = #{statTime}
   </select>
   <!-- 获取上个时间段的数据 -->
 <!--  <select id="getNetFlowPortInfoOld" resultType="java.util.HashMap">
     SELECT IFNULL(SUM(INOCTETS),0) inoctets ,IFNULL(SUM(OUTOCTETS),0) outoctets FROM galaxy.TRAFFIC_NETFLOW_PORT_INFO
     where RECV_TIME = DATE_SUB(#{recvTime},INTERVAL 5 MINUTE) 
-  </select> -->
+  </select>-->
 </mapper>

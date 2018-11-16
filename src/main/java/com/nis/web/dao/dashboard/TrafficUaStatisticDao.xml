@@ -18,29 +18,29 @@
   </sql>
     <!-- 获取最近时间并且有效 -->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficUaStatistic">
-  	SELECT MAX(stat_time) statTime FROM galaxy.traffic_ua_statistic WHERE os_type !=0 and bs_type!=0
+  	SELECT MAX(stat_time) statTime FROM traffic_ua_statistic WHERE os_type !=0 and bs_type!=0
   </select>
   <!--获取操作系统列表TOP10  -->
   <select id="systemList" resultMap="BaseResultMap">
-    SELECT os_type osType, SUM(link_num) count  FROM galaxy.traffic_ua_statistic
+    SELECT os_type osType, SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE os_type !=0 and stat_time = #{statTime}
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--获取上个时间段操作系统的数据量  -->
   <select id="preSystemListCount" resultType="java.lang.Integer">
-    SELECT SUM(link_num) count FROM galaxy.traffic_ua_statistic
+    SELECT SUM(link_num) count FROM traffic_ua_statistic
 	WHERE os_type !=0 and os_type=#{osType}
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
   </select>
   <!-- 根据操作系统获取浏览器分类 -->
   <select id="getBrowserBySystem" resultType="java.util.HashMap">
-    SELECT bs_type bsType, SUM(link_num) count  FROM galaxy.traffic_ua_statistic
+    SELECT bs_type bsType, SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE bs_type !=0 and os_type=#{osType} and stat_time = #{statTime}
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--浏览器TOP10后所有为others -->
   <select id="systemOthers" resultType="java.util.HashMap">
-  	SELECT SUM(link_num) count  FROM galaxy.traffic_ua_statistic
+  	SELECT SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE bs_type !=0 and os_type=#{osType}
 		<if test="bsType!=null and bsType.size()>0">
 		and os_type not in
@@ -53,25 +53,25 @@
   
   <!--获取浏览器列表TOP10  -->
   <select id="browserList" resultMap="BaseResultMap">
-    SELECT bs_type bsType, SUM(link_num) count  FROM galaxy.traffic_ua_statistic
+    SELECT bs_type bsType, SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE bs_type !=0 and stat_time = #{statTime}
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--获取上个时间段浏览器的数据量  -->
   <select id="preBrowserListCount" resultType="java.lang.Integer">
-    SELECT SUM(link_num) count FROM galaxy.traffic_ua_statistic
+    SELECT SUM(link_num) count FROM traffic_ua_statistic
 	WHERE bs_type !=0 and bs_type=#{bsType}
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
   </select>
   <!-- 根据浏览器获取操作系统分类 -->
   <select id="getSystemBybrowser" resultType="java.util.HashMap">
-    SELECT os_type osType, SUM(link_num) count  FROM galaxy.traffic_ua_statistic
+    SELECT os_type osType, SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE os_type !=0 and bs_type=#{bsType} and stat_time = #{statTime}
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--操作系统TOP10后所有为others -->
   <select id="browserOthers" parameterType="java.util.List" resultType="java.util.HashMap">
-  	SELECT SUM(link_num) count  FROM galaxy.traffic_ua_statistic
+  	SELECT SUM(link_num) count  FROM traffic_ua_statistic
 	WHERE os_type !=0 and bs_type=#{bsType}
 		<if test="osType!=null and osType.size()>0">
 		and bs_type not in

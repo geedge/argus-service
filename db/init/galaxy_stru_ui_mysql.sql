@@ -80,16 +80,19 @@ CREATE TABLE `ui_sys_dict_info` (
 ) ENGINE=FEDERATED AUTO_INCREMENT=448 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/sys_dict_info';
 
 
-CREATE TABLE `ui_code_app_dic` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `app_name` varchar(255) DEFAULT '',
-  `app_name_zh` varchar(255) DEFAULT NULL,
-  `view_code` varchar(255) DEFAULT '' COMMENT '应用编码',
-  `icon` varchar(255) DEFAULT '',
-  `behavior` varchar(255) DEFAULT '' COMMENT '行为细分',
-  `core_app` int(11) DEFAULT NULL COMMENT '是否是核心应用（1：是，0：否）',
-  PRIMARY KEY (`id`)
-  ) ENGINE=FEDERATED AUTO_INCREMENT=399 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_app_dic';
+  CREATE TABLE `ui_code_app_dic` (
+   `id` int(11) NOT NULL AUTO_INCREMENT,
+   `app_name` varchar(255) CHARACTER SET utf8mb4 DEFAULT '',
+   `app_name_zh` varchar(255) CHARACTER SET utf8mb4 DEFAULT '',
+   `view_code` varchar(255) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '应用编码',
+   `icon` varchar(255) DEFAULT '',
+   `behavior` varchar(255) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '行为细分',
+   `core_app` int(11) DEFAULT NULL COMMENT '是否是核心应用（1：是，0：否）',
+   `app_service_id` int(10) unsigned zerofill DEFAULT NULL COMMENT '业务类型编号',
+   `app_service` varchar(255) CHARACTER SET utf8mb4 DEFAULT '',
+   `lib` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT 'lib类别',
+   PRIMARY KEY (`id`)
+  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_app_dic';
 
 
 

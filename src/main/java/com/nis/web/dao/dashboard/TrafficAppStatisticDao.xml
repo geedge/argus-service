@@ -17,10 +17,10 @@
   </sql>
   <!-- 查询最近时间 -->
    <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficAppStatistic">
-  	SELECT MAX(stat_time) statTime FROM galaxy.traffic_app_statistic WHERE app_type != 0
+  	SELECT MAX(stat_time) statTime FROM traffic_app_statistic WHERE app_type != 0
   </select>
  <select id="appChart" resultType="java.util.HashMap">
-    SELECT app_type appType, SUM(link_num) count FROM galaxy.traffic_app_statistic
+    SELECT app_type appType, SUM(link_num) count FROM traffic_app_statistic
 	WHERE app_type !=0 and stat_time = #{statTime}
 	GROUP BY app_type order by count desc limit 0,10
   </select>

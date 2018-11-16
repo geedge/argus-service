@@ -17,10 +17,10 @@
   </sql>
   <!-- 获取最近时间 -->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficProtocolStatistic">
-	SELECT MAX(stat_time) statTime FROM galaxy.traffic_protocol_statistic WHERE proto_type != 0
+	SELECT MAX(stat_time) statTime FROM traffic_protocol_statistic WHERE proto_type != 0
   </select>
   <select id="protocolChart" resultType="java.util.HashMap">
-	SELECT proto_type protoType, SUM(link_num) count FROM galaxy.traffic_protocol_statistic WHERE proto_type != 0 
+	SELECT proto_type protoType, SUM(link_num) count FROM traffic_protocol_statistic WHERE proto_type != 0 
 	AND stat_time = #{statTime} GROUP BY proto_type ORDER BY count DESC LIMIT 0, 10
   </select>
 </mapper>
