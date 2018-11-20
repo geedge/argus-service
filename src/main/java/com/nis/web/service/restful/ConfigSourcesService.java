@@ -126,7 +126,10 @@ public class ConfigSourcesService extends BaseService {
 			StringBuffer sb) throws Exception {
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-
+		
+		if (configCompileList!=null&&configCompileList.size()>Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
+		}
 		for (ConfigCompile configCompile : configCompileList) {
 			Integer service = Integer.valueOf(configCompile.getService().toString());
 			MaatConfig maatConfig = new MaatConfig();
@@ -323,6 +326,9 @@ public class ConfigSourcesService extends BaseService {
 	public void updateConfigSources(AuditLogThread thread, long start, List<ConfigCompile> compileList, Date opTime,
 			StringBuffer sb) throws Exception {
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
+		if (compileList!=null&&compileList.size()>Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
+		}
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
 				checkCompileOptForUpdate(config);
@@ -416,7 +422,9 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
-
+		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
+		}
 		Map<Integer, List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String, String>>>();
 		for (int i = 0; i < jsonObjectList.size(); i++) {
 			JsonObject jsonObj = (JsonObject) jsonObjectList.get(i);
@@ -635,6 +643,9 @@ public class ConfigSourcesService extends BaseService {
 			// TODO: handle exception
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
+		}
+		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
 		}
 		// <service,cfgIdList>
 		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
@@ -867,9 +878,17 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
 			}
+			
+			if ((maatConfig.getStrRegionMapList()!=null&&maatConfig.getStrRegionMapList().size()>Constants.MAX_LIST_SIZE)
+					||(maatConfig.getStrStrRegionMapList()!=null&&maatConfig.getStrStrRegionMapList().size()>Constants.MAX_LIST_SIZE)
+					||(maatConfig.getIpRegionMapList()!=null&&maatConfig.getIpRegionMapList().size()>Constants.MAX_LIST_SIZE)
+					||(maatConfig.getNumRegionMapList()!=null&&maatConfig.getNumRegionMapList().size()>Constants.MAX_LIST_SIZE)) {
+				thread.setSaveContentFlag(false);
+			}
 			//maatConfig.setService(groupReuse.getService());
 			list.add(maatConfig);
 		}
+		
 	
 		// 调用接口入redis
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
@@ -938,6 +957,9 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
+		if (reuseMap!=null&&reuseMap.size()>Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
+		}		
 		// 所有的都删除成功返回true
 		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
 //			if (!configRedisService.delGroupReuseConfigByPipeline(reuseMap)) {

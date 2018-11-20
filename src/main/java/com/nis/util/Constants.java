@@ -213,4 +213,10 @@ public final class Constants {
 	public static final Boolean IS_USE_MINIO = Configurations.getBooleanProperty("isUseMinio", true);
 	public static final int MAXTHREADNUM = Configurations.getIntProperty("maxThreadNum", 10);
 	public static final int EVERTHREADNUM = Configurations.getIntProperty("everThreadNum", 10000);
+	
+	/**
+	 * 保存请求内容时，最大的资源列表size
+	 */
+	public static final int MAX_LIST_SIZE = Configurations.getIntProperty("maxListSize", 10);
+	
 }

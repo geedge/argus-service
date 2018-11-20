@@ -55,11 +55,13 @@ public class MaatTestServiceimpl {
 				Map<String, String[]> tapFieldMap = ServiceAndRDBIndexReal.getMaatToValveMap().get(service);
 				//用于判断是否是入阀门时添加的额外字段
 				Map<String, String> keyMap = new HashMap<String, String>();
-				Iterator iterator =  tapFieldMap.keySet().iterator();
-				while (iterator.hasNext()) {
-					String [] tapFields = tapFieldMap.get(iterator.next().toString());
-					for (String obj : tapFields) {
-						keyMap.put(CamelUnderlineUtil.underlineToCamel(obj).toLowerCase(), obj.toLowerCase());
+				if(null!=tapFieldMap){
+					Iterator iterator =  tapFieldMap.keySet().iterator();
+					while (iterator.hasNext()) {
+						String [] tapFields = tapFieldMap.get(iterator.next().toString());
+						for (String obj : tapFields) {
+							keyMap.put(CamelUnderlineUtil.underlineToCamel(obj).toLowerCase(), obj.toLowerCase());
+						}
 					}
 				}
 				List<Integer> redisDBList = ServiceAndRDBIndexReal.getRedisDBByService(service);

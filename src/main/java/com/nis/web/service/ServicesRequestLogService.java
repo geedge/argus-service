@@ -92,7 +92,7 @@ public class ServicesRequestLogService {
 	 */
 	public void saveRequestLog(String requestAddr, String requestURI, String queryString, String contextPath,
 			String operator, String version, int opAction, Date opTime, Object content, Date requestTime,
-			long consumerTime, int businessCode, String exceptionInfo, String traceCode) {
+			long consumerTime, int businessCode, String exceptionInfo, String traceCode,Boolean saveContentFlag) {
 		logger.info("开始记录日志---");
 		logger.info("请求IP---" + requestAddr);
 		logger.info("请求路径---" + requestURI);
@@ -171,6 +171,9 @@ public class ServicesRequestLogService {
 			if ("file".equals(type)) {// 文件上传
 				log.setRequestContent(content.toString());
 			} else {
+				if(!saveContentFlag){
+					log.setRequestContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+",不记录请求内容");
+				}
 				if (content != null) {
 					log.setRequestContent(content.toString());
 				}
