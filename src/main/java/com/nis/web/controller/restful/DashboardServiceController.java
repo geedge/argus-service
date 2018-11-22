@@ -105,7 +105,6 @@ public class DashboardServiceController extends BaseRestController {
 				if (ipActiveChart.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(ipActiveChart);
 					list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
-					logger.info(list);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

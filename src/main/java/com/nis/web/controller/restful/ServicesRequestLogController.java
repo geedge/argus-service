@@ -14,6 +14,7 @@ import com.nis.domain.Page;
 import com.nis.domain.restful.ServicesRequestLogBean;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -38,7 +39,7 @@ public class ServicesRequestLogController extends BaseRestController {
 		} catch (Exception e) {
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			e.printStackTrace();
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(thread, System.currentTimeMillis() - start, "获取系统操作日志失败");
 			}

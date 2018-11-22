@@ -30,6 +30,7 @@ import com.nis.domain.restful.MmVoipAccountLog;
 import com.nis.domain.restful.MmVoipIpLog;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.LogDataService;
@@ -73,7 +74,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "音视频IP日志检索失败");
 			}
@@ -97,7 +98,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "音视频URL日志检索失败");
 			}
@@ -121,7 +122,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "图片IP日志检索失败");
 			}
@@ -145,7 +146,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "图片URL日志检索失败");
 			}
@@ -171,7 +172,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VoIP IP日志检索失败");
 			}
@@ -197,7 +198,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VoIP Account日志检索失败");
 			}
@@ -222,7 +223,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "音频样例日志检索失败");
 			}
@@ -246,7 +247,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "视频样例日志检索失败");
 			}
@@ -271,7 +272,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "音频色情日志检索失败");
 			}
@@ -296,7 +297,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "视频色情日志检索失败");
 			}
@@ -320,7 +321,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "图片样例日志检索失败");
 			}
@@ -344,7 +345,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "VOIP样例日志检索失败");
 			}
@@ -369,7 +370,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "说话人识别日志检索失败");
 			}
@@ -394,7 +395,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "台标识别日志检索失败");
 			}
@@ -419,7 +420,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "人脸识别日志检索失败");
 			}
@@ -443,7 +444,7 @@ public class MmLogSearchController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "文件摘要日志检索失败");
 			}

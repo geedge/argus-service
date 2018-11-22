@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nis.domain.restful.ConfigPzIdSource;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -25,8 +26,8 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class ConfigPzIdController extends BaseRestController {
 
-	protected final Logger logger1 = Logger.getLogger(this.getClass());
-	
+	// protected final Logger logger1 = Logger.getLogger(this.getClass());
+
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
 	@Autowired
@@ -39,14 +40,13 @@ public class ConfigPzIdController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				configPzIdSource);
-		
+
 		try {
 			configPzIdService.getConfigPzIdList(configPzIdSource);
 		} catch (Exception e) {
 			e.printStackTrace();
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e.getMessage());
-			logger.error(e.getCause());
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			throw new RestServiceException(thread, System.currentTimeMillis() - start, "配置ID获取失败");
 		}
 		return serviceResponse(thread, System.currentTimeMillis() - start, request, response, "配置ID获取成功",

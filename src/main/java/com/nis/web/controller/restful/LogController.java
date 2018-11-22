@@ -16,6 +16,7 @@ import com.nis.domain.restful.DkBehaviorLog;
 import com.nis.domain.restful.PxyHttpLog;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.LogDataService;
@@ -66,7 +67,7 @@ public class LogController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "行为识别日志检索失败");
 			}
@@ -90,7 +91,7 @@ public class LogController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
+			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
 				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "PXY HTTP日志检索失败");
 			}
