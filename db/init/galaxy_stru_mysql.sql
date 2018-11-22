@@ -1,6 +1,5 @@
 
 /*Table structure for table `area` */
-
 DROP TABLE IF EXISTS `area`;
 DROP TABLE IF EXISTS `image_url`;
 DROP TABLE IF EXISTS `isp`;
@@ -13,23 +12,28 @@ DROP TABLE IF EXISTS `nms_di_rule`;
 DROP TABLE IF EXISTS `ntc_attr_type_report`;
 DROP TABLE IF EXISTS `ntc_attr_type_stat_daily`;
 DROP TABLE IF EXISTS `ntc_attr_type_stat_hour`;
+DROP TABLE IF EXISTS `ntc_attr_type_stat_month`;
 DROP TABLE IF EXISTS `ntc_destip_country_report`;
 DROP TABLE IF EXISTS `ntc_tag_report`;
 DROP TABLE IF EXISTS `ntc_destip_country_stat_daily`;
 DROP TABLE IF EXISTS `ntc_destip_country_stat_hour`;
+DROP TABLE IF EXISTS `ntc_destip_country_stat_month`;
 DROP TABLE IF EXISTS `ntc_entrance_report`;
 DROP TABLE IF EXISTS `ntc_entrance_stat_daily`;
 DROP TABLE IF EXISTS `traffic_abnormal_machine`;
 DROP TABLE IF EXISTS `traffic_nmsserver_statistic`;
 DROP TABLE IF EXISTS `ntc_entrance_stat_hour`;
+DROP TABLE IF EXISTS `ntc_entrance_stat_month`;
 DROP TABLE IF EXISTS `ntc_lwhh_report`;
 DROP TABLE IF EXISTS `ntc_lwhh_stat_daily`;
 DROP TABLE IF EXISTS `ntc_lwhh_stat_hour`;
+DROP TABLE IF EXISTS `ntc_lwhh_stat_month`;
 DROP TABLE IF EXISTS `pz_control_report`;
 DROP TABLE IF EXISTS `ntc_device_info`;
 DROP TABLE IF EXISTS `ntc_pz_report`;
 DROP TABLE IF EXISTS `ntc_pz_stat_daily`;
 DROP TABLE IF EXISTS `ntc_pz_stat_hour`;
+DROP TABLE IF EXISTS `ntc_pz_stat_month`;
 DROP TABLE IF EXISTS `ntc_radius_report`;
 DROP TABLE IF EXISTS `ntc_reject_url_statistic`;
 DROP TABLE IF EXISTS `ntc_reject_website_statistic`;
@@ -38,11 +42,14 @@ DROP TABLE IF EXISTS `ntc_service_dic`;
 DROP TABLE IF EXISTS `ntc_service_report`;
 DROP TABLE IF EXISTS `ntc_service_stat_daily`;
 DROP TABLE IF EXISTS `ntc_service_stat_hour`;
+DROP TABLE IF EXISTS `ntc_service_stat_month`;
 DROP TABLE IF EXISTS `ntc_srcip_domestic_report`;
 DROP TABLE IF EXISTS `ntc_srcip_domestic_stat_daily`;
 DROP TABLE IF EXISTS `ntc_srcip_domestic_stat_hour`;
+DROP TABLE IF EXISTS `ntc_srcip_domestic_stat_month`;
 DROP TABLE IF EXISTS `ntc_tag_stat_daily`;
 DROP TABLE IF EXISTS `ntc_tag_stat_hour`;
+DROP TABLE IF EXISTS `ntc_tag_stat_month`;
 DROP TABLE IF EXISTS `ntc_total_report`;
 DROP TABLE IF EXISTS `pxy_total_report`;
 DROP TABLE IF EXISTS `services_config_request_log`;
@@ -69,6 +76,8 @@ DROP TABLE IF EXISTS `traffic_service_statistic`;
 DROP TABLE IF EXISTS `traffic_total_statistic`;
 DROP TABLE IF EXISTS `traffic_trans_statistic`;
 DROP TABLE IF EXISTS `traffic_ua_statistic`;
+DROP TABLE IF EXISTS `sys_app_log_stat_status`;
+
 
 
 CREATE TABLE `area` (
@@ -235,6 +244,7 @@ CREATE TABLE `ntc_attr_type_stat_daily` (
 
 
 
+
 CREATE TABLE `ntc_attr_type_stat_hour` (
   `stat_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
   `service` int(11) NOT NULL COMMENT '业务类型',
@@ -244,10 +254,18 @@ CREATE TABLE `ntc_attr_type_stat_hour` (
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.12.	ntc性质小时报表';
 
+/*Table structure for table `ntc_attr_type_stat_month` */
+CREATE TABLE `ntc_attr_type_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `attr_type` int(11) NOT NULL COMMENT '性质',
+  `sum` bigint(20)  NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_ATTR_TYPE_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='ntc性质月报表';
+
 /*Table structure for table `ntc_destip_country_report` */
-
-
-
 CREATE TABLE `ntc_destip_country_report` (
   `stat_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `service` int(11) NOT NULL,
@@ -283,6 +301,18 @@ CREATE TABLE `ntc_destip_country_stat_hour` (
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.10.	ntc国家小时报表';
 
+/*Table structure for table `ntc_destip_country_stat_month` */
+CREATE TABLE `ntc_destip_country_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `dest_country` varchar(255) NOT NULL COMMENT '目的ip所属国家',
+  `sum` bigint(20) NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_DESTIP_COUNTRY_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='ntc国家月报表';
+
+
 /*Table structure for table `ntc_entrance_report` */
 
 
@@ -310,9 +340,6 @@ CREATE TABLE `ntc_entrance_stat_daily` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.15.	ntc局点日报表';
 
 /*Table structure for table `ntc_entrance_stat_hour` */
-
-
-
 CREATE TABLE `ntc_entrance_stat_hour` (
   `stat_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
   `service` int(11) NOT NULL COMMENT '业务类型',
@@ -321,6 +348,20 @@ CREATE TABLE `ntc_entrance_stat_hour` (
   `report_time` datetime NOT NULL COMMENT '统计时间',
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.14.	ntc局点小时报表';
+
+/*Table structure for table `ntc_entrance_stat_month` */
+
+CREATE TABLE `ntc_entrance_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `entrance_id` int(11) NOT NULL COMMENT '局点（出入口）',
+  `sum` bigint(20)  NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_ENTRANCE_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='ntc局点月报表';
+
+
 
 /*Table structure for table `ntc_lwhh_report` */
 
@@ -349,9 +390,6 @@ CREATE TABLE `ntc_lwhh_stat_daily` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.17.	ntc来文函号日报表';
 
 /*Table structure for table `ntc_lwhh_stat_hour` */
-
-
-
 CREATE TABLE `ntc_lwhh_stat_hour` (
   `stat_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
   `service` int(11) NOT NULL COMMENT '业务类型',
@@ -360,6 +398,20 @@ CREATE TABLE `ntc_lwhh_stat_hour` (
   `report_time` datetime NOT NULL COMMENT '统计时间',
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.16.	ntc来文函号小时报表';
+
+/*Table structure for table `ntc_lwhh_stat_month` */
+
+CREATE TABLE `ntc_lwhh_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `lwhh` int(11) NOT NULL COMMENT '来文函号',
+  `sum` bigint(20) NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_LWHH_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='ntc来文函号月报表';
+
+
 
 /*Table structure for table `ntc_pz_report` */
 
@@ -427,6 +479,21 @@ CREATE TABLE `ntc_pz_stat_hour` (
   `report_time` datetime NOT NULL COMMENT '统计时间',
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.2.	ntc配置统计小时报表';
+
+
+/*Table structure for table `ntc_pz_stat_month` */
+
+CREATE TABLE `ntc_pz_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `cfg_id` int(11) NOT NULL COMMENT '配置id',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `sum` bigint(20)  NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_PZ_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='ntc配置统计月报表';
+
+
 
 /*Table structure for table `ntc_radius_report` */
 
@@ -527,6 +594,21 @@ CREATE TABLE `ntc_service_stat_hour` (
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.4.	ntc业务类型小时报表';
 
+
+/*Table structure for table `ntc_service_stat_month` */
+
+CREATE TABLE `ntc_service_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `sum` bigint(20)  NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_SERVICE_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=95 DEFAULT CHARSET=utf8mb4 COMMENT='ntc业务类型月报表';
+
+
+
+
 /*Table structure for table `ntc_srcip_domestic_report` */
 
 
@@ -567,6 +649,19 @@ CREATE TABLE `ntc_srcip_domestic_stat_hour` (
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.8.	ntc境内小时报表';
 
+/*Table structure for table `ntc_srcip_domestic_stat_month` */
+
+CREATE TABLE `ntc_srcip_domestic_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `src_province` varchar(255) NOT NULL COMMENT '源ip所属省',
+  `src_city` varchar(255) DEFAULT '0' COMMENT '源ip所属市',
+  `sum` bigint(20)  NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_SRCIP_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='ntc境内月报表';
+
 /*Table structure for table `ntc_tag_report` */
 
 
@@ -603,6 +698,17 @@ CREATE TABLE `ntc_tag_stat_hour` (
   `report_time` datetime NOT NULL COMMENT '统计时间',
   PRIMARY KEY (`stat_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='9.6.	ntc标签统计小时报表';
+
+/*Table structure for table `ntc_tag_stat_month` */
+CREATE TABLE `ntc_tag_stat_month` (
+  `stat_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id自增',
+  `service` int(11) NOT NULL COMMENT '业务类型',
+  `tag` int(11) NOT NULL COMMENT '标签',
+  `sum` bigint(20)  NOT NULL DEFAULT 0 COMMENT '日志数量',
+  `report_time` datetime NOT NULL COMMENT '统计时间',
+  PRIMARY KEY (`stat_id`),
+  KEY `IDX_TAG_STAT_MONTH_TIME` (`report_time`)
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COMMENT='ntc标签统计月报表';
 
 /*Table structure for table `ntc_total_report` */
 
@@ -1094,6 +1200,14 @@ CREATE TABLE `traffic_ua_statistic` (
   `stat_time` datetime NOT NULL,
   PRIMARY KEY (`stat_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `sys_app_log_stat_status` (
+  `log_id` INT(32) NOT NULL AUTO_INCREMENT,
+  `log_service` INT(20) NOT NULL COMMENT '业务类型：\r\n1.配置pz\r\n2.类型service\r\n3.标签tag\r\n4.境内srcipdomestic\r\n5.国家destipcountry\r\n6.性质attrtype\r\n7.局点entrance\r\n8.来文函号lwhh',
+  `log_time` DATETIME NOT NULL COMMENT '该统计时间',
+  `log_type` INT(20) NOT NULL COMMENT '统计类型：\r\n1.小时报\r\n2.日报\r\n3.月报',
+  PRIMARY KEY (`log_id`)
+) ENGINE=INNODB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 
 
