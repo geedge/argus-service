@@ -81,6 +81,9 @@ public class ConfigSourcesController extends BaseRestController {
 			if (getLock(requestId)) {
 				if (null != configSource && null != configSource.getConfigCompileList()
 						&& configSource.getConfigCompileList().size() > 0) {
+					if (configSource.getConfigCompileList()!=null&&configSource.getConfigCompileList().size()>Constants.MAX_LIST_SIZE) {
+						thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
+					}					
 					checkOpAction(thread, System.currentTimeMillis() - start, configSource.getOpAction(),
 							Constants.OPACTION_POST);
 					// 验证配置编译数据
@@ -131,6 +134,9 @@ public class ConfigSourcesController extends BaseRestController {
 				if (null != configSource && null != configSource.getConfigCompileList()
 						&& configSource.getConfigCompileList().size() > 0) {
 					int opAction = configSource.getOpAction();
+					if (configSource.getConfigCompileList()!=null&&configSource.getConfigCompileList().size()>Constants.MAX_LIST_SIZE) {
+						thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
+					}
 					checkOpAction(thread, System.currentTimeMillis() - start, opAction, 2);
 					configSourcesService.updateConfigSources(thread, start, configSource.getConfigCompileList(),
 							configSource.getOpTime(), sb);

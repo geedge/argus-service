@@ -578,7 +578,7 @@ public class MaatTestController {
 								} else if (srcName.toLowerCase().equals("cfgid")
 										|| srcName.toLowerCase().equals("keyringid")
 										|| srcName.toLowerCase().equals("fileid")) {
-									Long incrId = configRedisService.getIncrId("seq_compileid");
+									Long incrId = configRedisService.getIncrId("SEQ_COMPILEID");
 									compileIdList.add(incrId);
 									jsonString.append(incrId);
 								} else {

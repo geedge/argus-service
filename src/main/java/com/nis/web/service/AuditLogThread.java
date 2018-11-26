@@ -50,7 +50,6 @@ public class AuditLogThread implements Runnable {
 	private int businessCode;
 	private String exceptionInfo;
 	private String traceCode;
-	private Boolean saveContentFlag=true;//是否保存请求内容
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -63,7 +62,7 @@ public class AuditLogThread implements Runnable {
 		CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_A);// 开启数据源B
 		if (service != null) {
 			service.saveRequestLog(remoteAddr, requestURI, queryString, contextPath, operator, version, opAction,
-					opTime, content, requestTime, consumerTime, businessCode, exceptionInfo, traceCode,saveContentFlag);
+					opTime, content, requestTime, consumerTime, businessCode, exceptionInfo, traceCode);
 		} else {
 			logger.error("service 为空！");
 		}
@@ -429,13 +428,5 @@ public class AuditLogThread implements Runnable {
 
 	public void setTraceCode(String traceCode) {
 		this.traceCode = traceCode;
-	}
-
-	public Boolean getSaveContentFlag() {
-		return saveContentFlag;
-	}
-	
-	public void setSaveContentFlag(Boolean saveContentFlag) {
-		this.saveContentFlag = saveContentFlag;
 	}
 }
