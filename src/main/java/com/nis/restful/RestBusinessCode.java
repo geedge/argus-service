@@ -677,7 +677,10 @@ public enum RestBusinessCode {
 	/**
 	 * 状态更新操作中更新内容Map不能为空
 	 */
-	ConfigInfoMapIsNull(5004005,"状态更新操作中更新内容Map不能为空"),
+	ConfigInfoMapIsNull(5004006,"状态更新操作中更新内容Map不能为空"),
+	
+	
+	existBatchTask(5005001,"有其他任务正在执行批量导入,请稍后再试")
 	;
 	
 	
