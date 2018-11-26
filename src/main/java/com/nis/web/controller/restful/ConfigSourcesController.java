@@ -504,6 +504,62 @@ public class ConfigSourcesController extends BaseRestController {
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"MAAT规则分组复用域配置删除成功" + sb.toString(), Constants.IS_DEBUG ?groupReuseSource  : null);
 	}
+	@RequestMapping(value = "/cfg_batch/v1/configSources", method = RequestMethod.POST, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "全量同步配置接收接口", httpMethod = "POST", response = Map.class, notes = "接收全量同步配置")
+	public Map receiveConfigSources(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				null);
+		try {
+			JSONObject obj= JSONObject.fromObject(jsonString);
+			logger.info("-----------接收到json格式数据"+new Date());
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RestServiceException(RestBusinessCode.config_integrity_error.getErrorReason() + "," + e.getMessage(),
+					RestBusinessCode.config_integrity_error.getValue());
+		}
+		
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "已接收全量同步配置信息",
+				Constants.IS_DEBUG ? jsonString : null);
+	}
+	@RequestMapping(value = "/cfg_batch/v1/status", method = RequestMethod.POST, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "配置全量同步指令下发接口", httpMethod = "POST", response = Map.class, notes = "下发配置同步指令")
+	public Map acceptStatus(@RequestBody String jsonString, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				null);
+		JSONObject obj= JSONObject.fromObject(jsonString);
+		
+		if (!StringUtil.isEmpty(obj.get("syncStatus"))&&"1".equals(obj.get("syncStatus").toString())) {
+			logger.info("-----------配置同步指令下发:"+new Date());
+		}else{
+			logger.error("未获取到同步状态码");
+			thread.setBusinessCode(RestBusinessCode.syncStatusFailed.getValue());
+			throw new RestServiceException("未获取到同步状态码", RestBusinessCode.syncStatusFailed.getValue());
+		}
+		
+		thread.setBusinessCode(RestBusinessCode.syncStatusSuccessed.getValue());
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置同步指令下发成功",
+				Constants.IS_DEBUG ? jsonString : null);
+	}
+	
+	@RequestMapping(value = "/cfg_batch/v1/status", method = RequestMethod.GET)
+	@ApiOperation(value = "获取全量同步状态服务接口", httpMethod = "GET", response = Map.class, notes = "获取全量同步状态服务")
+	public Map getSyncStatus(HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+
+		JSONObject obj = new JSONObject();
+		obj.put("service", "ntc");
+		obj.put("status", 0);
+		obj.put("opTime", "2018-11-23 08:31:27");
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "获取全量同步状态成功",
+				obj);
+	}
 	
 	private void validateGroupReuseSource(AuditLogThread thread, long start, GroupReuseSource groupReuseSource) {
 		String errorInfo = "";
