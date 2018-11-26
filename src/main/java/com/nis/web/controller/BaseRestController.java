@@ -31,8 +31,10 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestConstants;
 import com.nis.restful.RestResult;
 import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
+import com.nis.util.JedisUtils;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.zdjizhi.utils.StringUtil;
@@ -419,4 +421,35 @@ public class BaseRestController {
 			entity.setSearchFoundEndTime(map.get("endTime"));
 		}
 	}
+	
+	/**
+	 * 获取redis分布式锁的状态
+	 * 
+	 * @param requestId
+	 * @return
+	 */
+	protected boolean getLock(String requestId) {
+		boolean lock = false;
+		if (JedisUtils.lock(requestId)) {
+			lock = true;
+		} else {
+			if (JedisUtils.lockRetry(requestId)) {
+				lock = true;
+			} else {
+				throw new ServiceRuntimeException("有其他任务正在执行批量导入,请稍后再试.如一直提示该信息,请联系管理员检查系统运行状态!",
+						RestBusinessCode.ConfigSourceIsNull.getValue());
+			}
+		}
+		return lock;
+	}
+	
+	/**
+	 * 解除redis分布式锁
+	 * @param requestId
+	 */
+	protected void deblocking (String requestId) {
+		JedisUtils.unLock(requestId);
+	}
+
+	
 }

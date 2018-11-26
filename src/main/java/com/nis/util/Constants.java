@@ -211,12 +211,22 @@ public final class Constants {
 	 *是否使用Minio
 	 */
 	public static final Boolean IS_USE_MINIO = Configurations.getBooleanProperty("isUseMinio", true);
-	public static final int MAXTHREADNUM = Configurations.getIntProperty("maxThreadNum", 10);
-	public static final int EVERTHREADNUM = Configurations.getIntProperty("everThreadNum", 10000);
 	
 	/**
 	 * 保存请求内容时，最大的资源列表size
 	 */
 	public static final int MAX_LIST_SIZE = Configurations.getIntProperty("maxListSize", 10);
+	
+	
+	/**
+	 * redis分布式锁超时时间,默认五分钟,3000秒
+	 */
+	public static final Long REDISLOCKTIME=Configurations.getLongProperty("redisLockTime", 3000);
+	/**
+	 * 获取redis分布式锁失败后的尝试获取锁的次数,每次失败暂停一秒钟后再次尝试
+	 */
+	public static final Long REDISRETRYNUM=Configurations.getLongProperty("redisRetryNum", 5);
+	
+	
 	
 }

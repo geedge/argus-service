@@ -1,5 +1,6 @@
 package com.nis.util;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,7 +17,8 @@ import com.nis.web.service.SpringContextHolder;
 
 public class JedisUtils {
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
-	private static JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
+	private static final JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
+
 	/**
 	 * 获取缓存
 	 * 
@@ -232,7 +234,7 @@ public class JedisUtils {
 			jedis.select(redisDb);
 		} catch (JedisException e) {
 			returnBrokenResource(jedis);
-			logger.error("获取redis连接失败,异常信息:{}" ,ExceptionUtil.getExceptionMsg(e));
+			logger.error("获取redis连接失败,异常信息:{}", ExceptionUtil.getExceptionMsg(e));
 			throw new ServiceRuntimeException("获取redis连接失败,请联系管理员检查程序",
 					RestBusinessCode.CannotConnectionRedis.getValue());
 		}
@@ -296,6 +298,74 @@ public class JedisUtils {
 	 */
 	public static Object toObject(byte[] bytes) {
 		return ObjectUtils.unserialize(bytes);
+	}
+
+	// 设置成功返回的结果OK
+	private static final String LOCK_SUCCESS = "OK";
+	// NX -- Only set the key if it does not already exist. XX -- Only set the key
+	// if it already exist
+	private static final String SET_IF_NOT_EXIST = "NX";
+	// 失效单位秒(EX)还是毫秒(PX)
+	private static final String SET_WITH_EXPIRE_TIME = "EX";
+	private static final Long UNLOCK_SUCCESS = 1L;
+
+	/**
+	 * 尝试获取分布式锁,如果没有key就set,有key就不操作
+	 * 
+	 * @param requestId
+	 *            请求标识(UUID.randomUUID().toString()),正常情况下是谁加的锁,谁去解锁不能a加的锁,b去解锁
+	 * @return 是否获取成功
+	 */
+	public static Boolean lock(String requestId) {
+		String key = "redisDistributedLock";
+		String var1 = getResource(0).set(key, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME,
+				Constants.REDISLOCKTIME);
+		if (LOCK_SUCCESS.equals(var1)) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 解锁操作
+	 * 
+	 * @param value
+	 *            客户端标识(requestId)
+	 * @return
+	 */
+	public static Boolean unLock(String value) {
+		String key = "redisDistributedLock";
+		// 这个字符串是个lua脚本，代表的意思是如果根据key拿到的value跟传入的value相同就执行del，否则就返回0【保证安全性】
+		String luaScript = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then return redis.call(\"del\",KEYS[1]) else  return 0 end";
+		// 这个命令就是去执行lua脚本，KEYS的集合就是第二个参数，ARGV的集合就是第三参数【保证解锁的原子操作】
+		Object var2 = getResource(0).eval(luaScript, Collections.singletonList(key), Collections.singletonList(value));
+		if (UNLOCK_SUCCESS == var2) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 重试机制
+	 * 
+	 * @param value
+	 *            客户端标识
+	 * @return
+	 */
+	public static Boolean lockRetry(String value) {
+		Boolean flag = false;
+		try {
+			for (int i = 0; i < Constants.REDISRETRYNUM; i++) {
+				flag = lock(value);
+				if (flag) {
+					break;
+				}
+				Thread.sleep(1000);
+			}
+		} catch (Exception e) {
+			logger.error("尝试获取redis分布式锁失败,失败原因:{}", ExceptionUtil.getExceptionMsg(e));
+		}
+		return flag;
 	}
 
 }
