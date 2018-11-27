@@ -209,11 +209,10 @@ public class BaseRestController {
 			restResult.setStatus(HttpStatus.CREATED);
 			restResult.setBusinessCode(RestBusinessCode.update_success);
 		} else if (requestMethod.equals(RequestMethod.POST.name())) {
-			if (thread.getBusinessCode()!=0&&(HttpStatus.ACCEPTED+"").equals((thread.getBusinessCode()+"").substring(0, 3))) {
-				restResult.setStatus(HttpStatus.ACCEPTED);
+			restResult.setStatus(HttpStatus.CREATED);
+			if (thread.getBusinessCode()!=0) {
 				restResult.setBusinessCode(RestBusinessCode.valueOf(thread.getBusinessCode()));
 			}else{
-				restResult.setStatus(HttpStatus.CREATED);
 				restResult.setBusinessCode(RestBusinessCode.add_success);
 			}
 		} else if (requestMethod.equals(RequestMethod.PATCH.name())) {

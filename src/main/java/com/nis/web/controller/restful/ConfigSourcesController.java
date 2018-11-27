@@ -2,6 +2,7 @@ package com.nis.web.controller.restful;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.zdjizhi.utils.StringUtil;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -43,6 +43,7 @@ import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * @ClassName: ConfigSourcesController
@@ -552,11 +553,41 @@ public class ConfigSourcesController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
 				null);
+		thread.setContent("全量同步不记录请求内容");
 		try {
-			JSONObject obj= JSONObject.fromObject(jsonString);
-			logger.info("-----------接收到json格式数据"+new Date());
+			
+			String configType = request.getHeader("Config-Type");
+			String serviceId = request.getHeader("Service-Id");
+			String configTable = request.getHeader("Config-Table");
+			String lastCompletedTag = request.getHeader("Last-Completed-Tag");
+			logger.info(new Date()+"-----------接收到json格式数据:"+jsonString+"-------:");
+			if(StringUtil.isEmpty(serviceId)){
+				logger.error("未在请求头中获取到serviceId");
+				throw new RestServiceException(RestBusinessCode.config_integrity_error.getErrorReason() + "," + "未在请求头中获取到serviceId",
+					RestBusinessCode.config_integrity_error.getValue());
+			}
+			if (!StringUtil.isEmpty(lastCompletedTag)) {
+				System.out.println("接收全量同步配置:FINISHED");
+				logger.info("接收全量同步配置:FINISHED");
+			}
+			if(StringUtil.isEmpty(configType)){
+				logger.error("未在请求头中获取到Config-Type");
+				throw new RestServiceException(RestBusinessCode.config_integrity_error.getErrorReason() + "," + "未在请求头中获取到Config-Type",
+					RestBusinessCode.config_integrity_error.getValue());
+			}else{
+				if (!("1".equals(configType)||"2".equals(configType))) {
+					logger.error("Config-Type的值只能是1(maat)和2(回调)");
+					throw new RestServiceException(RestBusinessCode.config_integrity_error.getErrorReason() + "," + "Config-Type的值只能是1(maat)和2(回调)",
+							RestBusinessCode.config_integrity_error.getValue());
+					
+				}	
+			}
+			
+			logger.info("-----------开始存储到json格式数据------->>configType:"+configType+",serviceId:"+serviceId+",configTable:"+configTable+",lastCompletedTag:"+lastCompletedTag);
+//			
 		} catch (Exception e) {
 			// TODO: handle exception
+			logger.error(e.getMessage());
 			throw new RestServiceException(RestBusinessCode.config_integrity_error.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.config_integrity_error.getValue());
 		}
@@ -593,13 +624,14 @@ public class ConfigSourcesController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-
+		List<JSONObject> list = new ArrayList<JSONObject>();
 		JSONObject obj = new JSONObject();
 		obj.put("service", "ntc");
 		obj.put("status", 0);
 		obj.put("opTime", "2018-11-23 08:31:27");
+		list.add(obj);
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "获取全量同步状态成功",
-				obj);
+				list);
 	}
 	
 	private void validateGroupReuseSource(AuditLogThread thread, long start, GroupReuseSource groupReuseSource) {
