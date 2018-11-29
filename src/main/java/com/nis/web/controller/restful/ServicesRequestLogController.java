@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.Page;
 import com.nis.domain.restful.ServicesRequestLogBean;
-import com.nis.restful.RestServiceException;
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
@@ -40,10 +41,8 @@ public class ServicesRequestLogController extends BaseRestController {
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			e.printStackTrace();
 			logger.error(ExceptionUtil.getExceptionMsg(e));
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(thread, System.currentTimeMillis() - start, "获取系统操作日志失败");
-			}
-			throw ((RestServiceException) e);
+			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+					"获取系统操作日志失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 
 		return testServiceResponse( System.currentTimeMillis() - start, request, response, "获取系统操作日志成功",

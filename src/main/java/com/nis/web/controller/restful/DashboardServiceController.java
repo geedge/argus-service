@@ -6,21 +6,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.nis.domain.restful.dashboard.TrafficPortActiveStatistic;
-import com.nis.restful.RestServiceException;
-import com.nis.util.Constants;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nis.web.service.AuditLogThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.ServiceRuntimeException;
+import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.util.JsonMapper;
 import com.nis.web.controller.BaseRestController;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DashboardService;
 import com.wordnik.swagger.annotations.Api;
@@ -54,11 +55,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "业务总量汇聚实时统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("业务总量汇聚实时统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"业务总量汇聚实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "业务总量汇聚实时统计数据检索成功",list, 0);
 	}
@@ -81,11 +80,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "活跃端口实时统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("活跃端口实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"活跃端口实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃端口实时统计数据检索成功",list, 0);
 	}
@@ -109,13 +106,11 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "协议统计图表数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("协议统计图表数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"协议统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "IP地址日志检索成功",
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "协议统计图表数据检索成功",
 				list, 0);
 	}
 	
@@ -138,11 +133,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "活跃IP实时统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("活跃IP实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"活跃IP实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP实时统计数据检索成功",list, 0);
 	}
@@ -164,19 +157,17 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "活跃IP实时统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("活跃IP统计一个小时的活跃IP"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"活跃IP统计一个小时的活跃IP检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP实时统计数据检索成功",list, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP统计一个小时的活跃IP检索成功",list, 0);
 	}
 	/**
 	 * 活跃IP TOP10 一小时数据
 	 */
 	@RequestMapping(value = "trafficIpActiveFiveMinute", method = RequestMethod.GET)
-	@ApiOperation(value = "活跃IP统计最近五分钟TOP10在近一个小时间隔五分钟的活跃IP数据", httpMethod = "GET", notes = "对应活跃IP实时统计查询服务。")
+	@ApiOperation(value = "活跃IP最近一个小时的变化趋势统计", httpMethod = "GET", notes = "对最新TOP10的活跃IP，在近一个小时的变化情况进行统计")
 	public Map<String,?> trafficIpActiveFiveMinute(Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
@@ -190,19 +181,17 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "活跃IP实时统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("活跃IP最近一个小时的变化趋势统计"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"活跃IP最近一个小时的变化趋势统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP实时统计数据检索成功",list, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP最近一个小时的变化趋势统计成功",list, 0);
 	}
 	/**
 	 * app应用流量分析 TOP10
 	 */
 	@RequestMapping(value = "trafficApp", method = RequestMethod.GET)
-	@ApiOperation(value = "app流量分析统计", httpMethod = "GET", notes = "对应app流量分析实时统计查询服务。")
+	@ApiOperation(value = "App流量分析统计", httpMethod = "GET", notes = "对应app流量分析实时统计查询服务。")
 	public Map<String, ?> trafficApp(Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
@@ -216,11 +205,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "App流量统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("App流量分析统计:"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"App流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App流量统计数据检索成功",list, 0);
 	}
@@ -238,11 +225,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "操作系统流量分析统计检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("操作系统流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"操作系统流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "操作系统流量分析统计检索成功",list, 0);
 	}
@@ -261,11 +246,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "操作系统下浏览器分类统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("操作系统下浏览器流量分析统计失败："+e);
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"操作系统下浏览器流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "操作系统下浏览器分类统计数据检索成功",list, 0);
 	}
@@ -283,11 +266,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "浏览器流量分析统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("浏览器流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"浏览器流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "浏览器流量分析统计数据检索成功",list, 0);
 	}
@@ -306,11 +287,9 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "浏览器下操作系统流量统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("浏览器下操作系统流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"浏览器下操作系统流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "浏览器下操作系统流量统计数据检索成功",list, 0);
 	}
@@ -330,16 +309,14 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "网站流量分析统计数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("网站流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"网站流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "网站流量分析统计数据检索成功",list, 0);
 	}
 	@RequestMapping(value = "trafficWebTypeChart", method = RequestMethod.GET)
-	@ApiOperation(value = "http网站分类分析统计", httpMethod = "GET", notes = "对应某个网站类型分类统计图")
+	@ApiOperation(value = "HTTP网站分类分析统计", httpMethod = "GET", notes = "对应某个网站类型分类统计图")
 	public Map<String, ?> trafficWebTypeChart(Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
@@ -353,16 +330,14 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "http网站分类分析数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("HTTP网站分类分析统计失败："+e);
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"HTTP网站分类分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "http网站分类分析数据检索成功",list, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站分类分析统计成功",list, 0);
 	}
 	@RequestMapping(value = "trafficTopicAndDomainChart", method = RequestMethod.GET)
-	@ApiOperation(value = "http网站主题分类分析统计", httpMethod = "GET", notes = "对应某个网站主题类型分类统计图")
+	@ApiOperation(value = "HTTP网站主题分类分析统计", httpMethod = "GET", notes = "对应某个网站主题类型分类统计图")
 	public Map<String, ?> trafficTopicAndDomainChart(Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
@@ -376,12 +351,10 @@ public class DashboardServiceController extends BaseRestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("流量统计接口服务错误"+e);
-			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "http网站主题分类分析数据检索失败");
-			}
-			throw ((RestServiceException) e);
+			logger.error("HTTP网站主题分类分析统计失败："+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"HTTP网站分类分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "http网站主题分类分析数据检索成功",list, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站主题分类分析数据检索成功",list, 0);
 	}
 }

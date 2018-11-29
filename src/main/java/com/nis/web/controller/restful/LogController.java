@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nis.domain.Page;
 import com.nis.domain.restful.DkBehaviorLog;
 import com.nis.domain.restful.PxyHttpLog;
+import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
@@ -69,9 +71,11 @@ public class LogController extends BaseRestController {
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "行为识别日志检索失败");
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"行为识别日志检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}else{
+				throw ((RestServiceException) e);
 			}
-			throw ((RestServiceException) e);
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "行为识别日志检索成功", page, 0);
 	}
@@ -93,9 +97,11 @@ public class LogController extends BaseRestController {
 			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(ExceptionUtil.getExceptionMsg(e));
 			if (!(e instanceof RestServiceException)) {
-				e = new RestServiceException(auditLogThread, System.currentTimeMillis() - start, "PXY HTTP日志检索失败");
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"PXY HTTP日志检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}else{
+				throw ((RestServiceException) e);
 			}
-			throw ((RestServiceException) e);
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "PXY HTTP日志检索成功", page,
 				0);

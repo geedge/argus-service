@@ -5,14 +5,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.restful.ConfigPzIdSource;
-import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
@@ -47,7 +46,7 @@ public class ConfigPzIdController extends BaseRestController {
 			e.printStackTrace();
 			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			logger.error(ExceptionUtil.getExceptionMsg(e));
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "配置ID获取失败");
+			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, "配置ID获取失败");
 		}
 		return serviceResponse(thread, System.currentTimeMillis() - start, request, response, "配置ID获取成功",
 				configPzIdSource);

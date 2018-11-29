@@ -16,7 +16,9 @@ import com.nis.domain.restful.TrafficNetflowPortInfoList;
 import com.nis.domain.restful.TrafficNmsServerStatisticList;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -60,8 +62,14 @@ public class NmsInfoController extends BaseRestController {
 			}
 
 		} catch (Exception e) {
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "上报服务器状态信息异常:" + e.getMessage(),
-					RestBusinessCode.unknow_error.getValue());
+			logger.error("上报服务器状态信息异常:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw (RestServiceException) e;
+			} else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, "上报服务器状态信息异常:" + e.getMessage(),
+						RestBusinessCode.unknow_error.getValue());
+			}
+			
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报服务器状态信息成功",
 				Constants.IS_DEBUG ? trafficNmsServerStatisticList : null);
@@ -84,8 +92,13 @@ public class NmsInfoController extends BaseRestController {
 						RestBusinessCode.missing_args.getValue());
 			}
 		} catch (Exception e) {
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+			logger.error("上报NmsDiRule信息异常:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw (RestServiceException) e;
+			} else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
 					"上报NmsDiRule信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
+			}
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报NmsDiRule信息成功",
 				Constants.IS_DEBUG ? nmsDiRuleList : null);
@@ -111,8 +124,12 @@ public class NmsInfoController extends BaseRestController {
 			}
 
 		} catch (Exception e) {
-			throw new RestServiceException(thread, System.currentTimeMillis() - start,
+			if (e instanceof RestServiceException) {
+				throw (RestServiceException) e;
+			} else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
 					"上报trafficNetflowPort信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
+			}
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"上报trafficNetflowPort信息成功", Constants.IS_DEBUG ? trafficNetflowPortInfoList : null);
