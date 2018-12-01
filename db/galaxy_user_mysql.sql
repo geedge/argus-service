@@ -6,9 +6,9 @@ set global read_only=0;
 
 create user 'galaxy'@'%' identified by 'ceiec2018!';
 
-create database galaxy_test DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
+create database galaxy-service DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 
-grant all privileges on galaxy_test.* to 'galaxy'@'%' identified by 'ceiec2018!';
+grant all privileges on galaxy-service.* to 'galaxy'@'%' identified by 'ceiec2018!';
 
 flush privileges;
 

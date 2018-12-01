@@ -6,24 +6,22 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisException;
-
 import com.google.common.collect.Lists;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.web.service.SpringContextHolder;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.jedis.exceptions.JedisException;
+
 public class JedisUtils {
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
-	private static final JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
 
 	/**
 	 * 获取缓存
 	 * 
-	 * @param key
-	 *            键
+	 * @param key 键
 	 * @return 值
 	 */
 	public static String get(String key, int redisDb) {
@@ -48,8 +46,7 @@ public class JedisUtils {
 	/**
 	 * 获取缓存
 	 * 
-	 * @param key
-	 *            键
+	 * @param key 键
 	 * @return 值
 	 */
 	public static Object getObject(String key, int redisDb) {
@@ -74,10 +71,8 @@ public class JedisUtils {
 	 * <b>可以作为获取唯一id的方法</b><br/>
 	 * 将key对应的value加上指定的值，只有value可以转为数字时该方法才可用
 	 * 
-	 * @param String
-	 *            key
-	 * @param long
-	 *            number 要减去的值
+	 * @param String key
+	 * @param        long number 要减去的值
 	 * @return long 相加后的值
 	 */
 	public static long incrBy(String key, long number, int redisDb) {
@@ -90,12 +85,9 @@ public class JedisUtils {
 	/**
 	 * 设置缓存
 	 * 
-	 * @param key
-	 *            键
-	 * @param value
-	 *            值
-	 * @param cacheSeconds
-	 *            超时时间，0为不超时
+	 * @param key          键
+	 * @param value        值
+	 * @param cacheSeconds 超时时间，0为不超时
 	 * @return
 	 */
 	public static String set(String key, String value, int cacheSeconds, int redisDb) {
@@ -120,8 +112,7 @@ public class JedisUtils {
 	/**
 	 * 获取List缓存
 	 * 
-	 * @param key
-	 *            键
+	 * @param key 键
 	 * @return 值
 	 */
 	public static List<String> getList(String key, int redisDb) {
@@ -145,8 +136,7 @@ public class JedisUtils {
 	/**
 	 * 获取List缓存
 	 * 
-	 * @param key
-	 *            键
+	 * @param key 键
 	 * @return 值
 	 */
 	public static List<Object> getObjectList(String key, int redisDb) {
@@ -174,8 +164,7 @@ public class JedisUtils {
 	/**
 	 * 缓存是否存在
 	 * 
-	 * @param key
-	 *            键
+	 * @param key 键
 	 * @return
 	 */
 	public static boolean exists(String key, int redisDb) {
@@ -197,8 +186,7 @@ public class JedisUtils {
 	/**
 	 * 缓存是否存在
 	 * 
-	 * @param key
-	 *            键
+	 * @param key 键
 	 * @return
 	 */
 	public static boolean existsObject(String key, int redisDb) {
@@ -224,13 +212,15 @@ public class JedisUtils {
 	 * @throws JedisException
 	 */
 	public static Jedis getResource(int redisDb) throws JedisException {
-		Jedis jedis = null;
-		if (jedisPool == null) {
+		JedisSentinelPool jedisSentinelPool = SpringContextHolder.getBean(JedisSentinelPool.class);
+
+		if (jedisSentinelPool == null) {
 			throw new ServiceRuntimeException("redis连接池为空,请联系管理员检查程序",
 					RestBusinessCode.CannotConnectionRedis.getValue());
 		}
+		Jedis jedis = null;
 		try {
-			jedis = jedisPool.getResource();
+			jedis = jedisSentinelPool.getResource();
 			jedis.select(redisDb);
 		} catch (JedisException e) {
 			returnBrokenResource(jedis);
@@ -312,8 +302,7 @@ public class JedisUtils {
 	/**
 	 * 尝试获取分布式锁,如果没有key就set,有key就不操作
 	 * 
-	 * @param requestId
-	 *            请求标识(UUID.randomUUID().toString()),正常情况下是谁加的锁,谁去解锁不能a加的锁,b去解锁
+	 * @param requestId 请求标识(UUID.randomUUID().toString()),正常情况下是谁加的锁,谁去解锁不能a加的锁,b去解锁
 	 * @return 是否获取成功
 	 */
 	public static Boolean lock(String requestId) {
@@ -329,8 +318,7 @@ public class JedisUtils {
 	/**
 	 * 解锁操作
 	 * 
-	 * @param value
-	 *            客户端标识(requestId)
+	 * @param value 客户端标识(requestId)
 	 * @return
 	 */
 	public static Boolean unLock(String value) {
@@ -348,8 +336,7 @@ public class JedisUtils {
 	/**
 	 * 重试机制
 	 * 
-	 * @param value
-	 *            客户端标识
+	 * @param value 客户端标识
 	 * @return
 	 */
 	public static Boolean lockRetry(String value) {

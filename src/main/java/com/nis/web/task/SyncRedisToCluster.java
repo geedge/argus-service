@@ -1,11 +1,13 @@
 package com.nis.web.task;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.nis.util.Configurations;
+import com.nis.util.Constants;
 import com.nis.util.ExceptionUtil;
 import com.nis.util.JedisUtils;
 import com.nis.web.service.restful.ConfigJedisServiceimpl;
@@ -33,15 +36,12 @@ public class SyncRedisToCluster {
 
 	@Autowired
 	private JedisCluster jedisCluster;
-	// @Autowired
-	// private JedisSentinelPool jedisSentinelPool;
 
-	// @Scheduled(cron = "0/3 * * * * ?")
-//	 @Scheduled(cron = "${syncRedisToClusterCron}")
+	@Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
+		String requestId = UUID.randomUUID().toString();
 		try {
-			String rpopRedisList = rpopRedisList("SyncRedisToCluster");
-			if (rpopRedisList != null) {//避免集群环境下同一秒钟所有的机器都执行这个定时任务
+			if (lock(requestId)) {// 避免集群环境下同一秒钟所有的机器都执行这个定时任务
 				// keys("EFFECTIVE_RULE*");
 				// keys("OBSOLETE_RULE*");
 				String clusterMaatVersionStr = jedisCluster.get("MAAT_VERSION");
@@ -75,12 +75,13 @@ public class SyncRedisToCluster {
 						logger.info("redis配置库中和redis集群中的MAAT_VERSION都为null,暂时不执行全量同步");
 					}
 				}
-				lpushRedisList("SyncRedisToCluster", "1");
 			} else {
-				logger.info("没有从rediscluster中获取到SyncRedisToCluster的值,暂时不执行数据同步!");
+				logger.info("没有从rediscluster中获取到configSyncDistributedLock分布式锁,暂时不执行数据同步!");
 			}
 		} catch (Exception e) {
 			logger.error("同步配置库配置到3A-redisCluster失败,失败原因:{}", ExceptionUtil.getExceptionMsg(e));
+		} finally {
+			unlock(requestId);
 		}
 	}
 
@@ -198,29 +199,45 @@ public class SyncRedisToCluster {
 		logger.info("向redis集群同步数据成功");
 	}
 
+	// 设置成功返回的结果OK
+	private static final String LOCK_SUCCESS = "OK";
+	// NX -- Only set the key if it does not already exist. XX -- Only set the key
+	// if it already exist
+	private static final String SET_IF_NOT_EXIST = "NX";
+	// 失效单位秒(EX)还是毫秒(PX)
+	private static final String SET_WITH_EXPIRE_TIME = "EX";
+	private static final Long UNLOCK_SUCCESS = 1L;
+
 	/**
-	 * 存储Redis队列，顺序存储
+	 * 尝试获取分布式锁,如果没有key就set,有key就不操作
 	 * 
-	 * @param key
-	 *            redis键名
-	 * @param value
-	 *            键值
+	 * @param requestId 请求标识(UUID.randomUUID().toString()),正常情况下是谁加的锁,谁去解锁不能a加的锁,b去解锁
+	 * @return 是否获取成功
 	 */
-	public void lpushRedisList(String key, String value) {
-		// LPUSH SyncRedisToCluster "1"
-		jedisCluster.lpush(key, value);
-		logger.info("向redis集群的{}中lpush了一个值{}", key, value);
+	public Boolean lock(String requestId) {
+		String key = "configSyncDistributedLock";
+		String var1 = jedisCluster.set(key, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, Constants.REDISLOCKTIME);
+		if (LOCK_SUCCESS.equals(var1)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
-	 * 移除并获取列表最后一个元素
+	 * 解除redis分布式锁
 	 * 
-	 * @param key
-	 * @return
+	 * @param requestId
 	 */
-	public String rpopRedisList(String key) {
-		// RPOP SyncRedisToCluster
-		return jedisCluster.rpop(key);
+	protected boolean unlock(String requestId) {
+		String key = "configSyncDistributedLock";
+		// 这个字符串是个lua脚本，代表的意思是如果根据key拿到的value跟传入的value相同就执行del，否则就返回0【保证安全性】
+		String luaScript = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then return redis.call(\"del\",KEYS[1]) else  return 0 end";
+		// 这个命令就是去执行lua脚本，KEYS的集合就是第二个参数，ARGV的集合就是第三参数【保证解锁的原子操作】
+		Object var2 = jedisCluster.eval(luaScript, Collections.singletonList(key),
+				Collections.singletonList(requestId));
+		if (UNLOCK_SUCCESS == var2) {
+			return true;
+		}
+		return false;
 	}
-
 }
