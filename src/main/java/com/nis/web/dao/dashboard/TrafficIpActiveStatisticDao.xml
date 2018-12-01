@@ -28,7 +28,7 @@
   </select>
     <!-- IP流量统计五分钟-->
   <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
-  	SELECT ip_addr ipAddr, SUM(link_num) linkNum FROM traffic_ip_active_statistic
+  	SELECT ip_addr ipAddr, SUM(c2s_byte_len+s2c_byte_len) linkNum FROM traffic_ip_active_statistic
 	WHERE stat_time = #{statTime}
 	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>

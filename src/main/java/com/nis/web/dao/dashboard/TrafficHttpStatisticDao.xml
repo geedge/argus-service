@@ -20,7 +20,7 @@
   	SELECT MAX(stat_time) statTime FROM traffic_http_statistic WHERE web_id != 0
   </select>
   <!-- 根据服务网站将域名分类 网站列表-->  <select id="getDomainByWebsiteList" resultType="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
-  	SELECT SUM(link_num) count, IFNULL( website_service_id, 268435455 ) websiteServiceId  
+  	SELECT SUM(c2s_byte_len+s2c_byte_len) count, IFNULL( website_service_id, 268435455 ) websiteServiceId  
   	FROM TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id
 	where t.web_id!=0
@@ -28,7 +28,7 @@
 	GROUP BY u.website_service_id ORDER BY count desc limit 0,10
   </select> 
   <!-- 根据主题将域名分类 主题列表 最近五分钟top10-->  <select id="getDomainByTopicList" resultType="java.util.HashMap">
-  	SELECT SUM(link_num) count, IFNULL( topic_id, 268435455 ) topicId  
+  	SELECT SUM(c2s_byte_len+s2c_byte_len) count, IFNULL( topic_id, 268435455 ) topicId  
   	FROM TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id 
 	where t.web_id!=0
@@ -38,7 +38,7 @@
   </select> 
 	<!--获取上个时间段该网站站域名流量的数据量  -->
   <select id="preWebsiteListCount" resultType="java.lang.Integer">
-    SELECT SUM(link_num) count FROM traffic_http_statistic t 
+    SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_http_statistic t 
     LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id 
 	WHERE u.website_service_id=#{websiteServiceId}
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
@@ -52,7 +52,7 @@
   </select> -->
   <!-- 根据网站分组获取子域名 -->
   <select id="getDomainByWebsiteServiceId" resultType="java.util.HashMap">
-	SELECT web_id webId,SUM(link_num) count 
+	SELECT web_id webId,SUM(c2s_byte_len+s2c_byte_len) count 
 	FROM traffic_http_statistic t
 	LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
@@ -61,7 +61,7 @@
   </select>
   <!-- 根据主题分组获取子域名 -->
   <select id="getDomainByTopicId" resultType="java.util.HashMap">
-	SELECT web_id webId,SUM(link_num) count 
+	SELECT web_id webId,SUM(c2s_byte_len+s2c_byte_len) count 
 	FROM traffic_http_statistic t
 	LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
 	where u.topic_id=#{topicId}  
@@ -71,7 +71,7 @@
   
   <!-- 指定网站下的TOP10之外为others -->
     <select id="websiteDomainOthers" resultType="java.util.HashMap">
-  	SELECT SUM(link_num) count  FROM traffic_http_statistic t
+  	SELECT SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_http_statistic t
   	LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
 	and t.web_id!=0
