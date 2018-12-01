@@ -15,7 +15,7 @@ public interface TrafficHttpStatisticDao {
 	
 	//获取域名分类之后属于的网站
 	List<TrafficHttpStatistic> getDomainByWebsiteList(@Param("statTime")Date statTime);
-	Integer preWebsiteListCount(@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
+	Long preWebsiteListCount(@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
 	List<Map> getDomainByWebsiteServiceId(@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
 	Map websiteDomainOthers(@Param("webIdList") List webIdList,@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
 

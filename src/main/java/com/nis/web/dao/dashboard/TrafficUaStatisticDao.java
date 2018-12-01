@@ -25,7 +25,7 @@ public interface TrafficUaStatisticDao {
 
 	Map browserOthers(@Param("osType") List osType,@Param("bsType") Integer bsType,@Param("statTime") Date statTime);
 	
-	Integer preSystemListCount(@Param("osType") Integer osType,@Param("statTime") Date statTime);
+	Long preSystemListCount(@Param("osType") Integer osType,@Param("statTime") Date statTime);
 
-	Integer preBrowserListCount(@Param("bsType") Integer bsType,@Param("statTime") Date statTime);
+	Long preBrowserListCount(@Param("bsType") Integer bsType,@Param("statTime") Date statTime);
 }

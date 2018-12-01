@@ -223,7 +223,7 @@ public class DashboardService extends BaseService{
 			if(maxStatTime!=null) {
 				Date statTime = maxStatTime.getStatTime();
 				List<TrafficUaStatistic> list = trafficUaStatisticDao.systemList(statTime);
-				Integer preCount=0;
+				Long preCount=0l;
 				for (TrafficUaStatistic ua : list) {
 					Map map = new HashMap();
 					map.put("osType",ua.getOsType());
@@ -272,7 +272,7 @@ public class DashboardService extends BaseService{
 		if(maxStatTime!=null) {
 			Date statTime = maxStatTime.getStatTime();
 			List<TrafficUaStatistic> list = trafficUaStatisticDao.browserList(statTime);
-			Integer preCount=0;
+			Long preCount=0l;
 			if(list!=null&&list.size()>0){
 					for (TrafficUaStatistic ua : list) {
 						Map map = new HashMap();
@@ -321,7 +321,7 @@ public class DashboardService extends BaseService{
 		TrafficHttpStatistic maxStatTime = trafficHttpStatisticDao.getMaxStatTime();
 		if(maxStatTime!=null) {
 			List<TrafficHttpStatistic> list = trafficHttpStatisticDao.websiteList(maxStatTime.getStatTime());
-			Integer preCount=0;
+			Long preCount=0l;
 			if(list!=null&&list.size()>0){
 				for (TrafficHttpStatistic website : list) {
 					Map map = new HashMap();
@@ -383,7 +383,7 @@ public class DashboardService extends BaseService{
 			Date statTime = maxStatTime.getStatTime();
 			List<TrafficHttpStatistic> websiteList = trafficHttpStatisticDao.getDomainByWebsiteList(statTime);
 			if(websiteList!=null&&websiteList.size()>0){
-				Integer preCount=0;
+				Long preCount=0l;
 				for (TrafficHttpStatistic website : websiteList) {
 					Map map = new HashMap();
 					map.put("websiteServiceId",website.getWesiteServiceId());
