@@ -27,7 +27,7 @@
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--获取上个时间段操作系统的数据量  -->
-  <select id="preSystemListCount" resultType="java.lang.Integer">
+  <select id="preSystemListCount" resultType="java.lang.Long">
     SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
 	WHERE os_type !=0 and os_type=#{osType}
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
@@ -58,7 +58,7 @@
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--获取上个时间段浏览器的数据量  -->
-  <select id="preBrowserListCount" resultType="java.lang.Integer">
+  <select id="preBrowserListCount" resultType="java.lang.Long">
     SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
 	WHERE bs_type !=0 and bs_type=#{bsType}
 	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)

@@ -37,7 +37,7 @@
 	
   </select> 
 	<!--获取上个时间段该网站站域名流量的数据量  -->
-  <select id="preWebsiteListCount" resultType="java.lang.Integer">
+  <select id="preWebsiteListCount" resultType="java.lang.Long">
     SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_http_statistic t 
     LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id 
 	WHERE u.website_service_id=#{websiteServiceId}
