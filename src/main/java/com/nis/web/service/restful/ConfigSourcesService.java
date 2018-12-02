@@ -8,16 +8,22 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.json.JSONObject;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisCluster;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +48,8 @@ import com.nis.util.CamelUnderlineUtil;
 import com.nis.util.CompileVal;
 import com.nis.util.Constants;
 import com.nis.util.GroupReuseVal;
+import com.nis.util.JedisClusterUtils;
+import com.nis.util.JedisUtils;
 import com.nis.util.JsonMapper;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
@@ -126,8 +134,8 @@ public class ConfigSourcesService extends BaseService {
 			StringBuffer sb) throws Exception {
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-		
-		if (configCompileList!=null&&configCompileList.size()>Constants.MAX_LIST_SIZE) {
+
+		if (configCompileList != null && configCompileList.size() > Constants.MAX_LIST_SIZE) {
 			thread.setSaveContentFlag(false);
 		}
 		for (ConfigCompile configCompile : configCompileList) {
@@ -326,7 +334,7 @@ public class ConfigSourcesService extends BaseService {
 	public void updateConfigSources(AuditLogThread thread, long start, List<ConfigCompile> compileList, Date opTime,
 			StringBuffer sb) throws Exception {
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
-		if (compileList!=null&&compileList.size()>Constants.MAX_LIST_SIZE) {
+		if (compileList != null && compileList.size() > Constants.MAX_LIST_SIZE) {
 			thread.setSaveContentFlag(false);
 		}
 		if (null != compileList && compileList.size() > 0) {
@@ -422,7 +430,7 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
-		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
+		if (jsonObjectList != null && jsonObjectList.size() > Constants.MAX_LIST_SIZE) {
 			thread.setSaveContentFlag(false);
 		}
 		Map<Integer, List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String, String>>>();
@@ -495,7 +503,7 @@ public class ConfigSourcesService extends BaseService {
 									maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
 							dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
 						} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
-							//dstStr = dstStr.substring(dstStr.indexOf("group"));
+							// dstStr = dstStr.substring(dstStr.indexOf("group"));
 						}
 					}
 					switch (commonSourceFieldCfg.getFieldType()) {
@@ -644,7 +652,7 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
-		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
+		if (jsonObjectList != null && jsonObjectList.size() > Constants.MAX_LIST_SIZE) {
 			thread.setSaveContentFlag(false);
 		}
 		// <service,cfgIdList>
@@ -878,18 +886,21 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
 			}
-			
-			if ((maatConfig.getStrRegionMapList()!=null&&maatConfig.getStrRegionMapList().size()>Constants.MAX_LIST_SIZE)
-					||(maatConfig.getStrStrRegionMapList()!=null&&maatConfig.getStrStrRegionMapList().size()>Constants.MAX_LIST_SIZE)
-					||(maatConfig.getIpRegionMapList()!=null&&maatConfig.getIpRegionMapList().size()>Constants.MAX_LIST_SIZE)
-					||(maatConfig.getNumRegionMapList()!=null&&maatConfig.getNumRegionMapList().size()>Constants.MAX_LIST_SIZE)) {
+
+			if ((maatConfig.getStrRegionMapList() != null
+					&& maatConfig.getStrRegionMapList().size() > Constants.MAX_LIST_SIZE)
+					|| (maatConfig.getStrStrRegionMapList() != null
+							&& maatConfig.getStrStrRegionMapList().size() > Constants.MAX_LIST_SIZE)
+					|| (maatConfig.getIpRegionMapList() != null
+							&& maatConfig.getIpRegionMapList().size() > Constants.MAX_LIST_SIZE)
+					|| (maatConfig.getNumRegionMapList() != null
+							&& maatConfig.getNumRegionMapList().size() > Constants.MAX_LIST_SIZE)) {
 				thread.setSaveContentFlag(false);
 			}
-			//maatConfig.setService(groupReuse.getService());
+			// maatConfig.setService(groupReuse.getService());
 			list.add(maatConfig);
 		}
-		
-	
+
 		// 调用接口入redis
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
 		configRedisService.saveGroupReuseConfig(list);
@@ -957,9 +968,9 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
-		if (reuseMap!=null&&reuseMap.size()>Constants.MAX_LIST_SIZE) {
+		if (reuseMap != null && reuseMap.size() > Constants.MAX_LIST_SIZE) {
 			thread.setSaveContentFlag(false);
-		}		
+		}
 		// 所有的都删除成功返回true
 		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
 //			if (!configRedisService.delGroupReuseConfigByPipeline(reuseMap)) {
@@ -1039,5 +1050,91 @@ public class ConfigSourcesService extends BaseService {
 			throw new ServiceRuntimeException(RestBusinessCode.ReuseRegionIsNull.getErrorReason(),
 					RestBusinessCode.ReuseRegionIsNull.getValue());
 		}
+	}
+
+	/**
+	 * 设置配置全量同步状态
+	 * 
+	 * @param value
+	 */
+	public void setAllConfigSyncStatus(String value) {
+		JedisClusterUtils.set("allConfigSyncStatus", value, Constants.CONFIGSYNCLOCKTIME.intValue());
+	}
+
+	/**
+	 * 获取配置全量同步状态
+	 * 
+	 * @return
+	 */
+	public String getAllConfigSyncStatus() {
+		return JedisClusterUtils.get("allConfigSyncStatus");
+	}
+
+	/**
+	 * 将界面发过来的数据存储到rediscluster中
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void setRedisClusterKey(String key, String value) {
+		JedisClusterUtils.set(key, value, 0);
+	}
+
+	/**
+	 * 将所有业务的配置key记录下来,方便读取
+	 * 
+	 * @param value
+	 */
+	public void setAllServiceKey(String value) {
+		JedisCluster resource = JedisClusterUtils.getResource();
+		resource.append("allConfigSyncKey", value + ";");
+	}
+
+	public Map<String, Integer> getAllConfig() {
+		Jedis resource = JedisUtils.getResource(0);
+		Set<String> effectiveSet = new HashSet<>();
+		Set<String> obsoleteSet = new HashSet<>();
+		for (int i = 2; i < 6; i++) {
+			resource.select(i);
+			effectiveSet.addAll(resource.keys("EFFECTIVE_RULE:*_COMPILE*"));
+			obsoleteSet.addAll(resource.keys("OBSOLETE_RULE:*_COMPILE*"));
+		}
+		Map<String, Integer> map = new HashMap<>();
+		map.put("effectiveMaatKeys", effectiveSet.size());
+		map.put("obsoleteMaatKeys", obsoleteSet.size());
+		JedisUtils.returnBrokenResource(resource);
+		return map;
+	}
+
+	public Map<String, Integer> getAllConfigByScan() {
+		Jedis resource = JedisUtils.getResource(0);
+		Set<String> effectiveSet = new HashSet<>();
+		Set<String> obsoleteSet = new HashSet<>();
+		for (int i = 2; i < 6; i++) {
+			resource.select(i);
+			effectiveSet.addAll(getKeyByScan("EFFECTIVE_RULE:*_COMPILE*", resource));
+			obsoleteSet.addAll(getKeyByScan("OBSOLETE_RULE:*_COMPILE*", resource));
+		}
+		Map<String, Integer> map = new HashMap<>();
+		map.put("effectiveMaat", effectiveSet.size());
+		map.put("obsoleteMaat", obsoleteSet.size());
+		JedisUtils.returnBrokenResource(resource);
+		return map;
+	}
+
+	public List<String> getKeyByScan(String pattern, Jedis resource) {
+		List<String> list = new ArrayList<>();
+		int count = 1000;
+		String cursor = ScanParams.SCAN_POINTER_START;
+		ScanParams scanParams = new ScanParams();
+		scanParams.count(count);
+		scanParams.match(pattern);
+
+		do {
+			ScanResult<String> scanResult = resource.scan(cursor, scanParams);
+			list.addAll(scanResult.getResult());
+			cursor = scanResult.getStringCursor();
+		} while (!"0".equals(cursor));
+		return list;
 	}
 }

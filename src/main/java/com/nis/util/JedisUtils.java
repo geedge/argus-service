@@ -14,7 +14,13 @@ import com.google.common.collect.Lists;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.web.service.SpringContextHolder;
-
+/**
+ * @ClassName: JedisUtils
+ * @Description: redis工具类
+ * @author (rkg)
+ * @date 2018年03月5日 上午10:20:33
+ * @version V1.0
+ */
 public class JedisUtils {
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
 	private static final JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
