@@ -87,6 +87,7 @@ public class SyncRedisToCluster {
 		}
 	}
 
+	// 删除之前的key
 	public void deleteRedisKeyStartWith(String redisKeyStartWith) {
 		try {
 			Map<String, JedisPool> clusterNodes = jedisCluster.getClusterNodes();
@@ -142,9 +143,9 @@ public class SyncRedisToCluster {
 				connection.close();// 用完一定要close这个链接！！！
 			}
 		}
-		 for (String string : keys) {
-		 System.out.println(string);
-		 }
+		for (String string : keys) {
+			System.out.println(string);
+		}
 		logger.debug("Keys gotten!");
 		return keys;
 	}
@@ -189,6 +190,7 @@ public class SyncRedisToCluster {
 				}
 				min = Double.parseDouble(start + "");
 				max = Double.parseDouble(end + "");
+				//分批获取,避免一次性获取太多,造成redis阻塞
 				zrangeByScoreWithScores = resource.zrangeByScoreWithScores("MAAT_UPDATE_STATUS", min, max);// 获取所有的maat_update_status
 				syncData(zrangeByScoreWithScores);
 			}
@@ -264,6 +266,13 @@ public class SyncRedisToCluster {
 		return false;
 	}
 
+	/**
+	 * 利用scan模糊匹配key
+	 * 
+	 * @param pattern
+	 * @param resource
+	 * @return
+	 */
 	public List<String> getKeyByScan(String pattern, Jedis resource) {
 		List<String> list = new ArrayList<>();
 		int count = 1000;
