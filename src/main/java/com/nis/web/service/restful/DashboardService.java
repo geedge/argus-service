@@ -1,31 +1,14 @@
 package com.nis.web.service.restful;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.beust.jcommander.internal.Maps;
+import com.nis.domain.restful.dashboard.*;
+import com.nis.web.dao.dashboard.*;
+import com.nis.web.service.BaseService;
+import com.zdjizhi.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.nis.domain.Page;
-import com.nis.domain.restful.dashboard.NtcTotalReport;
-import com.nis.domain.restful.dashboard.TrafficAppStatistic;
-import com.nis.domain.restful.dashboard.TrafficHttpStatistic;
-import com.nis.domain.restful.dashboard.TrafficIpActiveStatistic;
-import com.nis.domain.restful.dashboard.TrafficPortActiveStatistic;
-import com.nis.domain.restful.dashboard.TrafficProtocolStatistic;
-import com.nis.domain.restful.dashboard.TrafficUaStatistic;
-import com.nis.web.dao.dashboard.NtcTotalReportDao;
-import com.nis.web.dao.dashboard.TrafficAppStatisticDao;
-import com.nis.web.dao.dashboard.TrafficHttpStatisticDao;
-import com.nis.web.dao.dashboard.TrafficIpActiveStatisticDao;
-import com.nis.web.dao.dashboard.TrafficPortActiveStatisticDao;
-import com.nis.web.dao.dashboard.TrafficProtocolStatisticDao;
-import com.nis.web.dao.dashboard.TrafficUaStatisticDao;
-import com.nis.web.service.BaseService;
+import java.util.*;
 
 @Service
 public class DashboardService extends BaseService{
@@ -57,33 +40,32 @@ public class DashboardService extends BaseService{
 			totalReportList = ntcTotalReportDao.getTotalReportList(reportTime);
 		}
 		Map maxRecvtTime = ntcTotalReportDao.getMaxRecvTime();
+
 		List<Map> newData = new ArrayList<Map>();
-//		List<Map> oldData = new ArrayList<Map>();
-		if(maxRecvtTime!=null&&maxRecvtTime.get("statTime")!=null) {
+
+		if(maxRecvtTime!=null &&  maxRecvtTime.get("statTime")!=null) {
 			Date recvTime = (Date) maxRecvtTime.get("statTime");
 			newData = ntcTotalReportDao.getNetFlowPortInfoNew(recvTime);
-//			oldData = ntcTotalReportDao.getNetFlowPortInfoOld(recvTime);
+
 		}
 		//统计带宽的流入流出 单位 五分钟 的 byte
-		Double inoctets=0d;
-		Double outoctets=0d;
-		if(newData!=null&&newData.size()>0&&newData.get(0)!=null){
-			Double newInoctets=Double.parseDouble(newData.get(0).get("inoctets").toString()) ;
-			Double newOutoctets=Double.parseDouble(newData.get(0).get("outoctets").toString()) ;
-			//结果为当前五分钟减去上个五分钟
-			inoctets=newInoctets;
-			outoctets=newOutoctets;
-			if(inoctets<0||outoctets<0){
-				inoctets=0d;
-				outoctets=0d;
+		if(StringUtil.isNotEmpty(newData)){
+			Double inoctets = Double.parseDouble(newData.get(0).get("inoctets").toString()) ;
+			Double outoctets = Double.parseDouble(newData.get(0).get("outoctets").toString()) ;
+
+			if (StringUtil.isEmpty(totalReportList)) {
+				Map valueMap = Maps.newHashMap();
+				valueMap.put("inoctets", inoctets);
+				valueMap.put("outoctets", outoctets);
+				totalReportList.add(valueMap);
+			} else {
+				totalReportList.get(0).put("inoctets", inoctets);
+				totalReportList.get(0).put("outoctets", outoctets);
 			}
+
+
 		}
-		if(totalReportList!=null&&totalReportList.size()>0){
-			for (Map map : totalReportList) {
-				map.put("inoctets", inoctets);
-				map.put("outoctets", outoctets);
-			}
-		}
+
 		
 		return totalReportList;
 	}
@@ -241,7 +223,7 @@ public class DashboardService extends BaseService{
 			if(maxStatTime!=null) {
 				Date statTime = maxStatTime.getStatTime();
 				List<TrafficUaStatistic> list = trafficUaStatisticDao.systemList(statTime);
-				Integer preCount=0;
+				Long preCount=0l;
 				for (TrafficUaStatistic ua : list) {
 					Map map = new HashMap();
 					map.put("osType",ua.getOsType());
@@ -290,7 +272,7 @@ public class DashboardService extends BaseService{
 		if(maxStatTime!=null) {
 			Date statTime = maxStatTime.getStatTime();
 			List<TrafficUaStatistic> list = trafficUaStatisticDao.browserList(statTime);
-			Integer preCount=0;
+			Long preCount=0l;
 			if(list!=null&&list.size()>0){
 					for (TrafficUaStatistic ua : list) {
 						Map map = new HashMap();
@@ -339,7 +321,7 @@ public class DashboardService extends BaseService{
 		TrafficHttpStatistic maxStatTime = trafficHttpStatisticDao.getMaxStatTime();
 		if(maxStatTime!=null) {
 			List<TrafficHttpStatistic> list = trafficHttpStatisticDao.websiteList(maxStatTime.getStatTime());
-			Integer preCount=0;
+			Long preCount=0l;
 			if(list!=null&&list.size()>0){
 				for (TrafficHttpStatistic website : list) {
 					Map map = new HashMap();
@@ -401,7 +383,7 @@ public class DashboardService extends BaseService{
 			Date statTime = maxStatTime.getStatTime();
 			List<TrafficHttpStatistic> websiteList = trafficHttpStatisticDao.getDomainByWebsiteList(statTime);
 			if(websiteList!=null&&websiteList.size()>0){
-				Integer preCount=0;
+				Long preCount=0l;
 				for (TrafficHttpStatistic website : websiteList) {
 					Map map = new HashMap();
 					map.put("websiteServiceId",website.getWesiteServiceId());
