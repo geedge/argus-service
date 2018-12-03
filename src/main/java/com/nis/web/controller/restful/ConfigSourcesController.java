@@ -29,6 +29,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.FileUtils;
+import com.nis.util.JedisClusterUtils;
 import com.nis.util.MinioUtil;
 import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
@@ -549,8 +550,17 @@ public class ConfigSourcesController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request, null);
 		thread.setContent("全量同步不记录请求内容");
+		String allConfigSyncStatus = configSourcesService.getAllConfigSyncStatus();
+		if (allConfigSyncStatus != null) {
+			if (!allConfigSyncStatus.equals("0")) {
+				throw new RestServiceException("后台同步指令为" + allConfigSyncStatus + ",请先下发配置同步指令,或等待后台数据同步进程完成后再次下发配置同步指令",
+						RestBusinessCode.config_integrity_error.getValue());
+			}
+		} else {
+			throw new RestServiceException("没有获取到同步请求标志,请先下发配置同步指令",
+					RestBusinessCode.config_integrity_error.getValue());
+		}
 		try {
-
 			String configType = request.getHeader("Config-Type");
 			String serviceId = request.getHeader("Service-Id");
 			String configTable = request.getHeader("Config-Table");
@@ -579,16 +589,19 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 			logger.info("-----------开始存储到json格式数据------->>configType:" + configType + ",serviceId:" + serviceId
 					+ ",configTable:" + configTable + ",lastCompletedTag:" + lastCompletedTag);
-			String key = null;
-			if ("1".equals(configType)) {
-				key = "MAAT";
-			} else {
-				key = "UNMAAT";
+
+			if (jsonString != null && !jsonString.trim().equals("")) {// 张薇说body可能为空,有的service没有数据也会下发一次,譬如最后一次提交时,lastCompletedTag=finished,但是body可能是空的
+				String key = null;
+				if ("1".equals(configType)) {
+					key = "MAAT";
+				} else {
+					key = "UNMAAT";
+				}
+				key = key + "-" + serviceId + "-" + UUID.randomUUID();
+				configSourcesService.setRedisClusterKey(key, jsonString);
+				configSourcesService.setAllServiceKey(key);
 			}
-			key = key + "-" + serviceId + "-" + UUID.randomUUID();
-			configSourcesService.setRedisClusterKey(key, jsonString);
-			configSourcesService.setAllServiceKey(key);
-			if (!StringUtil.isEmpty(lastCompletedTag)) {
+			if (!StringUtil.isEmpty(lastCompletedTag) && lastCompletedTag.trim().toLowerCase().equals("finished")) {
 				// 设置配置同步状态为接收配置完成
 				configSourcesService.setAllConfigSyncStatus("1");
 				logger.info("接收全量同步配置:FINISHED");
@@ -610,11 +623,35 @@ public class ConfigSourcesController extends BaseRestController {
 	public Map acceptStatus(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request, null);
+
 		JSONObject obj = JSONObject.fromObject(jsonString);
-		if (!StringUtil.isEmpty(obj.get("syncStatus")) && "1".equals(obj.get("syncStatus").toString())) {
-			logger.info("-----------配置同步指令下发:" + new Date());
-			// 设置配置同步状态为开始
-			configSourcesService.setAllConfigSyncStatus("0");
+		if (!StringUtil.isEmpty(obj.get("syncStatus"))) {
+			String allConfigSyncStatus = configSourcesService.getAllConfigSyncStatus();
+			if ("1".equals(obj.get("syncStatus").toString())) {
+				if (allConfigSyncStatus != null) {
+					if (allConfigSyncStatus.equals("0") || allConfigSyncStatus.equals("1")
+							|| allConfigSyncStatus.equals("2")) {
+						throw new RestServiceException("已经下发过配置同步指令,请等待后台数据同步进程完成后再次下发配置同步指令",
+								RestBusinessCode.config_integrity_error.getValue());
+					}
+				}
+				logger.info("-----------配置同步指令下发:" + new Date());
+				// 设置配置同步状态为开始
+				configSourcesService.setAllConfigSyncStatus("0");
+			} else if ("0".equals(obj.get("syncStatus").toString())) {// 取消同步指令
+				if (allConfigSyncStatus != null
+						&& (allConfigSyncStatus.equals("0") || allConfigSyncStatus.equals("1"))) {// 只有在没有完全接收配置之前可以取消,否则不允许取消,因为接收完配置之后会把redis清空,所以这个时候不允许取消了
+					// 设置配置同步状态为完成,并把之前记录的key删除
+					configSourcesService.setAllConfigSyncStatus("3");
+					if (JedisClusterUtils.exists("allConfigSyncKey")) {
+						JedisClusterUtils.getResource().del("allConfigSyncKey");
+					}
+				} else {
+					throw new RestServiceException(
+							"配置同步指令状态为" + allConfigSyncStatus + ",不可执行取消操作了请等待后台数据同步进程完成后再次下发配置同步指令",
+							RestBusinessCode.config_integrity_error.getValue());
+				}
+			}
 		} else {
 			logger.error("未获取到同步状态码");
 			thread.setBusinessCode(RestBusinessCode.syncStatusFailed.getValue());
@@ -633,7 +670,12 @@ public class ConfigSourcesController extends BaseRestController {
 		List<JSONObject> list = new ArrayList<JSONObject>();
 		JSONObject obj = new JSONObject();
 		obj.put("service", "ntc");
-		obj.put("status", configSourcesService.getAllConfigSyncStatus());
+		String allConfigSyncStatus = configSourcesService.getAllConfigSyncStatus();
+		if (allConfigSyncStatus == null || allConfigSyncStatus.trim().equals("")) {
+			obj.put("status", "-1");
+		} else {
+			obj.put("status", configSourcesService.getAllConfigSyncStatus());
+		}
 		obj.put("opTime", "2018-11-23 08:31:27");
 		list.add(obj);
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "获取全量同步状态成功",
