@@ -547,6 +547,7 @@ public class MaatTestController {
 						String fieldType = commonSourceFieldCfg.getFieldType();
 						String srcName = commonSourceFieldCfg.getSrcName();
 						String dstName = commonSourceFieldCfg.getDstName();
+						Boolean isCfgId = commonSourceFieldCfg.getIsCfgId();
 						if (!srcList.contains(srcName)) {
 							jsonString.append("\"");
 							jsonString.append(srcName);
@@ -575,9 +576,9 @@ public class MaatTestController {
 									jsonString.append("1");
 								} else if (srcName.toLowerCase().equals("isvalid")) {
 									jsonString.append("1");
-								} else if (srcName.toLowerCase().equals("cfgid")
-										|| srcName.toLowerCase().equals("keyringid")
-										|| srcName.toLowerCase().equals("fileid")) {
+								}  else if (srcName.toLowerCase().equals("dolog")) {
+									jsonString.append("1");
+								} else if (isCfgId) {
 									Long incrId = configRedisService.getIncrId("SEQ_COMPILEID");
 									compileIdList.add(incrId);
 									jsonString.append(incrId);

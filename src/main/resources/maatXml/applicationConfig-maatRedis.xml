@@ -137,11 +137,54 @@
 			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
 		</p:expressions>
 	</p:maatType>
-	<!-- #0x340 IP复用地址池配置（回调） 832=0:IR_STATIC_IP_POOL_CB -->
-	<p:maatType service="832">
+	<!-- #0x342	IP复用静态地址池	834=0:IR_STATIC_NOMINEE_IP-->
+	<p:maatType service="834">
 		<p:expressions>
 			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
-			<p:valueExpression>[cfg_id];\t;[addr_type];\t;[protocol];\t;[ip];\t;[port];\t;[direction];\t;[user_region];\t;[location];\t;[is_valid];\t;[service];\t;[policy_group];\t;[effective_range];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+			<p:valueExpression>[cfg_id];\t;0;\t;[addr_type];\t;[src_ip];\t;[mask_src_ip];\t;[src_port];\t;[mask_src_port];\t;[dst_ip];\t;[mask_dst_ip];\t;[dst_port];\t;[mask_dst_port];\t;[protocol];\t;[direction];\t;[addr_pool_id];\t;[is_valid];\t;[action];\t;[service];\t;[effective_range];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+		</p:expressions>
+		<p:sequences>
+			<p:operation>1</p:operation>
+			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
+		</p:sequences>
+		<p:expressions>
+			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
+		</p:expressions>
+
+		<p:expressions>
+			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
+		</p:expressions>
+	</p:maatType>
+	
+	<!-- #0x343	IP复用SNAT策略	835=0:IR_SNAT_POLICY-->
+	<p:maatType service="835">
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[addr_pool_id];\t;[user_type];\t;[user_id];\t;[translate_param];\t;[do_log];\t;[action];\t;[service];\t;[is_valid];\t;[effective_range];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
+		</p:expressions>
+		<p:sequences>
+			<p:operation>1</p:operation>
+			<p:sequenceKey>MAAT_VERSION</p:sequenceKey>
+		</p:sequences>
+		<p:expressions>
+			<p:keyExpression>MAAT_UPDATE_STATUS</p:keyExpression>
+		</p:expressions>
+
+		<p:expressions>
+			<p:keyExpression>MAAT_RULE_TIMER</p:keyExpression>
+		</p:expressions>
+		<p:expressions>
+			<p:keyExpression>MAAT_VERSION_TIMER</p:keyExpression>
+		</p:expressions>
+	</p:maatType>
+	<!-- #0x344	IP复用DNAT策略	836=0:IR_DNAT_POLICY-->
+	<p:maatType service="836">
+		<p:expressions>
+			<p:keyExpression>EFFECTIVE_RULE;:;{un_maat_table_name};,;[cfg_id]</p:keyExpression>
+			<p:valueExpression>[cfg_id];\t;[original_dest_ip];\t;[original_dest_port];\t;[original_protocol];\t;[translate_dest_ip];\t;[translate_dest_port];\t;[do_log];\t;[action];\t;[service];\t;[is_valid];\t;[effective_range];\t;[op_time];&amp;nbsp;0;\n</p:valueExpression>
 		</p:expressions>
 		<p:sequences>
 			<p:operation>1</p:operation>

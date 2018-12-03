@@ -95,25 +95,6 @@
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 	</t:commonSource>
-	<!--
-		 #0x340	IP复用地址池配置（回调）	832=0:IR_STATIC_IP_POOL_CB
-	-->
-	<t:commonSource serviceIds="832">
-		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
-		<!-- <t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/> -->
-		<t:field fieldType="Number" srcName="cfgId" dstName="cfg_id"  isRequired="true" isCfgId="true"/>
-		<t:field fieldType="Number" srcName="policyGroup" dstName="policy_group" isRequired="true"/>
-		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="[4|6]"/>
-		<t:field fieldType="Number" srcName="protocol" dstName="protocol" isRequired="true" defaultVal="0"/>
-		<t:field fieldType="IP" srcName="ip" dstName="ip" isRequired="true"/>
-		<t:field fieldType="Port" srcName="port" dstName="port" isRequired="true"/>
-		<t:field fieldType="Number" srcName="direction" dstName="direction" isRequired="true" regexp="[0|1|2]"/>
-		<t:field fieldType="String" srcName="userRegion" dstName="user_region"/>
-		<t:field fieldType="Number" srcName="location" dstName="location" isRequired="true" regexp="[0|1]"/>
-		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
-		<t:field fieldType="String" srcName="effectiveRange" dstName="effective_range" isRequired="true"/>
-		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
-	</t:commonSource>
 	<!-- 
 		 #0x40	DNS欺骗配置(回调)	64=0:NTC_DNS_FAKE_IP_CB
 	-->
@@ -211,6 +192,58 @@
 		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
 		<t:field fieldType="String" srcName="crlFile" dstName="redisFile_private_crl_file" isRequired="true"/>
 	</t:commonSource>
+	
+	<!-- #0x342	IP复用静态地址池	834=0:IR_STATIC_NOMINEE_IP-->
+	<t:commonSource serviceIds="834">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
+		<t:field fieldType="Number" srcName="regionId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
+		<t:field fieldType="Number" srcName="addrType" dstName="addr_type" isRequired="true" regexp="^([4|6]{1})|46|64|10$"/>
+		<t:field fieldType="IP" srcName="srcIp" dstName="src_ip"  isRequired="true" isSrcInfo="true"/>
+		<t:field fieldType="IP" srcName="maskSrcIp" dstName="mask_src_ip"  isRequired="true" isSrcInfo="true"/>
+		<t:field fieldType="Port" srcName="srcPort" dstName="src_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Port" srcName="maskSrcPort" dstName="mask_src_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="IP" srcName="dstIp" dstName="dst_ip" isRequired="true"/>
+		<t:field fieldType="IP" srcName="maskDstIp" dstName="mask_dst_ip"  isRequired="true"/>
+		<t:field fieldType="Port" srcName="dstPort" dstName="dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Port" srcName="maskDstPort" dstName="mask_dst_port" isRequired="true" range="0-65535"/>
+		<t:field fieldType="Number" srcName="protocol" dstName="protocol" isRequired="true" defaultVal="0"/>
+		<t:field fieldType="Number" srcName="direction" dstName="direction" isRequired="true" range="0-1"/>
+		<t:field fieldType="Number" srcName="addrPoolId" dstName="addr_pool_id" isRequired="true"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="String" srcName="effectiveRange" dstName="effective_range" isRequired="true"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	<!-- #0x343	IP复用SNAT策略	835=0:IR_SNAT_POLICY-->
+	<t:commonSource serviceIds="835">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
+		<t:field fieldType="Number" srcName="configId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
+		<t:field fieldType="Number" srcName="addrPoolId" dstName="addr_pool_id" isRequired="true"/>
+		<t:field fieldType="String" srcName="userType" dstName="user_type" isRequired="true"/>
+		<t:field fieldType="String" srcName="userId" dstName="user_id" isRequired="true"/>
+		<t:field fieldType="String" srcName="translateParam" dstName="translate_param" isRequired="true"/>
+		<t:field fieldType="Number" srcName="doLog" dstName="do_log" isRequired="true" regexp="[0|1|2]"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="String" srcName="effectiveRange" dstName="effective_range" isRequired="true"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	<!-- #0x344	IP复用DNAT策略	836=0:IR_DNAT_POLICY-->
+	<t:commonSource serviceIds="836">
+		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
+		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
+		<t:field fieldType="Number" srcName="configId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
+		<t:field fieldType="String" srcName="originalDestIp" dstName="original_dest_ip" isRequired="true"/>
+		<t:field fieldType="String" srcName="origzinalDestPort" dstName="original_dest_port" isRequired="true"/>
+		<t:field fieldType="String" srcName="originalProtocol" dstName="original_protocol" isRequired="true"/>
+		<t:field fieldType="String" srcName="translateDestIp" dstName="translate_dest_ip" isRequired="true"/>
+		<t:field fieldType="String" srcName="translateDestPort" dstName="translate_dest_port" isRequired="true"/>
+		<t:field fieldType="Number" srcName="doLog" dstName="do_log" isRequired="true" regexp="[0|1|2]"/>
+		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
+		<t:field fieldType="String" srcName="effectiveRange" dstName="effective_range" isRequired="true"/>
+		<t:field fieldType="Date" srcName="opTime" dstName="op_time" isRequired="true"/>
+	</t:commonSource>
+	
 </t:commonSources>
 
 
