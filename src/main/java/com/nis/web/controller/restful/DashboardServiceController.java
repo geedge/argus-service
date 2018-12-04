@@ -62,6 +62,30 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "业务总量汇聚实时统计数据检索成功",list, 0);
 	}
 	/**
+	 *  根据ip46,协议tcp，udp查询带宽
+	 */
+	@RequestMapping(value = "trafficBandwidthTrans", method = RequestMethod.GET)
+	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
+	public Map<String,?> trafficBandwidthTrans(String addrType,Integer transType,Model model, HttpServletRequest request, HttpServletResponse response) {
+		
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<HashMap> list = new ArrayList<HashMap>();
+		try {
+			List<HashMap> resultList = dashboardService.getBandwidthTrans(addrType, transType);
+			if (resultList!=null&&resultList.size() > 0) {
+				list = resultList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error("带宽实时统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",list, 0);
+	}
+	/**
 	 * 流量统计活跃端口统计
 	 */
 	@RequestMapping(value = "trafficPortActive", method = RequestMethod.GET)

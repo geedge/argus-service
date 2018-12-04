@@ -35,11 +35,11 @@
   
     <!-- IP流量统计一小时内每隔五分钟数据-->
   <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
-	select IFNULL(p.maxNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
+	select IFNULL(p.sumNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
 	(select date_sub(#{statTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
 	from (SELECT @mycnt:=-5) m, traffic_ip_active_statistic limit 12) a
 	LEFT JOIN (
-	SELECT date_format(stat_time, '%Y-%m-%d %H:%i') timestamp, max(link_num) maxNum FROM traffic_ip_active_statistic 
+	SELECT date_format(stat_time, '%Y-%m-%d %H:%i') timestamp, SUM(c2s_byte_len+s2c_byte_len) sumNum FROM traffic_ip_active_statistic 
 	WHERE ip_addr=#{ipAddr} AND stat_time > DATE_SUB(#{statTime,jdbcType=TIMESTAMP}, INTERVAL 1 HOUR) 
 	GROUP by timestamp
 	) p 

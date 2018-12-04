@@ -5,16 +5,16 @@ import java.util.Date;
 public class NtcTotalReport {
 	
 	private Integer statId 			;//int(11) NOT NULL AUTO_INCREMENT COMMENT id自增,
-	private Integer rejectNum	 	;//int(11) NOT NULL COMMENT 封堵数量,
-	private Integer monitorNum 		;//int(11) NOT NULL COMMENT 监测数量,
-	private Integer c2sPktNum 		;//int(11) DEFAULT NULL COMMENT c2s包数,
-	private Integer s2cPktNum 		;//int(11) DEFAULT NULL COMMENT s2c包数,
-	private Integer c2sByteLen		;//int(11) NOT NULL COMMENT c2s字节数,
-	private Integer s2cByteLen 		;//int(11) NOT NULL COMMENT s2c字节数,
-	private Integer newUniConnNum 	;//int(11) DEFAULT NULL COMMENT 新建链接数,
-	private Integer liveConnNum 	;//int(11) DEFAULT NULL COMMENT 活跃链接数,
-	private Integer dropConnNum 	;//int(11) DEFAULT NULL COMMENT 丢弃链接数,
-	private Integer loopConnNum 	;//int(11) DEFAULT NULL COMMENT 回流链接数,
+	private Long rejectNum	 	;//int(11) NOT NULL COMMENT 封堵数量,
+	private Long monitorNum 		;//int(11) NOT NULL COMMENT 监测数量,
+	private Long c2sPktNum 		;//int(11) DEFAULT NULL COMMENT c2s包数,
+	private Long s2cPktNum 		;//int(11) DEFAULT NULL COMMENT s2c包数,
+	private Long c2sByteLen		;//int(11) NOT NULL COMMENT c2s字节数,
+	private Long s2cByteLen 		;//int(11) NOT NULL COMMENT s2c字节数,
+	private Long newUniConnNum 	;//int(11) DEFAULT NULL COMMENT 新建链接数,
+	private Long liveConnNum 	;//int(11) DEFAULT NULL COMMENT 活跃链接数,
+	private Long dropConnNum 	;//int(11) DEFAULT NULL COMMENT 丢弃链接数,
+	private Long loopConnNum 	;//int(11) DEFAULT NULL COMMENT 回流链接数,
 	private Date reportTime 		;//datetime NOT NULL COMMENT 统计时间,
 	
 	public Integer getStatId() {
@@ -23,64 +23,65 @@ public class NtcTotalReport {
 	public void setStatId(Integer statId) {
 		this.statId = statId;
 	}
-	public Integer getRejectNum() {
+	
+	public Long getRejectNum() {
 		return rejectNum;
 	}
-	public void setRejectNum(Integer rejectNum) {
+	public void setRejectNum(Long rejectNum) {
 		this.rejectNum = rejectNum;
 	}
-	public Integer getMonitorNum() {
+	public Long getMonitorNum() {
 		return monitorNum;
 	}
-	public void setMonitorNum(Integer monitorNum) {
+	public void setMonitorNum(Long monitorNum) {
 		this.monitorNum = monitorNum;
 	}
-	public Integer getC2sPktNum() {
+	public Long getC2sPktNum() {
 		return c2sPktNum;
 	}
-	public void setC2sPktNum(Integer c2sPktNum) {
+	public void setC2sPktNum(Long c2sPktNum) {
 		this.c2sPktNum = c2sPktNum;
 	}
-	public Integer getS2cPktNum() {
+	public Long getS2cPktNum() {
 		return s2cPktNum;
 	}
-	public void setS2cPktNum(Integer s2cPktNum) {
+	public void setS2cPktNum(Long s2cPktNum) {
 		this.s2cPktNum = s2cPktNum;
 	}
-	public Integer getC2sByteLen() {
+	public Long getC2sByteLen() {
 		return c2sByteLen;
 	}
-	public void setC2sByteLen(Integer c2sByteLen) {
+	public void setC2sByteLen(Long c2sByteLen) {
 		this.c2sByteLen = c2sByteLen;
 	}
-	public Integer getS2cByteNen() {
+	public Long getS2cByteLen() {
 		return s2cByteLen;
 	}
-	public void setS2cByteNen(Integer s2cByteLen) {
+	public void setS2cByteLen(Long s2cByteLen) {
 		this.s2cByteLen = s2cByteLen;
 	}
-	public Integer getNewUniConnNum() {
+	public Long getNewUniConnNum() {
 		return newUniConnNum;
 	}
-	public void setNewUniConnNum(Integer newUniConnNum) {
+	public void setNewUniConnNum(Long newUniConnNum) {
 		this.newUniConnNum = newUniConnNum;
 	}
-	public Integer getLiveConnNum() {
+	public Long getLiveConnNum() {
 		return liveConnNum;
 	}
-	public void setLiveConnNum(Integer liveConnNum) {
+	public void setLiveConnNum(Long liveConnNum) {
 		this.liveConnNum = liveConnNum;
 	}
-	public Integer getDropConnNum() {
+	public Long getDropConnNum() {
 		return dropConnNum;
 	}
-	public void setDropConnNum(Integer dropConnNum) {
+	public void setDropConnNum(Long dropConnNum) {
 		this.dropConnNum = dropConnNum;
 	}
-	public Integer getLoopConnNum() {
+	public Long getLoopConnNum() {
 		return loopConnNum;
 	}
-	public void setLoopConnNum(Integer loopConnNum) {
+	public void setLoopConnNum(Long loopConnNum) {
 		this.loopConnNum = loopConnNum;
 	}
 	public Date getReportTime() {

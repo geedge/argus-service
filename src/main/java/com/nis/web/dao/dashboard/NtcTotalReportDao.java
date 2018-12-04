@@ -7,12 +7,13 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 
 import com.nis.domain.restful.dashboard.NtcTotalReport;
+import com.nis.domain.restful.dashboard.TrafficTransStatistic;
 import com.nis.web.dao.MyBatisDao;
 @MyBatisDao
 public interface NtcTotalReportDao {
 	NtcTotalReport getMaxReportTime();
-	Map getMaxRecvTime();
+	Map getMaxStatTime();
 	List<Map> getTotalReportList(@Param("reportTime") Date reportTime);
 	List<Map> getNetFlowPortInfoNew(@Param("statTime") Date statTime);
-//	List<Map> getNetFlowPortInfoOld(@Param("recvTime") Date recvTime);
+	List<TrafficTransStatistic> getBandwidthTrans(@Param("statTime") Date statTime,@Param("addrType") String addrType,@Param("transType") Integer transType);
 }

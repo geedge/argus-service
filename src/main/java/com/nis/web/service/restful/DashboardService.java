@@ -30,25 +30,23 @@ public class DashboardService extends BaseService{
 	
 	/**
 	 * 流量统计 数据显示
-	 * @return Map
+	 * info：先查询最近时间，根据时间条件查询数据 效率提高
 	 */
 	public List<Map> getTotalReportList(){
 		List<Map> totalReportList =new ArrayList<Map>();
+		List<Map> newData = new ArrayList<Map>();
+		// 流量统计阻断丢弃回流等数据显示最近时间
 		NtcTotalReport maxReportTime = ntcTotalReportDao.getMaxReportTime();
 		if(maxReportTime!=null&&maxReportTime.getReportTime()!=null) {
 			Date reportTime = maxReportTime.getReportTime();
-			totalReportList = ntcTotalReportDao.getTotalReportList(reportTime);
+			totalReportList = ntcTotalReportDao.getTotalReportList(reportTime);// 返回阻断，监测等結果
 		}
-		Map maxRecvtTime = ntcTotalReportDao.getMaxRecvTime();
-
-		List<Map> newData = new ArrayList<Map>();
-
-		if(maxRecvtTime!=null &&  maxRecvtTime.get("statTime")!=null) {
+		Map maxRecvtTime = ntcTotalReportDao.getMaxStatTime();
+		if(maxRecvtTime!=null && maxRecvtTime.get("statTime")!=null) {
 			Date recvTime = (Date) maxRecvtTime.get("statTime");
 			newData = ntcTotalReportDao.getNetFlowPortInfoNew(recvTime);
-
 		}
-		//统计带宽的流入流出 单位 五分钟 的 byte
+		// 统计带宽的流入流出 单位 五分钟 的 byte
 		if(StringUtil.isNotEmpty(newData)){
 			Double inoctets = Double.parseDouble(newData.get(0).get("inoctets").toString()) ;
 			Double outoctets = Double.parseDouble(newData.get(0).get("outoctets").toString()) ;
@@ -62,16 +60,54 @@ public class DashboardService extends BaseService{
 				totalReportList.get(0).put("inoctets", inoctets);
 				totalReportList.get(0).put("outoctets", outoctets);
 			}
-
-
 		}
-
-		
 		return totalReportList;
 	}
 	/**
-	 * 最近活跃端口时间五分钟数据
+	 * 根据ip46,协议tcp，udp查询带宽
+	 * @param addrType
+	 * @param transType
 	 * @return
+	 */
+	public List<HashMap> getBandwidthTrans(String addrType,Integer transType) {
+		ArrayList<HashMap> listMap=new ArrayList<HashMap>();
+		List<TrafficTransStatistic> bandwidthList = new ArrayList<TrafficTransStatistic>();
+		Map maxStatTime = ntcTotalReportDao.getMaxStatTime();
+		if(maxStatTime!=null && maxStatTime.get("statTime")!=null) {
+			Date stat = (Date) maxStatTime.get("statTime");
+			HashMap m = new HashMap();
+			bandwidthList=ntcTotalReportDao.getBandwidthTrans(stat, addrType, transType);
+			List timeList = new ArrayList();
+			List linkList = new ArrayList();
+			List gbpsList = new ArrayList();
+			List ppsList = new ArrayList();
+			if(bandwidthList!=null&&bandwidthList.size()>0) {
+				for (TrafficTransStatistic tt : bandwidthList) {
+					if(tt.getTime()!=null) {
+						timeList.add(tt.getTime());
+						if(tt.getLinkNum()!=null) {
+							linkList.add(tt.getLinkNum());
+						}
+						if(tt.getPps()!=null) {
+							ppsList.add(tt.getPps());
+						}
+						if(tt.getGbps()!=null) {
+							gbpsList.add(tt.getGbps());
+						}
+					}
+				}
+			}
+			m.put("linkNum",linkList);
+			m.put("gbps",linkList);
+			m.put("pps",linkList);
+			m.put("statTime",timeList);
+			listMap.add(m);
+		}
+		return listMap;
+	}
+	/**
+	 * 最近活跃端口时间五分钟数据
+	 * @return List
 	 */
 	public List<Map> getPortActiveList(){
 		List<Map> list = new ArrayList<Map>();
@@ -100,22 +136,17 @@ public class DashboardService extends BaseService{
 		return list;
 	}
 	
+
 	/**
-	 * 分页查询活跃IPtop100
+	 * 活跃IP最近五分钟数据TOP10
 	 * @return
 	 */
-/*	public  Page<TrafficIpActiveStatistic> getIpList(Page<TrafficIpActiveStatistic> page,TrafficIpActiveStatistic entry){
-			// 设置分页参数
-			entry.setPage(page);
-			// 执行分页查询
-			page.setList(trafficIpActiveStatisticDao.getIpList(entry));
-			return page;
-	}*/
 	public List<HashMap> ipActiveFiveMinute(){
 		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap=new ArrayList<HashMap>();
 		if(maxStatTime!=null&&maxStatTime.getStatTime()!=null) {
 			Date statTime = maxStatTime.getStatTime();
+			// 查询最近五分钟TOP10
 			ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(statTime);
 			if(list!=null&&list.size()>0) {
 				for (LinkedHashMap map : list) {
@@ -123,7 +154,8 @@ public class DashboardService extends BaseService{
 					if(map.get("ipAddr")!=null) {
 						String ipAddr = (String) map.get("ipAddr");
 						m.put("ipAddr", ipAddr);
-						ArrayList<TrafficIpActiveStatistic>  ipList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipAddr,statTime);
+						// 根据五分钟TOP10IP，查询TOP10中每个IP最近一小时的变化
+						ArrayList<TrafficIpActiveStatistic> ipList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipAddr,statTime);
 						List linkList = new ArrayList();
 						List timeList = new ArrayList();
 						if(ipList!=null&&ipList.size()>0) {
@@ -144,6 +176,10 @@ public class DashboardService extends BaseService{
 		
 		return listMap;
 	}
+	/**
+	 * 根据活跃IP最近五分钟TOP10，查询近1小时最大值
+	 * @return
+	 */
 	public List<HashMap> ipActiveOneHour(){
 		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap=new ArrayList<HashMap>();
