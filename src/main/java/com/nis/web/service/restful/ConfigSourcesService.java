@@ -299,7 +299,7 @@ public class ConfigSourcesService extends BaseService {
 
 				}
 			} else {
-				throw new ServiceRuntimeException(RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 		}
@@ -478,7 +478,7 @@ public class ConfigSourcesService extends BaseService {
 
 				}
 			} else {
-				throw new ServiceRuntimeException(RestBusinessCode.ServiceNoFoundDBIndex.getErrorReason(),
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 		}
@@ -801,7 +801,7 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			} else {
-				throw new ServiceRuntimeException("service与写入数据库序号映射关系不存在",
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 
@@ -891,7 +891,7 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			} else {
-				throw new ServiceRuntimeException("service与写入数据库序号映射关系不存在",
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 
@@ -972,7 +972,7 @@ public class ConfigSourcesService extends BaseService {
 					}
 				}
 			} else {
-				throw new ServiceRuntimeException("service与写入数据库序号映射关系不存在",
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
 						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
 			}
 		}

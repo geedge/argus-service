@@ -565,7 +565,7 @@ public class ConfigSourcesController extends BaseRestController {
 			String serviceId = request.getHeader("Service-Id");
 			String configTable = request.getHeader("Config-Table");
 			String lastCompletedTag = request.getHeader("Last-Completed-Tag");
-			logger.info(new Date() + "-----------接收到json格式数据:" + jsonString + "-------:");
+//			logger.info(new Date() + "-----------接收到json格式数据:" + jsonString + "-------:");
 			if (StringUtil.isEmpty(serviceId)) {
 				logger.error("未在请求头中获取到serviceId");
 				throw new RestServiceException(
@@ -590,7 +590,7 @@ public class ConfigSourcesController extends BaseRestController {
 			logger.info("-----------开始存储到json格式数据------->>configType:" + configType + ",serviceId:" + serviceId
 					+ ",configTable:" + configTable + ",lastCompletedTag:" + lastCompletedTag);
 
-			if (jsonString != null && !jsonString.trim().equals("")) {// 张薇说body可能为空,有的service没有数据也会下发一次,譬如最后一次提交时,lastCompletedTag=finished,但是body可能是空的
+			if (jsonString != null && !jsonString.trim().equals("{}")) {// 如果最后的service没有配置，不论是maat类还是回调类配置，都会传{}+lastCompletedTag(finished)来结束数据传输
 				String key = null;
 				if ("1".equals(configType)) {
 					key = "MAAT";
@@ -637,6 +637,10 @@ public class ConfigSourcesController extends BaseRestController {
 				}
 				logger.info("-----------配置同步指令下发:" + new Date());
 				// 设置配置同步状态为开始
+				//在下次开始同步之前把上次记录的key删除
+				if (JedisClusterUtils.exists("allConfigSyncKey")) {
+					JedisClusterUtils.getResource().del("allConfigSyncKey");
+				}
 				configSourcesService.setAllConfigSyncStatus("0");
 			} else if ("0".equals(obj.get("syncStatus").toString())) {// 取消同步指令
 				if (allConfigSyncStatus != null

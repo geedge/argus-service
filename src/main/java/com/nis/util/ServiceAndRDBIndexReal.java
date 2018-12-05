@@ -311,7 +311,7 @@ public class ServiceAndRDBIndexReal {
 						return tableList.get(index);
 					} else {
 						logger.error("未从业务类型和表对应关系中,找到业务类型:{},配置类型:{}表名:{}对应的真实表名", service, type, tableName);
-						throw new ServiceRuntimeException("无法从applicationConfig-rule.properties配置文件中,找到回调类配置service为"
+						throw new ServiceRuntimeException("无法从applicationConfig-rule.properties配置文件中,找到service为"
 								+ service + ",配置类型:" + type + "对应的真实表名", RestBusinessCode.NotFoundTableName.getValue());
 					}
 
