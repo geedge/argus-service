@@ -137,6 +137,31 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "协议统计图表数据检索成功",
 				list, 0);
 	}
+	/**
+	 * 协议统计详情图与表
+	 */
+	@RequestMapping(value="trafficProtocolList", method = RequestMethod.GET)
+	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
+	public Map<String,?> trafficProtocolList(Model model, HttpServletRequest request, HttpServletResponse response){
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<HashMap> list = new ArrayList<HashMap>();
+		try {
+			List<Map> ipActiveList = dashboardService.getProtocolList();
+			if (ipActiveList.size() > 0) {
+				String jsonString = JsonMapper.toJsonString(ipActiveList);
+				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error("协议统计图表数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"协议统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "协议统计图表数据检索成功",
+				list, 0);
+	}
 	
 	
 	/**

@@ -219,6 +219,10 @@ public class DashboardService extends BaseService{
 		return list;
 	}
 
+	/**
+	 * 协议统计
+	 * @return
+	 */
 	public List<Map> protocolChart() {
 		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list=new ArrayList<Map>();
@@ -235,6 +239,19 @@ public class DashboardService extends BaseService{
 		return list;
 	}
 
+	/**
+	 * 协议统计报表
+	 * @return
+	 */
+	public List<Map> getProtocolList(){
+		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
+		List<Map> list=new ArrayList<Map>();
+		if(maxStatTime!=null&&maxStatTime.getStatTime()!=null) {
+			Date statTime = maxStatTime.getStatTime();
+			list = trafficProtocolStatisticDao.getProtocolList(statTime);
+		}	
+		return list;
+	}
 	public List<Map> appChart() {
 		List<Map> list=new ArrayList<Map>();
 		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
