@@ -82,7 +82,7 @@ minio_url=http://10.0.7.7:9000
 ##minio的accessKey
 minio_accessKey=minio
 ##minio的secretKey
-minio_secretKey=123456789
+minio_secretKey=k1BConfigMinio
 ##minio的bucketName
 minio_bucketName=maat-redis
 
