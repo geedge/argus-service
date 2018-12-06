@@ -71,7 +71,7 @@ public class NmsInfoController extends BaseRestController {
 			}
 			
 		}
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报服务器状态信息成功",
+		return testServiceResponse(System.currentTimeMillis() - start, request, response, "上报服务器状态信息成功",
 				Constants.IS_DEBUG ? trafficNmsServerStatisticList : null);
 	}
 
@@ -100,7 +100,7 @@ public class NmsInfoController extends BaseRestController {
 					"上报NmsDiRule信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
 			}
 		}
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报NmsDiRule信息成功",
+		return testServiceResponse(System.currentTimeMillis() - start, request, response, "上报NmsDiRule信息成功",
 				Constants.IS_DEBUG ? nmsDiRuleList : null);
 	}
 
@@ -131,7 +131,7 @@ public class NmsInfoController extends BaseRestController {
 					"上报trafficNetflowPort信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
 			}
 		}
-		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+		return testServiceResponse(System.currentTimeMillis() - start, request, response,
 				"上报trafficNetflowPort信息成功", Constants.IS_DEBUG ? trafficNetflowPortInfoList : null);
 	}
 
