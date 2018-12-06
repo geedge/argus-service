@@ -24,4 +24,12 @@
 	WHERE app_type !=0 and stat_time = #{statTime}
 	GROUP BY app_type order by count desc limit 0,10
   </select>
+  <!-- 获取app统计详情 -->
+  <select id="getAppList" resultType="java.util.HashMap">
+	SELECT IFNULL(c.app_name,p.app_type) appName,p.app_type appType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
+	SELECT app_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
+	(SUM(c2s_byte_len+s2c_byte_len)/1024/1024/1024) AS GByte 
+	FROM traffic_app_statistic WHERE stat_time=#{statTime} GROUP BY app_type ) p
+	LEFT JOIN ui_code_app_dic c ON p.app_type=c.view_code ORDER BY p.GByte DESC
+  </select>
 </mapper>

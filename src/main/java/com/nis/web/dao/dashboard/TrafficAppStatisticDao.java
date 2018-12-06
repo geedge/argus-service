@@ -13,4 +13,5 @@ public interface TrafficAppStatisticDao {
 
 	TrafficAppStatistic getMaxStatTime();
 	List<Map> appChart(@Param("statTime")Date statTime);
+	List<Map> getAppList(@Param("statTime")Date statTime);
 }

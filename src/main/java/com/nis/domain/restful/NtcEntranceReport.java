@@ -13,6 +13,8 @@ public class NtcEntranceReport extends NtcReportEntity<NtcEntranceReport> {
 	protected Integer entranceId;
 
 	protected String searchEntrance;
+	
+	protected String time;
 
 	/**
 	 * @return the entranceId
@@ -42,4 +44,13 @@ public class NtcEntranceReport extends NtcReportEntity<NtcEntranceReport> {
 	public void setSearchEntrance(String searchEntrance) {
 		this.searchEntrance = searchEntrance;
 	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+	
 }

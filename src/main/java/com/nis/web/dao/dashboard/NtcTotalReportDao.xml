@@ -38,8 +38,8 @@
   <!-- 获取近五分钟的带宽根据ip46，协议 tcp,udp变化 -->
  <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
 	select IFNULL(p.gbps,0) gbps,IFNULL(p.pps,0) pps,IFNULL(p.sumNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
-	(select date_sub(#{statTime},interval @mycnt :=@mycnt + 1 MINUTE) min5
-	from (SELECT @mycnt:=-1) m, traffic_trans_statistic limit 12) a
+	(select date_sub(#{statTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
+	from (SELECT @mycnt:=-5) m, traffic_trans_statistic limit 12) a
 	LEFT JOIN (
 	SELECT date_format(stat_time, '%Y-%m-%d %H:%i') timestamp, 
 	SUM(link_num)/300 sumNum,
@@ -61,4 +61,24 @@
 	ORDER by time
   </select>
 
+  <!-- 获取报表最近时间 -->
+  <select id="getEntranceMaxReportTime" resultType="java.util.HashMap">
+  	SELECT MAX(report_time) reportTime FROM ntc_entrance_report
+  </select>
+<!-- entrance 1,2 ,动作为阻断，近五分钟数据 -->
+<select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">
+	select IFNULL(p.sumNum,0) sum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
+	(select date_sub(#{reportTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
+	from (SELECT @mycnt:=-5) m, ntc_entrance_report limit 12) a
+	LEFT JOIN (
+	SELECT date_format(report_time, '%Y-%m-%d %H:%i') timestamp, SUM(sum) sumNum FROM ntc_entrance_report 
+	WHERE
+	<![CDATA[${serviceSql}]]>
+	and entrance_id=#{entranceId}
+	and report_time > DATE_SUB(#{reportTime}, INTERVAL 1 HOUR) 
+	GROUP by timestamp
+	) p 
+	on date_format(p.timestamp,'%Y-%m-%d %H:%i')=date_format(a.min5,'%Y-%m-%d %H:%i')
+	ORDER by time
+</select>
 </mapper>

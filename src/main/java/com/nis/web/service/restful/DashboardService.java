@@ -1,7 +1,9 @@
 package com.nis.web.service.restful;
 
 import com.beust.jcommander.internal.Maps;
+import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.dashboard.*;
+import com.nis.util.StringUtils;
 import com.nis.web.dao.dashboard.*;
 import com.nis.web.service.BaseService;
 import com.zdjizhi.utils.StringUtil;
@@ -98,13 +100,74 @@ public class DashboardService extends BaseService{
 				}
 			}
 			m.put("linkNum",linkList);
-			m.put("gbps",linkList);
-			m.put("pps",linkList);
+			m.put("gbps",gbpsList);
+			m.put("pps",ppsList);
 			m.put("statTime",timeList);
 			listMap.add(m);
 		}
 		return listMap;
 	}
+	/**
+	 * 根据service 动作查询近五分钟变化趋势
+	 * entrance 默认为1,2 
+	 */
+	public List<HashMap> getActionTrans(String serviceType) {
+		String sql ="";
+		String sqlBlock="((service>=16 and service<=40) or (service>=258 and service<=273) or (service=576))"; //阻断
+		String sqlMonitor="((service>=128 and service<=152) or (service>=384 and service<=513) or (service=592) or (service>=848 and service<=1030) or (service=1152))"; //监测
+		// 区分动作
+		if(StringUtils.isNotBlank(serviceType)) {
+			if(serviceType.equalsIgnoreCase("block")) {
+				sql=sqlBlock;
+			}
+			if(serviceType.equalsIgnoreCase("monitor")) {
+				sql=sqlMonitor;
+			}
+		}
+		ArrayList<HashMap> listMap=new ArrayList<HashMap>();
+		List<NtcEntranceReport> entrance1 = new ArrayList<NtcEntranceReport>();
+		List<NtcEntranceReport> entrance2 = new ArrayList<NtcEntranceReport>();
+		Map maxReportTime = ntcTotalReportDao.getEntranceMaxReportTime();
+		if(maxReportTime!=null && maxReportTime.get("reportTime")!=null) {
+			Date reportTime = (Date) maxReportTime.get("reportTime");
+			HashMap m1 = new HashMap();
+			HashMap m2 = new HashMap();
+			entrance1=ntcTotalReportDao.getActionTrans(reportTime, 1, sql);
+			entrance2=ntcTotalReportDao.getActionTrans(reportTime, 2, sql);
+			List timeList = new ArrayList();
+			List sumList1 = new ArrayList();
+			List sumList2 = new ArrayList();
+			// entrance 为1的趋势
+			if(entrance1!=null&&entrance1.size()>0) {
+				for (NtcEntranceReport tt : entrance1) {
+					if(tt.getTime()!=null&&tt.getSum()!=null) {
+						timeList.add(tt.getTime());
+						sumList1.add(tt.getSum());
+						
+					}
+				}
+			}
+			// entrance 为2的趋势
+			if(entrance2!=null&&entrance2.size()>0) {
+				for (NtcEntranceReport tt : entrance2) {
+					if(tt.getTime()!=null&&tt.getSum()!=null) {
+//						timeList.add(tt.getTime());
+						sumList2.add(tt.getSum());
+					}
+				}
+			}
+			m1.put("count",sumList1);//[{time:[],link:[],link2:[]}]
+			m1.put("statTime",timeList);
+			m1.put("entranceId",1);
+			m2.put("count",sumList2);//[{link1:[],time:[],entrance:"1"},]
+			m2.put("statTime",timeList);
+			m2.put("entranceId",2);
+			listMap.add(m1);
+			listMap.add(m2);
+		}
+		return listMap;
+	}
+	
 	/**
 	 * 最近活跃端口时间五分钟数据
 	 * @return List
@@ -252,6 +315,11 @@ public class DashboardService extends BaseService{
 		}	
 		return list;
 	}
+	
+	/**
+	 * app应用top10 图
+	 * @return
+	 */
 	public List<Map> appChart() {
 		List<Map> list=new ArrayList<Map>();
 		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
@@ -267,7 +335,19 @@ public class DashboardService extends BaseService{
 		}
 		return list;
 	}
-	
+	/**
+	 * App统计报表
+	 * @return
+	 */
+	public List<Map> getAppList(){
+		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
+		List<Map> list=new ArrayList<Map>();
+		if(maxStatTime!=null&&maxStatTime.getStatTime()!=null) {
+			Date statTime = maxStatTime.getStatTime();
+			list = trafficAppStatisticDao.getAppList(statTime);
+		}	
+		return list;
+	}
 //	操作系统列表 排名TOP10
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Map> systemList(){

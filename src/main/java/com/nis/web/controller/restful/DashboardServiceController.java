@@ -26,7 +26,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DashboardService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
-
+@SuppressWarnings("unchecked")
 @RestController
 @RequestMapping(value = "${servicePath}/log/v1")
 @Api(value = "DashboardServiceController", description = "统计分析图表基本服务接口")
@@ -60,6 +60,30 @@ public class DashboardServiceController extends BaseRestController {
 					"业务总量汇聚实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "业务总量汇聚实时统计数据检索成功",list, 0);
+	}
+	/**
+	 * 流量统计info滚动条数据显示 封堵监测回流丢弃详情趋势
+	 */
+	@RequestMapping(value = "ntcActionEntranceReport", method = RequestMethod.GET)
+	@ApiOperation(value = "根据不同动作统计总量汇聚", httpMethod = "GET", notes = "对应流量统计info滚动条动作类型详情数据显示")
+	public Map<String,?> ntcTotalReport(Model model, HttpServletRequest request, HttpServletResponse response,String searchAction) {
+
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<HashMap> list = new ArrayList<HashMap>();
+		try {
+			 List<HashMap> resultList = dashboardService.getActionTrans(searchAction);
+				if (resultList!=null&&resultList.size() > 0) {
+					list = resultList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error("动作趋势分析统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"动作趋势分析统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "动作趋势分析统计数据检索成功",list, 0);
 	}
 	/**
 	 *  根据ip46,协议tcp，udp查询带宽
@@ -123,7 +147,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
 			List<Map> ipActiveChart = dashboardService.protocolChart();
-				if (ipActiveChart.size() > 0) {
+				if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 					String jsonString = JsonMapper.toJsonString(ipActiveChart);
 					list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
 			}
@@ -148,7 +172,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
 			List<Map> ipActiveList = dashboardService.getProtocolList();
-			if (ipActiveList.size() > 0) {
+			if (ipActiveList!=null&&ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
 			}
@@ -176,7 +200,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<LinkedHashMap> list = new ArrayList<LinkedHashMap>();
 		try {
 			List<LinkedHashMap> ipActiveChart = dashboardService.ipActiveChart();
-				if (ipActiveChart.size() > 0) {
+				if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 					list = ipActiveChart;
 			}
 		} catch (Exception e) {
@@ -200,7 +224,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
 			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour();
-			if (ipActiveChart.size() > 0) {
+			if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
 		} catch (Exception e) {
@@ -213,7 +237,7 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP统计一个小时的活跃IP检索成功",list, 0);
 	}
 	/**
-	 * 活跃IP TOP10 一小时数据
+	 * 活跃IP TOP10 一小时间隔五分钟数据
 	 */
 	@RequestMapping(value = "trafficIpActiveFiveMinute", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP最近一个小时的变化趋势统计", httpMethod = "GET", notes = "对最新TOP10的活跃IP，在近一个小时的变化情况进行统计")
@@ -224,7 +248,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
 			List<HashMap> ipActiveChart = dashboardService.ipActiveFiveMinute();
-			if (ipActiveChart.size() > 0) {
+			if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
 		} catch (Exception e) {
@@ -248,7 +272,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> appChart = dashboardService.appChart();
-			if (appChart.size() > 0) {
+			if (appChart!=null&&appChart.size() > 0) {
 				list = appChart;
 			}
 		} catch (Exception e) {
@@ -260,6 +284,31 @@ public class DashboardServiceController extends BaseRestController {
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App流量统计数据检索成功",list, 0);
 	}
+	/**
+	 * App统计详情图与表
+	 */
+	@RequestMapping(value="trafficAppList", method = RequestMethod.GET)
+	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
+	public Map<String,?> trafficAppList(Model model, HttpServletRequest request, HttpServletResponse response){
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<HashMap> list = new ArrayList<HashMap>();
+		try {
+			List<Map> appList = dashboardService.getAppList();
+			if (appList!=null&&appList.size() > 0) {
+				String jsonString = JsonMapper.toJsonString(appList);
+				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error("App统计图表数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"App统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App统计图表数据检索成功",
+				list, 0);
+	}
 	@RequestMapping(value = "trafficOsList", method = RequestMethod.GET)
 	@ApiOperation(value = "操作系统流量分析统计", httpMethod = "GET", notes = "对应终端用户的操作系统列表显示")
 	public Map<String,?> trafficOsList(Model model, HttpServletRequest request, HttpServletResponse response) {
@@ -268,7 +317,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> osChart = dashboardService.systemList();
-			if (osChart.size() > 0) {
+			if (osChart!=null&&osChart.size() > 0) {
 				list = osChart;
 			}
 		} catch (Exception e) {
@@ -289,7 +338,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> osChart = dashboardService.getBrowserBySystem(osType);
-			if (osChart.size() > 0) {
+			if (osChart!=null&&osChart.size() > 0) {
 				list=osChart;
 			}
 		} catch (Exception e) {
@@ -309,7 +358,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> bsChart = dashboardService.browserList();
-			if (bsChart.size() > 0) {
+			if (bsChart!=null&&bsChart.size() > 0) {
 				list = bsChart;
 			}
 		} catch (Exception e) {
@@ -330,7 +379,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> bsChart = dashboardService.getSystemBybrowser(bsType);
-			if (bsChart.size() > 0) {
+			if (bsChart!=null&&bsChart.size() > 0) {
 				list = bsChart;
 			}
 		} catch (Exception e) {
@@ -352,7 +401,7 @@ public class DashboardServiceController extends BaseRestController {
 		try {
 //			List<Map> websiteChart = dashboardService.websiteList();
 			List<Map> websiteChart = dashboardService.getDomainByWebsiteList();
-			if (websiteChart.size() > 0) {
+			if (websiteChart!=null&&websiteChart.size() > 0) {
 				list = websiteChart;
 			}
 		} catch (Exception e) {
@@ -373,7 +422,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> websiteChart = dashboardService.getDomainByWebsiteServiceId(websiteServiceId);
-			if (websiteChart.size() > 0) {
+			if (websiteChart!=null&&websiteChart.size() > 0) {
 				list = websiteChart;
 			}
 		} catch (Exception e) {
@@ -394,7 +443,7 @@ public class DashboardServiceController extends BaseRestController {
 		List<Map> list = new ArrayList<Map>();
 		try {
 			List<Map> websiteChart = dashboardService.getTopicAndDomainList();
-			if (websiteChart.size() > 0) {
+			if (websiteChart!=null&&websiteChart.size() > 0) {
 				list = websiteChart;
 			}
 		} catch (Exception e) {

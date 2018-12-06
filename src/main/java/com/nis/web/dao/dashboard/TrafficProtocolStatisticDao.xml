@@ -25,7 +25,7 @@
   </select>
   
   <select id="getProtocolList" resultType="java.util.HashMap">
-	SELECT c.protocol_type protocolType,p.proto_type protoType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
+	SELECT IFNULL(c.protocol_type,p.proto_type) protocolType,p.proto_type protoType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
 	SELECT proto_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
 	 (SUM(c2s_byte_len+s2c_byte_len)/1024/1024/1024) AS GByte
 	FROM traffic_protocol_statistic WHERE stat_time=#{statTime} GROUP BY proto_type ) p
