@@ -11,18 +11,19 @@
   
   <!-- 获取最大时间 -->
 	<select id="getMaxStatTime" resultMap="BaseResultMap">
-		SELECT MAX(stat_time) statTime FROM traffic_port_active_statistic
+		SELECT stat_time statTime FROM traffic_port_active_statistic order by stat_time desc limit 1
 	</select>
   <!-- 获取当前时间五分钟数据 -->
  <select id="getPortActiveList" resultMap="BaseResultMap">
     SELECT port ,SUM(sum) sum from traffic_port_active_statistic
-	WHERE stat_time = #{statTime}
+	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
 	GROUP BY port order by sum desc limit 0,10
   </select>
   <!-- 获取上个时间段的数据 -->
   <select id="getPortActiveOld" resultMap="BaseResultMap">
   	SELECT SUM(sum) sum from traffic_port_active_statistic
-	WHERE port=#{port} and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE) 
+	WHERE port=#{port} and stat_time &lt; DATE_SUB(#{statTime},INTERVAL 1 hour)
+	and stat_time > DATE_SUB(#{statTime},INTERVAL 2 hour)
 	GROUP BY port ORDER BY sum DESC limit 0,10
   </select>
 </mapper>

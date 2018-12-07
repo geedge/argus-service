@@ -16,7 +16,7 @@
 
   <!-- 获取取阻断，监测等流量信息最近时间 -->
   <select id="getMaxReportTime" resultType="com.nis.domain.restful.dashboard.NtcTotalReport">
-  	SELECT MAX(report_time) reportTime FROM ntc_total_report
+  	SELECT report_time reportTime FROM ntc_total_report order by report_time desc limit 1
   </select>
  
   <!-- 根据最近的时间获取阻断，监测等流量信息 -->
@@ -28,17 +28,17 @@
   
   <!-- 获取带宽最近时间 -->
   <select id="getMaxStatTime" resultType="java.util.HashMap">
-  	SELECT MAX(stat_time) statTime FROM traffic_trans_statistic
+  	SELECT stat_time statTime FROM traffic_trans_statistic order by stat_time desc limit 1
   </select>
   <!-- 根据最近时间条获取带宽，进出口流量 -->
  <select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
 
-    SELECT SUM(total_traffic.inoctets) AS inoctets ,SUM(total_traffic.outoctets) AS 	outoctets FROM (
+    SELECT SUM(total_traffic.inoctets) AS inoctets ,SUM(total_traffic.outoctets) AS outoctets FROM (
 		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
-		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=1
+		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
 		UNION ALL
 		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
-		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=2
+		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
     ) total_traffic
 
   </select>
@@ -70,7 +70,7 @@
 
   <!-- 获取报表最近时间 -->
   <select id="getEntranceMaxReportTime" resultType="java.util.HashMap">
-  	SELECT MAX(report_time) reportTime FROM ntc_entrance_report
+  	SELECT report_time reportTime FROM ntc_entrance_report order by report_time desc limit 1
   </select>
 <!-- entrance 1,2 ,动作为阻断，近五分钟数据 -->
 <select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">

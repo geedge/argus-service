@@ -24,12 +24,12 @@
   </select> -->
     <!-- IP流量统计五分钟-->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficIpActiveStatistic">
-  	SELECT MAX(stat_time) statTime FROM traffic_ip_active_statistic
+  	SELECT stat_time statTime FROM traffic_ip_active_statistic order by stat_time desc limit 1
   </select>
     <!-- IP流量统计五分钟-->
   <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
   	SELECT ip_addr ipAddr, SUM(c2s_byte_len+s2c_byte_len) linkNum FROM traffic_ip_active_statistic
-	WHERE stat_time = #{statTime}
+	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
 	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>
   

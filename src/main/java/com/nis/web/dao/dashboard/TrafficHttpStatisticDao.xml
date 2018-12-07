@@ -17,22 +17,20 @@
   </sql>
   <!-- 获取最近时间并且有效 -->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
-  	SELECT MAX(stat_time) statTime FROM traffic_http_statistic WHERE web_id != 0
+  	SELECT stat_time statTime FROM traffic_http_statistic order by stat_time desc limit 1
   </select>
   <!-- 根据服务网站将域名分类 网站列表-->  <select id="getDomainByWebsiteList" resultType="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
   	SELECT SUM(c2s_byte_len+s2c_byte_len) count, IFNULL( website_service_id, 268435455 ) websiteServiceId  
   	FROM TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id
-	where t.web_id!=0
-	and t.stat_time = #{statTime}
+	where t.stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
 	GROUP BY u.website_service_id ORDER BY count desc limit 0,10
   </select> 
   <!-- 根据主题将域名分类 主题列表 最近五分钟top10-->  <select id="getDomainByTopicList" resultType="java.util.HashMap">
   	SELECT SUM(c2s_byte_len+s2c_byte_len) count, IFNULL( topic_id, 268435455 ) topicId  
   	FROM TRAFFIC_HTTP_STATISTIC t 
 	LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id 
-	where t.web_id!=0
-	and t.stat_time =#{statTime}
+	and t.stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
 	GROUP BY u.topic_id ORDER BY count desc limit 0,10
 	
   </select> 
@@ -41,7 +39,8 @@
     SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_http_statistic t 
     LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id 
 	WHERE u.website_service_id=#{websiteServiceId}
-	and stat_time = DATE_SUB(#{statTime},INTERVAL 5 MINUTE)
+	and stat_time &lt; DATE_SUB(#{statTime},INTERVAL 1 hour)
+	and stat_time > DATE_SUB(#{statTime},INTERVAL 2 hour)
   </select>
   
     <!--获取网站列表列表  -->
@@ -56,7 +55,7 @@
 	FROM traffic_http_statistic t
 	LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
-	and t.stat_time =#{statTime}
+	and t.stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
 	GROUP BY t.web_id ORDER BY count desc limit 0,10
   </select>
   <!-- 根据主题分组获取子域名 -->
@@ -65,7 +64,7 @@
 	FROM traffic_http_statistic t
 	LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
 	where u.topic_id=#{topicId}  
-	and t.stat_time = #{statTime}
+	and t.stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
 	GROUP BY t.web_id ORDER BY count desc limit 0,10
   </select>
   
@@ -74,13 +73,13 @@
   	SELECT SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_http_statistic t
   	LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
 	where u.website_service_id=#{websiteServiceId} 
-	and t.web_id!=0
+	
 		<if test="webIdList!=null and webIdList.size()>0">
 		and t.web_id not in
 		<foreach collection="webIdList" item="singleType" index="index" open="(" close=")" separator=",">
 				 #{singleType}
 		</foreach>
 		</if>
-	and stat_time =#{statTime}
+	and stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
   </select>
 </mapper>

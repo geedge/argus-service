@@ -17,18 +17,34 @@
   </sql>
   <!-- 获取最近时间 -->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficProtocolStatistic">
-	SELECT MAX(stat_time) statTime FROM traffic_protocol_statistic WHERE proto_type != 0
+	SELECT stat_time statTime FROM traffic_protocol_statistic WHERE proto_type != 0 order by stat_time desc limit 1
   </select>
   <select id="protocolChart" resultType="java.util.HashMap">
-	SELECT proto_type protoType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_protocol_statistic WHERE proto_type != 0 
-	AND stat_time = #{statTime} GROUP BY proto_type ORDER BY count DESC LIMIT 0, 10
+	SELECT x.protoType protoType, SUM(x.count) count FROM
+	(	SELECT proto_type protoType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_protocol_statistic
+		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
+		GROUP BY protoType
+		UNION ALL
+		SELECT proto_type protoType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_protocol_statistic
+		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
+		GROUP BY protoType
+ 	) x
+	GROUP BY x.protoType ORDER BY count DESC LIMIT 0, 10
   </select>
   
   <select id="getProtocolList" resultType="java.util.HashMap">
-	SELECT IFNULL(c.protocol_type,p.proto_type) protocolType,p.proto_type protoType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
-	SELECT proto_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
-	 (SUM(c2s_byte_len+s2c_byte_len)/1024/1024/1024) AS GByte
-	FROM traffic_protocol_statistic WHERE stat_time=#{statTime} GROUP BY proto_type ) p
-	LEFT JOIN ui_code_protocol_type_dic c ON p.proto_type=c.view_code ORDER BY p.GByte DESC
+	SELECT IFNULL(c.protocol_type,p.protoType) protocolType,p.protoType protoType,p.linkNum linkNum, p.packets packets, p.GByte GByte FROM (
+	SELECT x.protoType ,SUM(x.link_num) AS linkNum,SUM(x.pkt) AS packets,
+	(SUM(x.byte)/1024/1024/1024) AS GByte FROM
+	(	SELECT proto_type protoType,SUM(link_num) link_num,SUM(c2s_byte_len+s2c_byte_len) byte,SUM(c2s_pkt_num+s2c_pkt_num) pkt FROM traffic_protocol_statistic
+		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
+		GROUP BY protoType
+		UNION ALL
+		SELECT proto_type protoType,SUM(link_num) link_num,SUM(c2s_byte_len+s2c_byte_len) byte,SUM(c2s_pkt_num+s2c_pkt_num) pkt FROM traffic_protocol_statistic
+		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
+		GROUP BY protoType
+    ) x
+	GROUP BY x.protoType ) p
+	LEFT JOIN ui_code_protocol_type_dic c ON p.protoType=c.view_code ORDER BY p.GByte DESC
   </select>
 </mapper>
