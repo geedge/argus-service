@@ -233,8 +233,9 @@
 		<t:field fieldType="String" srcName="service" dstName="service" isRequired="true"/>
 		<t:field fieldType="Number" srcName="action" dstName="action" isRequired="true"/>
 		<t:field fieldType="Number" srcName="configId" dstName="cfg_id" isRequired="true" isCfgId="true"/>
+		<t:field fieldType="Number" srcName="originalAddrType" dstName="original_addr_type" isRequired="true" regexp="^([4|6]{1})$"/>
 		<t:field fieldType="String" srcName="originalDestIp" dstName="original_dest_ip" isRequired="true"/>
-		<t:field fieldType="String" srcName="origzinalDestPort" dstName="original_dest_port" isRequired="true"/>
+		<t:field fieldType="String" srcName="originalDestPort" dstName="original_dest_port" isRequired="true"/>
 		<t:field fieldType="String" srcName="originalProtocol" dstName="original_protocol" isRequired="true"/>
 		<t:field fieldType="String" srcName="translateDestIp" dstName="translate_dest_ip" isRequired="true"/>
 		<t:field fieldType="String" srcName="translateDestPort" dstName="translate_dest_port" isRequired="true"/>
