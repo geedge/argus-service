@@ -37,11 +37,25 @@
 	SELECT x.protoType ,SUM(x.link_num) AS linkNum,SUM(x.pkt) AS packets,
 	(SUM(x.byte)/1024/1024/1024) AS GByte FROM
 	(	SELECT proto_type protoType,SUM(link_num) link_num,SUM(c2s_byte_len+s2c_byte_len) byte,SUM(c2s_pkt_num+s2c_pkt_num) pkt FROM traffic_protocol_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
+		where 
+		<if test="beginTime==null or endTime==null">
+			stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR)
+		</if>
+		<if test="beginTime!=null and endTime!=null">
+			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
+		</if>
+		and entrance_id=1
 		GROUP BY protoType
 		UNION ALL
 		SELECT proto_type protoType,SUM(link_num) link_num,SUM(c2s_byte_len+s2c_byte_len) byte,SUM(c2s_pkt_num+s2c_pkt_num) pkt FROM traffic_protocol_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
+		where 
+		<if test="beginTime==null or endTime==null">
+			stat_time > DATE_SUB((SELECT stat_time FROM traffic_protocol_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) 
+		</if>
+		<if test="beginTime!=null and endTime!=null">
+			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
+		</if>
+		and entrance_id=2
 		GROUP BY protoType
     ) x
 	GROUP BY x.protoType ) p
