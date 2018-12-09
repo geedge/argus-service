@@ -23,7 +23,7 @@
  <select id="getTotalReportList" resultType="java.util.HashMap">
     SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
     SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM ntc_total_report
-    where report_time = #{reportTime}
+    where report_time > DATE_SUB(#{reportTime}, INTERVAL 1 HOUR)
   </select>
   
   <!-- 获取带宽最近时间 -->
@@ -32,15 +32,8 @@
   </select>
   <!-- 根据最近时间条获取带宽，进出口流量 -->
  <select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
-
-    SELECT SUM(total_traffic.inoctets) AS inoctets ,SUM(total_traffic.outoctets) AS outoctets FROM (
-		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
-		UNION ALL
-		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
-    ) total_traffic
-
+    SELECT IFNULL(SUM(c2s_byte_len),0) AS inoctets ,IFNULL(SUM(s2c_byte_len),0) AS outoctets FROM traffic_trans_statistic
+    WHERE stat_time > DATE_SUB(#{statTime}, INTERVAL 1 HOUR)
   </select>
   <!-- 获取近五分钟的带宽根据ip46，协议 tcp,udp变化 -->
  <select id="getBandwidthTrans" resultMap="BandwidthResultMap">

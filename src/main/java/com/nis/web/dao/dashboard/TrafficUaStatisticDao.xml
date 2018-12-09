@@ -21,132 +21,64 @@
   	SELECT stat_time statTime FROM traffic_ua_statistic order by stat_time desc limit 1
   </select>
   <!--获取操作系统列表TOP10  -->
-  <select id="systemList" resultMap="BaseResultMap">
-    SELECT x.osType osType, SUM(x.count) count FROM 
-	(	SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
-		GROUP BY osType
-		UNION ALL
-		SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
-		GROUP BY osType
- 	) x
-	GROUP BY x.osType ORDER BY count DESC limit 0,10
+    <select id="systemList" resultMap="BaseResultMap">
+    SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
+	WHERE stat_time > DATE_SUB(#{statTime}, INTERVAL 1 HOUR) 
+	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--获取上个时间段操作系统的数据量  -->
   <select id="preSystemListCount" resultType="java.lang.Long">
-    SELECT SUM(x.count) count FROM
-	(	SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time &lt; DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and os_type=#{osType} and entrance_id=1
-		and stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 2 HOUR) and os_type=#{osType} and entrance_id=1
-		GROUP BY osType
-		UNION ALL
-		SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time &lt; DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and os_type=#{osType} and entrance_id=2
-		and stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 2 HOUR) and os_type=#{osType} and entrance_id=2
-		GROUP BY osType
- 	) x
+    SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
+	WHERE os_type=#{osType}
+	and stat_time &lt; DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
+	and stat_time > DATE_SUB(#{statTime},INTERVAL 2 HOUR)
   </select>
   <!-- 根据操作系统获取浏览器分类 -->
   <select id="getBrowserBySystem" resultType="java.util.HashMap">
-    SELECT x.bsType bsType, SUM(x.count) count FROM 
-	(	SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and os_type=#{osType} and entrance_id=1
-		GROUP BY bsType
-		UNION ALL
-		SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and os_type=#{osType} and entrance_id=2
-		GROUP BY bsType
- 	) x 
-	GROUP BY x.bsType ORDER BY count DESC limit 0,10
+    SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
+	WHERE os_type=#{osType} and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
+	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--浏览器TOP10后所有为others -->
   <select id="systemOthers" resultType="java.util.HashMap">
-  	SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM
-	(	SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and os_type=#{osType}
+  	SELECT SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
+	WHERE bs_type !=0 and os_type=#{osType}
 		<if test="bsType!=null and bsType.size()>0">
-			and x.bsType not in
+		and bs_type not in
 		<foreach collection="bsType" item="singleType" index="index" open="(" close=")" separator=",">
 				 #{singleType}
 		</foreach>
 		</if>
-		 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and os_type=#{osType} and entrance_id=1
-		UNION ALL
-		SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		<if test="bsType!=null and bsType.size()>0">
-			and x.bsType not in
-		<foreach collection="bsType" item="singleType" index="index" open="(" close=")" separator=",">
-				 #{singleType}
-		</foreach>
-		</if>
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and os_type=#{osType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and os_type=#{osType} and entrance_id=2
- 	) x 
-		
+	and stat_time  > DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
   </select>
-  
   <!--获取浏览器列表TOP10  -->
   <select id="browserList" resultMap="BaseResultMap">
-    SELECT x.bsType, SUM(x.count) count FROM
-	(	SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
-		GROUP BY bsType
-		UNION ALL
-		SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
-		GROUP BY bsType
- 	) x
-	GROUP BY x.bsType ORDER BY count DESC limit 0,10
+    SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
+	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
+	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--获取上个时间段浏览器的数据量  -->
   <select id="preBrowserListCount" resultType="java.lang.Long">
-    SELECT SUM(x.count) count FROM
-	(	SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time &lt; DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and bs_type=#{bsType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and bs_type=#{bsType} and entrance_id=1
-		and stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and bs_type=#{bsType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 2 HOUR) and bs_type=#{bsType} and entrance_id=1
-		GROUP BY bsType
-		UNION ALL
-		SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time &lt; DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and bs_type=#{bsType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and bs_type=#{bsType} and entrance_id=2
-		and stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and bs_type=#{bsType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 2 HOUR) and bs_type=#{bsType} and entrance_id=2
-		GROUP BY bsType
- 	) x
+    SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
+	WHERE bs_type=#{bsType}
+	and stat_time &lt; DATE_SUB(#{statTime},INTERVAL 1 HOUR) and stat_time > DATE_SUB(#{statTime},INTERVAL 2 HOUR)
   </select>
   <!-- 根据浏览器获取操作系统分类 -->
-  <select id="getSystemBybrowser" resultType="java.util.HashMap">
-    SELECT x.osType osType, SUM(x.count) count FROM
-	(	SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and bs_type=#{bsType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and bs_type=#{bsType} and entrance_id=1
-		GROUP BY osType
-		UNION ALL
-		SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and bs_type=#{bsType} ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and bs_type=#{bsType} and entrance_id=2
-		GROUP BY osType
- 	) x 
-	GROUP BY x.osType ORDER BY count DESC limit 0,10
+    <select id="getSystemBybrowser" resultType="java.util.HashMap">
+    SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
+	WHERE bs_type=#{bsType} and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
+	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--操作系统TOP10后所有为others -->
   <select id="browserOthers" parameterType="java.util.List" resultType="java.util.HashMap">
-  	SELECT SUM(x.count) count FROM
-		(	SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=1 and bs_type=#{bsType}
+  	SELECT SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
+	WHERE os_type !=0 and bs_type=#{bsType}
 		<if test="osType!=null and osType.size()>0">
 		and os_type not in
 		<foreach collection="osType" item="singleType" index="index" open="(" close=")" separator=",">
 				 #{singleType}
 		</foreach>
 		</if>
-		ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and bs_type=#{bsType} and entrance_id=1
-		UNION ALL
-		SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_ua_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_ua_statistic WHERE entrance_id=2 and bs_type=#{bsType} 
-		<if test="osType!=null and osType.size()>0">
-		and os_type not in
-		<foreach collection="osType" item="singleType" index="index" open="(" close=")" separator=",">
-				 #{singleType}
-		</foreach>
-		</if>
-		ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and bs_type=#{bsType} and entrance_id=2
- 		) x 
+	and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
   </select>
 </mapper>

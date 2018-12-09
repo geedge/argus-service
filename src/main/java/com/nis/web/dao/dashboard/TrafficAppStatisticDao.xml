@@ -17,47 +17,28 @@
   </sql>
   <!-- 查询最近时间 -->
    <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficAppStatistic">
-  	SELECT stat_time statTime FROM traffic_app_statistic WHERE app_type != 0 order by stat_time desc limit 1
+  	SELECT stat_time statTime FROM traffic_app_statistic order by stat_time desc limit 1
   </select>
- <select id="appChart" resultType="java.util.HashMap">
-      SELECT x.appType appType, SUM(x.count) count FROM
-	(	SELECT app_type appType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_app_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_app_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=1
-		GROUP BY appType
-		UNION ALL
-		SELECT app_type appType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_app_statistic
-		where stat_time > DATE_SUB((SELECT stat_time FROM traffic_app_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) and entrance_id=2
-		GROUP BY appType
- 	) x GROUP BY x.appType order by count desc limit 0,10
+  
+   <select id="appChart" resultType="java.util.HashMap">
+    SELECT app_type appType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_app_statistic
+	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
+	GROUP BY app_type order by count desc limit 0,10
   </select>
+
   <!-- 获取app统计详情 -->
   <select id="getAppList" resultType="java.util.HashMap">
-	SELECT IFNULL(c.app_name,p.appType) appName,p.appType appType,p.linkNum linkNum, p.packets packets, p.GByte GByte FROM (
-	SELECT x.appType ,SUM(x.link_num) AS linkNum,SUM(x.pkt) AS packets,
-	(SUM(x.byte)/1024/1024/1024) AS GByte FROM
-	(	SELECT app_type appType,SUM(link_num) link_num,SUM(c2s_byte_len+s2c_byte_len) byte,SUM(c2s_pkt_num+s2c_pkt_num) pkt FROM traffic_app_statistic
-		where 
-		<if test="beginTime==null or endTime==null">
-			stat_time > DATE_SUB((SELECT stat_time FROM traffic_app_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) 
-		</if>
-		<if test="beginTime!=null and endTime!=null">
+	SELECT IFNULL(c.app_name,p.app_type) appName,p.app_type appType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
+	SELECT app_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
+	(SUM(c2s_byte_len+s2c_byte_len)/1024/1024/1024) AS GByte 
+	FROM traffic_app_statistic WHERE
+	<if test="beginTime==null or endTime==null">
+			stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
+	</if>
+	<if test="beginTime!=null and endTime!=null">
 			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
-		</if>
-		and entrance_id=1
-		GROUP BY appType
-		UNION ALL
-		SELECT app_type appType,SUM(link_num) link_num,SUM(c2s_byte_len+s2c_byte_len) byte,SUM(c2s_pkt_num+s2c_pkt_num) pkt FROM traffic_app_statistic
-		where 
-		<if test="beginTime==null or endTime==null">
-		stat_time > DATE_SUB((SELECT stat_time FROM traffic_app_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1),INTERVAL 1 HOUR) 
-		</if>
-		<if test="beginTime!=null and endTime!=null">
-			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
-		</if>
-		and entrance_id=2
-		GROUP BY appType
-    ) x
-	 GROUP BY x.appType ) p
-	LEFT JOIN ui_code_app_dic c ON p.appType=c.view_code ORDER BY p.GByte DESC
+	</if>
+	GROUP BY app_type ) p
+	LEFT JOIN ui_code_app_dic c ON p.app_type=c.view_code ORDER BY p.GByte DESC
   </select>
 </mapper>
