@@ -42,7 +42,7 @@
     <!--浏览器TOP10后所有为others -->
   <select id="systemOthers" resultType="java.util.HashMap">
   	SELECT SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
-	WHERE bs_type !=0 and os_type=#{osType}
+	WHERE os_type=#{osType}
 		<if test="bsType!=null and bsType.size()>0">
 		and bs_type not in
 		<foreach collection="bsType" item="singleType" index="index" open="(" close=")" separator=",">
@@ -72,7 +72,7 @@
   <!--操作系统TOP10后所有为others -->
   <select id="browserOthers" parameterType="java.util.List" resultType="java.util.HashMap">
   	SELECT SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
-	WHERE os_type !=0 and bs_type=#{bsType}
+	WHERE bs_type=#{bsType}
 		<if test="osType!=null and osType.size()>0">
 		and os_type not in
 		<foreach collection="osType" item="singleType" index="index" open="(" close=")" separator=",">

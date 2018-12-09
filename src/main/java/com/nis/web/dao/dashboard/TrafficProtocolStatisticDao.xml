@@ -17,7 +17,7 @@
   </sql>
   <!-- 获取最近时间 -->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficProtocolStatistic">
-	SELECT stat_time statTime FROM traffic_protocol_statistic WHERE proto_type != 0 order by stat_time desc limit 1
+	SELECT stat_time statTime FROM traffic_protocol_statistic WHERE order by stat_time desc limit 1
   </select>
     <select id="protocolChart" resultType="java.util.HashMap">
 	SELECT proto_type protoType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_protocol_statistic WHERE
