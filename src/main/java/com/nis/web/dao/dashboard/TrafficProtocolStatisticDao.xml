@@ -17,18 +17,25 @@
   </sql>
   <!-- 获取最近时间 -->
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficProtocolStatistic">
-	SELECT MAX(stat_time) statTime FROM traffic_protocol_statistic WHERE proto_type != 0
+	SELECT stat_time statTime FROM traffic_protocol_statistic WHERE proto_type != 0 order by stat_time desc limit 1
   </select>
-  <select id="protocolChart" resultType="java.util.HashMap">
-	SELECT proto_type protoType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_protocol_statistic WHERE proto_type != 0 
-	AND stat_time = #{statTime} GROUP BY proto_type ORDER BY count DESC LIMIT 0, 10
+    <select id="protocolChart" resultType="java.util.HashMap">
+	SELECT proto_type protoType, SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_protocol_statistic WHERE
+	stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour) GROUP BY proto_type ORDER BY count DESC LIMIT 0, 10
   </select>
   
   <select id="getProtocolList" resultType="java.util.HashMap">
 	SELECT IFNULL(c.protocol_type,p.proto_type) protocolType,p.proto_type protoType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
 	SELECT proto_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
 	 (SUM(c2s_byte_len+s2c_byte_len)/1024/1024/1024) AS GByte
-	FROM traffic_protocol_statistic WHERE stat_time=#{statTime} GROUP BY proto_type ) p
+	FROM traffic_protocol_statistic WHERE 
+	<if test="beginTime==null or endTime==null">
+			stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
+	</if>
+	<if test="beginTime!=null and endTime!=null">
+			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
+	</if>
+	GROUP BY proto_type ) p
 	LEFT JOIN ui_code_protocol_type_dic c ON p.proto_type=c.view_code ORDER BY p.GByte DESC
   </select>
 </mapper>

@@ -13,5 +13,5 @@ public interface TrafficProtocolStatisticDao {
 
 	TrafficProtocolStatistic getMaxStatTime();
 	List<Map> protocolChart(@Param("statTime")Date statTime);
-	List<Map> getProtocolList(@Param("statTime")Date statTime);
+	List<Map> getProtocolList(@Param("statTime")Date statTime,@Param("beginTime")String beginTime,@Param("endTime")String endTime);
 }

@@ -55,6 +55,7 @@ public class NmsInfoController extends BaseRestController {
 
 			if (trafficNmsServerStatisticList != null && trafficNmsServerStatisticList.getTrafficNmsServerList() != null
 					&& trafficNmsServerStatisticList.getTrafficNmsServerList().size() > 0) {
+				thread.setContent("NMS系统上报服务器数量为"+trafficNmsServerStatisticList.getTrafficNmsServerList().size());
 				trafficNmsServerStatisticService.saveNmsInfo(trafficNmsServerStatisticList.getTrafficNmsServerList());
 			} else {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "参数trafficNmsServerList不能为空",
@@ -71,7 +72,8 @@ public class NmsInfoController extends BaseRestController {
 			}
 			
 		}
-		return testServiceResponse(System.currentTimeMillis() - start, request, response, "上报服务器状态信息成功",
+		
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报服务器状态信息成功",
 				Constants.IS_DEBUG ? trafficNmsServerStatisticList : null);
 	}
 
@@ -86,6 +88,7 @@ public class NmsInfoController extends BaseRestController {
 		try {
 			if (nmsDiRuleList != null && nmsDiRuleList.getNmsDiRuleList() != null
 					&& nmsDiRuleList.getNmsDiRuleList().size() > 0) {
+				thread.setContent("NMS系统上报的di信息数量为"+nmsDiRuleList.getNmsDiRuleList().size());
 				nmsDiRuleService.saveNmsDiRuleInfo(nmsDiRuleList.getNmsDiRuleList());
 			} else {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start, "参数nmsDiRuleList不能为空",
@@ -100,7 +103,7 @@ public class NmsInfoController extends BaseRestController {
 					"上报NmsDiRule信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
 			}
 		}
-		return testServiceResponse(System.currentTimeMillis() - start, request, response, "上报NmsDiRule信息成功",
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "上报NmsDiRule信息成功",
 				Constants.IS_DEBUG ? nmsDiRuleList : null);
 	}
 
@@ -116,6 +119,7 @@ public class NmsInfoController extends BaseRestController {
 		try {
 			if (trafficNetflowPortInfoList != null && trafficNetflowPortInfoList.getTrafficNetflowPortInfoList() != null
 					&& trafficNetflowPortInfoList.getTrafficNetflowPortInfoList().size() > 0) {
+				thread.setContent("NMS系统上报上报trafficNetflowPort信息数量为"+trafficNetflowPortInfoList.getTrafficNetflowPortInfoList().size());
 				trafficNetflowPortInfoService
 						.saveTrafficNetflowPortInfo(trafficNetflowPortInfoList.getTrafficNetflowPortInfoList());
 			} else {
@@ -131,7 +135,7 @@ public class NmsInfoController extends BaseRestController {
 					"上报trafficNetflowPort信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
 			}
 		}
-		return testServiceResponse(System.currentTimeMillis() - start, request, response,
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"上报trafficNetflowPort信息成功", Constants.IS_DEBUG ? trafficNetflowPortInfoList : null);
 	}
 

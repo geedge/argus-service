@@ -306,12 +306,12 @@ public class DashboardService extends BaseService{
 	 * 协议统计报表
 	 * @return
 	 */
-	public List<Map> getProtocolList(){
+	public List<Map> getProtocolList(String startTime,String endTime){
 		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list=new ArrayList<Map>();
 		if(maxStatTime!=null&&maxStatTime.getStatTime()!=null) {
 			Date statTime = maxStatTime.getStatTime();
-			list = trafficProtocolStatisticDao.getProtocolList(statTime);
+			list = trafficProtocolStatisticDao.getProtocolList(statTime,startTime,endTime);
 		}	
 		return list;
 	}
@@ -339,12 +339,12 @@ public class DashboardService extends BaseService{
 	 * App统计报表
 	 * @return
 	 */
-	public List<Map> getAppList(){
+	public List<Map> getAppList(String startTime,String endTime){
 		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
 		List<Map> list=new ArrayList<Map>();
 		if(maxStatTime!=null&&maxStatTime.getStatTime()!=null) {
 			Date statTime = maxStatTime.getStatTime();
-			list = trafficAppStatisticDao.getAppList(statTime);
+			list = trafficAppStatisticDao.getAppList(statTime,startTime,endTime);
 		}	
 		return list;
 	}

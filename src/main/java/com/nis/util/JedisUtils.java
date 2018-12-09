@@ -306,9 +306,10 @@ public class JedisUtils {
 	 * @return 是否获取成功
 	 */
 	public static Boolean lock(String requestId) {
+		Jedis resource = getResource(0);
 		String key = "redisDistributedLock";
-		String var1 = getResource(0).set(key, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME,
-				Constants.REDISLOCKTIME);
+		String var1 = resource.set(key, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, Constants.REDISLOCKTIME);
+		returnResource(resource);
 		if (LOCK_SUCCESS.equals(var1)) {
 			return true;
 		}
@@ -322,11 +323,13 @@ public class JedisUtils {
 	 * @return
 	 */
 	public static Boolean unLock(String value) {
+		Jedis resource = getResource(0);
 		String key = "redisDistributedLock";
 		// 这个字符串是个lua脚本，代表的意思是如果根据key拿到的value跟传入的value相同就执行del，否则就返回0【保证安全性】
 		String luaScript = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then return redis.call(\"del\",KEYS[1]) else  return 0 end";
 		// 这个命令就是去执行lua脚本，KEYS的集合就是第二个参数，ARGV的集合就是第三参数【保证解锁的原子操作】
-		Object var2 = getResource(0).eval(luaScript, Collections.singletonList(key), Collections.singletonList(value));
+		Object var2 = resource.eval(luaScript, Collections.singletonList(key), Collections.singletonList(value));
+		returnResource(resource);
 		if (UNLOCK_SUCCESS == var2) {
 			return true;
 		}

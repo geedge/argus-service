@@ -166,12 +166,12 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value="trafficProtocolList", method = RequestMethod.GET)
 	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
-	public Map<String,?> trafficProtocolList(Model model, HttpServletRequest request, HttpServletResponse response){
+	public Map<String,?> trafficProtocolList(String searchFoundStartTime,String searchFoundEndTime,Model model, HttpServletRequest request, HttpServletResponse response){
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> ipActiveList = dashboardService.getProtocolList();
+			List<Map> ipActiveList = dashboardService.getProtocolList(searchFoundStartTime,searchFoundEndTime);
 			if (ipActiveList!=null&&ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
@@ -289,12 +289,12 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value="trafficAppList", method = RequestMethod.GET)
 	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
-	public Map<String,?> trafficAppList(Model model, HttpServletRequest request, HttpServletResponse response){
+	public Map<String,?> trafficAppList(String searchFoundStartTime,String searchFoundEndTime,Model model, HttpServletRequest request, HttpServletResponse response){
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> appList = dashboardService.getAppList();
+			List<Map> appList = dashboardService.getAppList(searchFoundStartTime,searchFoundEndTime);
 			if (appList!=null&&appList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(appList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);

@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,6 +31,7 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
+import com.nis.util.ExceptionUtil;
 import com.nis.util.FileUtils;
 import com.nis.util.MinioUtil;
 import com.nis.util.StringUtils;
@@ -81,9 +83,10 @@ public class ConfigSourcesController extends BaseRestController {
 			if (getLock(requestId)) {
 				if (null != configSource && null != configSource.getConfigCompileList()
 						&& configSource.getConfigCompileList().size() > 0) {
-					if (configSource.getConfigCompileList()!=null&&configSource.getConfigCompileList().size()>Constants.MAX_LIST_SIZE) {
-						thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
-					}					
+					if (configSource.getConfigCompileList() != null
+							&& configSource.getConfigCompileList().size() > Constants.MAX_LIST_SIZE) {
+						thread.setContent("批量提交数量超过" + Constants.MAX_LIST_SIZE + "条,不记录请求内容");
+					}
 					checkOpAction(thread, System.currentTimeMillis() - start, configSource.getOpAction(),
 							Constants.OPACTION_POST);
 					// 验证配置编译数据
@@ -134,8 +137,9 @@ public class ConfigSourcesController extends BaseRestController {
 				if (null != configSource && null != configSource.getConfigCompileList()
 						&& configSource.getConfigCompileList().size() > 0) {
 					int opAction = configSource.getOpAction();
-					if (configSource.getConfigCompileList()!=null&&configSource.getConfigCompileList().size()>Constants.MAX_LIST_SIZE) {
-						thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
+					if (configSource.getConfigCompileList() != null
+							&& configSource.getConfigCompileList().size() > Constants.MAX_LIST_SIZE) {
+						thread.setContent("批量提交数量超过" + Constants.MAX_LIST_SIZE + "条,不记录请求内容");
 					}
 					checkOpAction(thread, System.currentTimeMillis() - start, opAction, 2);
 					configSourcesService.updateConfigSources(thread, start, configSource.getConfigCompileList(),
@@ -549,6 +553,28 @@ public class ConfigSourcesController extends BaseRestController {
 
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"MAAT规则分组复用域配置删除成功" + sb.toString(), Constants.IS_DEBUG ? groupReuseSource : null);
+	}
+
+	@RequestMapping(value = "/cfg/v1/getAllKVByCompileId", method = RequestMethod.GET)
+	@ApiOperation(value = "根据配置id获取对应的编译,组,域等信息", httpMethod = "GET", response = Map.class, notes = "根据配置id获取对应的编译,组,域等信息")
+	@ApiParam(value = "配置id", name = "getAllKVByCompileId", required = true)
+	public Map getAllKVByCompileId(@RequestParam Long compileId, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				compileId);
+		Map map=null;
+		try {
+			map=configRedisService.getAllKVByCompileId(compileId);
+		} catch (Exception e) {
+			thread.setExceptionInfo("根据配置id获取对应的编译,组,域等信息时出现异常:" + e.getMessage());
+			logger.error("根据配置id获取对应的编译,组,域等信息时出现异常:" +ExceptionUtil.getExceptionMsg(e));
+			throw new RestServiceException("根据配置id获取对应的编译,组,域等信息失败",
+					RestBusinessCode.ConfigSourceIsNull.getValue());
+
+		}
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"根据配置id获取对应的编译,组,域等信息成功",  map);
 	}
 
 	private void validateGroupReuseSource(AuditLogThread thread, long start, GroupReuseSource groupReuseSource) {

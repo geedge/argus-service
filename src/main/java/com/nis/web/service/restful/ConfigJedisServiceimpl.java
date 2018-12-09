@@ -30,6 +30,8 @@ import com.nis.util.ReadMaatXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
@@ -568,8 +570,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	 * @param redisTemplate
 	 * @param redisDBIndex
 	 * @param compileId
-	 * @param isReuse
-	 *            是否是分组复用
+	 * @param isReuse       是否是分组复用
 	 */
 	private void setCommonConfig(MaatXmlConfig maatXmlConfig, Map<String, String> map, int type, Double maatVersion,
 			int service, Transaction transaction, Integer redisDBIndex, String compileId, boolean isReuse) {
@@ -1028,17 +1029,12 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	/**
 	 * 删除maat类配置
 	 * 
-	 * @param id
-	 *            配置id
-	 * @param maatXmlConfig
-	 *            maat.xml中关于当前业务类型的key和value写法的对象
-	 * @param maatVersion
-	 *            版本号
-	 * @param service
-	 *            业务类型
+	 * @param id            配置id
+	 * @param maatXmlConfig maat.xml中关于当前业务类型的key和value写法的对象
+	 * @param maatVersion   版本号
+	 * @param service       业务类型
 	 * @param redisTemplate
-	 * @param maatRelation
-	 *            id对应关系对象
+	 * @param maatRelation  id对应关系对象
 	 */
 	private void removeConfig(Long id, MaatXmlConfig maatXmlConfig, Double maatVersion, int service,
 			Transaction transaction, int redisDBIndex, int idRelaRedisDBIndex) {
@@ -1700,20 +1696,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	/**
 	 * 保存域配置信息,供分组复用单独添加域和普通maat配置添加域
 	 * 
-	 * @param maatConfig
-	 *            配置信息
-	 * @param maatXmlConfig
-	 *            配置的表达式
-	 * @param maatVersion
-	 *            版本号
-	 * @param service
-	 *            业务类型
-	 * @param transaction
-	 *            redis连接
-	 * @param redisDBIndex
-	 *            redis编号
-	 * @param isReuseSaveRegion
-	 *            是否是分组复用单独添加域配置
+	 * @param maatConfig        配置信息
+	 * @param maatXmlConfig     配置的表达式
+	 * @param maatVersion       版本号
+	 * @param service           业务类型
+	 * @param transaction       redis连接
+	 * @param redisDBIndex      redis编号
+	 * @param isReuseSaveRegion 是否是分组复用单独添加域配置
 	 */
 	private Integer addRegion(MaatConfig maatConfig, MaatXmlConfig maatXmlConfig, Double maatVersion, int service,
 			Transaction transaction, Integer redisDBIndex, boolean isReuseSaveRegion) {
@@ -1957,6 +1946,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			JedisUtils.returnResource(resource);
 		}
 	}
+
 	private void updateMaatInfo(List<MaatXmlExpr> list, String maatKey, Transaction transaction, Double maatVersion,
 			int redisDBIndex, boolean idDel) {
 		if (list != null && list.size() > 0) {
@@ -1989,6 +1979,80 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				}
 			}
 		}
+	}
+
+	public Map<Integer, Map<String, String>> getAllKVByCompileId(Long id) {
+		Jedis resource = JedisUtils.getResource(1);
+		try {
+			Map<Integer, Map<String, String>> map = new HashMap<>();
+			String pattern = "*," + id;
+
+			for (int index = 2; index < 6; index++) {
+				resource.select(index);
+				List<String> keyByScan = getKeyByScan(pattern, resource);
+				for (String redisKey : keyByScan) {
+					if (resource.exists(redisKey)) {
+
+						String statusMebmer = null;
+						if (redisKey.startsWith("EFFECTIVE_RULE:")) {
+							statusMebmer = redisKey.replace("EFFECTIVE_RULE:", "ADD,");
+						} else if (redisKey.startsWith("OBSOLETE_RULE:")) {
+							statusMebmer = redisKey.replace("OBSOLETE_RULE:", "DEL,");
+						}
+						if (statusMebmer != null) {
+							Double zscore = resource.zscore("MAAT_UPDATE_STATUS", statusMebmer);
+							if (zscore != null) {
+								Set<String> zrangeByScore = resource.zrangeByScore("MAAT_UPDATE_STATUS", zscore,
+										zscore);
+								for (String statusKey : zrangeByScore) {
+									String replaceKey = null;
+									if (statusKey.startsWith("ADD,")) {
+										replaceKey = statusKey.replace("ADD,", "EFFECTIVE_RULE:");
+
+									} else if (statusKey.startsWith("DEL,")) {
+										replaceKey = statusKey.replace("DEL,", "OBSOLETE_RULE:");
+									}
+									if (replaceKey != null) {
+										String val = resource.get(replaceKey);
+										if (val != null) {
+											if (map.containsKey(index)) {
+												Map<String, String> map2 = map.get(index);
+												map2.put(replaceKey, val);
+											} else {
+												Map<String, String> map2 = new HashMap<>();
+												map2.put(replaceKey, val);
+												map.put(index, map2);
+											}
+										}
+									}
+								}
+
+							}
+						}
+					}
+
+				}
+			}
+			return map;
+		} finally {
+			resource.close();
+		}
+	}
+
+	public List<String> getKeyByScan(String pattern, Jedis resource) {
+		List<String> list = new ArrayList<>();
+		int count = 1000;
+		String cursor = ScanParams.SCAN_POINTER_START;
+		ScanParams scanParams = new ScanParams();
+		scanParams.count(count);
+		scanParams.match(pattern);
+		do {
+			ScanResult<String> scanResult = resource.scan(cursor, scanParams);
+			list.addAll(scanResult.getResult());
+			cursor = scanResult.getStringCursor();
+		} while ("!0".equals(cursor));
+		return list;
+
 	}
 
 }
