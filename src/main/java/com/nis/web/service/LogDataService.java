@@ -363,12 +363,15 @@ public class LogDataService {
 	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
 //		if (Constants.ISOPENLOGCOUNTANDLAST) {
-			logJDBCByDruid.getCount(page, countSql.toString().toLowerCase());
+			logJDBCByDruid.getCount(page, countSql.toString());
 //		}
 		if (page.getCount() > 0) {
 			logJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
+			if(page.getLast()>100) {
+				page.setLast(100);
+			}
 		} else {
-			logger.info("没有查询到数据,sql={}",countSql.toString().toLowerCase());
+			logger.info("没有查询到数据,sql={}",countSql.toString());
 		}
 
 	}
