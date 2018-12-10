@@ -59,7 +59,7 @@ CREATE TABLE `ui_asn_ip_cfg` (
     `user_region4` varchar(1024) DEFAULT '' COMMENT '预留自定义域4',
     `user_region5` varchar(1024) DEFAULT '' COMMENT '预留自定义域5',
     PRIMARY KEY (`cfg_id`)
-  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/asn_ip_cfg';
+  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/asn_ip_cfg';
 
 CREATE TABLE `ui_sys_dict_info` (
   `sys_dict_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '字典ID',
@@ -77,7 +77,7 @@ CREATE TABLE `ui_sys_dict_info` (
   `edit_time` datetime DEFAULT NULL COMMENT '修改时间',
   `is_initianlize` int(11) NOT NULL DEFAULT 0 COMMENT '是否是初始化数据：1是，0否',
   PRIMARY KEY (`sys_dict_id`)
-) ENGINE=FEDERATED AUTO_INCREMENT=448 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/sys_dict_info';
+) ENGINE=FEDERATED AUTO_INCREMENT=448 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/sys_dict_info';
 
 
   CREATE TABLE `ui_code_app_dic` (
@@ -92,7 +92,7 @@ CREATE TABLE `ui_sys_dict_info` (
    `app_service` varchar(255) CHARACTER SET utf8mb4 DEFAULT '',
    `lib` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT 'lib类别',
    PRIMARY KEY (`id`)
-  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_app_dic';
+  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_app_dic';
 
 
 
@@ -105,7 +105,7 @@ CREATE TABLE `ui_cfg_num_statistics` (
    `compile_id` int(11) DEFAULT 0,
    `statistic_time` datetime DEFAULT NULL COMMENT '统计时间',
    PRIMARY KEY (`id`)
- )  ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/cfg_num_statistics';
+ )  ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/cfg_num_statistics';
 
 
 CREATE TABLE `ui_request_num_statistics` (
@@ -116,7 +116,7 @@ CREATE TABLE `ui_request_num_statistics` (
     `statistic_time` datetime DEFAULT NULL COMMENT '统计时间',
     `compile_id` int(11) DEFAULT 0,
     PRIMARY KEY (`id`)
-  )ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/request_num_statistics';
+  )ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/request_num_statistics';
 
 
 CREATE TABLE `ui_sys_data_dictionary_item` (
@@ -129,14 +129,14 @@ CREATE TABLE `ui_sys_data_dictionary_item` (
     `type` int(11) DEFAULT 1 COMMENT '该条记录页面是否可维护（1：可维护 0：不可维护）',
     `dictionary_id` int(11) DEFAULT NULL COMMENT '关联数据字典外键',
     PRIMARY KEY (`id`)
-  )ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/sys_data_dictionary_item';
+  )ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/sys_data_dictionary_item';
 
  CREATE TABLE `ui_code_behavior_type_dic` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `behavior_type` varchar(255) DEFAULT NULL,
     `view_code` varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_behavior_type_dic';
+  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_behavior_type_dic';
 
 CREATE TABLE `ui_code_browser_type_dic` (
    `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -144,7 +144,7 @@ CREATE TABLE `ui_code_browser_type_dic` (
    `view_code` varchar(255) DEFAULT NULL,
    `icon` varchar(255) DEFAULT NULL,
    PRIMARY KEY (`id`)
- ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_browser_type_dic';
+ ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_browser_type_dic';
 
 
 CREATE TABLE `ui_code_os_type_dic` (
@@ -153,7 +153,7 @@ CREATE TABLE `ui_code_os_type_dic` (
   `view_code` varchar(255) DEFAULT NULL,
   `icon` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_os_type_dic';
+) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_os_type_dic';
 
 
 
@@ -172,7 +172,7 @@ CREATE TABLE `ui_code_service_type_dic` (
    `service_type` varchar(255) DEFAULT '' COMMENT '业务类型',
    `view_code` varchar(255) DEFAULT NULL COMMENT '界面编码',
    PRIMARY KEY (`id`)
- ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_service_type_dic';
+ ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_service_type_dic';
 
 
 CREATE TABLE `ui_code_web_service_dic` (
@@ -182,7 +182,7 @@ CREATE TABLE `ui_code_web_service_dic` (
   `view_code` varchar(255) DEFAULT '',
   `icon` varchar(255) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_web_service_dic';
+) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_web_service_dic';
 
 
 
@@ -201,7 +201,7 @@ CREATE TABLE `ui_service_dict_info` (
    `editor_id` int(11) DEFAULT NULL COMMENT '修改人员取自sys_user.id',
    `edit_time` datetime DEFAULT NULL COMMENT '修改时间',
    PRIMARY KEY (`service_dict_id`)
- ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/service_dict_info';
+ ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/service_dict_info';
 
 
  CREATE TABLE `ui_request_info` (
@@ -222,7 +222,7 @@ CREATE TABLE `ui_service_dict_info` (
     `task_id` bigint(20) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `request_info_request_number` (`request_number`) USING BTREE
-  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/request_info';
+  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/request_info';
 
 
   CREATE TABLE `ui_task_info` (
@@ -241,7 +241,7 @@ CREATE TABLE `ui_service_dict_info` (
      `audit_time` date DEFAULT NULL,
      PRIMARY KEY (`id`),
      UNIQUE KEY `task_info_task_name` (`task_name`) USING BTREE
-   )  ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/task_info';
+   )  ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/task_info';
 
 
   CREATE TABLE `ui_config_group_info` (
@@ -254,7 +254,7 @@ CREATE TABLE `ui_service_dict_info` (
     `group_type` int(11) DEFAULT NULL COMMENT '1:协议，2：内容，3：区域 ,4 asn',
     `compile_id` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
-    ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/config_group_info';
+    ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/config_group_info';
 
   CREATE TABLE `ui_website_domain_topic` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -267,7 +267,7 @@ CREATE TABLE `ui_service_dict_info` (
     `desc` varchar(400) DEFAULT NULL COMMENT '描述信息',
     `creator_id` int(11) DEFAULT NULL,
     PRIMARY KEY (`id`)
-  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/website_domain_topic';
+  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/website_domain_topic';
 
 
 
@@ -307,4 +307,4 @@ CREATE TABLE `ui_http_url_cfg` (
    `user_region4` varchar(1024) DEFAULT '' COMMENT '预留自定义域4',
    `user_region5` varchar(1024) DEFAULT '' COMMENT '预留自定义域5',
    PRIMARY KEY (`cfg_id`)
- ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/http_url_cfg';
+ ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/http_url_cfg';

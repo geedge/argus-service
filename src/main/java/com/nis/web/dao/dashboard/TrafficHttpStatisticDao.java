@@ -8,20 +8,26 @@ import org.apache.ibatis.annotations.Param;
 
 import com.nis.domain.restful.dashboard.TrafficHttpStatistic;
 import com.nis.web.dao.MyBatisDao;
+
 @MyBatisDao
 public interface TrafficHttpStatisticDao {
 	TrafficHttpStatistic getMaxStatTime();
-    List<TrafficHttpStatistic> websiteList(@Param("statTime")Date statTime);
-	
-	//获取域名分类之后属于的网站
-	List<TrafficHttpStatistic> getDomainByWebsiteList(@Param("statTime")Date statTime);
-	Long preWebsiteListCount(@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
-	List<Map> getDomainByWebsiteServiceId(@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
-	Map websiteDomainOthers(@Param("webIdList") List webIdList,@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
 
-	List<Map> getDomainByTopicList(@Param("statTime") Date statTime,@Param("endTime")Date endTime);
-	
-	List<Map> getUiWebsiteDomainTopicList( );
+	List<TrafficHttpStatistic> websiteList(@Param("statTime") Date statTime);
 
-	List<Map> getDomainByTopicId( @Param("statTime")Date statTime ,@Param("endTime")Date endTime);
+	// 获取域名分类之后属于的网站
+	List<Map> getDomainByWebsiteList(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+
+	List<Map> preWebsiteListCount(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+
+	List<Map> getDomainByWebsiteServiceId(@Param("webIdList") List webIdList,@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+
+	Map websiteDomainOthers(@Param("webIdList") List webIdList, @Param("statTime") Date statTime,
+			@Param("endTime") Date endTime);
+
+	List<Map> getDomainByTopicList(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+
+	List<Map> getDomainByTopicId(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+
+	List getIdByWebSiteId(@Param("websiteId") Integer websiteId);
 }

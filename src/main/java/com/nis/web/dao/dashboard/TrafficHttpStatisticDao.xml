@@ -19,26 +19,32 @@
 			property="statTime" />
 	</resultMap>
 	<sql id="Base_Column_List">
-		stat_id, web_type, web_id, c2s_pkt_num, s2c_pkt_num, c2s_byte_len,
+		stat_id, web_type, web_id, c2s_pkt_num, s2c_pkt_num,
+		c2s_byte_len,
 		s2c_byte_len,
 		stat_time
 	</sql>
 	<!-- 获取最近时间并且有效 -->
 	<select id="getMaxStatTime"
 		resultType="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
-		SELECT stat_time statTime FROM traffic_http_statistic order by stat_time
+		SELECT stat_time statTime FROM traffic_http_statistic order
+		by stat_time
 		desc limit 1
 	</select>
 	<!-- 根据服务网站将域名分类 网站列表 -->
 	<select id="getDomainByWebsiteList"
-		resultType="com.nis.domain.restful.dashboard.TrafficHttpStatistic">
-		SELECT SUM(c2s_byte_len+s2c_byte_len) count, IFNULL( website_service_id,
-		268435455 ) websiteServiceId
-		FROM TRAFFIC_HTTP_STATISTIC t
-		LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id
-		where t.stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
-		GROUP BY u.website_service_id ORDER BY count desc limit 0,10
+		resultType="java.util.HashMap">
+		SELECT
+		IFNULL(
+		website_service_id,
+		268435455
+		) websiteServiceId,
+		id
+		FROM
+		ui_website_domain_topic t group by website_service_id,id
 	</select>
+
+
 
 	<!-- 根据主题将域名分类 主题列表 最近五分钟top10 -->
 	<select id="getDomainByTopicList" resultType="java.util.HashMap">
@@ -53,12 +59,11 @@
 	</select>
 
 	<!--获取上个时间段该网站站域名流量的数据量 -->
-	<select id="preWebsiteListCount" resultType="java.lang.Long">
-		SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM traffic_http_statistic t
-		LEFT JOIN ui_website_domain_topic u ON t.web_id = u.id
-		WHERE u.website_service_id=#{websiteServiceId}
-		and stat_time &lt; DATE_SUB(#{statTime},INTERVAL 1 hour)
-		and stat_time > DATE_SUB(#{statTime},INTERVAL 2 hour)
+	<select id="preWebsiteListCount" resultType="java.util.HashMap">
+		select web_id webId,	SUM(c2s_byte_len + s2c_byte_len) count from
+		traffic_http_statistic t where
+		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id ]]>
+
 	</select>
 
 	<!--获取网站列表列表 -->
@@ -70,13 +75,29 @@
 	<!-- 根据网站分组获取子域名 -->
 	<select id="getDomainByWebsiteServiceId"
 		resultType="java.util.HashMap">
-		SELECT web_id webId,SUM(c2s_byte_len+s2c_byte_len) count
-		FROM traffic_http_statistic t
-		LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
-		where u.website_service_id=#{websiteServiceId}
-		and t.stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
-		GROUP BY t.web_id ORDER BY count desc limit 0,10
+		SELECT
+	web_id webId,
+	SUM(c2s_byte_len + s2c_byte_len) count
+FROM
+	traffic_http_statistic t where
+	<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} ]]>
+		<if test="webIdList!=null and webIdList.size()>0">
+			and  web_id   in
+			<foreach collection="webIdList" item="singleType"
+				index="index" open="(" close=")" separator=",">
+				#{singleType}
+			</foreach>
+		</if>
+	group by t.web_id 
 	</select>
+	
+	<select id="getIdByWebSiteId"
+		resultType="java.lang.String">
+		SELECT
+	distinct id  FROM ui_website_domain_topic  where website_service_id= #{websiteId} 
+	</select>
+	
+
 	<!-- 根据主题分组获取子域名 -->
 	<select id="getDomainByTopicId" resultType="java.util.HashMap">
 		select web_id webId,sum(c2s_byte_len + s2c_byte_len) count from
@@ -91,9 +112,8 @@
 	<select id="websiteDomainOthers" resultType="java.util.HashMap">
 		SELECT SUM(c2s_byte_len+s2c_byte_len) count FROM
 		traffic_http_statistic t
-		LEFT JOIN ui_website_domain_topic u ON t.web_id=u.id
-		where u.website_service_id=#{websiteServiceId}
-
+		where
+	<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} ]]>
 		<if test="webIdList!=null and webIdList.size()>0">
 			and t.web_id not in
 			<foreach collection="webIdList" item="singleType"
@@ -101,6 +121,6 @@
 				#{singleType}
 			</foreach>
 		</if>
-		and stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
+		
 	</select>
 </mapper>

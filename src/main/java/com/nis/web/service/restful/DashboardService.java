@@ -466,32 +466,32 @@ public class DashboardService extends BaseService {
 		return list;
 	}
 
-	public List<Map> websiteList() {
-		List<Map> result = new ArrayList<Map>();
-		TrafficHttpStatistic maxStatTime = trafficHttpStatisticDao.getMaxStatTime();
-		if (maxStatTime != null) {
-			List<TrafficHttpStatistic> list = trafficHttpStatisticDao.websiteList(maxStatTime.getStatTime());
-			Long preCount = 0l;
-			if (list != null && list.size() > 0) {
-				for (TrafficHttpStatistic website : list) {
-					Map map = new HashMap();
-					map.put("webId", website.getWebId());
-					map.put("count", website.getCount());
-					map.put("pktNum", 0);
-					map.put("byteLen", 0);
-					preCount = trafficHttpStatisticDao.preWebsiteListCount(website.getWebId(),
-							maxStatTime.getStatTime());// 上个时段的量 用于与现在对比
-					if (preCount != null) {
-						map.put("preCount", preCount);
-					} else {
-						map.put("preCount", 0);
-					}
-					result.add(map);
-				}
-			}
-		}
-		return result;
-	}
+//	public List<Map> websiteList() {
+//		List<Map> result = new ArrayList<Map>();
+//		TrafficHttpStatistic maxStatTime = trafficHttpStatisticDao.getMaxStatTime();
+//		if (maxStatTime != null) {
+//			List<TrafficHttpStatistic> list = trafficHttpStatisticDao.websiteList(maxStatTime.getStatTime());
+//			Long preCount = 0l;
+//			if (list != null && list.size() > 0) {
+//				for (TrafficHttpStatistic website : list) {
+//					Map map = new HashMap();
+//					map.put("webId", website.getWebId());
+//					map.put("count", website.getCount());
+//					map.put("pktNum", 0);
+//					map.put("byteLen", 0);
+//					preCount = trafficHttpStatisticDao.preWebsiteListCount(website.getWebId(),
+//							maxStatTime.getStatTime());// 上个时段的量 用于与现在对比
+//					if (preCount != null) {
+//						map.put("preCount", preCount);
+//					} else {
+//						map.put("preCount", 0);
+//					}
+//					result.add(map);
+//				}
+//			}
+//		}
+//		return result;
+//	}
 
 	/**
 	 * 根据网站服务查询子域名
@@ -500,28 +500,53 @@ public class DashboardService extends BaseService {
 	 * @return list
 	 */
 	public List<Map> getDomainByWebsiteServiceId(Integer websiteServiceId) {
-		List<Map> list = new ArrayList<Map>();
-		TrafficHttpStatistic maxStatTime = trafficHttpStatisticDao.getMaxStatTime();
-		if (maxStatTime != null) {
-			Date statTime = maxStatTime.getStatTime();
-			list = trafficHttpStatisticDao.getDomainByWebsiteServiceId(websiteServiceId, statTime);
-			List webIdList = new ArrayList();
-			// 查询固定网站下的域名除了TOP10以外的others域名
-			if (list != null && list.size() > 0) {
-				for (Map map : list) {
-					webIdList.add(map.get("webId"));
+
+		Date statTime = getBeforeByHourTime(1);// 获取上一个小时
+
+		List idList = trafficHttpStatisticDao.getIdByWebSiteId(websiteServiceId);
+
+		List<Map> matchList = trafficHttpStatisticDao.getDomainByWebsiteServiceId(idList, statTime, new Date());// 获取webid和count的对应关系,key是webid,val是count
+// 获取webid和count的对应关系,key是webid,val是count
+		Set<Long> set = new HashSet<>();
+		Map<Long, List<Map>> countMap = new HashMap();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
+		for (Map map : matchList) {
+			String countStr = String.valueOf(map.get("count"));
+			long count = Long.parseLong(countStr);
+			set.add(count);
+			if (countMap.containsKey(count)) {// 将每个count和对应的viewmap放到map中,count可能相同所以value是list
+				countMap.get(count).add(map);
+			} else {
+				List<Map> listMap = new ArrayList<>();
+				listMap.add(map);
+				countMap.put(count, listMap);
+			}
+		}
+		List<Map> top10Data = getTop10Data(set, countMap);
+		List<String> notTop10List = new ArrayList<>();// 获取不在top10中的webid,用来查询标记为orther
+		for (Map map : matchList) {
+			String webIdStr = String.valueOf(map.get("webId"));
+			boolean exist = false;
+			for (Map map1 : top10Data) {
+				String webIdStr1 = String.valueOf(map1.get("webId"));
+				if (webIdStr1 != null && webIdStr != null && webIdStr1.equals(webIdStr)) {
+					exist = true;
 				}
-				if (list.size() > 10) {
-					Map others = new HashMap();
-					others = trafficHttpStatisticDao.websiteDomainOthers(webIdList, websiteServiceId, statTime);
-					if (others != null && others.size() > 0) {
-						others.put("webId", "-1");
-						list.add(others);
-					}
+				if (!exist) {
+					notTop10List.add(webIdStr);
 				}
 			}
 		}
-		return list;
+
+		// 查询固定网站下的域名除了TOP10以外的others域名
+		if (matchList != null && matchList.size() > 10) {
+			Map others = trafficHttpStatisticDao.websiteDomainOthers(notTop10List, statTime, new Date());
+			if (others != null && others.size() > 0) {
+				others.put("webId", "-1");
+				top10Data.add(others);
+			}
+		}
+		return top10Data;
+
 	}
 
 	/**
@@ -531,31 +556,71 @@ public class DashboardService extends BaseService {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Map> getDomainByWebsiteList() {
-		List<Map> result = new ArrayList<Map>();
-		TrafficHttpStatistic maxStatTime = trafficHttpStatisticDao.getMaxStatTime();
-		if (maxStatTime != null) {
-			Date statTime = maxStatTime.getStatTime();
-			List<TrafficHttpStatistic> websiteList = trafficHttpStatisticDao.getDomainByWebsiteList(statTime);
-			if (websiteList != null && websiteList.size() > 0) {
-				Long preCount = 0l;
-				for (TrafficHttpStatistic website : websiteList) {
-					Map map = new HashMap();
-					map.put("websiteServiceId", website.getWesiteServiceId());
-					map.put("count", website.getCount());
-					map.put("pktNum", 0);
-					map.put("byteLen", 0);
-					preCount = trafficHttpStatisticDao.preWebsiteListCount(website.getWesiteServiceId(), statTime);// 上个时段的量
-																													// 用于与现在对比
-					if (preCount != null) {
-						map.put("preCount", preCount);
-					} else {
-						map.put("preCount", 0);
-					}
-					result.add(map);
+		Date statTime = getBeforeByHourTime(1);// 获取上一个小时
+		Map<String, List<String>> websiteIdAndIdMap = new HashMap<>();// 存储websiteServiceId和id的对应关系,一个websiteServiceId有多个id
+		List<Map> websiteIdAndidList = trafficHttpStatisticDao.getDomainByWebsiteList(statTime, new Date());// 获取website_service_id和id的对应关系,group
+																											// by
+																											// website_service_id,id
+		for (Map map : websiteIdAndidList) {
+			Object websiteServiceIdObj = map.get("websiteServiceId");
+			Object idObj = map.get("id");
+			if (websiteServiceIdObj != null && idObj != null) {
+				if (websiteIdAndIdMap.containsKey(String.valueOf(websiteServiceIdObj))) {
+					websiteIdAndIdMap.get(String.valueOf(websiteServiceIdObj)).add(String.valueOf(idObj));
+				} else {
+					List<String> list = new ArrayList<>();
+					list.add(String.valueOf(idObj));
+					websiteIdAndIdMap.put(String.valueOf(websiteServiceIdObj), list);
 				}
 			}
 		}
-		return result;
+
+		Set<Long> set = new HashSet<>();
+		Map<Long, List<Map>> countAndViewMap = new HashMap<>();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
+		List<Map> webIdAndCountList = trafficHttpStatisticDao.preWebsiteListCount(statTime, new Date());// 获取最近一小时的webid和count的关系
+		List<Map> prevWebIdAndCountList = trafficHttpStatisticDao.preWebsiteListCount(getBeforeByHourTime(2), statTime);// 获取最近一小时的webid和count的关系
+		for (String websiteServiceId : websiteIdAndIdMap.keySet()) {// 遍历上面获取的websiteServiceId和id的对应关系,拼接json
+			Map viewMap = new HashMap<>();
+			long count = 0l;// 记录当前websiteServiceId所有的count
+			long prevCount = 0l;// 记录当前websiteServiceId所有的count
+			List<String> idList = websiteIdAndIdMap.get(websiteServiceId);// 根据websiteServiceId获取对应的id
+			for (String id : idList) {
+				for (Map webIdAndCountMap : webIdAndCountList) {// 遍历webid和count
+					String webId = String.valueOf(webIdAndCountMap.get("webId"));
+					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
+						String countStr = String.valueOf(webIdAndCountMap.get("count"));
+						if (countStr != null) {
+							count += Long.parseLong(countStr);// 将count累加
+						}
+					}
+				}
+				for (Map webIdAndCountMap : prevWebIdAndCountList) {// 遍历webid和count
+					String webId = String.valueOf(webIdAndCountMap.get("webId"));
+					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
+						String countStr = String.valueOf(webIdAndCountMap.get("count"));
+						if (countStr != null) {
+							prevCount += Long.parseLong(countStr);// 将count累加
+						}
+					}
+				}
+
+			}
+			viewMap.put("websiteServiceId", websiteServiceId);
+			viewMap.put("count", count);
+			viewMap.put("pktNum", 0);
+			viewMap.put("byteLen", 0);
+			viewMap.put("preCount", prevCount);
+
+			if (countAndViewMap.containsKey(count)) {// 将每个count和对应的viewmap放到map中,count可能相同所以value是list
+				countAndViewMap.get(count).add(viewMap);
+			} else {
+				List<Map> listMap = new ArrayList<>();
+				listMap.add(viewMap);
+				countAndViewMap.put(count, listMap);
+			}
+			set.add(count);
+		}
+		return getTop10Data(set, countAndViewMap);
 	}
 
 	/**
@@ -615,7 +680,5 @@ public class DashboardService extends BaseService {
 		}
 		return getTop10Data(set, countAndViewMap);
 	}
-
-	
 
 }
