@@ -161,8 +161,10 @@ CREATE TABLE `ui_code_protocol_type_dic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `protocol_type` varchar(255) DEFAULT '',
   `view_code` varchar(255) DEFAULT NULL,
+  `service_id` int(11) DEFAULT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@192.168.10.204:3306/gwall/code_protocol_type_dic';
+) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8  CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_protocol_type_dic';
 
 
 CREATE TABLE `ui_code_service_type_dic` (

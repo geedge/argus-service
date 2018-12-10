@@ -19,7 +19,9 @@ public interface TrafficHttpStatisticDao {
 	List<Map> getDomainByWebsiteServiceId(@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
 	Map websiteDomainOthers(@Param("webIdList") List webIdList,@Param("websiteServiceId") Integer websiteServiceId,@Param("statTime") Date statTime);
 
-	List<Map> getDomainByTopicList(@Param("statTime") Date statTime);
+	List<Map> getDomainByTopicList(@Param("statTime") Date statTime,@Param("endTime")Date endTime);
+	
+	List<Map> getUiWebsiteDomainTopicList( );
 
-	List<Map> getDomainByTopicId(@Param("topicId")Object TopicId,@Param("statTime")Date statTime);
+	List<Map> getDomainByTopicId( @Param("statTime")Date statTime ,@Param("endTime")Date endTime);
 }
