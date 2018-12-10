@@ -23,7 +23,7 @@
  <select id="getTotalReportList" resultType="java.util.HashMap">
     SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
     SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM ntc_total_report
-    where report_time > DATE_SUB(#{reportTime}, INTERVAL 1 HOUR)
+    where report_time = #{reportTime}
   </select>
   
   <!-- 获取带宽最近时间 -->
