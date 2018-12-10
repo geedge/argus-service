@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.nis.web.dao.SystemHomePageDao">
+
+	<!-- 地域流量 -->
+	<select id="getTrafficAreaStatList" resultType="com.nis.domain.restful.NtcAreaHomeReport"
+		useCache="false" flushCache="true">
+		SELECT
+		device.entrance_id entranceId,
+		CASE device.entrance_id
+		WHEN 1 THEN
+		'阿斯塔纳'
+		WHEN 2 THEN
+		'阿拉木图'
+		ELSE
+		- 1
+		END AS area,
+		(netflow.INOCTETS_SPEED+
+		netflow.OUTOCTETS_SPEED) as sum,
+		netflow.RECV_TIME reportTime
+		FROM
+		ntc_device_info device
+		LEFT JOIN (
+		SELECT
+		netflow.INOCTETS_SPEED
+		INOCTETS_SPEED,
+		netflow.OUTOCTETS_SPEED
+		OUTOCTETS_SPEED,
+		netflow.RECV_TIME,
+		netflow.NODE_IP
+		FROM
+		traffic_netflow_port_info netflow
+		<where>
+			<if
+				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
+				netflow.RECV_TIME&gt;#{startTime}
+				and
+				netflow.RECV_TIME&lt;=#{endTime}
+			</if>
+		</where>
+		) netflow
+		ON device.manager_ip = netflow.NODE_IP
+		WHERE
+		netflow.RECV_TIME
+		IS NOT
+		NULL
+	</select>
+
+
+	<!-- 配置日志TOP统计 -->
+	<select id="getCfgSortLogStatList" resultType="com.nis.domain.restful.CfgLogInfo"
+		useCache="false" flushCache="true">
+		SELECT
+		dic.service_code as serviceCode,
+		sum(service.sum) as sum,
+		dic.service_name_zh as serviceNameZh,
+		dic.service_name_en as
+		serviceNameEn,
+		dic.service_name_ru as serviceNameRu,
+		service.report_time as reportTime
+		FROM
+		ntc_service_report
+		service,ntc_service_dic dic
+		WHERE
+		service.service =
+		dic.service_code
+		and
+		<if
+			test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
+			service.report_time&gt;#{startTime} and
+			service.report_time&lt;=#{endTime}
+		</if>
+		GROUP BY
+		service.report_time,
+		service.service
+		ORDER BY
+		service.report_time ASC,
+		service.sum DESC
+	</select>
+
+	<!-- 丢弃量 -->
+	<!-- 总量 -->
+	<select id="getBlockAndDropStatListAll" resultType="com.nis.domain.restful.DropInfo"
+		useCache="false" flushCache="true">
+		SELECT
+		'drop' AS label,
+		IFNULL(
+		(
+		sum(reject_num) + SUM(drop_conn_num)
+		),
+		0
+		) AS sum,#{startTime} as reportTime
+		FROM
+		ntc_total_report
+		<where>
+			<if
+				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
+				report_time&gt;#{startTime} and
+				report_time&lt;=#{endTime}
+			</if>
+		</where>
+		order by report_time
+		asc;
+	</select>
+
+	<!-- 五分钟业务 -->
+	<select id="getBlockAndDropStatListMinute" resultType="com.nis.domain.restful.DropInfo"
+		useCache="false" flushCache="true">
+		SELECT
+		'drop' AS label,
+		IFNULL(
+		(
+		sum(reject_num) + SUM(drop_conn_num)
+		),
+		0
+		) AS sum,report_time as reportTime
+		FROM
+		ntc_total_report
+		<where>
+			<if
+				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
+				report_time&gt;#{startTime} and
+				report_time&lt;=#{endTime}
+			</if>
+		</where>
+		GROUP BY report_time
+		order by report_time
+		asc;
+	</select>
+</mapper>
