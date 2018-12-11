@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -22,6 +23,10 @@ public class NtcMailLog extends LogEntity{
     protected String emlKey;
     @ApiModelProperty(value="EML文件转储路径", required=true)
     protected String emlFile;
+    
+    protected String searchMailFrom;	//发件人
+    protected String searchMailTo; 	//收件人
+    protected String searchSubject;		//主题
 
     public String getMailProto() {
         return mailProto;
@@ -77,4 +82,25 @@ public class NtcMailLog extends LogEntity{
 		this.emlKey = emlKey;
 	}
 	
+	public void setSearchMailFrom(String searchMailFrom) {
+		this.searchMailFrom = searchMailFrom;
+	}
+	@JsonIgnore
+	public String getSearchMailFrom() {
+		return searchMailFrom;
+	}
+	public void setSearchMailTo(String searchMailTo) {
+		this.searchMailTo = searchMailTo;
+	}
+	@JsonIgnore
+	public String getSearchMailTo() {
+		return searchMailTo;
+	}
+	public void setSearchSubject(String searchSubject) {
+		this.searchSubject = searchSubject;
+	}
+	@JsonIgnore
+	public String getSearchSubject() {
+		return searchSubject;
+	}
 }

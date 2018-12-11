@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -168,7 +169,7 @@ public class LogDataService {
 									if (field.equals("url")) {
 										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
 									} else {
-										whereSB.append(" and " + field + "='" + value.toString().trim() + "'");
+										whereSB.append(" and " + field + "='" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
 									}
 								} else if (type.equals("java.lang.Integer") || type.equals("int")
 										|| type.equals("java.lang.Long") || type.equals("long")) {
