@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.nis.domain.LogEntity;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
 /**
@@ -178,6 +179,7 @@ public class NtcCollectVoipLog implements Serializable{
 		this.pid = pid;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getFoundTime() {
 		return foundTime;
 	}
@@ -186,6 +188,7 @@ public class NtcCollectVoipLog implements Serializable{
 		this.foundTime = foundTime;
 	}
 
+	@JsonSerialize(using = JsonDateSerializer.class)
 	public Date getRecvTime() {
 		return recvTime;
 	}
