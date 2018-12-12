@@ -30,7 +30,7 @@
   <select id="getAppList" resultType="java.util.HashMap">
 	SELECT IFNULL(c.app_name,p.app_type) appName,p.app_type appType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
 	SELECT app_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
-	(SUM(c2s_byte_len+s2c_byte_len)/300/1024/1024/1024) AS GByte 
+	((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte 
 	FROM traffic_app_statistic WHERE
 	<if test="beginTime==null or endTime==null">
 			stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
