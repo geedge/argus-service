@@ -23,7 +23,7 @@
  <select id="getTotalReportList" resultType="java.util.HashMap">
     SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
     SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM ntc_total_report
-    where report_time = #{reportTime}
+    where report_time  > DATE_SUB(#{reportTime},INTERVAL 1 hour)
   </select>
   
   <!-- 获取带宽最近时间 -->
@@ -45,7 +45,7 @@
     
   </select>
   <!-- 获取近五分钟的带宽根据ip46，协议 tcp,udp变化 -->
- <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
+<!--  <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
 	select IFNULL(p.gbps,0) gbps,IFNULL(p.pps,0) pps,IFNULL(p.sumNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
 	(select date_sub(#{statTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
 	from (SELECT @mycnt:=-5) m, traffic_trans_statistic limit 12) a
@@ -68,7 +68,21 @@
 	) p 
 	on date_format(p.timestamp,'%Y-%m-%d %H:%i')=date_format(a.min5,'%Y-%m-%d %H:%i')
 	ORDER by time
-  </select>
+  </select> -->
+  <!-- 获取近一小时的带宽根据ip46，协议 tcp,udp变化  -->
+<select id="getBandwidthTrans" resultMap="BandwidthResultMap">
+	select IFNULL(SUM(c2s_byte_len+s2c_byte_len),0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num),0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time time from traffic_trans_statistic
+	where <![CDATA[stat_time<=#{endDate} and stat_time>=#{beginDate}]]>
+	<if test="addrType != null">
+		and addr_type=#{addrType}
+	</if>
+	<if test="transType != null">
+		and trans_type=${transType}
+	</if>
+	and entrance_id=#{entranceId}
+	group by stat_time order by stat_time
+</select>
+
 
   <!-- 获取报表最近时间 -->
   <select id="getEntranceMaxReportTime" resultType="java.util.HashMap">

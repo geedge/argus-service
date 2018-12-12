@@ -73,7 +73,7 @@ public class DashboardService extends BaseService {
 	 * @param transType
 	 * @return
 	 */
-	public List<HashMap> getBandwidthTrans(String addrType, Integer transType) {
+/*	public List<HashMap> getBandwidthTrans(String addrType, Integer transType,String beginDate,String endDate) {
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 		List<TrafficTransStatistic> bandwidthList = new ArrayList<TrafficTransStatistic>();
 		Map maxStatTime = ntcTotalReportDao.getMaxStatTime();
@@ -108,8 +108,172 @@ public class DashboardService extends BaseService {
 			listMap.add(m);
 		}
 		return listMap;
+	}*/
+	/**
+	 * 根据ip46,协议tcp，udp查询带宽
+	 * 
+	 * @param addrType
+	 * @param transType
+	 * @return
+	 */
+	public List<HashMap> getBandwidthTrans(String addrType, Integer transType,String beginDate,String endDate){
+		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
+		
+		HashMap m1 = getBandwidthTransEntrance(addrType, transType, beginDate, endDate, 1);
+		if(m1!=null&&m1.size()>0) {
+			m1.put("entranceId", 1);// 局点1.2 不同来源
+			listMap.add(m1);
+		}
+		return listMap;
+		
+	}
+	/**
+	 * 根据ip46,协议tcp，udp查询带宽
+	 * 
+	 * @param addrType
+	 * @param transType
+	 * @return
+	 */
+	public List<HashMap> getBandwidthTrans2(String addrType, Integer transType,String beginDate,String endDate){
+		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
+		
+		HashMap m2 = getBandwidthTransEntrance(addrType, transType, beginDate, endDate, 2);
+		if(m2!=null&&m2.size()>0) {
+			m2.put("entranceId", 2);
+			listMap.add(m2);
+		}
+		return listMap;
+		
+	}
+	
+	/**
+	 *查询单个局点流量的数据信息
+	 * @param addrType
+	 * @param transType
+	 * @param beginDate
+	 * @param endDate
+	 * @param entranceId
+	 * @return
+	 */
+	public HashMap getBandwidthTransEntrance(String addrType, Integer transType,String beginDate,String endDate,Integer entranceId) {
+		long start = System.currentTimeMillis();
+		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
+		List<TrafficTransStatistic> bandwidthList = new ArrayList<TrafficTransStatistic>();
+			HashMap resulMap = new HashMap();
+			bandwidthList = ntcTotalReportDao.getBandwidthTrans(entranceId,beginDate,endDate,addrType, transType);
+			List timeList = new ArrayList();
+			List linkList = new ArrayList();
+			List gbpsList = new ArrayList();
+			List ppsList = new ArrayList();
+			if (bandwidthList != null && bandwidthList.size() > 0) {
+				Map<String, Comparable> m= new HashMap<String, Comparable>();
+				int inter=1000*60*5;// 间隔时间为五分钟
+				// 开始时间，结束时间 时间戳
+				Long b = dateToStamp(endDate);
+				Long e = dateToStamp(beginDate);
+				int num=0;
+				Long pointTime=b;
+				while(pointTime>e){
+					Map rm=new HashMap();
+					Long sumL=0l;
+					Long sumP=0l;
+					Long sumG=0l;
+					if(pointTime<e){
+						break; //停止 
+					}
+					for (TrafficTransStatistic tt : bandwidthList) {
+						// 实际时间 
+						String time= tt.getTime();
+						Long t = dateToStamp(time);
+						if(t>=pointTime&&t<pointTime+inter){
+							// 范围之内分到此pointTime组
+							sumL=sumL+ tt.getLinkNum();
+							sumP=sumP+ tt.getPps();
+							sumG=sumG+ tt.getGbps();
+						}
+					}
+					timeList.add(stampToDate(pointTime));
+					linkList.add(sumL);
+					gbpsList.add(sumG);
+					ppsList.add(sumP);
+					num=num+1;
+					pointTime =b-inter*num;
+				}
+				resulMap.put("linkNum", linkList);
+				resulMap.put("gbps", gbpsList);
+				resulMap.put("pps", ppsList);
+				resulMap.put("statTime", timeList);
+		}
+			return resulMap;
 	}
 
+	/**
+	 * 将结果格式为时间间隔相同，数量补0数据
+	 * @param begin
+	 * @param end
+	 * @param li
+	 * @return
+	 */
+	public static List<Map> formatDateData(String begin,String end, List<Map> li){
+		List<Map> resList = new ArrayList<Map>();
+		Map<String, Comparable> m= new HashMap<String, Comparable>();
+		int inter=1000*60*60;// 间隔时间为一小时
+		// 开始时间，结束时间 时间戳
+		Long b = dateToStamp(begin);
+		Long e = dateToStamp(end);
+		int num=0;
+		Long pointTime=b;
+		while(pointTime>e){
+			Map rm=new HashMap();
+			Long sum=0l;
+			if(pointTime<e){
+				break; //停止 
+			}
+			for (Map<?, ?> map : li) {
+				// 实际时间 
+				String time=(String) map.get("time");
+				Long t = dateToStamp(time);
+				if(t>=pointTime&&t<pointTime+inter){
+					// 范围之内分到此pointTime组
+					sum=sum+(Long) map.get("count");
+				}
+			}
+			rm.put("time", stampToDate(pointTime));
+			rm.put("sum", sum);
+			num=num+1;
+			pointTime =b-inter*num;
+			resList.add(rm);
+		}
+		return resList;
+	}
+    /** 
+     * 日期格式字符串转换成时间戳 
+     * @param date 字符串日期 
+     * @param format 如：yyyy-MM-dd HH:mm:ss 
+     * @return 
+     */  
+    public static Long dateToStamp(String date_str){
+        try {  
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            return sdf.parse(date_str).getTime();  
+        } catch (Exception e) {
+            e.printStackTrace();
+        }  
+        return 0l;
+    }
+    /** 
+     * 时间戳 换成日期格式字符串转
+     * @param 时间 1544602212000
+     * @param format 如：yyyy-MM-dd HH:mm:ss 
+     * @return 
+     */ 
+    public static String stampToDate(long timeStamp){
+    	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//这个是你要转成后的时间的格式
+    	String sd = sdf.format(new Date(timeStamp));   // 时间戳转换成时间
+    	return sd;
+    }
+	
+	
 	/**
 	 * 根据service 动作查询近五分钟变化趋势 entrance 默认为1,2
 	 */

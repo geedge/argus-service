@@ -1,6 +1,9 @@
 package com.nis.web.controller.restful;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +23,7 @@ import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.ExceptionUtil;
 import com.nis.util.JsonMapper;
+import com.nis.util.StringUtils;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -90,13 +94,49 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficBandwidthTrans", method = RequestMethod.GET)
 	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
-	public Map<String,?> trafficBandwidthTrans(String addrType,Integer transType,Model model, HttpServletRequest request, HttpServletResponse response) {
-		
+	public Map<String,?> trafficBandwidthTrans(String beginDate,String endDate,String addrType,Integer transType,Model model, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<HashMap> resultList = dashboardService.getBandwidthTrans(addrType, transType);
+			if(StringUtils.isEmpty(beginDate)||StringUtils.isEmpty(endDate)) {
+				Calendar cal = Calendar. getInstance ();
+		        cal.setTime(new Date());
+		        endDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());//获取到完整的时间
+		        cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+		        beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
+			}
+			List<HashMap> resultList = dashboardService.getBandwidthTrans(addrType, transType,beginDate,endDate);
+			if (resultList!=null&&resultList.size() > 0) {
+				list = resultList;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			logger.error("带宽实时统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
+			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+					"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",list, 0);
+	}
+	/**
+	 *  根据ip46,协议tcp，udp查询带宽
+	 */
+	@RequestMapping(value = "trafficBandwidthTransTwo", method = RequestMethod.GET)
+	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
+	public Map<String,?> trafficBandwidthTransTow(String beginDate,String endDate,String addrType,Integer transType,Model model, HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<HashMap> list = new ArrayList<HashMap>();
+		try {
+			if(StringUtils.isEmpty(beginDate)||StringUtils.isEmpty(endDate)) {
+				Calendar cal = Calendar. getInstance ();
+				cal.setTime(new Date());
+				endDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());//获取到完整的时间
+				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+				beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
+			}
+			List<HashMap> resultList = dashboardService.getBandwidthTrans2(addrType, transType,beginDate,endDate);
 			if (resultList!=null&&resultList.size() > 0) {
 				list = resultList;
 			}
