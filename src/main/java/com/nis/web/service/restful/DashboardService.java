@@ -199,6 +199,10 @@ public class DashboardService extends BaseService {
 					num=num+1;
 					pointTime =b-inter*num;
 				}
+				Collections.reverse(linkList);
+				Collections.reverse(gbpsList);
+				Collections.reverse(ppsList);
+				Collections.reverse(timeList);
 				resulMap.put("linkNum", linkList);
 				resulMap.put("gbps", gbpsList);
 				resulMap.put("pps", ppsList);
