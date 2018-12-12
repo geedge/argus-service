@@ -36,7 +36,7 @@ NtcStreamingMediaLogHiveTable=singhand_NTC_STREAMING_MEDIA_LOG
 MmFileDigestLogHiveTable=singhand_MM_FILE_DIGEST_LOG
 NtcKeywordsUrlLogHiveTable=singhand_NTC_KEYWORDS_URL_LOG
 NtcCollectVoipLogHiveTable=singhand_NTC_COLLECT_VOIP_LOG
-
+NtcCollectRadiusLogHiveTable=singhand_NTC_COLLECT_RADIUS_LOG
 
 
 
