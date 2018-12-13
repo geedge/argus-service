@@ -70,13 +70,20 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "ntcActionEntranceReport", method = RequestMethod.GET)
 	@ApiOperation(value = "根据不同动作统计总量汇聚", httpMethod = "GET", notes = "对应流量统计info滚动条动作类型详情数据显示")
-	public Map<String,?> ntcTotalReport(Model model, HttpServletRequest request, HttpServletResponse response,String searchAction) {
+	public Map<String,?> ntcTotalReport(Model model, HttpServletRequest request, HttpServletResponse response,String searchAction,String beginDate,String endDate) {
 
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			 List<HashMap> resultList = dashboardService.getActionTrans(searchAction);
+			if(StringUtils.isEmpty(beginDate)||StringUtils.isEmpty(endDate)) {
+				Calendar cal = Calendar. getInstance ();
+				cal.setTime(new Date());
+				endDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());//获取到完整的时间
+				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+				beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
+			}
+			 List<HashMap> resultList = dashboardService.getActionTrans(beginDate,endDate,searchAction);
 				if (resultList!=null&&resultList.size() > 0) {
 					list = resultList;
 			}
@@ -206,12 +213,12 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value="trafficProtocolList", method = RequestMethod.GET)
 	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
-	public Map<String,?> trafficProtocolList(String searchFoundStartTime,String searchFoundEndTime,Model model, HttpServletRequest request, HttpServletResponse response){
+	public Map<String,?> trafficProtocolList(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response){
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> ipActiveList = dashboardService.getProtocolList(searchFoundStartTime,searchFoundEndTime);
+			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate,endDate);
 			if (ipActiveList!=null&&ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
@@ -329,12 +336,12 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value="trafficAppList", method = RequestMethod.GET)
 	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
-	public Map<String,?> trafficAppList(String searchFoundStartTime,String searchFoundEndTime,Model model, HttpServletRequest request, HttpServletResponse response){
+	public Map<String,?> trafficAppList(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response){
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> appList = dashboardService.getAppList(searchFoundStartTime,searchFoundEndTime);
+			List<Map> appList = dashboardService.getAppList(beginDate,endDate);
 			if (appList!=null&&appList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(appList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);

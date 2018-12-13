@@ -19,5 +19,5 @@ public interface NtcTotalReportDao {
 	List<TrafficTransStatistic> getBandwidthTrans(@Param("entranceId") Integer entranceId,@Param("beginDate") String beginDate,@Param("endDate") String endDate,@Param("addrType") String addrType,@Param("transType") Integer transType);
 	
 	Map getEntranceMaxReportTime();
-	List<NtcEntranceReport> getActionTrans(@Param("reportTime") Date reportTime,@Param("entranceId") Integer entranceId,@Param("serviceSql") String serviceSql);
+	List<NtcEntranceReport> getActionTrans(@Param("beginDate") String beginDate,@Param("endDate") String endDate ,@Param("entranceId") Integer entranceId,@Param("serviceSql") String serviceSql);
 }

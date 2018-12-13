@@ -89,7 +89,7 @@
   	SELECT report_time reportTime FROM ntc_entrance_report order by report_time desc limit 1
   </select>
 <!-- entrance 1,2 ,动作为阻断，近五分钟数据 -->
-<select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">
+<!-- <select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">
 	select IFNULL(p.sumNum,0) sum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
 	(select date_sub(#{reportTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
 	from (SELECT @mycnt:=-5) m, ntc_entrance_report limit 12) a
@@ -103,5 +103,12 @@
 	) p 
 	on date_format(p.timestamp,'%Y-%m-%d %H:%i')=date_format(a.min5,'%Y-%m-%d %H:%i')
 	ORDER by time
+</select> -->
+<!-- entrance 1,2 ,动作为阻断，近一小时 间隔5分钟数据 -->
+<select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">
+	select sum(sum) sum,report_time time from ntc_entrance_report r where
+	<![CDATA[${serviceSql} and report_time<=#{endDate} and report_time>=#{beginDate}]]>
+	and entrance_id=#{entranceId}
+	group by report_time order by report_time
 </select>
 </mapper>

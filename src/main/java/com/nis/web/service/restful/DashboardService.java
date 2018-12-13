@@ -169,16 +169,16 @@ public class DashboardService extends BaseService {
 				Map<String, Comparable> m= new HashMap<String, Comparable>();
 				int inter=1000*60*5;// 间隔时间为五分钟
 				// 开始时间，结束时间 时间戳
-				Long b = dateToStamp(endDate);
-				Long e = dateToStamp(beginDate);
+				Long b = dateToStamp(beginDate);
+				Long e = dateToStamp(endDate);
 				int num=0;
 				Long pointTime=b;
-				while(pointTime>e){
+				while(pointTime<e){
 					Map rm=new HashMap();
 					Long sumL=0l;
 					Long sumP=0l;
 					Long sumG=0l;
-					if(pointTime<e){
+					if(pointTime>=e){
 						break; //停止 
 					}
 					for (TrafficTransStatistic tt : bandwidthList) {
@@ -192,17 +192,29 @@ public class DashboardService extends BaseService {
 							sumG=sumG+ tt.getGbps();
 						}
 					}
-					timeList.add(stampToDate(pointTime));
-					linkList.add(sumL);
-					gbpsList.add(sumG);
-					ppsList.add(sumP);
+					// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
+					if(pointTime>=e-inter&&sumL>0) {
+						linkList.add(sumL);
+					}
+					if(pointTime>=e-inter&&sumP>0) {
+						ppsList.add(sumP);
+					}
+					if(pointTime>=e-inter&&sumG>0) {
+						gbpsList.add(sumG);
+					}
+					if(pointTime>=e-inter&&(sumL>0||sumG>0||sumP>0)) {
+						timeList.add(stampToDate(pointTime));
+					}
+					if(pointTime<e-inter) {
+						timeList.add(stampToDate(pointTime));
+						linkList.add(sumL);
+						gbpsList.add(sumG);
+						ppsList.add(sumP);
+					}
+					
 					num=num+1;
-					pointTime =b-inter*num;
+					pointTime =b+inter*num;
 				}
-				Collections.reverse(linkList);
-				Collections.reverse(gbpsList);
-				Collections.reverse(ppsList);
-				Collections.reverse(timeList);
 				resulMap.put("linkNum", linkList);
 				resulMap.put("gbps", gbpsList);
 				resulMap.put("pps", ppsList);
@@ -227,10 +239,10 @@ public class DashboardService extends BaseService {
 		Long e = dateToStamp(end);
 		int num=0;
 		Long pointTime=b;
-		while(pointTime>e){
+		while(pointTime<e){
 			Map rm=new HashMap();
 			Long sum=0l;
-			if(pointTime<e){
+			if(pointTime>=e){
 				break; //停止 
 			}
 			for (Map<?, ?> map : li) {
@@ -245,7 +257,7 @@ public class DashboardService extends BaseService {
 			rm.put("time", stampToDate(pointTime));
 			rm.put("sum", sum);
 			num=num+1;
-			pointTime =b-inter*num;
+			pointTime =b+inter*num;
 			resList.add(rm);
 		}
 		return resList;
@@ -281,7 +293,7 @@ public class DashboardService extends BaseService {
 	/**
 	 * 根据service 动作查询近五分钟变化趋势 entrance 默认为1,2
 	 */
-	public List<HashMap> getActionTrans(String serviceType) {
+	public List<HashMap> getActionTrans(String begin,String end,String serviceType) {
 		String sql = "";
 		String sqlBlock = "((service>=16 and service<=40) or (service>=258 and service<=273) or (service=576))"; // 阻断
 		String sqlMonitor = "((service>=128 and service<=152) or (service>=384 and service<=513) or (service=592) or (service>=848 and service<=1030) or (service=1152))"; // 监测
@@ -297,36 +309,65 @@ public class DashboardService extends BaseService {
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 		List<NtcEntranceReport> entrance1 = new ArrayList<NtcEntranceReport>();
 		List<NtcEntranceReport> entrance2 = new ArrayList<NtcEntranceReport>();
-		Map maxReportTime = ntcTotalReportDao.getEntranceMaxReportTime();
-		if (maxReportTime != null && maxReportTime.get("reportTime") != null) {
-			Date reportTime = (Date) maxReportTime.get("reportTime");
 			HashMap m1 = new HashMap();
 			HashMap m2 = new HashMap();
-			entrance1 = ntcTotalReportDao.getActionTrans(reportTime, 1, sql);
-			entrance2 = ntcTotalReportDao.getActionTrans(reportTime, 2, sql);
+			entrance1 = ntcTotalReportDao.getActionTrans(begin,end, 1, sql);
+			entrance2 = ntcTotalReportDao.getActionTrans(begin,end, 2, sql);
 			List timeList = new ArrayList();
 			List sumList1 = new ArrayList();
 			List sumList2 = new ArrayList();
-			// entrance 为1的趋势
-			if (entrance1 != null && entrance1.size() > 0) {
-				for (NtcEntranceReport tt : entrance1) {
-					if (tt.getTime() != null && tt.getSum() != null) {
-						timeList.add(tt.getTime());
-						sumList1.add(tt.getSum());
-
+			
+			Map<String, Comparable> m= new HashMap<String, Comparable>();
+			int inter=1000*60*5;// 间隔时间为五分钟
+			// 开始时间，结束时间 时间戳
+			Long b = dateToStamp(begin);
+			Long e = dateToStamp(end);
+			int num=0;
+			Long pointTime=b;
+			while(pointTime<e){
+				Map rm=new HashMap();
+				Long sum1=0l;
+				Long sum2=0l;
+				if(pointTime>=e){
+					break; //停止 
+				}
+				for (NtcEntranceReport e1 : entrance1) {
+					// 实际时间 
+					String time= e1.getTime();
+					Long t = dateToStamp(time);
+					if(t>=pointTime&&t<pointTime+inter){
+						// 范围之内分到此pointTime组
+						sum1=sum1+ e1.getSum();
 					}
 				}
-			}
-			// entrance 为2的趋势
-			if (entrance2 != null && entrance2.size() > 0) {
-				for (NtcEntranceReport tt : entrance2) {
-					if (tt.getTime() != null && tt.getSum() != null) {
-//						timeList.add(tt.getTime());
-						sumList2.add(tt.getSum());
+				for (NtcEntranceReport e2 : entrance2) {
+					// 实际时间 
+					String time= e2.getTime();
+					Long t = dateToStamp(time);
+					if(t>=pointTime&&t<pointTime+inter){
+						// 范围之内分到此pointTime组
+						sum2=sum2+ e2.getSum();
 					}
 				}
+				// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
+				if(pointTime>=e-inter&&sum1>0) {
+					sumList1.add(sum1);
+				}
+				if(pointTime>=e-inter&&sum2>0) {
+					sumList2.add(sum2);
+				}
+				if(pointTime>=e-inter&&(sum1>0||sum2>0)) {
+					timeList.add(stampToDate(pointTime));
+				}
+				if(pointTime<e-inter) {
+					sumList1.add(sum1);
+					sumList2.add(sum2);
+					timeList.add(stampToDate(pointTime));
+				}
+				num=num+1;
+				pointTime =b+inter*num;
 			}
-			m1.put("count", sumList1);// [{time:[],link:[],link2:[]}]
+			m1.put("count", sumList1);
 			m1.put("statTime", timeList);
 			m1.put("entranceId", 1);
 			m2.put("count", sumList2);// [{link1:[],time:[],entrance:"1"},]
@@ -334,7 +375,6 @@ public class DashboardService extends BaseService {
 			m2.put("entranceId", 2);
 			listMap.add(m1);
 			listMap.add(m2);
-		}
 		return listMap;
 	}
 
