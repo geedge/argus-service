@@ -23,7 +23,7 @@
   <!--获取操作系统列表TOP10  -->
     <select id="systemList" resultMap="BaseResultMap">
     SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
-	WHERE stat_time > DATE_SUB(#{statTime}, INTERVAL 1 HOUR) 
+	WHERE stat_time > DATE_SUB(#{statTime}, INTERVAL 1 HOUR) and os_type!=0
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--获取上个时间段操作系统的数据量  -->
@@ -36,7 +36,7 @@
   <!-- 根据操作系统获取浏览器分类 -->
   <select id="getBrowserBySystem" resultType="java.util.HashMap">
     SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
-	WHERE os_type=#{osType} and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
+	WHERE os_type=#{osType} and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)  and bs_type!=0
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--浏览器TOP10后所有为others -->
@@ -54,7 +54,7 @@
   <!--获取浏览器列表TOP10  -->
   <select id="browserList" resultMap="BaseResultMap">
     SELECT bs_type bsType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
-	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) 
+	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)  and bs_type!=0
 	GROUP BY bs_type ORDER BY count DESC limit 0,10
   </select>
     <!--获取上个时间段浏览器的数据量  -->
@@ -66,7 +66,7 @@
   <!-- 根据浏览器获取操作系统分类 -->
     <select id="getSystemBybrowser" resultType="java.util.HashMap">
     SELECT os_type osType, SUM(c2s_byte_len+s2c_byte_len) count  FROM traffic_ua_statistic
-	WHERE bs_type=#{bsType} and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
+	WHERE bs_type=#{bsType} and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) and os_type!=0
 	GROUP BY os_type ORDER BY count DESC limit 0,10
   </select>
   <!--操作系统TOP10后所有为others -->
