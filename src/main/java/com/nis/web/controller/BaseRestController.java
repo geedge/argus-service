@@ -326,27 +326,23 @@ public class BaseRestController {
 		if (need != opAction) {
 			switch (need) {
 			case Constants.OPACTION_POST:
-				throw new RestServiceException(thread, time,
-						"操作行为错误,您使用的是POST请求,POST请求对应的opAction为" + Constants.OPACTION_POST + ",您请求中的opAction为" + opAction
+				throw new RestServiceException("操作行为错误,您使用的是POST请求,POST请求对应的opAction为" + Constants.OPACTION_POST + ",您请求中的opAction为" + opAction
 								+ ",对应的请求方式为" + convertOpAction(opAction) + "!",
 						RestBusinessCode.op_action_error.getValue());
 			case Constants.OPACTION_PUT:
-				throw new RestServiceException(thread, time,
-						"操作行为错误,您使用的是PUT请求,PUT请求对应的opAction为" + Constants.OPACTION_PUT + ",您请求中的opAction为" + opAction
+				throw new RestServiceException("操作行为错误,您使用的是PUT请求,PUT请求对应的opAction为" + Constants.OPACTION_PUT + ",您请求中的opAction为" + opAction
 								+ ",对应的请求方式为" + convertOpAction(opAction) + "!",
 						RestBusinessCode.op_action_error.getValue());
 			case Constants.OPACTION_DELETE:
-				throw new RestServiceException(thread, time,
-						"操作行为错误,您使用的是DELETE请求,DELETE请求对应的opAction为" + Constants.OPACTION_DELETE + ",您请求中的opAction为"
+				throw new RestServiceException("操作行为错误,您使用的是DELETE请求,DELETE请求对应的opAction为" + Constants.OPACTION_DELETE + ",您请求中的opAction为"
 								+ opAction + ",对应的请求方式为" + convertOpAction(opAction) + "!",
 						RestBusinessCode.op_action_error.getValue());
 			case Constants.OPACTION_GET:
-				throw new RestServiceException(thread, time,
-						"操作行为错误,您使用的是GET请求,GET请求对应的opAction为" + Constants.OPACTION_GET + ",您请求中的opAction为" + opAction
+				throw new RestServiceException("操作行为错误,您使用的是GET请求,GET请求对应的opAction为" + Constants.OPACTION_GET + ",您请求中的opAction为" + opAction
 								+ ",对应的请求方式为" + convertOpAction(opAction) + "!",
 						RestBusinessCode.op_action_error.getValue());
 			default:
-				throw new RestServiceException(thread, time, "操作行为错误,未找到属性opAction对应业务！",
+				throw new RestServiceException("操作行为错误,未找到属性opAction对应业务！",
 						RestBusinessCode.op_action_error.getValue());
 			}
 		}

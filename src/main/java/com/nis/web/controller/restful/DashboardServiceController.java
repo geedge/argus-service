@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.restful.RestBusinessCode;
+import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.ExceptionUtil;
@@ -57,11 +58,19 @@ public class DashboardServiceController extends BaseRestController {
 					list = resultList;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("业务总量汇聚实时统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"业务总量汇聚实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("业务总量汇聚实时统计数据检索失败:"+e.getMessage());
+			logger.error("业务总量汇聚实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"业务总量汇聚实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"业务总量汇聚实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"业务总量汇聚实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+			
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "业务总量汇聚实时统计数据检索成功",list, 0);
 	}
@@ -88,11 +97,18 @@ public class DashboardServiceController extends BaseRestController {
 					list = resultList;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("动作趋势分析统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"动作趋势分析统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("动作趋势分析统计数据检索失败:"+e.getMessage());
+			logger.error("动作趋势分析统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"动作趋势分析统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"动作趋势分析统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"动作趋势分析统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "动作趋势分析统计数据检索成功",list, 0);
 	}
@@ -118,11 +134,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = resultList;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("带宽实时统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());
+			logger.error("带宽实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",list, 0);
 	}
@@ -148,11 +171,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = resultList;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("带宽实时统计数据检索失败"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());
+			logger.error("带宽实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",list, 0);
 	}
@@ -173,11 +203,18 @@ public class DashboardServiceController extends BaseRestController {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			auditLogThread.setExceptionInfo("活跃端口实时统计数据检索失败:"+e.getMessage());
 			logger.error("活跃端口实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"活跃端口实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃端口实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃端口实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃端口实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃端口实时统计数据检索成功",list, 0);
 	}
@@ -199,11 +236,18 @@ public class DashboardServiceController extends BaseRestController {
 					list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			auditLogThread.setExceptionInfo("协议统计图表数据检索失败:"+e.getMessage());
 			logger.error("协议统计图表数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"协议统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"协议统计图表数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"协议统计图表数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"协议统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "协议统计图表数据检索成功",
 				list, 0);
@@ -224,13 +268,20 @@ public class DashboardServiceController extends BaseRestController {
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("协议统计图表数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"协议统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("协议统计占比与报表检索失败:"+e.getMessage());
+			logger.error("协议统计占比与报表检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"协议统计占比与报表检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"协议统计占比与报表检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"协议统计占比与报表检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "协议统计图表数据检索成功",
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "协议统计占比与报表检索成功",
 				list, 0);
 	}
 	
@@ -251,11 +302,18 @@ public class DashboardServiceController extends BaseRestController {
 					list = ipActiveChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			auditLogThread.setExceptionInfo("活跃IP实时统计数据检索失败:"+e.getMessage());
 			logger.error("活跃IP实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"活跃IP实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP实时统计数据检索成功",list, 0);
 	}
@@ -275,11 +333,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = ipActiveChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("活跃IP统计一个小时的活跃IP"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"活跃IP统计一个小时的活跃IP检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("活跃IP统计一个小时的活跃IP检索失败:"+e.getMessage());
+			logger.error("活跃IP统计一个小时的活跃IP检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP统计一个小时的活跃IP检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP统计一个小时的活跃IP检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP统计一个小时的活跃IP检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP统计一个小时的活跃IP检索成功",list, 0);
 	}
@@ -299,11 +364,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = ipActiveChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("活跃IP最近一个小时的变化趋势统计"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"活跃IP最近一个小时的变化趋势统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("活跃IP最近一个小时的变化趋势统计失败:"+e.getMessage());
+			logger.error("活跃IP最近一个小时的变化趋势统计失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP最近一个小时的变化趋势统计失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP最近一个小时的变化趋势统计失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"活跃IP最近一个小时的变化趋势统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "活跃IP最近一个小时的变化趋势统计成功",list, 0);
 	}
@@ -323,11 +395,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = appChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("App流量分析统计:"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"App流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("App流量统计数据检索失败:"+e.getMessage());
+			logger.error("App流量统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"App流量统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App流量统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App流量统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App流量统计数据检索成功",list, 0);
 	}
@@ -347,11 +426,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
+			auditLogThread.setExceptionInfo("App统计图表数据检索失败:"+e.getMessage());
 			logger.error("App统计图表数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"App统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"App统计图表数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App统计图表数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App统计图表数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App统计图表数据检索成功",
 				list, 0);
@@ -368,11 +454,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = osChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("操作系统流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"操作系统流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("操作系统流量分析统计检索失败:"+e.getMessage());
+			logger.error("操作系统流量分析统计检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"操作系统流量分析统计检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"操作系统流量分析统计检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"操作系统流量分析统计检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "操作系统流量分析统计检索成功",list, 0);
 	}
@@ -389,11 +482,18 @@ public class DashboardServiceController extends BaseRestController {
 				list=osChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("操作系统下浏览器流量分析统计失败："+e);
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"操作系统下浏览器流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("操作系统下浏览器分类统计数据检索失败:"+e.getMessage());
+			logger.error("操作系统下浏览器分类统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"操作系统下浏览器分类统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"操作系统下浏览器分类统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"操作系统下浏览器分类统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "操作系统下浏览器分类统计数据检索成功",list, 0);
 	}
@@ -409,11 +509,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = bsChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("浏览器流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"浏览器流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("浏览器流量分析统计数据检索失败:"+e.getMessage());
+			logger.error("浏览器流量分析统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"浏览器流量分析统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"浏览器流量分析统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"浏览器流量分析统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "浏览器流量分析统计数据检索成功",list, 0);
 	}
@@ -430,11 +537,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = bsChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("浏览器下操作系统流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"浏览器下操作系统流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("浏览器下操作系统流量统计数据检索失败:"+e.getMessage());
+			logger.error("浏览器下操作系统流量统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"浏览器下操作系统流量统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"浏览器下操作系统流量统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"浏览器下操作系统流量统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "浏览器下操作系统流量统计数据检索成功",list, 0);
 	}
@@ -452,11 +566,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = websiteChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("网站流量分析统计失败："+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"网站流量分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("网站流量分析统计数据检索失败:"+e.getMessage());
+			logger.error("网站流量分析统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"网站流量分析统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"网站流量分析统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"网站流量分析统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "网站流量分析统计数据检索成功",list, 0);
 	}
@@ -473,11 +594,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = websiteChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("HTTP网站分类分析统计失败："+e);
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"HTTP网站分类分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("HTTP网站分类分析统计失败:"+e.getMessage());
+			logger.error("HTTP网站分类分析统计失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站分类分析统计失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站分类分析统计失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站分类分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站分类分析统计成功",list, 0);
 	}
@@ -494,11 +622,18 @@ public class DashboardServiceController extends BaseRestController {
 				list = websiteChart;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error("HTTP网站主题分类分析统计失败："+ExceptionUtil.getExceptionMsg(e));
-			throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-					"HTTP网站分类分析统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			auditLogThread.setExceptionInfo("HTTP网站主题分类分析数据检索失败:"+e.getMessage());
+			logger.error("HTTP网站主题分类分析数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站主题分类分析数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站主题分类分析数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站主题分类分析数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站主题分类分析数据检索成功",list, 0);
 	}

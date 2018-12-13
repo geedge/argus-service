@@ -28,6 +28,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
+import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -81,14 +82,17 @@ public class SingleDimensionReport extends BaseRestController {
 			ntcPzReportPage = ntcReportService.findNtcPzReport(new Page<NtcPzReport>(request, response, NtcPzReport.class),
 					ntcPzReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("配置日志总量统计失败:"+e.getMessage());
+			logger.error("配置日志总量统计失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"配置日志总量统计失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"配置日志总量统计失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"配置日志总量统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -118,14 +122,17 @@ public class SingleDimensionReport extends BaseRestController {
 			reportPage = ntcReportService.findNtcServiceReport(new Page<NtcServiceReport>(request, response, NtcServiceReport.class),
 					ntcServiceReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("业务类型统计查询失败:"+e.getMessage());
+			logger.error("业务类型统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"业务类型统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"业务类型统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"业务类型统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -159,14 +166,17 @@ public class SingleDimensionReport extends BaseRestController {
 			reportPage = ntcReportService.findNtcTagReport(new Page<NtcTagReport>(request, response, NtcTagReport.class),
 					ntcTagReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("标签统计查询失败:"+e.getMessage());
+			logger.error("标签统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"标签统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"标签统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"标签统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -197,14 +207,17 @@ public class SingleDimensionReport extends BaseRestController {
 			reportPage = ntcReportService.findNtcAttrTypeReport(new Page<NtcAttrTypeReport>(request, response, NtcAttrTypeReport.class),
 					ntcAttrTypeReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("性质统计查询失败:"+e.getMessage());
+			logger.error("性质统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"性质统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"性质统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"性质统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -237,14 +250,17 @@ public class SingleDimensionReport extends BaseRestController {
 			reportPage = ntcReportService.findNtcLwhhReport(new Page<NtcLwhhReport>(request, response, NtcLwhhReport.class),
 					ntcLwhhReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("来文函号统计查询失败:"+e.getMessage());
+			logger.error("来文函号统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"来文函号统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"来文函号统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"来文函号统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -275,14 +291,17 @@ public class SingleDimensionReport extends BaseRestController {
 			reportPage = ntcReportService.findNtcSrcipDomesticReport(new Page<NtcSrcipDomesticReport>(request, response, NtcSrcipDomesticReport.class),
 					ntcSrcipDomesticReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("境内源IP统计查询失败:"+e.getMessage());
+			logger.error("境内源IP统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"境内源IP统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"境内源IP统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"境内源IP统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -315,14 +334,17 @@ public class SingleDimensionReport extends BaseRestController {
 					new Page<NtcDestipCountryReport>(request, response, NtcDestipCountryReport.class),
 					ntcDestipCountryReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("各国家目的IP统计查询失败:"+e.getMessage());
+			logger.error("各国家目的IP统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"各国家目的IP统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"各国家目的IP统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"各国家目的IP统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -356,14 +378,17 @@ public class SingleDimensionReport extends BaseRestController {
 			reportPage = ntcReportService.findNtcEntranceReport(
 					new Page<NtcEntranceReport>(request, response, NtcEntranceReport.class), ntcEntranceReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("运营商局点统计查询失败:"+e.getMessage());
+			logger.error("运营商局点统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"运营商局点统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"运营商局点统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"运营商局点统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 
@@ -385,14 +410,17 @@ public class SingleDimensionReport extends BaseRestController {
 			ntcReportService.checkNtcRadiusReportCondition(saveLogThread, start, ntcRadiusReport);
 			dataList= ntcReportService.findNtcRadiusReport(ntcRadiusReport);
 		} catch (Exception e) {
-			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			if (!(e instanceof RestServiceException)) {
+			saveLogThread.setExceptionInfo("用户行为统计查询失败:"+e.getMessage());
+			logger.error("用户行为统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"用户行为统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"用户行为统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
 						"用户行为统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
 			}
 		}
 

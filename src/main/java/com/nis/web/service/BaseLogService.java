@@ -7,6 +7,8 @@ import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcReportEntity;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
+import com.nis.restful.ServiceRuntimeException;
+import com.nis.util.ExceptionUtil;
 import com.nis.util.elasticsearch.ElasticsearchSqlDao;
 import com.zdjizhi.utils.StringUtil;
 import org.apache.ibatis.mapping.ResultMap;
@@ -98,8 +100,7 @@ public abstract class BaseLogService {
 				}
 				if (!StringUtil.isBlank(notExistColumn)) {
 					notExistColumn = notExistColumn.substring(1);
-					throw new RestServiceException(thread, System.currentTimeMillis() - start,
-							"fields中" + notExistColumn + "的字段不存在!", RestBusinessCode.param_formate_error.getValue());
+					throw new RestServiceException("fields中" + notExistColumn + "的字段不存在!", RestBusinessCode.param_formate_error.getValue());
 				}
 			}
 			if (orderByColoumn != null) {
@@ -117,8 +118,7 @@ public abstract class BaseLogService {
 				}
 				if (!StringUtil.isBlank(notExistColumn)) {
 					notExistColumn = notExistColumn.substring(1);
-					throw new RestServiceException(thread, System.currentTimeMillis() - start,
-							"orderBy中" + notExistColumn + "的字段不存在!", RestBusinessCode.param_formate_error.getValue());
+					throw new RestServiceException("orderBy中" + notExistColumn + "的字段不存在!", RestBusinessCode.param_formate_error.getValue());
 				}
 			}
 
@@ -141,14 +141,10 @@ public abstract class BaseLogService {
 				Long.parseLong(entity.getSearchCfgId());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchCfgId参数格式错误",
+			throw new RestServiceException("searchCfgId参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchCfgId参数错误");
+			throw new RestServiceException("searchCfgId参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -156,14 +152,10 @@ public abstract class BaseLogService {
 				Integer.parseInt(entity.getSearchDirection());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "getSearchDirection参数格式错误",
+			throw new RestServiceException("getSearchDirection参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "getSearchDirection参数错误");
+			throw new RestServiceException("getSearchDirection参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -171,14 +163,10 @@ public abstract class BaseLogService {
 				Long.parseLong(entity.getSearchEntranceId());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchEntranceId参数格式错误",
+			throw new RestServiceException("searchEntranceId参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchEntranceId参数错误");
+			throw new RestServiceException("searchEntranceId参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -187,14 +175,10 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式错误",
+			throw new RestServiceException("searchFoundEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式格式");
+			throw new RestServiceException("searchFoundEndTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -203,14 +187,10 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数格式错误",
+			throw new RestServiceException("searchFoundStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数错误");
+			throw new RestServiceException("searchFoundStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -218,24 +198,17 @@ public abstract class BaseLogService {
 				Integer.parseInt(entity.getSearchService());
 			}
 		} catch (NumberFormatException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数格式错误",
+			throw new RestServiceException("searchService参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchService参数错误");
+			throw new RestServiceException("searchService参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 		try {
 			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
-			logger.error(e);
 			throw e;
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求参数错误");
+			throw new ServiceRuntimeException(ExceptionUtil.getExceptionMsg(e),RestBusinessCode.service_runtime_error.getValue());
 		}
 		logger.info("请求参数校验结束----" + System.currentTimeMillis());
 
@@ -257,14 +230,10 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式错误",
+			throw new RestServiceException("searchFoundEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundEndTime参数格式格式");
+			throw new RestServiceException("searchFoundEndTime参数格式格式",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -273,25 +242,18 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数格式错误",
+			throw new RestServiceException("searchFoundStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchFoundStartTime参数错误");
+			throw new RestServiceException("searchFoundStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
 			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
-			logger.error(e);
 			throw e;
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "请求参数错误");
+			throw new ServiceRuntimeException(ExceptionUtil.getExceptionMsg(e),RestBusinessCode.service_runtime_error.getValue());
 		}
 		logger.info("请求参数校验结束----" + System.currentTimeMillis());
 
@@ -311,12 +273,7 @@ public abstract class BaseLogService {
 										  Page page) {
 		logger.info("实时报表统计查询参数校验开始----" + System.currentTimeMillis());
 		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
-			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
-			thread.setExceptionInfo("searchBusinessType参数格式错误");
-			throw new RestServiceException(thread,
-					System.currentTimeMillis() - start,
-					"searchBusinessType参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchBusinessType参数格式错误",RestBusinessCode.param_formate_error.getValue());
 		}
 		//searchService
 		checkNumericCondition(thread, start, entity.getSearchService(), "searchService");
@@ -326,14 +283,9 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchReportStartTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportStartTime参数格式错误",RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数错误");
+			throw new RestServiceException("searchReportStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 		
 		try {
@@ -341,21 +293,12 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchReportEndTime());
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportEndTime参数格式错误",RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数错误");
+			throw new RestServiceException("searchReportEndTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
-			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
-			thread.setExceptionInfo("searchBusinessType参数格式错误");
-			throw new RestServiceException(thread,
-					System.currentTimeMillis() - start,
-					"searchBusinessType参数格式错误",
+			throw new RestServiceException("searchBusinessType参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		}
 		
@@ -386,11 +329,7 @@ public abstract class BaseLogService {
 				flag = true;
 			}
 			if (flag) {
-				logger.error(RestBusinessCode.param_formate_error.getErrorReason()+","+condName+"参数格式错误");
-				thread.setExceptionInfo(condName+"参数格式错误");
-				throw new RestServiceException(thread,
-						System.currentTimeMillis() - start,
-						condName+"参数格式错误",
+				throw new RestServiceException(condName+"参数格式错误",
 						RestBusinessCode.param_formate_error.getValue());
 			}
 		}
@@ -406,11 +345,7 @@ public abstract class BaseLogService {
 	public void checkNtcRadiusReportCondition(AuditLogThread thread, long start, NtcRadiusReport entity) {
 		logger.info("用户行为日志统计参数校验开始----" + System.currentTimeMillis());
 		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
-			logger.error(RestBusinessCode.param_formate_error.getErrorReason()+",searchBusinessType参数格式错误");
-			thread.setExceptionInfo("searchBusinessType参数格式错误");
-			throw new RestServiceException(thread,
-					System.currentTimeMillis() - start,
-					"searchBusinessType参数格式错误",
+			throw new RestServiceException("searchBusinessType参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		}
 
@@ -421,14 +356,10 @@ public abstract class BaseLogService {
 				timeCount++;
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数格式错误",
+			throw new RestServiceException("searchReportStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportStartTime参数错误");
+			throw new RestServiceException("searchReportStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -437,42 +368,26 @@ public abstract class BaseLogService {
 				timeCount++;
 			}
 		} catch (ParseException e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数格式错误",
+			throw new RestServiceException("searchReportEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			thread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(e);
-			throw new RestServiceException(thread, System.currentTimeMillis() - start, "searchReportEndTime参数错误");
+			throw new RestServiceException("searchReportEndTime参数错误",RestBusinessCode.param_formate_error.getValue());
 		}
 		if (timeCount==1) {
-			logger.error(RestBusinessCode.config_integrity_error.getErrorReason()+",searchReportStartTime和searchReportEndTime参数必须同时填写");
-			thread.setExceptionInfo("searchReportStartTime和searchReportEndTime参数必须同时填写");
-			throw new RestServiceException(thread,
-					System.currentTimeMillis() - start,
-					"searchReportStartTime和searchReportEndTime参数必须同时填写",
+			throw new RestServiceException("searchReportStartTime和searchReportEndTime参数必须同时填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
 
 
 		//根据用户查看IP趋势时(searchBusinessType=2)，用户名必需填写
 		if ("2".equals(entity.getSearchBusinessType())&&StringUtil.isEmpty(entity.getSearchAccount())) {
-			logger.error(RestBusinessCode.config_integrity_error.getErrorReason()+",searchBusinessType=2时searchAccount参数必须填写");
-			thread.setExceptionInfo("searchBusinessType=2时searchAccount参数必须填写");
-			throw new RestServiceException(thread,
-					System.currentTimeMillis() - start,
-					"searchBusinessType=2时searchAccount参数必须填写",
+			throw new RestServiceException("searchBusinessType=2时searchAccount参数必须填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
 
 		//根据用户查看IP趋势时(searchBusinessType=3)，用户名必需填写
 		if ("3".equals(entity.getSearchBusinessType())&&StringUtil.isEmpty(entity.getSearchNasIp())) {
-			logger.error(RestBusinessCode.config_integrity_error.getErrorReason()+",searchBusinessType=3时searchNasIp参数必须填写");
-			thread.setExceptionInfo("searchBusinessType=3时searchNasIp参数必须填写");
-			throw new RestServiceException(thread,
-					System.currentTimeMillis() - start,
-					"searchBusinessType=3时searchNasIp参数必须填写",
+			throw new RestServiceException("searchBusinessType=3时searchNasIp参数必须填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
 

@@ -58,7 +58,7 @@ public class NmsInfoController extends BaseRestController {
 				thread.setContent("NMS系统上报服务器数量为"+trafficNmsServerStatisticList.getTrafficNmsServerList().size());
 				trafficNmsServerStatisticService.saveNmsInfo(trafficNmsServerStatisticList.getTrafficNmsServerList());
 			} else {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start, "参数trafficNmsServerList不能为空",
+				throw new RestServiceException("参数trafficNmsServerList不能为空",
 						RestBusinessCode.missing_args.getValue());
 			}
 
@@ -91,7 +91,7 @@ public class NmsInfoController extends BaseRestController {
 				thread.setContent("NMS系统上报的di信息数量为"+nmsDiRuleList.getNmsDiRuleList().size());
 				nmsDiRuleService.saveNmsDiRuleInfo(nmsDiRuleList.getNmsDiRuleList());
 			} else {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start, "参数nmsDiRuleList不能为空",
+				throw new RestServiceException("参数nmsDiRuleList不能为空",
 						RestBusinessCode.missing_args.getValue());
 			}
 		} catch (Exception e) {
@@ -123,8 +123,7 @@ public class NmsInfoController extends BaseRestController {
 				trafficNetflowPortInfoService
 						.saveTrafficNetflowPortInfo(trafficNetflowPortInfoList.getTrafficNetflowPortInfoList());
 			} else {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"参数trafficNetflowPortInfoList不能为空", RestBusinessCode.missing_args.getValue());
+				throw new RestServiceException("参数trafficNetflowPortInfoList不能为空", RestBusinessCode.missing_args.getValue());
 			}
 
 		} catch (Exception e) {

@@ -67,14 +67,17 @@ public class LogController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, dkBehaviorLog, DkBehaviorLog.class, page);
 			logDataService.getData(page, dkBehaviorLog);
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(ExceptionUtil.getExceptionMsg(e));
-			if (!(e instanceof RestServiceException)) {
+			auditLogThread.setExceptionInfo("行为识别日志检索失败:"+e.getMessage());
+			logger.error("行为识别日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"行为识别日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
 				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-						"行为识别日志检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
+						"行为识别日志检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"行为识别日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "行为识别日志检索成功", page, 0);
@@ -93,14 +96,17 @@ public class LogController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, pxyHttpLog, PxyHttpLog.class, page);
 			logDataService.getData(page, pxyHttpLog);
 		} catch (Exception e) {
-			e.printStackTrace();
-			auditLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
-			logger.error(ExceptionUtil.getExceptionMsg(e));
-			if (!(e instanceof RestServiceException)) {
+			auditLogThread.setExceptionInfo("PXY HTTP日志检索失败:"+e.getMessage());
+			logger.error("PXY HTTP日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"PXY HTTP日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
 				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
-						"PXY HTTP日志检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
-			}else{
-				throw ((RestServiceException) e);
+						"PXY HTTP日志检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"PXY HTTP日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "PXY HTTP日志检索成功", page,
