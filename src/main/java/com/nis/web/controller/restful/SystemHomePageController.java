@@ -77,8 +77,8 @@ public class SystemHomePageController extends BaseRestController {
 				trafficAreaStatPage, 0);
 	}
 
-	@RequestMapping(value = "/log/v1/cfgSortLogStat", method = RequestMethod.GET)
-	@ApiOperation(value = "配置日志TOP5统计获取", httpMethod = "GET", notes = "对配置日志TOP5统计信息进行查询", response = Map.class)
+	@RequestMapping(value = "/log/v1/logServiceTopn", method = RequestMethod.GET)
+	@ApiOperation(value = "日志TOP5业务统计量获取", httpMethod = "GET", notes = "对日志TOP5业务统计量信息进行查询", response = Map.class)
 	public Map<String, ?> cfgSortLogStat(String searchReportStartTime, String searchReportEndTime,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
@@ -110,14 +110,14 @@ public class SystemHomePageController extends BaseRestController {
 	@RequestMapping(value = "/log/v1/blockAndDropStat", method = RequestMethod.GET)
 	@ApiOperation(value = "丢弃量获取", httpMethod = "GET", notes = "对阻断和丢弃量进行查询", response = Map.class)
 	public Map<String, ?> blockAndDropStat(String searchReportStartTime, String searchReportEndTime,
-			@RequestParam(required = true) int searchBusinessType, HttpServletRequest request,
+			int searchBusinessType, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		Page<DropInfo> dropInfo = null;
-
+		if(searchBusinessType == 0)searchBusinessType = 1;
 		try {
 			dropInfo = systemHomePageService.getBlockAndDropStat(searchReportStartTime, searchReportEndTime,
 					searchBusinessType, request, response);
