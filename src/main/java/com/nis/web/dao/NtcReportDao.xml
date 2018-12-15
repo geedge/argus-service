@@ -618,7 +618,7 @@
 				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</when>
 			<otherwise>
-				and REPORT_TIME>=DATE_SUB(now(), INTERVAL 1 DAY) 
+				and REPORT_TIME>=DATE_SUB(now(), INTERVAL 1 HOUR) 
 			</otherwise>
 		</choose>
 		
@@ -634,7 +634,7 @@
 				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</when>
 			<otherwise>
-				and REPORT_TIME>DATE_SUB(now(), INTERVAL 1 DAY) 
+				and REPORT_TIME>DATE_SUB(now(), INTERVAL 1 HOUR) 
 			</otherwise>
 		</choose>
 		
@@ -659,7 +659,7 @@
 					<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 				</when>
 				<otherwise>
-					<![CDATA[AND REPORT_TIME>DATE_SUB(now(), INTERVAL 1 DAY) ]]>
+					<![CDATA[AND REPORT_TIME>DATE_SUB(now(), INTERVAL 1 HOUR) ]]>
 				</otherwise>
 			</choose>
 		</where>
