@@ -618,12 +618,12 @@
 				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</when>
 			<otherwise>
-				and REPORT_TIME>=DATE_SUB(now(), INTERVAL 1 DAY) 
+				and REPORT_TIME>=DATE_SUB(now(), INTERVAL 1 HOUR) 
 			</otherwise>
 		</choose>
 		
 		</where>
-		group by NAS_IP order by num desc;
+		group by NAS_IP order by num desc limit 10;
 	</select>
 	<select id="findAccounList" parameterType="com.nis.domain.restful.NtcRadiusReport"
 		resultMap="NtcRadiusReportMap">
@@ -634,12 +634,12 @@
 				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</when>
 			<otherwise>
-				and REPORT_TIME>DATE_SUB(now(), INTERVAL 1 DAY) 
+				and REPORT_TIME>DATE_SUB(now(), INTERVAL 1 HOUR) 
 			</otherwise>
 		</choose>
 		
 		</where>
-		group by account order by num desc;
+		group by account order by num desc limit 10;
 	</select>
 	
 	<select id="findNtcRadiusReport" parameterType="com.nis.domain.restful.NtcRadiusReport"
@@ -659,7 +659,7 @@
 					<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s') AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 				</when>
 				<otherwise>
-					<![CDATA[AND REPORT_TIME>DATE_SUB(now(), INTERVAL 1 DAY) ]]>
+					<![CDATA[AND REPORT_TIME>DATE_SUB(now(), INTERVAL 1 HOUR) ]]>
 				</otherwise>
 			</choose>
 		</where>
