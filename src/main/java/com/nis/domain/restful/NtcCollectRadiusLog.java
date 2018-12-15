@@ -1,6 +1,5 @@
 package com.nis.domain.restful;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -23,11 +22,6 @@ public class NtcCollectRadiusLog  extends LogEntity<NtcCollectRadiusLog> {
     protected String framedIp;
     @ApiModelProperty(value="用户名", required=true)
     protected String account;
-    
-    protected String searchNasIp;//ISN接入的IP
-	protected String searchFramedIp;//服务器下发的用户地址
-	protected String searchAccount;//用户名
-	
 	public Integer getCode() {
 		return code;
 	}
@@ -51,27 +45,6 @@ public class NtcCollectRadiusLog  extends LogEntity<NtcCollectRadiusLog> {
 	}
 	public void setAccount(String account) {
 		this.account = account;
-	}
-	@JsonIgnore
-	public String getSearchNasIp() {
-		return searchNasIp;
-	}
-	public void setSearchNasIp(String searchNasIp) {
-		this.searchNasIp = searchNasIp;
-	}
-	@JsonIgnore
-	public String getSearchFramedIp() {
-		return searchFramedIp;
-	}
-	public void setSearchFramedIp(String searchFramedIp) {
-		this.searchFramedIp = searchFramedIp;
-	}
-	@JsonIgnore
-	public String getSearchAccount() {
-		return searchAccount;
-	}
-	public void setSearchAccount(String searchAccount) {
-		this.searchAccount = searchAccount;
 	}
 	
     
