@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
-import com.nis.util.Constants;
+import com.nis.domain.restful.NtcConnRecordPercent;
 import com.nis.web.service.SpringContextHolder;
 import com.zdjizhi.utils.StringUtil;
 
@@ -108,6 +109,48 @@ public class LocalLogJDBCByDruid {
 		} finally {
 			closeConn();
 		}
+	}
+
+	public NtcConnRecordPercent getNtcConnRecordPercentData(NtcConnRecordPercent ntcConnRecordPercent, String sql,
+			boolean isPersent) throws Exception {
+		try {
+			conn = getConnection();
+			logger.info("连接数据中心日志库成功--------------------------");
+			st = conn.createStatement();
+			logger.info("开始执行日志查询语句sql={}", sql);
+			rs = st.executeQuery(sql);
+			NumberFormat num = NumberFormat.getPercentInstance();
+			num.setMinimumFractionDigits(2);// 保留两位小数
+			while (rs.next()) {
+				if (isPersent) {
+					String allBps = rs.getString("bps");
+					if (!allBps.equals("0")) {
+						ntcConnRecordPercent.setBpsPercent(
+								num.format(Double.valueOf(ntcConnRecordPercent.getBps()) / Double.valueOf(allBps)));
+						ntcConnRecordPercent.setBps(num.format(Double.valueOf(ntcConnRecordPercent.getBps())));
+					} else {
+						ntcConnRecordPercent.setBpsPercent("0%");
+					}
+					String allPps = rs.getString("pps");
+					if (!allPps.equals("0")) {
+						ntcConnRecordPercent.setPpsPercent(
+								num.format(Double.valueOf(ntcConnRecordPercent.getPps()) / Double.valueOf(allPps)));
+						ntcConnRecordPercent.setPps(num.format(Double.valueOf(ntcConnRecordPercent.getPps())));
+					} else {
+						ntcConnRecordPercent.setPpsPercent("0%");
+					}
+				} else {
+					String bps = rs.getString("bps");
+					String pps = rs.getString("pps");
+					ntcConnRecordPercent.setBps(bps);
+					ntcConnRecordPercent.setPps(pps);
+				}
+			}
+			logger.info("执行日志查询语句成功,sql={}", sql);
+		} finally {
+			closeConn();
+		}
+		return ntcConnRecordPercent;
 	}
 
 	/**

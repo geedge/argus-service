@@ -1,5 +1,7 @@
 package com.nis.web.controller.restful;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcCollectRadiusLog;
 import com.nis.domain.restful.NtcCollectVoipLog;
 import com.nis.domain.restful.NtcConnRecordLog;
+import com.nis.domain.restful.NtcConnRecordPercent;
 import com.nis.domain.restful.NtcDdosLog;
 import com.nis.domain.restful.NtcDnsLog;
 import com.nis.domain.restful.NtcFtpLog;
@@ -79,8 +82,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcIpLog, NtcIpLog.class, page);
 			logDataService.getData(page, ntcIpLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("IP地址日志检索失败:"+e.getMessage());
-			logger.error("IP地址日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("IP地址日志检索失败:" + e.getMessage());
+			logger.error("IP地址日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"IP地址日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -91,7 +94,7 @@ public class NtcLogSearchController extends BaseRestController {
 				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
 						"IP地址日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
-			
+
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "IP地址日志检索成功", page, 0);
 	}
@@ -109,8 +112,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcHttpLog, NtcHttpLog.class, page);
 			logDataService.getData(page, ntcHttpLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("Http日志检索失败:"+e.getMessage());
-			logger.error("Http日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("Http日志检索失败:" + e.getMessage());
+			logger.error("Http日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"Http日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -139,8 +142,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcDnsLog, NtcDnsLog.class, page);
 			logDataService.getData(page, ntcDnsLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("Dns日志检索失败:"+e.getMessage());
-			logger.error("Dns日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("Dns日志检索失败:" + e.getMessage());
+			logger.error("Dns日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"Dns日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -168,8 +171,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);
 			logDataService.getData(page, ntcMailLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("EMAIL日志检索失败:"+e.getMessage());
-			logger.error("EMAIL日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("EMAIL日志检索失败:" + e.getMessage());
+			logger.error("EMAIL日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"EMAIL日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -198,8 +201,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSslLog, NtcSslLog.class, page);
 			logDataService.getData(page, ntcSslLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("SSL日志检索失败:"+e.getMessage());
-			logger.error("SSL日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("SSL日志检索失败:" + e.getMessage());
+			logger.error("SSL日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"SSL日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -228,8 +231,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcPptpLog, NtcPptpLog.class, page);
 			logDataService.getData(page, ntcPptpLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("PPTP日志检索失败:"+e.getMessage());
-			logger.error("PPTP日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("PPTP日志检索失败:" + e.getMessage());
+			logger.error("PPTP日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"PPTP日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -258,8 +261,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcL2tpLog, NtcL2tpLog.class, page);
 			logDataService.getData(page, ntcL2tpLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("L2TP日志检索失败:"+e.getMessage());
-			logger.error("L2TP日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("L2TP日志检索失败:" + e.getMessage());
+			logger.error("L2TP日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"L2TP日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -288,8 +291,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcOpenvpnLog, NtcOpenvpnLog.class, page);
 			logDataService.getData(page, ntcOpenvpnLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("Openvpn日志检索失败:"+e.getMessage());
-			logger.error("Openvpn日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("Openvpn日志检索失败:" + e.getMessage());
+			logger.error("Openvpn日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"Openvpn日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -319,8 +322,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcIpsecLog, NtcIpsecLog.class, page);
 			logDataService.getData(page, ntcIpsecLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("IPSEC日志检索失败:"+e.getMessage());
-			logger.error("IPSEC日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("IPSEC日志检索失败:" + e.getMessage());
+			logger.error("IPSEC日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"IPSEC日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -349,8 +352,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSshLog, NtcSshLog.class, page);
 			logDataService.getData(page, ntcSshLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("SSH日志检索失败:"+e.getMessage());
-			logger.error("SSH日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("SSH日志检索失败:" + e.getMessage());
+			logger.error("SSH日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"SSH日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -381,8 +384,8 @@ public class NtcLogSearchController extends BaseRestController {
 			logDataService.getData(page, ntcFtpLog);
 
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("FTP日志检索失败:"+e.getMessage());
-			logger.error("FTP日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("FTP日志检索失败:" + e.getMessage());
+			logger.error("FTP日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"FTP日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -409,8 +412,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcAppLog, NtcAppLog.class, page);
 			logDataService.getData(page, ntcAppLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("App日志检索失败:"+e.getMessage());
-			logger.error("App日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("App日志检索失败:" + e.getMessage());
+			logger.error("App日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"App日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -438,8 +441,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcDdosLog, NtcDdosLog.class, page);
 			logDataService.getData(page, ntcDdosLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("DDos日志检索失败:"+e.getMessage());
-			logger.error("DDos日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("DDos日志检索失败:" + e.getMessage());
+			logger.error("DDos日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"DDos日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -468,8 +471,8 @@ public class NtcLogSearchController extends BaseRestController {
 
 			logDataService.getData(page, ntcP2pLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("P2P日志检索失败:"+e.getMessage());
-			logger.error("P2P日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("P2P日志检索失败:" + e.getMessage());
+			logger.error("P2P日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"P2P日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -498,8 +501,8 @@ public class NtcLogSearchController extends BaseRestController {
 
 			logDataService.getData(page, ntcBgpLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("BGP日志检索失败:"+e.getMessage());
-			logger.error("BGP日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("BGP日志检索失败:" + e.getMessage());
+			logger.error("BGP日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"BGP日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -527,8 +530,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcVoipLog, NtcVoipLog.class, page);
 			logDataService.getData(page, ntcVoipLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("NTC VoIP日志检索失败:"+e.getMessage());
-			logger.error("NTC VoIP日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("NTC VoIP日志检索失败:" + e.getMessage());
+			logger.error("NTC VoIP日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"NTC VoIP日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -558,8 +561,8 @@ public class NtcLogSearchController extends BaseRestController {
 					page);
 			logDataService.getData(page, ntcStreamMediaLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("流媒体协议日志检索失败:"+e.getMessage());
-			logger.error("流媒体协议日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("流媒体协议日志检索失败:" + e.getMessage());
+			logger.error("流媒体协议日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"流媒体协议日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -587,8 +590,8 @@ public class NtcLogSearchController extends BaseRestController {
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcKeywordsUrlLog, NtcKeywordsUrlLog.class, page);
 			logDataService.getData(page, ntcKeywordsUrlLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("NTC关键字转URL日志检索失败:"+e.getMessage());
-			logger.error("NTC关键字转URL日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("NTC关键字转URL日志检索失败:" + e.getMessage());
+			logger.error("NTC关键字转URL日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"NTC关键字转URL日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -615,17 +618,17 @@ public class NtcLogSearchController extends BaseRestController {
 		try {
 			if (StringUtil.isEmpty(ntcCollectVoipLog.getSearchFoundStartTime())
 					&& StringUtil.isEmpty(ntcCollectVoipLog.getSearchFoundEndTime())) {
-				Map<String, String> map = DateUtils.getLocalTime(null,
-						null, Constants.LOG_LOCAL_TIME, "minute");
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
 				ntcCollectVoipLog.setSearchFoundStartTime(map.get("startTime"));
 				ntcCollectVoipLog.setSearchFoundEndTime(map.get("endTime"));
 			}
-			
-			ntcLogService.collectConditionCheck(auditLogThread, start,ntcCollectVoipLog, NtcCollectVoipLog.class, page);
+
+			ntcLogService.collectConditionCheck(auditLogThread, start, ntcCollectVoipLog, NtcCollectVoipLog.class,
+					page);
 			logDataService.getData(page, ntcCollectVoipLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("VoIp泛收日志检索失败:"+e.getMessage());
-			logger.error("VoIp泛收日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("VoIp泛收日志检索失败:" + e.getMessage());
+			logger.error("VoIp泛收日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"VoIp泛收日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -637,10 +640,9 @@ public class NtcLogSearchController extends BaseRestController {
 						"VoIp泛收日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VoIp泛收日志检索成功", page,
-				0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "VoIp泛收日志检索成功", page, 0);
 	}
-	
+
 	@RequestMapping(value = "/ntcCollectRadiusLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "RADIUS泛收日志查询", httpMethod = "GET", notes = "对日志功能“RADIUS泛收日志查询”提供数据基础查询服务")
 	public Map<String, ?> ntcCollectRadiusLogs(Page page, NtcCollectRadiusLog ntcCollectRadiusLog, Model model,
@@ -652,17 +654,17 @@ public class NtcLogSearchController extends BaseRestController {
 		try {
 			if (StringUtil.isEmpty(ntcCollectRadiusLog.getSearchFoundStartTime())
 					&& StringUtil.isEmpty(ntcCollectRadiusLog.getSearchFoundEndTime())) {
-				Map<String, String> map = DateUtils.getLocalTime(null,
-						null, Constants.LOG_LOCAL_TIME, "minute");
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
 				ntcCollectRadiusLog.setSearchFoundStartTime(map.get("startTime"));
 				ntcCollectRadiusLog.setSearchFoundEndTime(map.get("endTime"));
 			}
-			
-			ntcLogService.queryConditionCheck(auditLogThread, start,ntcCollectRadiusLog, NtcCollectRadiusLog.class, page);
+
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcCollectRadiusLog, NtcCollectRadiusLog.class,
+					page);
 			logDataService.getData(page, ntcCollectRadiusLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("RADIUS泛收日志检索失败:"+e.getMessage());
-			logger.error("RADIUS泛收日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("RADIUS泛收日志检索失败:" + e.getMessage());
+			logger.error("RADIUS泛收日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"RADIUS泛收日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -677,7 +679,6 @@ public class NtcLogSearchController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "RADIUS泛收日志检索成功", page,
 				0);
 	}
-	
 
 	@RequestMapping(value = "/ntcConnRecordLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "通联关系日志查询", httpMethod = "GET", notes = "对日志功能“通联关系日志查询”提供数据基础查询服务")
@@ -689,16 +690,15 @@ public class NtcLogSearchController extends BaseRestController {
 		try {
 			if (StringUtil.isEmpty(ntcConnRecordLog.getSearchFoundStartTime())
 					&& StringUtil.isEmpty(ntcConnRecordLog.getSearchFoundEndTime())) {
-				Map<String, String> map = DateUtils.getLocalTime(null,
-						null, Constants.LOG_LOCAL_TIME, "minute");
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
 				ntcConnRecordLog.setSearchFoundStartTime(map.get("startTime"));
 				ntcConnRecordLog.setSearchFoundEndTime(map.get("endTime"));
 			}
-			ntcLogService.queryConditionCheck(auditLogThread, start,ntcConnRecordLog, NtcConnRecordLog.class, page);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
 			logDataService.getData(page, ntcConnRecordLog);
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("通联关系日志检索失败:"+e.getMessage());
-			logger.error("通联关系日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("通联关系日志检索失败:" + e.getMessage());
+			logger.error("通联关系日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"通联关系日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -710,7 +710,73 @@ public class NtcLogSearchController extends BaseRestController {
 						"通联关系日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "通联关系日志检索成功", page,
-				0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "通联关系日志检索成功", page, 0);
+	}
+
+	@RequestMapping(value = "/ntcConnRecordPercent", method = RequestMethod.GET)
+	@ApiOperation(value = "通联关系日志百分比查询", httpMethod = "GET", notes = "对日志功能“通联关系日志百分比查询”提供数据基础查询服务")
+	public Map<String, ?> ntcConnRecordPercent(NtcConnRecordPercent ntcConnRecordPercent, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		try {
+			if (StringUtil.isEmpty(ntcConnRecordPercent.getSearchFoundStartTime())
+					&& StringUtil.isEmpty(ntcConnRecordPercent.getSearchFoundEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
+				ntcConnRecordPercent.setSearchFoundStartTime(map.get("startTime"));
+				ntcConnRecordPercent.setSearchFoundEndTime(map.get("endTime"));
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			try {
+				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundEndTime())) {
+					sdf.setLenient(false);
+					sdf.parse(ntcConnRecordPercent.getSearchFoundEndTime());
+				}else {
+					throw new RestServiceException("searchFoundEndTime参数不能为空",
+							RestBusinessCode.param_formate_error.getValue());
+				}
+			} catch (ParseException e) {
+				throw new RestServiceException("searchFoundEndTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchFoundEndTime参数错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+
+			try {
+				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundStartTime())) {
+					sdf.setLenient(false);
+					sdf.parse(ntcConnRecordPercent.getSearchFoundStartTime());
+				}else {
+					throw new RestServiceException("searchFoundStartTime参数不能为空",
+							RestBusinessCode.param_formate_error.getValue());
+				}
+			} catch (ParseException e) {
+				throw new RestServiceException("searchFoundStartTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchFoundStartTime参数错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+
+			logDataService.getNtcConnRecordPercent(ntcConnRecordPercent);
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("通联关系日志检索失败:" + e.getMessage());
+			logger.error("通联关系日志百分比检索失败：" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"通联关系日志百分比检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"通联关系日志百分比检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"通联关系日志百分比检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "通联关系日志百分比检索成功",
+				ntcConnRecordPercent, 0);
 	}
 }

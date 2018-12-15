@@ -2,6 +2,7 @@ package com.nis.web.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
+import com.nis.domain.restful.NtcConnRecordPercent;
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
 import com.nis.web.dao.impl.LocalLogJDBCByDruid;
@@ -48,6 +52,34 @@ public class LogDataService {
 		Map<String, String> endMap = new HashMap<String, String>();
 		endMap.put("end", "foundTime");
 		col2col.put("searchFoundEndTime", endMap);
+	}
+
+	public NtcConnRecordPercent getNtcConnRecordPercent(NtcConnRecordPercent ntcConnRecordPercent) throws Exception {
+
+		long startTime = sdf.parse(ntcConnRecordPercent.getSearchFoundStartTime().toString().trim()).getTime() / 1000;
+		long endTime = sdf.parse(ntcConnRecordPercent.getSearchFoundEndTime().toString().trim()).getTime() / 1000;
+		if (endTime - startTime < 0) {
+			throw new RestServiceException("searchFoundStartTime() can not exceed searchFoundEndTime",
+					RestBusinessCode.param_formate_error.getValue());
+		}
+		long second = endTime - startTime;
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
+		sql.append(second);
+		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/");
+		sql.append(second);
+		sql.append(
+				" AS bps  FROM tbs_ods_ntc_conn_record_log_local_1 t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local_1 WHERE  found_time >= ");
+		sql.append(startTime);
+		sql.append(" and found_time< ");
+		sql.append(endTime);
+		StringBuffer totalSql = new StringBuffer();
+		totalSql.append(sql);
+		totalSql.append(" and stream_dir in(1,2,3)) and stream_dir in(1,2,3)");
+		sql.append(" and stream_dir in(1,2) ) and stream_dir in(1,2)");
+		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, sql.toString(), false);
+		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, totalSql.toString(), true);
+		return ntcConnRecordPercent;
 	}
 
 	/**
@@ -95,16 +127,11 @@ public class LogDataService {
 	/**
 	 * 从clickhouse中查询数据,注意clickhouse区分大小写,目前和百分点商定都是用小写
 	 * 
-	 * @param page
-	 *            里面含有pagesize和pageno,order by
-	 * @param bean
-	 *            日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
-	 * @param tableName
-	 *            表名
-	 * @param className
-	 *            类名
-	 * @param orderBy
-	 *            orderby条件
+	 * @param page      里面含有pagesize和pageno,order by
+	 * @param bean      日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
+	 * @param tableName 表名
+	 * @param className 类名
+	 * @param orderBy   orderby条件
 	 * @throws Exception
 	 */
 	private <T> void getDataFromClickHouse(Page<T> page, Object bean, String tableName, String className,
@@ -172,7 +199,8 @@ public class LogDataService {
 									if (field.equals("url")) {
 										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
 									} else {
-										whereSB.append(" and " + field + "='" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
+										whereSB.append(" and " + field + "='"
+												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
 									}
 								} else if (type.equals("java.lang.Integer") || type.equals("int")
 										|| type.equals("java.lang.Long") || type.equals("long")) {
@@ -213,30 +241,23 @@ public class LogDataService {
 			sql.append(whereSB.substring(indexOf) + " and found_time in(" + foundTimeSql + ") ");
 		}
 		sql.append(orderBy.toLowerCase() + "  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
-		
-		if(tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG_LOCAL")) {
+
+		if (tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG_LOCAL")) {
 			searchFromLocalCK(page, bean, sql, countSql);
-		}else {
+		} else {
 			searchFromDataCenter(page, bean, sql, countSql);
 		}
-		
-		
-		
+
 	}
 
 	/**
 	 * 从hive中查询数据
 	 * 
-	 * @param page
-	 *            里面含有pagesize和pageno,order by
-	 * @param bean
-	 *            日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
-	 * @param tableName
-	 *            表名
-	 * @param className
-	 *            类名
-	 * @param orderBy
-	 *            orderby条件
+	 * @param page      里面含有pagesize和pageno,order by
+	 * @param bean      日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
+	 * @param tableName 表名
+	 * @param className 类名
+	 * @param orderBy   orderby条件
 	 * @throws Exception
 	 */
 	private <T> void getDataFromHive(Page<T> page, Object bean, String tableName, String className, String orderBy)
@@ -375,18 +396,19 @@ public class LogDataService {
 	private <T> void searchFromDataCenter(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
 //		if (Constants.ISOPENLOGCOUNTANDLAST) {
-			logJDBCByDruid.getCount(page, countSql.toString());
+		logJDBCByDruid.getCount(page, countSql.toString());
 //		}
 		if (page.getCount() > 0) {
 			logJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
-			if(page.getLast()>100) {
+			if (page.getLast() > 100) {
 				page.setLast(100);
 			}
 		} else {
-			logger.info("没有查询到数据,sql={}",countSql.toString());
+			logger.info("没有查询到数据,sql={}", countSql.toString());
 		}
 
 	}
+
 	private <T> void searchFromLocalCK(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
 			throws Exception {
 //		if (Constants.ISOPENLOGCOUNTANDLAST) {
@@ -394,13 +416,13 @@ public class LogDataService {
 //		}
 		if (page.getCount() > 0) {
 			localLogJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
-			if(page.getLast()>100) {
+			if (page.getLast() > 100) {
 				page.setLast(100);
 			}
 		} else {
-			logger.info("没有查询到数据,sql={}",countSql.toString());
+			logger.info("没有查询到数据,sql={}", countSql.toString());
 		}
-		
+
 	}
 
 	/**
@@ -426,7 +448,7 @@ public class LogDataService {
 	 * 将fileds中的字段根据DfLogSearchDao.xml中对应的resultMap转换为数据库中的字段
 	 * 
 	 * @param mapName
-	 * @param fileds与界面商定好的是传日志类中的对象名(界面没有表结构不知道对象属性对应的数据库字段名称是什么),不是数据库中的字段名
+	 * @param         fileds与界面商定好的是传日志类中的对象名(界面没有表结构不知道对象属性对应的数据库字段名称是什么),不是数据库中的字段名
 	 * @return
 	 * @throws Exception
 	 */
