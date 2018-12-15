@@ -147,5 +147,6 @@ public class NtcReportService extends BaseLogService {
 			}
 		}
 		return resultList;
+		
 	}
 }

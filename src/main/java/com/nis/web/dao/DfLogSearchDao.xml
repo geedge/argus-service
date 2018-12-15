@@ -1470,4 +1470,59 @@
 		<result column="framed_ip" jdbcType="VARCHAR" property="framedIp" />
 		<result column="account" jdbcType="VARCHAR" property="account" />
 	</resultMap>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<resultMap id="NtcConnRecordLogMap"
+		type="com.nis.domain.restful.NtcConnRecordLog">
+		
+		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
+		<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
+		<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+		<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
+		<result column="addr_type" jdbcType="INTEGER" property="addrType" />
+		<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
+		<result column="s_ip" jdbcType="VARCHAR" property="sIp" />
+		<result column="d_port" jdbcType="VARCHAR" property="dPort" />
+		<result column="s_port" jdbcType="VARCHAR" property="sPort" />
+		<result column="service" jdbcType="INTEGER" property="service" />
+		<result column="entrance_id" jdbcType="BIGINT" property="entranceId" />
+		<result column="device_id" jdbcType="INTEGER" property="deviceId" />
+		<result column="direction" jdbcType="INTEGER" property="direction" />
+		<result column="stream_dir" jdbcType="INTEGER" property="streamDir" />
+		<result column="cap_ip" jdbcType="VARCHAR" property="capIp" />
+		<result column="addr_list" jdbcType="VARCHAR" property="addrList" />
+		<result column="user_region" jdbcType="VARCHAR" property="userRegion" />
+		<result column="server_locate" jdbcType="VARCHAR" property="serverLocate" />
+		<result column="client_locate" jdbcType="VARCHAR" property="clientLocate" />
+		<result column="s_asn" jdbcType="VARCHAR" property="sAsn" />
+		<result column="d_asn" jdbcType="VARCHAR" property="dAsn" />
+		<result column="s_subscribe_id" jdbcType="VARCHAR" property="sSubscribeId" />
+		<result column="d_subscribe_id" jdbcType="VARCHAR" property="dSubscribeId" />
+		<result column="scene_file" jdbcType="VARCHAR" property="sceneFile" />
+		<result column="link_id" jdbcType="BIGINT" property="linkId" />
+		<result column="encap_type" jdbcType="INTEGER" property="encapType" />
+		<result column="inner_smac" jdbcType="VARCHAR" property="innerSmac" />
+		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
+		
+		
+		<result column="app_label" jdbcType="BIGINT" property="appLabel" />
+		<result column="c2s_pkt_num" jdbcType="VARCHAR" property="c2sPktNum" />
+		<result column="s2c_pkt_num" jdbcType="VARCHAR" property="s2cPktNum" />
+		<result column="c2s_byte_num" jdbcType="VARCHAR" property="c2sByteNum" />
+		<result column="s2c_byte_num" jdbcType="VARCHAR" property="s2cByteNum" />
+		
+		</resultMap>
+	
 </mapper>

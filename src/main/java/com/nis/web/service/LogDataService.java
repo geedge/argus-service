@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.nis.domain.Page;
 import com.nis.util.Configurations;
 import com.nis.util.Constants;
+import com.nis.web.dao.impl.LocalLogJDBCByDruid;
 import com.nis.web.dao.impl.LogJDBCByDruid;
 import com.zdjizhi.utils.StringUtil;
 
@@ -35,6 +36,8 @@ public class LogDataService {
 
 	@Autowired
 	private LogJDBCByDruid logJDBCByDruid;
+	@Autowired
+	private LocalLogJDBCByDruid localLogJDBCByDruid;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat sdf2 = new SimpleDateFormat("yyyyMMdd");
 	private static Map<String, Map<String, String>> col2col = new HashMap<String, Map<String, String>>();
@@ -210,7 +213,15 @@ public class LogDataService {
 			sql.append(whereSB.substring(indexOf) + " and found_time in(" + foundTimeSql + ") ");
 		}
 		sql.append(orderBy.toLowerCase() + "  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
-		searchFromDataCenter(page, bean, sql, countSql);
+		
+		if(tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG_LOCAL")) {
+			searchFromLocalCK(page, bean, sql, countSql);
+		}else {
+			searchFromDataCenter(page, bean, sql, countSql);
+		}
+		
+		
+		
 	}
 
 	/**
@@ -375,6 +386,21 @@ public class LogDataService {
 			logger.info("没有查询到数据,sql={}",countSql.toString());
 		}
 
+	}
+	private <T> void searchFromLocalCK(Page<T> page, Object bean, StringBuffer selSql, StringBuffer countSql)
+			throws Exception {
+//		if (Constants.ISOPENLOGCOUNTANDLAST) {
+		localLogJDBCByDruid.getCount(page, countSql.toString());
+//		}
+		if (page.getCount() > 0) {
+			localLogJDBCByDruid.getTableData(page, selSql.toString(), bean.getClass());
+			if(page.getLast()>100) {
+				page.setLast(100);
+			}
+		} else {
+			logger.info("没有查询到数据,sql={}",countSql.toString());
+		}
+		
 	}
 
 	/**

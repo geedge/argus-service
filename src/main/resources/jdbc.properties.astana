@@ -39,6 +39,14 @@ jdbc.clickhouse.key=jT4yKPwwg2J4JE/KUZknnA==
 jdbc.clickhouse.password=XmaxnU2yLPQ5dpWjY3RDjQ==
 
 
+jdbc.ckLocal.url=jdbc:clickhouse://10.0.8.14:8123/k18_ods?socket_timeout=90000
+jdbc.ckLocal.username=default
+#实际密码k18
+jdbc.ckLocal.key=p8yBsnjQ2S4qT0XeSTi7lQ==
+jdbc.ckLocal.password=obYXo/qhb8fDaQbTpX9slA==
+
+
+
 #########################配置日志查询使用druid连接池#########################################
 #配置初始化连接池数量
 druid.log.initialSize=5

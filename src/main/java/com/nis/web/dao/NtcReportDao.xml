@@ -623,7 +623,7 @@
 		</choose>
 		
 		</where>
-		group by NAS_IP order by num desc;
+		group by NAS_IP order by num desc limit 10;
 	</select>
 	<select id="findAccounList" parameterType="com.nis.domain.restful.NtcRadiusReport"
 		resultMap="NtcRadiusReportMap">
@@ -639,7 +639,7 @@
 		</choose>
 		
 		</where>
-		group by account order by num desc;
+		group by account order by num desc limit 10;
 	</select>
 	
 	<select id="findNtcRadiusReport" parameterType="com.nis.domain.restful.NtcRadiusReport"
@@ -664,6 +664,6 @@
 			</choose>
 		</where>
 		ORDER BY
- 			REPORT_TIME	ASC
+ 			REPORT_TIME	ASC  limit 10
 	</select>
 </mapper>

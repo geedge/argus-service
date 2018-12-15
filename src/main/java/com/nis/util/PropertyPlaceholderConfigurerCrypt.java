@@ -30,6 +30,20 @@ public class PropertyPlaceholderConfigurerCrypt extends PropertyPlaceholderConfi
 				props.setProperty("jdbc.clickhouse.password",
 						new String(AESUtil.decrypt(Base64.decodeBase64(clickHousePassword), clickHouseScretKey)));
 			}
+			
+			
+			
+			
+			
+			String ckLocalPassword = props.getProperty("jdbc.ckLocal.password");
+			String ckLocalScretKey = props.getProperty("jdbc.ckLocal.key");
+			if (null != ckLocalPassword) {
+				props.setProperty("jdbc.ckLocal.password",
+						new String(AESUtil.decrypt(Base64.decodeBase64(ckLocalPassword), ckLocalScretKey)));
+			}
+			
+			
+			
 			// hive
 			String hivePassword = props.getProperty("jdbc.hive.password");
 			String hiveScretKey = props.getProperty("jdbc.hive.key");

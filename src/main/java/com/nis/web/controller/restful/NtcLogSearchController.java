@@ -16,6 +16,7 @@ import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcCollectRadiusLog;
 import com.nis.domain.restful.NtcCollectVoipLog;
+import com.nis.domain.restful.NtcConnRecordLog;
 import com.nis.domain.restful.NtcDdosLog;
 import com.nis.domain.restful.NtcDnsLog;
 import com.nis.domain.restful.NtcFtpLog;
@@ -674,6 +675,42 @@ public class NtcLogSearchController extends BaseRestController {
 			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "RADIUS泛收日志检索成功", page,
+				0);
+	}
+	
+
+	@RequestMapping(value = "/ntcConnRecordLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "通联关系日志查询", httpMethod = "GET", notes = "对日志功能“通联关系日志查询”提供数据基础查询服务")
+	public Map<String, ?> ntcConnRecordLogs(Page page, NtcConnRecordLog ntcConnRecordLog, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		try {
+			if (StringUtil.isEmpty(ntcConnRecordLog.getSearchFoundStartTime())
+					&& StringUtil.isEmpty(ntcConnRecordLog.getSearchFoundEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null,
+						null, Constants.LOG_LOCAL_TIME, "minute");
+				ntcConnRecordLog.setSearchFoundStartTime(map.get("startTime"));
+				ntcConnRecordLog.setSearchFoundEndTime(map.get("endTime"));
+			}
+			ntcLogService.queryConditionCheck(auditLogThread, start,ntcConnRecordLog, NtcConnRecordLog.class, page);
+			logDataService.getData(page, ntcConnRecordLog);
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("通联关系日志检索失败:"+e.getMessage());
+			logger.error("通联关系日志检索失败："+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"通联关系日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"通联关系日志检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"通联关系日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "通联关系日志检索成功", page,
 				0);
 	}
 }
