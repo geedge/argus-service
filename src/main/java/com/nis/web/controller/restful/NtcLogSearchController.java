@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAppLog;
+import com.nis.domain.restful.NtcAsnRecord;
 import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcCollectRadiusLog;
 import com.nis.domain.restful.NtcCollectVoipLog;
@@ -733,7 +734,7 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundEndTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcConnRecordPercent.getSearchFoundEndTime());
-				}else {
+				} else {
 					throw new RestServiceException("searchFoundEndTime参数不能为空",
 							RestBusinessCode.param_formate_error.getValue());
 				}
@@ -749,7 +750,7 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundStartTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcConnRecordPercent.getSearchFoundStartTime());
-				}else {
+				} else {
 					throw new RestServiceException("searchFoundStartTime参数不能为空",
 							RestBusinessCode.param_formate_error.getValue());
 				}
@@ -778,5 +779,71 @@ public class NtcLogSearchController extends BaseRestController {
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "通联关系日志百分比检索成功",
 				ntcConnRecordPercent, 0);
+	}
+
+	@RequestMapping(value = "/ntcAsnRecord", method = RequestMethod.GET)
+	@ApiOperation(value = "ASN通联关系(源,目的)查询", httpMethod = "GET", notes = "对日志功能“ASN通联关系(源,目的)查询”提供数据基础查询服务")
+	public Map<String, ?> ntcAsnRecord(Page page, NtcAsnRecord ntcAsnRecord, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		try {
+			if (StringUtil.isEmpty(ntcAsnRecord.getSearchFoundStartTime())
+					&& StringUtil.isEmpty(ntcAsnRecord.getSearchFoundEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
+				ntcAsnRecord.setSearchFoundStartTime(map.get("startTime"));
+				ntcAsnRecord.setSearchFoundEndTime(map.get("endTime"));
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			try {
+				if (!StringUtil.isBlank(ntcAsnRecord.getSearchFoundEndTime())) {
+					sdf.setLenient(false);
+					sdf.parse(ntcAsnRecord.getSearchFoundEndTime());
+				} else {
+					throw new RestServiceException("searchFoundEndTime参数不能为空",
+							RestBusinessCode.param_formate_error.getValue());
+				}
+			} catch (ParseException e) {
+				throw new RestServiceException("searchFoundEndTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchFoundEndTime参数错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+
+			try {
+				if (!StringUtil.isBlank(ntcAsnRecord.getSearchFoundStartTime())) {
+					sdf.setLenient(false);
+					sdf.parse(ntcAsnRecord.getSearchFoundStartTime());
+				} else {
+					throw new RestServiceException("searchFoundStartTime参数不能为空",
+							RestBusinessCode.param_formate_error.getValue());
+				}
+			} catch (ParseException e) {
+				throw new RestServiceException("searchFoundStartTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchFoundStartTime参数错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+			logDataService.getNtcAsnRecord(page, ntcAsnRecord);
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("ASN通联关系(源,目的)日志检索失败:" + e.getMessage());
+			logger.error("ASN通联关系(源,目的)检索失败：" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"ASN通联关系(源,目的)检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"ASN通联关系(源,目的)检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"ASN通联关系(源,目的)检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "ASN通联关系(源,目的)检索成功",
+				page, 0);
 	}
 }

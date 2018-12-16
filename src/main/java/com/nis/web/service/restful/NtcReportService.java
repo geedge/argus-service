@@ -14,12 +14,14 @@ import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.NtcIpURLReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
 import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
+import com.nis.domain.restful.NtcURLReport;
 import com.nis.web.dao.NtcReportDao;
 import com.nis.web.service.BaseLogService;
 
@@ -53,7 +55,7 @@ public class NtcReportService extends BaseLogService {
 			pageTotal.setCount(restList.size());
 			pageTotal.setList(restList);
 			return pageTotal;
-		} else{
+		} else {
 			return page;
 		}
 
@@ -105,41 +107,73 @@ public class NtcReportService extends BaseLogService {
 		page.setList(dao.findNtcEntranceReport(entity));
 		return page;
 	}
-	
-	
-	
+
+	public Page<NtcURLReport> findNtcURLReport(Page<NtcURLReport> page, NtcURLReport entity) throws Exception {
+		entity.setPage(page);
+		Map<String, List<NtcIpURLReport>> map = new HashMap<>();
+		List<NtcURLReport> list = new ArrayList<>();
+
+		List<NtcIpURLReport> findNtcIpURLReport = dao.findNtcIpURLReport(entity);
+		for (NtcIpURLReport ntcIpURLReport : findNtcIpURLReport) {
+			String url = ntcIpURLReport.getUrl();
+			if (map.containsKey(url)) {
+				map.get(url).add(ntcIpURLReport);
+
+			} else {
+				List<NtcIpURLReport> ipUrlList = new ArrayList<>();
+				ipUrlList.add(ntcIpURLReport);
+				map.put(url, ipUrlList);
+			}
+		}
+
+		for (String url : map.keySet()) {
+			NtcURLReport ntcURLReport = new NtcURLReport();
+			ntcURLReport.setUrl(url);
+			long count = 0l;
+			List<NtcIpURLReport> list2 = map.get(url);
+			for (NtcIpURLReport ntcIpURLReport : list2) {
+				count += ntcIpURLReport.getSum();
+			}
+			ntcURLReport.setUrlCount(count);
+			ntcURLReport.setDataList(list2);
+			list.add(ntcURLReport);
+		}
+		page.setList(list);
+		return page;
+	}
+
 	public List findNtcRadiusReport(NtcRadiusReport entity) throws Exception {
 		List resultList = null;
 		if ("1".equals(entity.getSearchBusinessType())) {
 			resultList = new ArrayList<Map>();
 			Map<String, List<NtcRadiusReport>> restMap = new HashMap<String, List<NtcRadiusReport>>();
-			List<NtcRadiusReport> accountList =dao.findAccounList(entity);
+			List<NtcRadiusReport> accountList = dao.findAccounList(entity);
 			restMap.put("accountList", accountList);
-			List<NtcRadiusReport> nasIpList =dao.findNasIpList(entity);
+			List<NtcRadiusReport> nasIpList = dao.findNasIpList(entity);
 			restMap.put("nasIpList", nasIpList);
 			resultList.add(restMap);
-		}else{
+		} else {
 			resultList = new ArrayList<NtcRadiusReport>();
 			List<NtcRadiusReport> list = dao.findNtcRadiusReport(entity);
-			
+
 			String regionName = "nasIp";
 			if ("3".equals(entity.getSearchBusinessType())) {
-				regionName="account";
+				regionName = "account";
 			}
-			PropertyDescriptor pd= new PropertyDescriptor(regionName, NtcRadiusReport.class);
+			PropertyDescriptor pd = new PropertyDescriptor(regionName, NtcRadiusReport.class);
 			Method method = pd.getReadMethod();
 			NtcRadiusReport temp = null;
-			Object tempVal =null;
+			Object tempVal = null;
 			for (int i = 0; i < list.size(); i++) {
-				if (i>0) {
+				if (i > 0) {
 					NtcRadiusReport obj = list.get(i);
 					Object objVal = method.invoke(obj);
-					if (objVal!=null && tempVal!=null && !objVal.toString().equals(tempVal.toString())) {
+					if (objVal != null && tempVal != null && !objVal.toString().equals(tempVal.toString())) {
 						temp = obj;
 						tempVal = method.invoke(temp);
 						resultList.add(obj);
 					}
-				}else{
+				} else {
 					temp = list.get(i);
 					tempVal = method.invoke(temp);
 					resultList.add(list.get(i));
@@ -147,6 +181,6 @@ public class NtcReportService extends BaseLogService {
 			}
 		}
 		return resultList;
-		
+
 	}
 }

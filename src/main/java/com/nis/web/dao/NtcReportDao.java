@@ -5,12 +5,14 @@ import java.util.List;
 import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.NtcIpURLReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
 import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
+import com.nis.domain.restful.NtcURLReport;
 
 /**
  * 
@@ -30,6 +32,7 @@ public interface NtcReportDao extends CrudDao {
 	List<NtcSrcipDomesticReport> findNtcSrcipDomesticReport(NtcSrcipDomesticReport pz);
 	List<NtcDestipCountryReport> findNtcDestipCountryReport(NtcDestipCountryReport pz);
 	List<NtcEntranceReport> findNtcEntranceReport(NtcEntranceReport pz);
+	List<NtcIpURLReport> findNtcIpURLReport(NtcURLReport pz);
 	List<NtcRadiusReport> findAccounList(NtcRadiusReport pz);
 	List<NtcRadiusReport> findNasIpList(NtcRadiusReport pz);
 	List<NtcRadiusReport> findNtcRadiusReport(NtcRadiusReport pz);

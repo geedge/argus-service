@@ -2,7 +2,6 @@ package com.nis.web.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
+import com.nis.domain.restful.NtcAsnRecord;
 import com.nis.domain.restful.NtcConnRecordPercent;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -55,7 +55,6 @@ public class LogDataService {
 	}
 
 	public NtcConnRecordPercent getNtcConnRecordPercent(NtcConnRecordPercent ntcConnRecordPercent) throws Exception {
-
 		long startTime = sdf.parse(ntcConnRecordPercent.getSearchFoundStartTime().toString().trim()).getTime() / 1000;
 		long endTime = sdf.parse(ntcConnRecordPercent.getSearchFoundEndTime().toString().trim()).getTime() / 1000;
 		if (endTime - startTime < 0) {
@@ -69,7 +68,7 @@ public class LogDataService {
 		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/");
 		sql.append(second);
 		sql.append(
-				" AS bps  FROM tbs_ods_ntc_conn_record_log_local_1 t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local_1 WHERE  found_time >= ");
+				" AS bps  FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
 		sql.append(startTime);
 		sql.append(" and found_time< ");
 		sql.append(endTime);
@@ -80,6 +79,39 @@ public class LogDataService {
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, sql.toString(), false);
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, totalSql.toString(), true);
 		return ntcConnRecordPercent;
+	}
+
+	public void getNtcAsnRecord(Page page, NtcAsnRecord ntcAsnRecord) throws Exception {
+		long startTime = sdf.parse(ntcAsnRecord.getSearchFoundStartTime().toString().trim()).getTime() / 1000;
+		long endTime = sdf.parse(ntcAsnRecord.getSearchFoundEndTime().toString().trim()).getTime() / 1000;
+		if (endTime - startTime < 0) {
+			throw new RestServiceException("searchFoundStartTime() can not exceed searchFoundEndTime",
+					RestBusinessCode.param_formate_error.getValue());
+		}
+		long second = endTime - startTime;
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
+		sql.append(second);
+		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/");
+		sql.append(second);
+		sql.append(
+				" AS bps,d_asn,s_asn FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
+		sql.append(startTime);
+		sql.append(" and found_time< ");
+		sql.append(endTime);
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("select count(1) from (");
+		countSql.append(sql);
+		countSql.append(" ) group by s_asn,d_asn)");
+
+		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
+		Integer limitCount = startNum + page.getPageSize();
+
+		sql.append(" limit " + limitCount + " ) group by s_asn,d_asn  limit " + startNum + "," + page.getPageSize());
+
+		localLogJDBCByDruid.getCount(page, countSql.toString());
+
+		page.setList(localLogJDBCByDruid.getNtcAsnRecordData(sql.toString()));
 	}
 
 	/**

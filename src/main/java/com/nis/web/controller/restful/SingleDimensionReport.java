@@ -23,6 +23,7 @@ import com.nis.domain.restful.NtcReportEntity;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
+import com.nis.domain.restful.NtcURLReport;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -395,6 +396,69 @@ public class SingleDimensionReport extends BaseRestController {
 		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "运营商局点统计查询成功", reportPage,
 				0);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+	@RequestMapping(value = "/ntcURLReport", method = RequestMethod.GET)
+	@ApiOperation(value = "URL统计查询服务", httpMethod = "GET", notes = "URL统计查询服务")
+	public Map<String, ?> ntcURLReport(Page page, NtcURLReport urlReport, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+
+		Page<?> reportPage = null;
+		try {
+			resetReportTime(urlReport,false);
+			ntcReportService.queryReportConditionCheck(saveLogThread, start, urlReport, NtcURLReport.class,
+					page);
+			String orderBy = "";
+			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+				orderBy = Page.getOrderBySql(NtcURLReport.class.getSimpleName(), page.getOrderBy());
+			} else {
+				orderBy = "report_time";
+			}
+			page.setOrderBy(orderBy);
+			reportPage = ntcReportService.findNtcURLReport(
+					new Page<NtcURLReport>(request, response, NtcURLReport.class), urlReport);
+		} catch (Exception e) {
+			saveLogThread.setExceptionInfo("URL统计查询失败:"+e.getMessage());
+			logger.error("URL统计查询失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"URL统计查询失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"URL统计查询失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"URL统计查询失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "URL统计查询成功", reportPage,
+				0);
+	}
+	
+	
+	
+	
+	
+	
+	
 
 	@RequestMapping(value = "/ntcRadiusReport", method = RequestMethod.GET)
 	@ApiOperation(value = "用户行为统计查询服务", httpMethod = "GET", notes = "用户行为统计查询服务，基于用户名或接入IP维度聚合")

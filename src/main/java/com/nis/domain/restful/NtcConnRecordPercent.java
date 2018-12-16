@@ -14,13 +14,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class NtcConnRecordPercent implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String bps;
 	private String bpsPercent;
 	private String pps;
 	private String ppsPercent;
 	private String searchFoundStartTime;// 开始发现时间
 	private String searchFoundEndTime;// 结束发现时间
-	private String searchStreamDir;// 流类型
 
 	public String getBps() {
 		return bps;
@@ -70,14 +73,5 @@ public class NtcConnRecordPercent implements Serializable {
 
 	public void setSearchFoundEndTime(String searchFoundEndTime) {
 		this.searchFoundEndTime = searchFoundEndTime;
-	}
-
-	@JsonIgnore
-	public String getSearchStreamDir() {
-		return searchStreamDir;
-	}
-
-	public void setSearchStreamDir(String searchStreamDir) {
-		this.searchStreamDir = searchStreamDir;
 	}
 }

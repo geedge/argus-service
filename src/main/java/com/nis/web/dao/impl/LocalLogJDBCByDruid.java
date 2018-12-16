@@ -13,6 +13,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,8 +26,10 @@ import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
+import com.nis.domain.restful.NtcAsnRecord;
 import com.nis.domain.restful.NtcConnRecordPercent;
 import com.nis.web.service.SpringContextHolder;
+import com.zdjizhi.utils.CommonUtil;
 import com.zdjizhi.utils.StringUtil;
 
 /**
@@ -48,6 +51,9 @@ import com.zdjizhi.utils.StringUtil;
 @Repository
 public class LocalLogJDBCByDruid {
 	private final static Logger logger = LoggerFactory.getLogger(LocalLogJDBCByDruid.class);
+
+	static NumberFormat num = NumberFormat.getPercentInstance();
+
 	static DruidDataSource datasource = null;
 	Connection conn = null;
 	ResultSet rs = null;
@@ -111,6 +117,15 @@ public class LocalLogJDBCByDruid {
 		}
 	}
 
+	/**
+	 * 获取单向,流量包数和流量字节数在总的流量包数和字节数的占比
+	 * 
+	 * @param ntcConnRecordPercent
+	 * @param sql
+	 * @param isPersent
+	 * @return
+	 * @throws Exception
+	 */
 	public NtcConnRecordPercent getNtcConnRecordPercentData(NtcConnRecordPercent ntcConnRecordPercent, String sql,
 			boolean isPersent) throws Exception {
 		try {
@@ -119,7 +134,6 @@ public class LocalLogJDBCByDruid {
 			st = conn.createStatement();
 			logger.info("开始执行日志查询语句sql={}", sql);
 			rs = st.executeQuery(sql);
-			NumberFormat num = NumberFormat.getPercentInstance();
 			num.setMinimumFractionDigits(2);// 保留两位小数
 			while (rs.next()) {
 				if (isPersent) {
@@ -127,7 +141,7 @@ public class LocalLogJDBCByDruid {
 					if (!allBps.equals("0")) {
 						ntcConnRecordPercent.setBpsPercent(
 								num.format(Double.valueOf(ntcConnRecordPercent.getBps()) / Double.valueOf(allBps)));
-						ntcConnRecordPercent.setBps(num.format(Double.valueOf(ntcConnRecordPercent.getBps())));
+						ntcConnRecordPercent.setBps(subStr(ntcConnRecordPercent.getBps()));
 					} else {
 						ntcConnRecordPercent.setBpsPercent("0%");
 					}
@@ -135,7 +149,7 @@ public class LocalLogJDBCByDruid {
 					if (!allPps.equals("0")) {
 						ntcConnRecordPercent.setPpsPercent(
 								num.format(Double.valueOf(ntcConnRecordPercent.getPps()) / Double.valueOf(allPps)));
-						ntcConnRecordPercent.setPps(num.format(Double.valueOf(ntcConnRecordPercent.getPps())));
+						ntcConnRecordPercent.setPps(subStr(ntcConnRecordPercent.getPps()));
 					} else {
 						ntcConnRecordPercent.setPpsPercent("0%");
 					}
@@ -144,6 +158,7 @@ public class LocalLogJDBCByDruid {
 					String pps = rs.getString("pps");
 					ntcConnRecordPercent.setBps(bps);
 					ntcConnRecordPercent.setPps(pps);
+
 				}
 			}
 			logger.info("执行日志查询语句成功,sql={}", sql);
@@ -151,6 +166,58 @@ public class LocalLogJDBCByDruid {
 			closeConn();
 		}
 		return ntcConnRecordPercent;
+	}
+
+	/**
+	 * 获取asn,源目的的流量包数和字节数
+	 * 
+	 * @param ntcAsnRecord
+	 * @param sql
+	 * @return
+	 * @throws Exception
+	 */
+	public List<NtcAsnRecord> getNtcAsnRecordData(String sql) throws Exception {
+		List<NtcAsnRecord> list = new LinkedList<>();
+		try {
+			conn = getConnection();
+			logger.info("连接数据中心日志库成功--------------------------");
+			st = conn.createStatement();
+			logger.info("开始执行日志查询语句sql={}", sql);
+			rs = st.executeQuery(sql);
+			num.setMinimumFractionDigits(2);// 保留两位小数
+			while (rs.next()) {
+				NtcAsnRecord ntcAsnRecord = new NtcAsnRecord();
+				String bps = rs.getString("bps");
+				String pps = rs.getString("pps");
+				ntcAsnRecord.setBps(subStr(bps));
+				ntcAsnRecord.setPps(subStr(pps));
+				ntcAsnRecord.setdAsn(rs.getString("d_asn"));
+				ntcAsnRecord.setsAsn(rs.getString("s_asn"));
+				list.add(ntcAsnRecord);
+			}
+			logger.info("执行日志查询语句成功,sql={}", sql);
+		} finally {
+			closeConn();
+		}
+		return list;
+	}
+
+	/**
+	 * 截取字符串后两位
+	 * 
+	 * @param val
+	 * @return
+	 */
+	public String subStr(String val) {
+		if (val != null && val.contains(".")) {
+			int length = val.indexOf(".") + 3;
+			if (val.length() > length) {
+				return val.substring(0, length);
+			}
+
+		}
+		return val;
+
 	}
 
 	/**
