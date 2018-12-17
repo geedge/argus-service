@@ -903,9 +903,9 @@ public class DashboardServiceController extends BaseRestController {
 			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(new Date());
-				Date begin1 = cal.getTime();// 获取到完整的时间
+				Date end1 = cal.getTime();// 获取到完整的时间
 				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
-				Date end1 = cal.getTime();
+				Date begin1 = cal.getTime();
 				// 带查询时间查询所有
 				List<Map> websiteChart = dashboardService.getTopicDetails(begin1, end1);
 				if (websiteChart != null && websiteChart.size() > 0) {

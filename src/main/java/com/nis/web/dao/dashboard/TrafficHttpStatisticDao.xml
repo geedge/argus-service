@@ -132,7 +132,7 @@ FROM
 		<if test="entranceId!=null">
 			and entrance_id=#{entranceId}
 		</if>
-		group by web_id order by uniqueNum
+		group by web_id order by unique_num
 	</select>
 	<select id="getDomainTrans" resultType="com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic">
 		select 	stat_time time, unique_num count from traffic_http_focus_statistic t where
