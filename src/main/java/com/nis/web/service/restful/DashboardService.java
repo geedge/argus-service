@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Map.Entry;
 
 @Service
 public class DashboardService extends BaseService {
@@ -1063,5 +1064,126 @@ public List<Map> getTopicTop10(){
 		}
 		return dataList;
 	}
+	public String [] getFiledTypeByName(String fieldName){
+		if(fieldName==null){
+			return null;
+		}
+		String fieldType=null;
+		if("addr_type".equals(fieldName)){
+			fieldType= ntcTotalReportDao.getAddrType();
+		}
+		if("trans_type".equals(fieldName)){
+			fieldType= ntcTotalReportDao.getTransType();
+		}
+		if("entrance_id".equals(fieldName)){
+			fieldType= ntcTotalReportDao.getEntranceId();
+		}
+		return fieldType==null?null:fieldType.split(",");
+	}
+	public Map<String,List<HashMap>> getBandwidthTransEntrance(String beginDate,String endDate) {
+		long start = System.currentTimeMillis();
+		Map<String,List<TrafficTransStatistic>> listMap = new HashMap<String,List<TrafficTransStatistic>>();
+		List<TrafficTransStatistic> bandwidthList = new ArrayList<TrafficTransStatistic>();
+		bandwidthList = ntcTotalReportDao.getBandwidthTrans2(beginDate,endDate);
+		String[] addrTypes=getFiledTypeByName("addr_type");
+		String[] transTypes=getFiledTypeByName("trans_type");
+		String[] entranceIds = getFiledTypeByName("entrance_id");
+		for (String entranceId : entranceIds) {
+			for (String addrType : addrTypes) {
+				listMap.put("ipv"+addrType+"Type"+entranceId, new ArrayList<TrafficTransStatistic>());
+			}
+		}
+		for (String entranceId : entranceIds) {
+			for (String transType : transTypes) {
+				listMap.put("trans"+transType+"Type"+entranceId, new ArrayList<TrafficTransStatistic>());
+			}
+		}
+		for (TrafficTransStatistic tts : bandwidthList) {
+			String addrType = tts.getAddrType();
+			Integer entranceId = tts.getEntranceId();
+			Integer transType = tts.getTransType();
+			String key1="ipv"+addrType+"Type"+entranceId;
+			String key2="trans"+transType+"Type"+entranceId;
+			listMap.get(key1).add(tts);
+			listMap.get(key2).add(tts);
+		}
+		Map<String,List<HashMap>> resultMap=new HashMap<String,List<HashMap>>();
+		Set<Entry<String,List<TrafficTransStatistic>>> entrySet = listMap.entrySet();
+		for (Entry<String, List<TrafficTransStatistic>> entry : entrySet) {
+			String key = entry.getKey();
+			String entranceId = key.substring(key.length()-1);
+			List<TrafficTransStatistic> value = entry.getValue();
+			HashMap newData = getNewData(beginDate, endDate, value);
+			newData.put("entranceId", entranceId);
+			ArrayList<HashMap> resultList = new ArrayList<HashMap>();
+			resultList.add(newData);
+			resultMap.put(key, resultList);
+		}
+		return resultMap;
+	}
 
+	private HashMap getNewData(String beginDate, String endDate, List<TrafficTransStatistic> bandwidthList) {
+		HashMap resulMap = new HashMap();
+		List timeList = new ArrayList();
+		List linkList = new ArrayList();
+		List gbpsList = new ArrayList();
+		List ppsList = new ArrayList();
+		if (bandwidthList != null && bandwidthList.size() > 0) {
+			Map<String, Comparable> m= new HashMap<String, Comparable>();
+			int inter=1000*60*5;// 间隔时间为五分钟
+			// 开始时间，结束时间 时间戳
+			Long b = dateToStamp(beginDate);
+			Long e = dateToStamp(endDate);
+			int num=0;
+			Long pointTime=b;
+			while(pointTime<e){
+				
+				Long sumL=0l;
+				Long sumP=0l;
+				Long sumG=0l;
+				if(pointTime>=e){
+					break; //停止 
+				}
+				for (TrafficTransStatistic tt : bandwidthList) {
+					// 实际时间 
+					String time= tt.getTime();
+					Long t = dateToStamp(time);
+					if(t>=pointTime&&t<pointTime+inter){
+						// 范围之内分到此pointTime组
+						sumL=sumL+ tt.getLinkNum();
+						sumP=sumP+ tt.getPps();
+						sumG=sumG+ tt.getGbps();
+					}
+				}
+				// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
+				if(pointTime>=e-inter&&sumL>0) {
+					linkList.add(sumL);
+				}
+				if(pointTime>=e-inter&&sumP>0) {
+					ppsList.add(sumP);
+				}
+				if(pointTime>=e-inter&&sumG>0) {
+					gbpsList.add(sumG);
+				}
+				if(pointTime>=e-inter&&(sumL>0||sumG>0||sumP>0)) {
+					timeList.add(stampToDate(pointTime));
+				}
+				if(pointTime<e-inter) {
+					timeList.add(stampToDate(pointTime));
+					linkList.add(sumL);
+					gbpsList.add(sumG);
+					ppsList.add(sumP);
+				}
+				
+				num=num+1;
+				pointTime =b+inter*num;
+			}
+			resulMap.put("linkNum", linkList);
+			resulMap.put("gbps", gbpsList);
+			resulMap.put("pps", ppsList);
+			resulMap.put("statTime", timeList);
+}
+		return resulMap;
+	}
+	
 }

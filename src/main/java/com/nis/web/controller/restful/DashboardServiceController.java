@@ -188,6 +188,104 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",list, 0);
 	}
 	/**
+	 *  根据ip46,协议tcp，udp查询带宽
+	 */
+	@RequestMapping(value = "trafficBandwidthTransThree", method = RequestMethod.GET)
+	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
+	public Map<String,?> trafficBandwidthTransThree(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response) {
+		String[] addrTypes=dashboardService.getFiledTypeByName("addr_type");
+		String[] transTypes=dashboardService.getFiledTypeByName("trans_type");
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		Map<String,List<HashMap>> resultMap=new HashMap<String,List<HashMap>>();
+		try {
+			if(StringUtils.isEmpty(beginDate)||StringUtils.isEmpty(endDate)) {
+				Calendar cal = Calendar. getInstance ();
+		        cal.setTime(new Date());
+		        endDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());//获取到完整的时间
+		        cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+		        beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
+			}
+			String addrType=null;
+			Integer transType=null;
+			if(addrTypes!=null){
+				for(int i=0;i<addrTypes.length;i++){
+					addrType=addrTypes[i];
+					List<HashMap> resultList = dashboardService.getBandwidthTrans(addrType, transType,beginDate,endDate);
+					if (resultList!=null&&resultList.size() > 0) {
+						resultMap.put("ipv"+addrType+"Type1", resultList);
+					}
+					
+					resultList = dashboardService.getBandwidthTrans2(addrType, transType,beginDate,endDate);
+					if (resultList!=null&&resultList.size() > 0) {
+						resultMap.put("ipv"+addrType+"Type2", resultList);
+					}
+					addrType=null;
+				}
+			}
+			if(transTypes!=null){
+				for(int i=0;i<transTypes.length;i++){
+					transType=Integer.valueOf(transTypes[i]);
+					List<HashMap> resultList = dashboardService.getBandwidthTrans(addrType, transType,beginDate,endDate);
+					if (resultList!=null&&resultList.size() > 0) {
+						resultMap.put("trans"+transType+"Type1", resultList);
+					}
+					resultList = dashboardService.getBandwidthTrans2(addrType, transType,beginDate,endDate);
+					if (resultList!=null&&resultList.size() > 0) {
+						resultMap.put("trans"+transType+"Type2", resultList);
+					}
+					transType=null;
+				}
+			}
+			
+			
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());
+			logger.error("带宽实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",resultMap, 0);
+	}
+	/**
+	 *  根据ip46,协议tcp，udp查询带宽
+	 */
+	@RequestMapping(value = "trafficBandwidthTransFour", method = RequestMethod.GET)
+	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
+	public Map<String,?> trafficBandwidthTransFour(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response) {
+		String[] addrTypes=dashboardService.getFiledTypeByName("addr_type");
+		String[] transTypes=dashboardService.getFiledTypeByName("trans_type");
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		Map<String, List<HashMap>> resultMap=new HashMap<String, List<HashMap>>();
+		try {
+			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate);
+			
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());
+			logger.error("带宽实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",resultMap, 0);
+	}
+	/**
 	 * 流量统计活跃端口统计
 	 */
 	@RequestMapping(value = "trafficPortActive", method = RequestMethod.GET)
