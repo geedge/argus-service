@@ -983,19 +983,19 @@ public class DashboardService extends BaseService {
 					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
 						String countStr = String.valueOf(webIdAndCountMap.get("byteCount"));
 						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
-						String packetsStr = String.valueOf(webIdAndCountMap.get("packets"));
+						String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
 						if (countStr != null) {
 							count += Long.parseLong(countStr);// 将count累加
-							list.add(webIdAndCountMap);
 						}
 						if (linkNumStr != null) {
 							linkNum += Long.parseLong(linkNumStr);// 将count累加
-							list.add(webIdAndCountMap);
 						}
 						if (packetsStr != null) {
 							packets += Long.parseLong(packetsStr);// 将count累加
-							list.add(webIdAndCountMap);
 						}
+						webIdAndCountMap.remove("linkNum");
+						webIdAndCountMap.remove("pktCount");
+						list.add(webIdAndCountMap);
 					}
 				}
 			}
