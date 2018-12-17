@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -40,7 +41,8 @@ public class NtcHttpLog extends LogEntity {
     @ApiModelProperty(value="应答体转储文件KEY", required=true)
     protected String resBodyKey;
     
-    protected String searchUrl; //命中url
+    protected String searchUrl; //url查询条件
+    protected String searchWebsite; //website查询条件
     public String getUrl() {
         return url;
     }
@@ -130,6 +132,8 @@ public class NtcHttpLog extends LogEntity {
 	/**
 	 * @return the searchUrl
 	 */
+
+	@JsonIgnore
 	public String getSearchUrl() {
 		return searchUrl;
 	}
@@ -140,4 +144,16 @@ public class NtcHttpLog extends LogEntity {
 	public void setSearchUrl(String searchUrl) {
 		this.searchUrl = searchUrl;
 	}
+
+	@JsonIgnore
+	public String getSearchWebsite() {
+		return searchWebsite;
+	}
+
+	public void setSearchWebsite(String searchWebsite) {
+		this.searchWebsite = searchWebsite;
+	}
+	
+	
+	
 }

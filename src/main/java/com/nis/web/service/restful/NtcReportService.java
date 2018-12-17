@@ -14,6 +14,7 @@ import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.NtcIpRangeReport;
 import com.nis.domain.restful.NtcIpURLReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
@@ -183,4 +184,12 @@ public class NtcReportService extends BaseLogService {
 		return resultList;
 
 	}
+
+	
+	
+	public List<NtcIpRangeReport> findNtcIpRangeReport(NtcIpRangeReport entity) throws Exception {
+		List<NtcIpRangeReport> list = dao.findNtcIpRangeReport(entity);
+		return list;
+	}
+
 }

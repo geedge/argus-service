@@ -18,19 +18,13 @@ public interface TrafficHttpStatisticDao {
 	// 获取域名分类之后属于的网站
 	List<Map> getDomainByWebsiteList(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 
-	List<Map> preWebsiteListCount(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
-
 	List<Map> getDomainByWebsiteServiceId(@Param("webIdList") List webIdList,@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 
 	Map websiteDomainOthers(@Param("webIdList") List webIdList, @Param("statTime") Date statTime,
 			@Param("endTime") Date endTime);
 
 	List<Map> getDomainByTopicList(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
-
-	List<Map> getDomainByTopicId(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
-
+	List<Map> getHttpStatisticNoLinkAndPkt(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+	List<Map> getTrafficHttpStatistic(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 	List getIdByWebSiteId(@Param("websiteId") Integer websiteId);
-
-	List<Map> getDomainList(@Param("beginDate")Date beginDate, @Param("endDate") Date endDate);
-
 }
