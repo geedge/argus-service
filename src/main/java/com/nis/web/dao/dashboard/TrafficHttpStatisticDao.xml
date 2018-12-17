@@ -59,13 +59,19 @@
 	</select>
 
 	<!--获取上个时间段该网站站域名流量的数据量 -->
+	<select id="getHttpStatisticNoLinkAndPkt" resultType="java.util.HashMap">
+		select 	web_id webId,
+		SUM(c2s_byte_len + s2c_byte_len) byteCount from 
+		traffic_http_statistic t where
+		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id ]]>
+	</select>
 	<select id="getTrafficHttpStatistic" resultType="java.util.HashMap">
 		select 	web_id webId,
 	SUM(c2s_byte_len + s2c_byte_len) byteCount,
 	sum(c2s_pkt_num + s2c_pkt_num) pktCount,
 	link_num linkNum from
 		traffic_http_statistic t where
-		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id,link_num order by byteCount]]>
+		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id,link_num]]>
 
 	</select>
 

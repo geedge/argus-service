@@ -24,6 +24,7 @@ public interface TrafficHttpStatisticDao {
 			@Param("endTime") Date endTime);
 
 	List<Map> getDomainByTopicList(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
+	List<Map> getHttpStatisticNoLinkAndPkt(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 	List<Map> getTrafficHttpStatistic(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 	List getIdByWebSiteId(@Param("websiteId") Integer websiteId);
 }

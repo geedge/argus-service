@@ -852,14 +852,12 @@ public class DashboardService extends BaseService {
 
 		Set<Long> set = new HashSet<>();
 		Map<Long, List<Map>> countAndViewMap = new HashMap<>();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
-		List<Map> webIdAndCountList = trafficHttpStatisticDao.getTrafficHttpStatistic(beginDate, endDate);// 获取最近一小时的webid和count的关系
-		List<Map> prevWebIdAndCountList = trafficHttpStatisticDao.getTrafficHttpStatistic(getBeforeByHourTime(2),
+		List<Map> webIdAndCountList = trafficHttpStatisticDao.getHttpStatisticNoLinkAndPkt(beginDate, endDate);// 获取最近一小时的webid和count的关系
+		List<Map> prevWebIdAndCountList = trafficHttpStatisticDao.getHttpStatisticNoLinkAndPkt(getBeforeByHourTime(2),
 				beginDate);// 获取最近一小时的webid和count的关系
 		for (String websiteServiceId : websiteIdAndIdMap.keySet()) {// 遍历上面获取的websiteServiceId和id的对应关系,拼接json
 			Map viewMap = new HashMap<>();
 			long count = 0l;// 记录当前websiteServiceId所有的count
-			long linkNum = 0l;//
-			long packets = 0l;//
 			long prevCount = 0l;// 记录当前websiteServiceId所有的count
 			List<String> idList = websiteIdAndIdMap.get(websiteServiceId);// 根据websiteServiceId获取对应的id
 			for (String id : idList) {
@@ -867,16 +865,8 @@ public class DashboardService extends BaseService {
 					String webId = String.valueOf(webIdAndCountMap.get("webId"));
 					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
 						String countStr = String.valueOf(webIdAndCountMap.get("byteCount"));
-						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
-						String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
 						if (countStr != null) {
 							count += Long.parseLong(countStr);// 将count累加
-						}
-						if (linkNumStr != null) {
-							linkNum += Long.parseLong(linkNumStr);// 将count累加
-						}
-						if (packetsStr != null) {
-							packets += Long.parseLong(packetsStr);// 将count累加
 						}
 					}
 				}
@@ -893,8 +883,6 @@ public class DashboardService extends BaseService {
 			}
 			viewMap.put("websiteServiceId", websiteServiceId);
 			viewMap.put("count", count);
-			viewMap.put("linkNum", linkNum);
-			viewMap.put("packets", packets);
 			viewMap.put("pktNum", 0);
 			viewMap.put("byteLen", 0);
 			viewMap.put("preCount", prevCount);
