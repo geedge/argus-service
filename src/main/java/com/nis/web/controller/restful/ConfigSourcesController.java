@@ -98,17 +98,19 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("Maat 规则存储异常:" + e.getMessage());
-			logger.error("Maat 规则存储异常:" + e.getMessage());
+			thread.setExceptionInfo("Maat 规则存储异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("Maat 规则存储异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"Maat 规则存储异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+						"Maat 规则存储异常:" + ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"Maat 规则存储异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+						"Maat 规则存储异常:" + ExceptionUtil.getExceptionMsg(e),
+						((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"Maat 规则存储异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"Maat 规则存储异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 
 		} finally {
@@ -152,17 +154,21 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("MAAT规则状态更新时出现异常:" + e.getMessage());
-			logger.error("MAAT规则状态更新时出现异常:" + e.getMessage());
+
+			thread.setExceptionInfo("MAAT规则状态更新时出现异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("MAAT规则状态更新时出现异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"MAAT规则状态更新时出现异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+						"MAAT规则状态更新时出现异常:" + ExceptionUtil.getExceptionMsg(e),
+						((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"MAAT规则状态更新时出现异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+						"MAAT规则状态更新时出现异常:" + ExceptionUtil.getExceptionMsg(e),
+						((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"MAAT规则状态更新时出现异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"MAAT规则状态更新时出现异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 		} finally {
 			deblocking(requestId);
@@ -213,17 +219,18 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("回调规则存储异常:" + e.getMessage());
-			logger.error("回调规则存储异常:" + e.getMessage());
+			thread.setExceptionInfo("回调规则存储异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("回调规则存储异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start, "回调规则存储异常:" + e.getMessage(),
-						((RestServiceException) e).getErrorCode());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"回调规则存储异常:" + ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start, "回调规则存储异常:" + e.getMessage(),
-						((ServiceRuntimeException) e).getErrorCode());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"回调规则存储异常:" + ExceptionUtil.getExceptionMsg(e), ((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"回调规则存储异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"回调规则存储异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 		} finally {
 			deblocking(requestId);
@@ -247,17 +254,18 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("回调规则内容更新异常:" + e.getMessage());
-			logger.error("回调规则内容更新异常:" + e.getMessage());
+			thread.setExceptionInfo("回调规则内容更新异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("回调规则内容更新异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"回调规则内容更新异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+						"回调规则内容更新异常:" + ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"回调规则内容更新异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+						"回调规则内容更新异常:" + ExceptionUtil.getExceptionMsg(e), ((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"回调规则内容更新异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"回调规则内容更新异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 		} finally {
 			deblocking(requestId);
@@ -282,17 +290,18 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("回调规则状态更新异常:" + e.getMessage());
-			logger.error("回调规则状态更新异常:" + e.getMessage());
+			thread.setExceptionInfo("回调规则状态更新异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("回调规则状态更新异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"回调规则状态更新异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+						"回调规则状态更新异常:" + ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"回调规则状态更新异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+						"回调规则状态更新异常:" + ExceptionUtil.getExceptionMsg(e), ((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"回调规则状态更新异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"回调规则状态更新异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 		} finally {
 			deblocking(requestId);
@@ -344,24 +353,25 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage());
-			thread.setExceptionInfo(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage());
+			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e));
+			thread.setExceptionInfo(
+					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e));
 			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage(),
+					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e),
 					RestBusinessCode.FileUploadFailure.getValue());
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error("文件上传异常:" + e.getMessage());
-			thread.setExceptionInfo("文件上传异常:" + e.getMessage());
+			logger.error("文件上传异常:" + ExceptionUtil.getExceptionMsg(e));
+			thread.setExceptionInfo("文件上传异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start, e.getMessage(),
-						((RestServiceException) e).getErrorCode());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
-				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, e.getMessage(),
-						((ServiceRuntimeException) e).getErrorCode());
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						ExceptionUtil.getExceptionMsg(e), ((ServiceRuntimeException) e).getErrorCode());
 			} else {
-				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, e.getMessage(),
-						RestBusinessCode.FileUploadFailure.getValue());
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						ExceptionUtil.getExceptionMsg(e), RestBusinessCode.FileUploadFailure.getValue());
 			}
 
 		}
@@ -415,24 +425,26 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage());
-			thread.setExceptionInfo(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage());
+			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e));
+			thread.setExceptionInfo(
+					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e));
 			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage(),
+					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e),
 					RestBusinessCode.FileUploadFailure.getValue());
 		} catch (Exception e) {
 			// TODO: handle exception
-			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage());
-			thread.setExceptionInfo(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + e.getMessage());
+			logger.error(RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e));
+			thread.setExceptionInfo(
+					RestBusinessCode.FileUploadFailure.getErrorReason() + ":" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
-				throw new RestServiceException(thread, System.currentTimeMillis() - start, e.getMessage(),
-						((RestServiceException) e).getErrorCode());
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
-				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, e.getMessage(),
-						((ServiceRuntimeException) e).getErrorCode());
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						ExceptionUtil.getExceptionMsg(e), ((ServiceRuntimeException) e).getErrorCode());
 			} else {
-				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start, e.getMessage(),
-						RestBusinessCode.FileUploadFailure.getValue());
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						ExceptionUtil.getExceptionMsg(e), RestBusinessCode.FileUploadFailure.getValue());
 			}
 		}
 		try {
@@ -449,10 +461,12 @@ public class ConfigSourcesController extends BaseRestController {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			logger.error(RestBusinessCode.GetFileDigestFailure.getValue() + ":" + e.getMessage() + ",请检查摘要获取工具是否安装成功");
-			thread.setExceptionInfo("摘要获取过程中出现异常:" + e.getMessage() + ",请检查摘要获取工具是否安装成功");
-			throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-					RestBusinessCode.GetFileDigestFailure.getErrorReason() + ":" + e.getMessage() + ",请检查摘要获取工具是否安装成功",
+			logger.error(RestBusinessCode.GetFileDigestFailure.getValue() + ":" + ExceptionUtil.getExceptionMsg(e)
+					+ ",请检查摘要获取工具是否安装成功");
+			thread.setExceptionInfo("摘要获取过程中出现异常:" + ExceptionUtil.getExceptionMsg(e) + ",请检查摘要获取工具是否安装成功");
+			throw new ServiceRuntimeException(
+					thread, System.currentTimeMillis() - start, RestBusinessCode.GetFileDigestFailure.getErrorReason()
+							+ ":" + ExceptionUtil.getExceptionMsg(e) + ",请检查摘要获取工具是否安装成功",
 					RestBusinessCode.GetFileDigestFailure.getValue());
 		}
 		return serviceResponse(thread, System.currentTimeMillis() - start, request, response, "摘要获取成功", resultObject);
@@ -485,17 +499,20 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("Maat 分组复用规则存储异常:" + e.getMessage());
-			logger.error("Maat 分组复用规则存储异常:" + e.getMessage());
+			thread.setExceptionInfo("Maat 分组复用规则存储异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("Maat 分组复用规则存储异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"Maat 分组复用规则存储异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+						"Maat 分组复用规则存储异常:" + ExceptionUtil.getExceptionMsg(e),
+						((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"Maat 分组复用规则存储异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+						"Maat 分组复用规则存储异常:" + ExceptionUtil.getExceptionMsg(e),
+						((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"Maat 分组复用规则存储异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"Maat 分组复用规则存储异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 
 		} finally {
@@ -535,17 +552,20 @@ public class ConfigSourcesController extends BaseRestController {
 			}
 		} catch (Exception e) {
 			// TODO: handle exception
-			thread.setExceptionInfo("MAAT规则状态更新时出现异常:" + e.getMessage());
-			logger.error("删除MAAT规则分组复用域配置时出现异常:" + e.getMessage());
+			thread.setExceptionInfo("MAAT规则状态更新时出现异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("删除MAAT规则分组复用域配置时出现异常:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(thread, System.currentTimeMillis() - start,
-						"删除MAAT规则分组复用域配置时出现异常:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+						"删除MAAT规则分组复用域配置时出现异常:" + ExceptionUtil.getExceptionMsg(e),
+						((RestServiceException) e).getErrorCode());
 			} else if (e instanceof ServiceRuntimeException) {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"删除MAAT规则分组复用域配置时出现异常:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+						"删除MAAT规则分组复用域配置时出现异常:" + ExceptionUtil.getExceptionMsg(e),
+						((ServiceRuntimeException) e).getErrorCode());
 			} else {
 				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
-						"删除MAAT规则分组复用域配置时出现异常:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"删除MAAT规则分组复用域配置时出现异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
 			}
 		} finally {
 			deblocking(requestId);
@@ -563,18 +583,17 @@ public class ConfigSourcesController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				compileId);
-		Map map=null;
+		Map map = null;
 		try {
-			map=configRedisService.getAllKVByCompileId(compileId);
+			map = configRedisService.getAllKVByCompileId(compileId);
 		} catch (Exception e) {
-			thread.setExceptionInfo("根据配置id获取对应的编译,组,域等信息时出现异常:" + e.getMessage());
-			logger.error("根据配置id获取对应的编译,组,域等信息时出现异常:" +ExceptionUtil.getExceptionMsg(e));
-			throw new RestServiceException("根据配置id获取对应的编译,组,域等信息失败",
-					RestBusinessCode.ConfigSourceIsNull.getValue());
+			thread.setExceptionInfo("根据配置id获取对应的编译,组,域等信息时出现异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("根据配置id获取对应的编译,组,域等信息时出现异常:" + ExceptionUtil.getExceptionMsg(e));
+			throw new RestServiceException("根据配置id获取对应的编译,组,域等信息失败", RestBusinessCode.ConfigSourceIsNull.getValue());
 
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
-				"根据配置id获取对应的编译,组,域等信息成功",  map);
+				"根据配置id获取对应的编译,组,域等信息成功", map);
 	}
 
 	private void validateGroupReuseSource(AuditLogThread thread, long start, GroupReuseSource groupReuseSource) {

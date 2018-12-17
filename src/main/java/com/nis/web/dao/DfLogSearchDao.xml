@@ -1517,7 +1517,7 @@
 		<result column="inner_dmac" jdbcType="VARCHAR" property="innerDmac" />
 		
 		
-		<result column="app_label" jdbcType="BIGINT" property="appLabel" />
+		<result column="app_label" jdbcType="VARCHAR" property="appLabel" />
 		<result column="c2s_pkt_num" jdbcType="VARCHAR" property="c2sPktNum" />
 		<result column="s2c_pkt_num" jdbcType="VARCHAR" property="s2cPktNum" />
 		<result column="c2s_byte_num" jdbcType="VARCHAR" property="c2sByteNum" />

@@ -17,9 +17,9 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final Long serialVersionUID = 1L;
 	@ApiModelProperty(value = "", required = true)
-	protected Long appLabel;
+	protected String appLabel;
 	@ApiModelProperty(value = "", required = true)
 	protected String c2sPktNum;
 	@ApiModelProperty(value = "", required = true)
@@ -29,11 +29,11 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	@ApiModelProperty(value = "", required = true)
 	protected String s2cByteNum;
 
-	public Long getAppLabel() {
+	public String getAppLabel() {
 		return appLabel;
 	}
 
-	public void setAppLabel(Long appLabel) {
+	public void setAppLabel(String appLabel) {
 		this.appLabel = appLabel;
 	}
 

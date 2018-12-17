@@ -25,7 +25,7 @@ import com.nis.domain.restful.NtcReportEntity;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
-import com.nis.domain.restful.NtcURLReport;
+import com.nis.domain.restful.NtcURLIpReport;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -413,7 +413,7 @@ public class SingleDimensionReport extends BaseRestController {
 
 	@RequestMapping(value = "/ntcURLReport", method = RequestMethod.GET)
 	@ApiOperation(value = "URL统计查询服务", httpMethod = "GET", notes = "URL统计查询服务")
-	public Map<String, ?> ntcURLReport(Page page, NtcURLReport urlReport, Model model, HttpServletRequest request,
+	public Map<String, ?> ntcURLReport(Page page, NtcURLIpReport urlReport, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
@@ -422,16 +422,16 @@ public class SingleDimensionReport extends BaseRestController {
 		Page<?> reportPage = null;
 		try {
 			resetReportTime(urlReport, false);
-			ntcReportService.queryReportConditionCheck(saveLogThread, start, urlReport, NtcURLReport.class, page);
+			ntcReportService.queryReportConditionCheck(saveLogThread, start, urlReport, NtcURLIpReport.class, page);
 			String orderBy = "";
 			if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
-				orderBy = Page.getOrderBySql(NtcURLReport.class.getSimpleName(), page.getOrderBy());
+				orderBy = Page.getOrderBySql(NtcURLIpReport.class.getSimpleName(), page.getOrderBy());
 			} else {
 				orderBy = "report_time";
 			}
 			page.setOrderBy(orderBy);
 			reportPage = ntcReportService
-					.findNtcURLReport(new Page<NtcURLReport>(request, response, NtcURLReport.class), urlReport);
+					.findNtcURLReport(new Page<NtcURLIpReport>(request, response, NtcURLIpReport.class), urlReport);
 		} catch (Exception e) {
 			saveLogThread.setExceptionInfo("URL统计查询失败:" + e.getMessage());
 			logger.error("URL统计查询失败:" + ExceptionUtil.getExceptionMsg(e));

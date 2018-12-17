@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
 import com.nis.domain.Page;
 
-public class NtcIpRangeReport<T>  implements Serializable {
+public class NtcIpRangeReport<T> implements Serializable {
 
 	/**
 	 * 
@@ -24,11 +24,11 @@ public class NtcIpRangeReport<T>  implements Serializable {
 	private Long ipEndNum;
 	private String ipSub;
 	private String country;
+
+	private Integer areaType;
 	private String searchType;
 	private String searchCountry;
 
-	
-	
 	public String getIpStart() {
 		return ipStart;
 	}
@@ -77,6 +77,14 @@ public class NtcIpRangeReport<T>  implements Serializable {
 		this.country = country;
 	}
 
+	public Integer getAreaType() {
+		return areaType;
+	}
+
+	public void setAreaType(Integer areaType) {
+		this.areaType = areaType;
+	}
+
 	@JsonIgnore
 	public String getSearchType() {
 		return searchType;
@@ -94,6 +102,5 @@ public class NtcIpRangeReport<T>  implements Serializable {
 	public void setSearchCountry(String searchCountry) {
 		this.searchCountry = searchCountry;
 	}
-
 
 }

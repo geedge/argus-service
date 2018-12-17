@@ -50,7 +50,7 @@
   <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
   	select SUM(c2s_byte_len+s2c_byte_len) count ,stat_time time from traffic_ip_active_statistic
   	WHERE ip_addr=#{ipAddr} and
-	<![CDATA[ stat_time> #{beginDate} and stat_time<=#{endDate}]]>
+	<![CDATA[ stat_time> #{beginDate} and stat_time<=#{endDate}  GROUP BY stat_time]]>
   </select>
     <!-- IP流量统计一小时-->
   <select id="ipActiveOneHour" resultType="java.util.HashMap">

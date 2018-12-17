@@ -6,14 +6,13 @@ import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.NtcIpRangeReport;
-import com.nis.domain.restful.NtcIpURLReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
 import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
-import com.nis.domain.restful.NtcURLReport;
+import com.nis.domain.restful.NtcURLIpReport;
 
 /**
  * 
@@ -26,18 +25,32 @@ import com.nis.domain.restful.NtcURLReport;
 @MyBatisDao
 public interface NtcReportDao extends CrudDao {
 	List<NtcPzReport> findNtcPzReport(NtcPzReport pz);
+
 	List<NtcServiceReport> findNtcServiceReport(NtcServiceReport pz);
+
 	List<NtcTagReport> findNtcTagReport(NtcTagReport pz);
+
 	List<NtcAttrTypeReport> findNtcAttrTypeReport(NtcAttrTypeReport pz);
+
 	List<NtcLwhhReport> findNtcLwhhReport(NtcLwhhReport pz);
+
 	List<NtcSrcipDomesticReport> findNtcSrcipDomesticReport(NtcSrcipDomesticReport pz);
+
 	List<NtcDestipCountryReport> findNtcDestipCountryReport(NtcDestipCountryReport pz);
+
 	List<NtcEntranceReport> findNtcEntranceReport(NtcEntranceReport pz);
-	List<NtcIpURLReport> findNtcIpURLReport(NtcURLReport pz);
+
+	List<NtcURLIpReport> findNtcIpURLReport(NtcURLIpReport pz);
+
 	List<NtcRadiusReport> findAccounList(NtcRadiusReport pz);
+
 	List<NtcRadiusReport> findNasIpList(NtcRadiusReport pz);
+
 	List<NtcRadiusReport> findNtcRadiusReport(NtcRadiusReport pz);
-	
-	
+
 	List<NtcIpRangeReport> findNtcIpRangeReport(NtcIpRangeReport pz);
+
+	void insertNtcIpRangeBatch(List<NtcIpRangeReport> list);
+
+	void truncateNtcIpRange();
 }

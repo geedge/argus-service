@@ -2,6 +2,7 @@ package com.nis.web.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,6 +81,58 @@ public class LogDataService {
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, totalSql.toString(), true);
 		return ntcConnRecordPercent;
 	}
+	
+	public static void main(String[] args) throws ParseException {
+		String asn = "s_asn  ";
+
+		long startTime = sdf.parse("2018-12-17 21:30:00").getTime() / 1000;
+		long endTime = sdf.parse("2018-12-17 21:50:00").getTime() / 1000;
+		
+		long second = 200l;
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
+		sql.append(second);
+		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/");
+		sql.append(second);
+		sql.append(" AS bps,");
+		sql.append(asn);
+		sql.append(
+				" asn FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
+		sql.append(startTime);
+		sql.append(" and found_time< ");
+		sql.append(endTime);
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("select count(1) from (");
+		countSql.append(sql);
+		countSql.append(" ) group by ");
+		countSql.append(asn+")");
+
+		Integer startNum =0;
+		Integer limitCount = startNum + 20;
+
+		sql.append(" limit " + limitCount + " ) group by "+asn+" limit " + startNum + "," + 20);
+
+		
+		System.out.println(sql);
+		System.out.println(countSql);
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	public void getNtcAsnRecord(Page page, NtcAsnRecord ntcAsnRecord) throws Exception {
 		long startTime = sdf.parse(ntcAsnRecord.getSearchFoundStartTime().toString().trim()).getTime() / 1000;
@@ -88,26 +141,36 @@ public class LogDataService {
 			throw new RestServiceException("searchFoundStartTime() can not exceed searchFoundEndTime",
 					RestBusinessCode.param_formate_error.getValue());
 		}
+		
+		
+		
+		String asn = "s_asn  ";
+		if (ntcAsnRecord.getSearchAsnType().trim().equals("1")) {
+			asn = "d_asn  ";
+		}
+
 		long second = endTime - startTime;
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
 		sql.append(second);
 		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/");
 		sql.append(second);
+		sql.append(" AS bps,");
+		sql.append(asn);
 		sql.append(
-				" AS bps,d_asn,s_asn FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
+				" asn FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
 		sql.append(startTime);
 		sql.append(" and found_time< ");
 		sql.append(endTime);
 		StringBuffer countSql = new StringBuffer();
 		countSql.append("select count(1) from (");
 		countSql.append(sql);
-		countSql.append(" ) group by s_asn,d_asn)");
-
+		countSql.append(" ) group by ");
+		countSql.append(asn+")");
 		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
 		Integer limitCount = startNum + page.getPageSize();
 
-		sql.append(" limit " + limitCount + " ) group by s_asn,d_asn  limit " + startNum + "," + page.getPageSize());
+		sql.append(" limit " + limitCount + " ) group by "+asn+" limit " + startNum + "," + page.getPageSize());
 
 		localLogJDBCByDruid.getCount(page, countSql.toString());
 
@@ -228,7 +291,7 @@ public class LogDataService {
 								String type = filedsType.get(key).trim();
 								if (type.equals("java.lang.String")) {
 									String field = filedAndColumnMap.get(key).toLowerCase();
-									if (field.equals("url")||field.equals("website")) {
+									if (field.equals("url") || field.equals("website")) {
 										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
 									} else {
 										whereSB.append(" and " + field + "='"

@@ -15,14 +15,13 @@ import com.nis.domain.restful.NtcAttrTypeReport;
 import com.nis.domain.restful.NtcDestipCountryReport;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.NtcIpRangeReport;
-import com.nis.domain.restful.NtcIpURLReport;
 import com.nis.domain.restful.NtcLwhhReport;
 import com.nis.domain.restful.NtcPzReport;
 import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.NtcServiceReport;
 import com.nis.domain.restful.NtcSrcipDomesticReport;
 import com.nis.domain.restful.NtcTagReport;
-import com.nis.domain.restful.NtcURLReport;
+import com.nis.domain.restful.NtcURLIpReport;
 import com.nis.web.dao.NtcReportDao;
 import com.nis.web.service.BaseLogService;
 
@@ -109,37 +108,9 @@ public class NtcReportService extends BaseLogService {
 		return page;
 	}
 
-	public Page<NtcURLReport> findNtcURLReport(Page<NtcURLReport> page, NtcURLReport entity) throws Exception {
+	public Page<NtcURLIpReport> findNtcURLReport(Page<NtcURLIpReport> page, NtcURLIpReport entity) throws Exception {
 		entity.setPage(page);
-		Map<String, List<NtcIpURLReport>> map = new HashMap<>();
-		List<NtcURLReport> list = new ArrayList<>();
-
-		List<NtcIpURLReport> findNtcIpURLReport = dao.findNtcIpURLReport(entity);
-		for (NtcIpURLReport ntcIpURLReport : findNtcIpURLReport) {
-			String url = ntcIpURLReport.getUrl();
-			if (map.containsKey(url)) {
-				map.get(url).add(ntcIpURLReport);
-
-			} else {
-				List<NtcIpURLReport> ipUrlList = new ArrayList<>();
-				ipUrlList.add(ntcIpURLReport);
-				map.put(url, ipUrlList);
-			}
-		}
-
-		for (String url : map.keySet()) {
-			NtcURLReport ntcURLReport = new NtcURLReport();
-			ntcURLReport.setUrl(url);
-			long count = 0l;
-			List<NtcIpURLReport> list2 = map.get(url);
-			for (NtcIpURLReport ntcIpURLReport : list2) {
-				count += ntcIpURLReport.getSum();
-			}
-			ntcURLReport.setUrlCount(count);
-			ntcURLReport.setDataList(list2);
-			list.add(ntcURLReport);
-		}
-		page.setList(list);
+		page.setList(dao.findNtcIpURLReport(entity));
 		return page;
 	}
 

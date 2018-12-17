@@ -71,11 +71,12 @@
 			property="reportTime" />
 	</resultMap>
 
-	<resultMap id="NtcIpURLReportMap"
-		type="com.nis.domain.restful.NtcIpURLReport">
+	<resultMap id="NtcURLIpReportMap"
+		type="com.nis.domain.restful.NtcURLIpReport">
 		<result column="url" jdbcType="VARCHAR" property="url" />
-		<result column="SUM" jdbcType="BIGINT" property="sum" />
-		<result column="ip_addr" jdbcType="VARCHAR" property="ipAddr" />
+		<result column="ipCount" jdbcType="BIGINT" property="ipCount" />
+		<result column="connCount" jdbcType="BIGINT" property="connCount" />
+		<result column="reportTime" jdbcType="TIMESTAMP" property="reportTime" />
 	</resultMap>
 
 	<resultMap id="NtcRadiusReportMap"
@@ -744,8 +745,8 @@
 	</select>
 
 	<select id="findNtcIpURLReport"
-		parameterType="com.nis.domain.restful.NtcURLReport"
-		resultMap="NtcIpURLReportMap">
+		parameterType="com.nis.domain.restful.NtcURLIpReport"
+		resultMap="NtcURLIpReportMap">
 		SELECT
 		<choose>
 			<when
@@ -753,10 +754,13 @@
 				${page.fields}
 			</when>
 			<otherwise>
-				url, ip_addr,SUM
+				url, ipCount,connCount,reportTime
 			</otherwise>
 		</choose>
-		FROM (SELECT url, SUM(SUM) SUM ,ip_addr
+		FROM (SELECT url,
+	count(distinct ip_addr) ipCount,
+	sum(sum) connCount,
+	stat_time reportTime
 		FROM ntc_reject_url_statistic
 
 		<where>
@@ -772,7 +776,7 @@
 				AND url = #{searchUrl}
 			</if>
 		</where>
-		GROUP BY url,ip_addr
+		GROUP BY url,stat_time
 		) ntc_reject_url_statistic
 		<choose>
 			<when
@@ -853,7 +857,8 @@
 		parameterType="com.nis.domain.restful.NtcIpRangeReport"
 		resultMap="NtcIpRangeReportMap">
 		SELECT ip_start,ip_end,ip_start_num,ip_end_num,ip_sub
-		FROM traffic_ip_identify 
+		FROM
+		traffic_ip_identify
 		<where>
 			<if test="searchType != null and searchType !=''">
 				<![CDATA[AND areaType = #{searchType}]]>
@@ -864,4 +869,21 @@
 		</where>
 	</select>
 
+
+	<insert id="insertNtcIpRangeBatch"
+		parameterType="com.nis.domain.restful.NtcIpRangeReport">
+		INSERT INTO traffic_ip_identify
+		(ip_start,ip_end,ip_start_num,ip_end_num,ip_sub,area_type,country)
+		VALUES
+		<foreach collection="list" item="ipRange" separator=",">
+			(#{ipRange.ipStart}, #{ipRange.ipEnd},
+			#{ipRange.ipStartNum}, #{ipRange.ipEndNum},
+			#{ipRange.ipSub}, #{ipRange.areaType},
+			#{ipRange.country})
+		</foreach>
+	</insert>
+
+	<update id="truncateNtcIpRange">
+		truncate table traffic_ip_identify
+	</update>
 </mapper>

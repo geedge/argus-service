@@ -20,10 +20,11 @@ public class NtcAsnRecord implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String bps;
 	private String pps;
-	private String sAsn;
-	private String dAsn;
+	private String asn;
 	private String searchFoundStartTime;// 开始发现时间
 	private String searchFoundEndTime;// 结束发现时间
+
+	private String searchAsnType;// 1是d_asn,2是s_asn
 
 	public String getBps() {
 		return bps;
@@ -41,20 +42,21 @@ public class NtcAsnRecord implements Serializable {
 		this.pps = pps;
 	}
 
-	public String getsAsn() {
-		return sAsn;
+	public String getAsn() {
+		return asn;
 	}
 
-	public void setsAsn(String sAsn) {
-		this.sAsn = sAsn;
+	public void setAsn(String asn) {
+		this.asn = asn;
 	}
 
-	public String getdAsn() {
-		return dAsn;
+	@JsonIgnore
+	public String getSearchAsnType() {
+		return searchAsnType;
 	}
 
-	public void setdAsn(String dAsn) {
-		this.dAsn = dAsn;
+	public void setSearchAsnType(String searchAsnType) {
+		this.searchAsnType = searchAsnType;
 	}
 
 	@JsonIgnore

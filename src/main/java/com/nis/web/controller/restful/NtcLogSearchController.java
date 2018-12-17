@@ -734,10 +734,8 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundEndTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcConnRecordPercent.getSearchFoundEndTime());
-				} else {
-					throw new RestServiceException("searchFoundEndTime参数不能为空",
-							RestBusinessCode.param_formate_error.getValue());
 				}
+
 			} catch (ParseException e) {
 				throw new RestServiceException("searchFoundEndTime参数格式错误",
 						RestBusinessCode.param_formate_error.getValue());
@@ -750,10 +748,7 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundStartTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcConnRecordPercent.getSearchFoundStartTime());
-				} else {
-					throw new RestServiceException("searchFoundStartTime参数不能为空",
-							RestBusinessCode.param_formate_error.getValue());
-				}
+				} 
 			} catch (ParseException e) {
 				throw new RestServiceException("searchFoundStartTime参数格式错误",
 						RestBusinessCode.param_formate_error.getValue());
@@ -801,10 +796,8 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcAsnRecord.getSearchFoundEndTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcAsnRecord.getSearchFoundEndTime());
-				} else {
-					throw new RestServiceException("searchFoundEndTime参数不能为空",
-							RestBusinessCode.param_formate_error.getValue());
 				}
+
 			} catch (ParseException e) {
 				throw new RestServiceException("searchFoundEndTime参数格式错误",
 						RestBusinessCode.param_formate_error.getValue());
@@ -817,10 +810,8 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcAsnRecord.getSearchFoundStartTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcAsnRecord.getSearchFoundStartTime());
-				} else {
-					throw new RestServiceException("searchFoundStartTime参数不能为空",
-							RestBusinessCode.param_formate_error.getValue());
 				}
+
 			} catch (ParseException e) {
 				throw new RestServiceException("searchFoundStartTime参数格式错误",
 						RestBusinessCode.param_formate_error.getValue());
@@ -828,6 +819,19 @@ public class NtcLogSearchController extends BaseRestController {
 				throw new RestServiceException("searchFoundStartTime参数错误",
 						RestBusinessCode.param_formate_error.getValue());
 			}
+			try {
+				if (!StringUtil.isBlank(ntcAsnRecord.getSearchAsnType())) {
+					Integer.parseInt(ntcAsnRecord.getSearchAsnType());
+				}else {
+					throw new RestServiceException("searchAsnType参数不能为空",
+							RestBusinessCode.param_formate_error.getValue());
+				}
+			} catch (NumberFormatException e) {
+				throw new RestServiceException("searchAsnType参数格式错误"+e.getMessage(), RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchAsnType参数错误"+e.getMessage(), RestBusinessCode.param_formate_error.getValue());
+			}
+
 			logDataService.getNtcAsnRecord(page, ntcAsnRecord);
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("ASN通联关系(源,目的)日志检索失败:" + e.getMessage());

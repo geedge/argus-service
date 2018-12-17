@@ -160,9 +160,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 
 			} catch (Exception e) {
-				transaction.discard();
 				String error = "保存非maat类配置发生了异常," + e.getMessage();
 				logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
+				transaction.discard();
 				throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 			} finally {
 				// 释放连接到连接池
@@ -500,9 +500,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 			} catch (Exception e) {
-				transaction.discard();
 				String error = "保存maat类配置发生了异常" + e.getMessage();
 				logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
+				transaction.discard();
 				throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 			} finally {
 				// 释放连接到连接池
@@ -879,9 +879,9 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 			} catch (Exception e) {
-				transaction.discard();
 				String error = "删除非maat类配置发生了异常," + e.getMessage();
 				logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
+				transaction.discard();
 				throw new ServiceRuntimeException(error, RestBusinessCode.DeleteDataInError.getValue());
 			} finally {
 				// 释放连接到连接池
@@ -993,12 +993,13 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 				throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 
 			} catch (Exception e) {
-				transaction.discard();
+
 				int businessCode = RestBusinessCode.service_runtime_error.getValue();
 				if (e instanceof ServiceRuntimeException) {
 					businessCode = ((ServiceRuntimeException) e).getErrorCode();
 				}
 				logger.error("删除maat配置发生了异常" + ExceptionUtil.getExceptionMsg(e));
+				transaction.discard();
 				throw new ServiceRuntimeException("删除maat配置发生了异常," + e.getMessage(), businessCode);
 			} finally {
 				// 释放连接到连接池
@@ -1643,9 +1644,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
 			throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 		} catch (Exception e) {
-			transaction.discard();
+
 			String error = "保存分组复用maat类域配置发生了异常" + e.getMessage();
 			logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
+			transaction.discard();
 			throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 		} finally {
 			// 释放连接到连接池
@@ -1936,10 +1938,10 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
 			throw new ServiceRuntimeException(error, RestBusinessCode.CannotConnectionRedis.getValue());
 		} catch (Exception e) {
-			e.printStackTrace();
-			transaction.discard();
+
 			String error = "删除分组复用maat类域配置发生了异常" + e.getMessage();
 			logger.error(error + "	" + ExceptionUtil.getExceptionMsg(e));
+			transaction.discard();
 			throw new ServiceRuntimeException(error, RestBusinessCode.SaveDataInError.getValue());
 		} finally {
 			// 释放连接到连接池

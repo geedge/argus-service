@@ -208,6 +208,10 @@ public final class Constants {
 	 */
 	public static final String MM_SAMPLE_DST_PATH = Configurations.getStringProperty("mmSampleDstPath", "/home/mesasoft/{tableType}/full/{fileName}");
 	/**
+	 * ip定位库
+	 */
+	public static final String IPLOCATIONLIBRARYPATH = Configurations.getStringProperty("ipLocationLibraryPath", "/usr/local/ipLocalLibraay/Kazakhstan.mmdb");
+	/**
 	 *是否使用Minio
 	 */
 	public static final Boolean IS_USE_MINIO = Configurations.getBooleanProperty("isUseMinio", true);

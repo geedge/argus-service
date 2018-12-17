@@ -191,8 +191,7 @@ public class LocalLogJDBCByDruid {
 				String pps = rs.getString("pps");
 				ntcAsnRecord.setBps(subStr(bps));
 				ntcAsnRecord.setPps(subStr(pps));
-				ntcAsnRecord.setdAsn(rs.getString("d_asn"));
-				ntcAsnRecord.setsAsn(rs.getString("s_asn"));
+				ntcAsnRecord.setAsn(rs.getString("asn"));
 				list.add(ntcAsnRecord);
 			}
 			logger.info("执行日志查询语句成功,sql={}", sql);
@@ -202,10 +201,11 @@ public class LocalLogJDBCByDruid {
 		return list;
 	}
 
-	public List<String> getAllIp(String frontier) throws Exception {
+	public List<String> getAllIp(Integer frontier) throws Exception {
 		List<String> list = new LinkedList<>();
 		try {
-			String sql = "select distinct ip from  ip_location_database_local where  ip like '145%'	and frontier='"+frontier+"'";
+//			String sql = "select distinct ip from  ip_location_database_local where  ip like '145%'	and frontier='"+frontier+"'";
+			String sql = "select distinct ip from  ip_location_database_local where   frontier='"+frontier+"'";
 			conn = getConnection();
 			logger.info("连接数据中心日志库成功--------------------------");
 			st = conn.createStatement();
