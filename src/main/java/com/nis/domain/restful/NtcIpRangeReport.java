@@ -1,14 +1,10 @@
 package com.nis.domain.restful;
 
 import java.io.Serializable;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.apache.poi.ss.formula.functions.T;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Maps;
 import com.nis.domain.Page;
 
 public class NtcIpRangeReport<T> implements Serializable {
@@ -24,10 +20,18 @@ public class NtcIpRangeReport<T> implements Serializable {
 	private Long ipEndNum;
 	private String ipSub;
 	private String country;
-
 	private Integer areaType;
-	private String searchType;
-	private String searchCountry;
+
+	private String desc;
+	private String searchDesc;// 界面上的desc查询条件
+	private String searchIp;// 界面上的ip查询条件
+	private String searchType;// 界面上的境内,境外查询条件
+	private String searchCountry;// 界面上的城市查询条件
+
+	/**
+	 * 当前实体分页对象
+	 */
+	protected Page<T> page;
 
 	public String getIpStart() {
 		return ipStart;
@@ -101,6 +105,45 @@ public class NtcIpRangeReport<T> implements Serializable {
 
 	public void setSearchCountry(String searchCountry) {
 		this.searchCountry = searchCountry;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
+	@JsonIgnore
+	public String getSearchDesc() {
+		return searchDesc;
+	}
+
+	public void setSearchDesc(String searchDesc) {
+		this.searchDesc = searchDesc;
+	}
+
+	@JsonIgnore
+	public String getSearchIp() {
+		return searchIp;
+	}
+
+	public void setSearchIp(String searchIp) {
+		this.searchIp = searchIp;
+	}
+
+	@JsonIgnore
+	@XmlTransient
+	public Page<T> getPage() {
+		if (page == null) {
+			page = new Page<T>();
+		}
+		return page;
+	}
+
+	public Page<T> setPage(Page<T> page) {
+		this.page = page;
+		return page;
 	}
 
 }

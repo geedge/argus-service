@@ -1,5 +1,6 @@
 package com.nis.web.controller.restful;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -490,14 +491,29 @@ public class SingleDimensionReport extends BaseRestController {
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		try {
-//			List<NtcIpRangeReport> list=new ArrayList<>();
-//			ntcIpRangeReport.setIpStart("192.168.10.121");
-//			ntcIpRangeReport.setIpEnd("192.168.10.122");
-//			ntcIpRangeReport.setIpEndNum(3232238202l);
-//			ntcIpRangeReport.setIpStartNum(3232238201l);
-//			ntcIpRangeReport.setIpSub("255.255.255.252");
-//			list.add(ntcIpRangeReport);
-			page.setList( ntcReportService.findNtcIpRangeReport(ntcIpRangeReport));
+
+			try {
+				if (!StringUtil.isBlank(ntcIpRangeReport.getSearchIp())) {
+					ntcIpRangeReport.setSearchIp(IPUtil.getIpHostDesimal(ntcIpRangeReport.getSearchIp()) + "");
+				}
+			} catch (Exception e) {
+				throw new RestServiceException("searchIp参数错误", RestBusinessCode.param_formate_error.getValue());
+			}
+
+			try {
+				if (!StringUtil.isBlank(ntcIpRangeReport.getSearchType())) {
+					if (!ntcIpRangeReport.getSearchType().trim().equals("1")
+							&& !ntcIpRangeReport.getSearchType().trim().equals("2")) {
+						throw new RestServiceException("searchType参数错误",
+								RestBusinessCode.param_formate_error.getValue());
+					}
+				}
+			} catch (Exception e) {
+				throw new RestServiceException("searchType参数错误,值只能为1(境内)或2(境外)",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+
+			ntcReportService.findNtcIpRangeReport(page, ntcIpRangeReport);
 		} catch (Exception e) {
 			saveLogThread.setExceptionInfo("ip范围段统计查询失败:" + e.getMessage());
 			logger.error("ip范围段统计查询失败:" + ExceptionUtil.getExceptionMsg(e));

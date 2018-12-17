@@ -149,7 +149,9 @@ public class LocalLogJDBCByDruid {
 					if (!allPps.equals("0")) {
 						ntcConnRecordPercent.setPpsPercent(
 								num.format(Double.valueOf(ntcConnRecordPercent.getPps()) / Double.valueOf(allPps)));
-						ntcConnRecordPercent.setPps(subStr(ntcConnRecordPercent.getPps()));
+						int idx = ntcConnRecordPercent.getPps().lastIndexOf(".");//查找小数点的位置
+				        String strNum = ntcConnRecordPercent.getPps().substring(0,idx);//截取从字符串开始到小数点位置的字符串，就是整数部分
+						ntcConnRecordPercent.setPps(strNum);
 					} else {
 						ntcConnRecordPercent.setPpsPercent("0%");
 					}

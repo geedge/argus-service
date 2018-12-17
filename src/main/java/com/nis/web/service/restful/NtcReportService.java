@@ -156,11 +156,10 @@ public class NtcReportService extends BaseLogService {
 
 	}
 
-	
-	
-	public List<NtcIpRangeReport> findNtcIpRangeReport(NtcIpRangeReport entity) throws Exception {
-		List<NtcIpRangeReport> list = dao.findNtcIpRangeReport(entity);
-		return list;
+	public Page<NtcIpRangeReport> findNtcIpRangeReport(Page page, NtcIpRangeReport entity) throws Exception {
+		entity.setPage(page);
+		page.setList(dao.findNtcIpRangeReport(entity));
+		return page;
 	}
 
 }

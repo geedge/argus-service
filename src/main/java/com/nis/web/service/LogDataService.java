@@ -66,7 +66,7 @@ public class LogDataService {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
 		sql.append(second);
-		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/");
+		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/1024/");
 		sql.append(second);
 		sql.append(
 				" AS bps  FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
