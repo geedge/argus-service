@@ -87,6 +87,19 @@
 			property="reportTime" />
 	</resultMap>
 
+	<resultMap id="NtcIpRangeReportMap"
+		type="com.nis.domain.restful.NtcIpRangeReport">
+		<result column="ip_start" jdbcType="VARCHAR" property="ipStart" />
+		<result column="ip_end" jdbcType="VARCHAR" property="ipEnd" />
+		<result column="ip_start_num" jdbcType="BIGINT"
+			property="ipStartNum" />
+		<result column="ip_end_num" jdbcType="BIGINT"
+			property="ipEndNum" />
+		<result column="ip_sub" jdbcType="VARCHAR" property="ipSub" />
+		<result column="country" jdbcType="VARCHAR" property="country" />
+	</resultMap>
+
+
 	<sql id="commonPorperty">
 		SERVICE,SUM,REPORT_TIME
 	</sql>
@@ -835,4 +848,20 @@
 		ORDER BY
 		REPORT_TIME ASC
 	</select>
+
+	<select id="findNtcIpRangeReport"
+		parameterType="com.nis.domain.restful.NtcIpRangeReport"
+		resultMap="NtcIpRangeReportMap">
+		SELECT ip_start,ip_end,ip_start_num,ip_end_num,ip_sub
+		FROM traffic_ip_identify 
+		<where>
+			<if test="searchType != null and searchType !=''">
+				<![CDATA[AND areaType = #{searchType}]]>
+			</if>
+			<if test="searchCountry != null and searchCountry !=''">
+				<![CDATA[AND country= #{searchCountry ]]>
+			</if>
+		</where>
+	</select>
+
 </mapper>

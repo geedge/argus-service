@@ -202,6 +202,29 @@ public class LocalLogJDBCByDruid {
 		return list;
 	}
 
+	public List<String> getAllIp(String frontier) throws Exception {
+		List<String> list = new LinkedList<>();
+		try {
+			String sql = "select distinct ip from  ip_location_database_local where  ip like '145%'	and frontier='"+frontier+"'";
+			conn = getConnection();
+			logger.info("连接数据中心日志库成功--------------------------");
+			st = conn.createStatement();
+			logger.info("开始执行日志查询语句sql={}", sql);
+			rs = st.executeQuery(sql);
+			num.setMinimumFractionDigits(2);// 保留两位小数
+			while (rs.next()) {
+				String bps = rs.getString("ip");
+				if(bps!=null&&!bps.trim().equals("")) {
+					list.add(bps);
+				}
+			}
+			logger.info("执行日志查询语句成功,sql={}", sql);
+		} finally {
+			closeConn();
+		}
+		return list;
+	}
+
 	/**
 	 * 截取字符串后两位
 	 * 

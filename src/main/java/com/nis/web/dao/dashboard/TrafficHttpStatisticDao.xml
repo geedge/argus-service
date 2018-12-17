@@ -59,10 +59,13 @@
 	</select>
 
 	<!--获取上个时间段该网站站域名流量的数据量 -->
-	<select id="preWebsiteListCount" resultType="java.util.HashMap">
-		select web_id webId,SUM(c2s_byte_len + s2c_byte_len) count from
+	<select id="getTrafficHttpStatistic" resultType="java.util.HashMap">
+		select 	web_id webId,
+	SUM(c2s_byte_len + s2c_byte_len) byteCount,
+	sum(c2s_pkt_num + s2c_pkt_num) pktCount,
+	link_num linkNum from
 		traffic_http_statistic t where
-		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id ]]>
+		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id,link_num order by byteCount]]>
 
 	</select>
 
@@ -96,23 +99,6 @@ FROM
 		SELECT
 	distinct id  FROM ui_website_domain_topic  where website_service_id= #{websiteId} 
 	</select>
-	
-
-	<!-- 根据主题分组获取子域名 -->
-	<select id="getDomainByTopicId" resultType="java.util.HashMap">
-		select web_id webId,link_num linkNum,SUM(c2s_pkt_num+s2c_pkt_num) packets,sum(c2s_byte_len + s2c_byte_len) count from
-		traffic_http_statistic t where
-		<![CDATA[ stat_time>= #{statTime} and stat_time< #{endTime} group by t.web_id]]>
-	</select>
-	<!-- 获取域名列表 -->
-	<select id="getDomainList" resultType="java.util.HashMap">
-		select web_id webId,link_num linkNum,SUM(c2s_pkt_num+s2c_pkt_num) packets,sum(c2s_byte_len + s2c_byte_len) count from
-		traffic_http_statistic t where
-		<![CDATA[ stat_time>= #{beginDate} and stat_time< #{endDate} group by t.web_id order by count]]>
-	</select>
-
-
-
 
 	<!-- 指定网站下的TOP10之外为others -->
 	<select id="websiteDomainOthers" resultType="java.util.HashMap">
