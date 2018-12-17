@@ -22,6 +22,7 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
+import com.nis.util.DateUtils;
 import com.nis.util.ExceptionUtil;
 import com.nis.util.JsonMapper;
 import com.nis.util.StringUtils;
@@ -291,13 +292,26 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActive", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP统计", httpMethod = "GET", notes = "对应活跃IP实时统计查询服务。")
-	public Map<String,?> trafficIpActive(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String,?> trafficIpActive(String beginDate, String endDate ,Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<LinkedHashMap> list = new ArrayList<LinkedHashMap>();
 		try {
-			List<LinkedHashMap> ipActiveChart = dashboardService.ipActiveChart();
+			Date begin=null;
+			Date end=null;
+			if(StringUtils.isEmpty(beginDate)||StringUtils.isEmpty(endDate)) {
+				Calendar cal = Calendar. getInstance ();
+				cal.setTime(new Date());
+				begin =  cal.getTime();//获取到完整的时间
+				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+				end =  cal.getTime();
+			}else {
+				begin = DateUtils.parseDate(beginDate);
+				end = DateUtils.parseDate(endDate);
+			}
+			
+			List<LinkedHashMap> ipActiveChart = dashboardService.ipActiveChart(begin,end);
 				if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 					list = ipActiveChart;
 			}
@@ -322,13 +336,15 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActiveOneHour", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP统计一个小时的活跃IP", httpMethod = "GET", notes = "对应活跃IP实时统计查询服务。")
-	public Map<String,?> trafficIpActiveOneHour(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String,?> trafficIpActiveOneHour(String beginDate, String endDate ,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour();
+			Date begin = DateUtils.parseDate(beginDate);
+			Date end = DateUtils.parseDate(endDate);
+			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour(begin,end);
 			if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
@@ -353,13 +369,19 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActiveFiveMinute", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP最近一个小时的变化趋势统计", httpMethod = "GET", notes = "对最新TOP10的活跃IP，在近一个小时的变化情况进行统计")
-	public Map<String,?> trafficIpActiveFiveMinute(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String,?> trafficIpActiveFiveMinute(String beginDate, String endDate ,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<HashMap> ipActiveChart = dashboardService.ipActiveFiveMinute();
+			Date begin=null;
+			Date end=null;
+			if(!StringUtils.isEmpty(beginDate)&&!StringUtils.isEmpty(endDate)) {
+				begin=DateUtils.parseDate(beginDate);
+				end=DateUtils.parseDate(endDate);
+			}
+			List<HashMap> ipActiveChart = dashboardService.ipActiveFiveMinute(begin,end);
 			if (ipActiveChart!=null&&ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
@@ -415,12 +437,12 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value="trafficAppList", method = RequestMethod.GET)
 	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
-	public Map<String,?> trafficAppList(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response){
+	public Map<String,?> trafficAppList(Integer appType,String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response){
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> appList = dashboardService.getAppList(beginDate,endDate);
+			List<Map> appList = dashboardService.getAppList(beginDate,endDate,appType);
 			if (appList!=null&&appList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(appList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString,HashMap.class);
@@ -554,17 +576,28 @@ public class DashboardServiceController extends BaseRestController {
 	}
 	@RequestMapping(value = "trafficWebsiteList", method = RequestMethod.GET)
 	@ApiOperation(value = "网站流量分析统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String,?> trafficWebsiteList(Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String,?> trafficWebsiteList(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-//			List<Map> websiteChart = dashboardService.websiteList();
-			List<Map> websiteChart = dashboardService.getDomainByWebsiteList();
-			if (websiteChart!=null&&websiteChart.size() > 0) {
-				list = websiteChart;
+			if(!StringUtils.isEmpty(beginDate)&&!StringUtils.isEmpty(endDate)) {
+				Date begin = DateUtils.parseDate(beginDate);
+				Date end = DateUtils.parseDate(endDate);
+				// 带查询时间查询所有
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin,end);
+				if (websiteChart!=null&&websiteChart.size() > 0) {
+					list = websiteChart;
+				}
+			}else {
+				// 不带时间默认top10
+				List<Map> websiteChart = dashboardService.getWebsiteTop10();
+				if (websiteChart!=null&&websiteChart.size() > 0) {
+					list = websiteChart;
+				}
 			}
+			
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("网站流量分析统计数据检索失败:"+e.getMessage());
 			logger.error("网站流量分析统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
@@ -583,16 +616,28 @@ public class DashboardServiceController extends BaseRestController {
 	}
 	@RequestMapping(value = "trafficWebTypeChart", method = RequestMethod.GET)
 	@ApiOperation(value = "HTTP网站分类分析统计", httpMethod = "GET", notes = "对应某个网站类型分类统计图")
-	public Map<String, ?> trafficWebTypeChart(Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficWebTypeChart(String beginDate,String endDate,Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			List<Map> websiteChart = dashboardService.getDomainByWebsiteServiceId(websiteServiceId);
-			if (websiteChart!=null&&websiteChart.size() > 0) {
-				list = websiteChart;
+			if(!StringUtils.isEmpty(beginDate)&&!StringUtils.isEmpty(endDate)) {
+				Date begin = DateUtils.parseDate(beginDate);
+				Date end = DateUtils.parseDate(endDate);
+				// 带查询时间查询所有
+				List<Map> websiteChart = dashboardService.getWebsiteDetailsById(websiteServiceId,begin,end);
+				if (websiteChart!=null&&websiteChart.size() > 0) {
+					list = websiteChart;
+				}
+			}else {
+				// 不带时间默认top10
+				List<Map> websiteChart = dashboardService.getWebsiteTop10ById(websiteServiceId);
+				if (websiteChart!=null&&websiteChart.size() > 0) {
+					list = websiteChart;
+				}
 			}
+			
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("HTTP网站分类分析统计失败:"+e.getMessage());
 			logger.error("HTTP网站分类分析统计失败:"+ExceptionUtil.getExceptionMsg(e));
@@ -611,15 +656,26 @@ public class DashboardServiceController extends BaseRestController {
 	}
 	@RequestMapping(value = "trafficTopicAndDomainChart", method = RequestMethod.GET)
 	@ApiOperation(value = "HTTP网站主题分类分析统计", httpMethod = "GET", notes = "对应某个网站主题类型分类统计图")
-	public Map<String, ?> trafficTopicAndDomainChart(Integer websiteServiceId,Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficTopicAndDomainChart(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response) {
 		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			List<Map> websiteChart = dashboardService.getTopicAndDomainList();
-			if (websiteChart!=null&&websiteChart.size() > 0) {
-				list = websiteChart;
+			if(!StringUtils.isEmpty(beginDate)&&!StringUtils.isEmpty(endDate)) {
+				Date begin = DateUtils.parseDate(beginDate);
+				Date end = DateUtils.parseDate(endDate);
+				// 带查询时间查询所有
+				List<Map> websiteChart = dashboardService.getTopicDetails(begin,end);
+				if (websiteChart!=null&&websiteChart.size() > 0) {
+					list = websiteChart;
+				}
+			}else {
+				// 不带时间默认top10
+				List<Map> websiteChart = dashboardService.getTopicTop10();
+				if (websiteChart!=null&&websiteChart.size() > 0) {
+					list = websiteChart;
+				}
 			}
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("HTTP网站主题分类分析数据检索失败:"+e.getMessage());

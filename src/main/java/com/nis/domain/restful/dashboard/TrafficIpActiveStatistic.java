@@ -32,8 +32,19 @@ public class TrafficIpActiveStatistic extends BaseEntity<TrafficIpActiveStatisti
     
     private String time;
     
+    private Long count;
+    
+    
 
-    public String getTime() {
+    public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+	public String getTime() {
 		return time;
 	}
 

@@ -26,31 +26,37 @@
   <select id="getMaxStatTime" resultType="com.nis.domain.restful.dashboard.TrafficIpActiveStatistic">
   	SELECT stat_time statTime FROM traffic_ip_active_statistic order by stat_time desc limit 1
   </select>
-    <!-- IP流量统计五分钟-->
+    <!-- IP流量统计五分钟TOp10-->
   <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
   	SELECT ip_addr ipAddr, SUM(c2s_byte_len+s2c_byte_len) linkNum FROM traffic_ip_active_statistic
-	WHERE stat_time > DATE_SUB(#{statTime},INTERVAL 1 hour)
+	WHERE
+	<![CDATA[ stat_time> #{beginDate} and stat_time<=#{endDate}]]>
 	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>
   
     <!-- IP流量统计一小时内每隔五分钟数据-->
-  <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
+<!--   <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
 	select IFNULL(p.sumNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
-	(select date_sub(#{statTime},interval @mycnt :=@mycnt + 5 MINUTE) min5
-	from (SELECT @mycnt:=-5) m, traffic_ip_active_statistic limit 12) a
+	(select date_sub(#{endDate},interval @mycnt :=@mycnt + 5 MINUTE) min5
+	from (SELECT @mycnt:=-5) m, traffic_ip_active_statistic limit #{inter}) a
 	LEFT JOIN (
 	SELECT date_format(stat_time, '%Y-%m-%d %H:%i') timestamp, SUM(c2s_byte_len+s2c_byte_len) sumNum FROM traffic_ip_active_statistic 
-	WHERE ip_addr=#{ipAddr} AND stat_time > DATE_SUB(#{statTime,jdbcType=TIMESTAMP}, INTERVAL 1 HOUR) 
+	WHERE ip_addr=#{ipAddr} AND <![CDATA[ stat_time> #{beginDate} and stat_time<=#{endDate}]]>
 	GROUP by timestamp
 	) p 
 	on date_format(p.timestamp,'%Y-%m-%d %H:%i')=date_format(a.min5,'%Y-%m-%d %H:%i')
 	ORDER by time
+  </select> -->
+  <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
+  	select SUM(c2s_byte_len+s2c_byte_len) count ,stat_time time from traffic_ip_active_statistic
+  	WHERE ip_addr=#{ipAddr} and
+	<![CDATA[ stat_time> #{beginDate} and stat_time<=#{endDate}]]>
   </select>
     <!-- IP流量统计一小时-->
   <select id="ipActiveOneHour" resultType="java.util.HashMap">
 	SELECT ip_addr ipAddr,area_id areaId,SUM(c2s_byte_len+s2c_byte_len) count, link_num linkNum ,c2s_pkt_num c2sPktNum,s2c_pkt_num s2cPktNum,c2s_byte_len c2sByteLen,s2c_byte_len s2cByteLen,date_format(stat_time, '%Y-%m-%d %H:%i:%s') statTime FROM traffic_ip_active_statistic
 	WHERE ip_addr=#{ipAddr}
-	and stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR) GROUP BY statTime
+	and <![CDATA[ stat_time> #{beginDate} and stat_time<=#{endDate}]]> GROUP BY statTime
 	ORDER BY count DESC LIMIT 1
   </select>
   

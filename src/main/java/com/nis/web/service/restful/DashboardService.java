@@ -3,6 +3,7 @@ package com.nis.web.service.restful;
 import com.beust.jcommander.internal.Maps;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.dashboard.*;
+import com.nis.util.DateUtils;
 import com.nis.util.StringUtils;
 import com.nis.web.dao.dashboard.*;
 import com.nis.web.service.BaseService;
@@ -416,22 +417,24 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<HashMap> ipActiveFiveMinute() {
+/*	public List<HashMap> ipActiveFiveMinute(Date beginDate,Date endDate) {
 		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 			Date statTime = maxStatTime.getStatTime();
 			// 查询最近五分钟TOP10
-			ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(statTime);
-			if (list != null && list.size() > 0) {
-				for (LinkedHashMap map : list) {
+			ArrayList<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate,endDate);
+			if (ipListTop10 != null && ipListTop10.size() > 0) {
+				for (LinkedHashMap map : ipListTop10) {
 					HashMap m = new HashMap();
 					if (map.get("ipAddr") != null) {
 						String ipAddr = (String) map.get("ipAddr");
 						m.put("ipAddr", ipAddr);
 						// 根据五分钟TOP10IP，查询TOP10中每个IP最近一小时的变化
-						ArrayList<TrafficIpActiveStatistic> ipList = trafficIpActiveStatisticDao
-								.ipActiveFiveMinute(ipAddr, statTime);
+						long beforeTime = beginDate.getTime();
+						long afterTime = endDate.getTime();
+						Long inter=(afterTime - beforeTime) / (1000 * 60 * 5);
+						ArrayList<TrafficIpActiveStatistic> ipList = trafficIpActiveStatisticDao.ipActiveFiveMinute(inter,ipAddr, beginDate,endDate);
 						List linkList = new ArrayList();
 						List timeList = new ArrayList();
 						if (ipList != null && ipList.size() > 0) {
@@ -451,24 +454,79 @@ public class DashboardService extends BaseService {
 		}
 
 		return listMap;
+	}*/
+	/**
+	 * 获取活跃IPtop10 的趋势图
+	 */
+	public List<HashMap> ipActiveFiveMinute(Date beginDate,Date endDate) {
+		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
+			ArrayList<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate,endDate);
+			if (ipListTop10 != null && ipListTop10.size() > 0) {
+				for (LinkedHashMap map : ipListTop10) {
+					HashMap m1 = new HashMap();
+					String ipAddr = (String) map.get("ipAddr");
+					m1.put("ipAddr", ipAddr);
+					ArrayList<TrafficIpActiveStatistic> ipList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipAddr, beginDate,endDate);
+					List timeList = new ArrayList();
+					List sumList1 = new ArrayList();
+					
+					Map<String, Comparable> m= new HashMap<String, Comparable>();
+					int inter=1000*60*5;// 间隔时间为五分钟
+					// 开始时间，结束时间 时间戳
+					Long b = dateToStamp(DateUtils.formatDateTime(beginDate));
+					Long e = dateToStamp(DateUtils.formatDateTime(endDate));
+					int num=0;
+					Long pointTime=b;
+					while(pointTime<e){
+						Map rm=new HashMap();
+						Long sum1=0l;
+						if(pointTime>=e){
+							break; //停止 
+						}
+						for (TrafficIpActiveStatistic e1 : ipList) {
+							// 实际时间 
+							String time= e1.getTime();
+							Long t = dateToStamp(time);
+							if(t>=pointTime&&t<pointTime+inter){
+								// 范围之内分到此pointTime组
+								sum1=sum1+ e1.getCount();
+							}
+						}
+						// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
+						if(pointTime>=e-inter&&sum1>0) {
+							sumList1.add(sum1);
+							timeList.add(stampToDate(pointTime));
+						}
+						if(pointTime<e-inter) {
+							sumList1.add(sum1);
+							timeList.add(stampToDate(pointTime));
+						}
+						num=num+1;
+						pointTime =b+inter*num;
+					}
+					m1.put("linkNum", sumList1);
+					m1.put("statTime", timeList);
+					listMap.add(m1);
+				}
+			}
+		return listMap;
 	}
-
 	/**
 	 * 根据活跃IP最近五分钟TOP10，查询近1小时最大值
 	 * 
 	 * @return
 	 */
-	public List<HashMap> ipActiveOneHour() {
+	public List<HashMap> ipActiveOneHour(Date beginDate,Date endDate) {
 		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 			Date statTime = maxStatTime.getStatTime();
-			ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(statTime);
+			ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate,endDate);
 			if (list != null && list.size() > 0) {
 				for (LinkedHashMap map : list) {
 					if (map.get("ipAddr") != null) {
 						String ipAddr = (String) map.get("ipAddr");
-						ArrayList<HashMap> iplList = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, statTime);
+						ArrayList<HashMap> iplList = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate,endDate);
 						listMap.add(iplList.get(0));
 					}
 				}
@@ -478,13 +536,19 @@ public class DashboardService extends BaseService {
 		return listMap;
 	}
 
+	/**
+	 * 活跃IP首页top10
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
 	@SuppressWarnings("rawtypes")
-	public List<LinkedHashMap> ipActiveChart() {
-		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
+	public List<LinkedHashMap> ipActiveChart(Date beginDate, Date endDate) {
+//		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<LinkedHashMap> list = new ArrayList<>();
-		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-			Date statTime = maxStatTime.getStatTime();
-			list = trafficIpActiveStatisticDao.ipActiveChart(statTime);
+//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+//			Date statTime = maxStatTime.getStatTime();
+			list = trafficIpActiveStatisticDao.ipActiveChart(beginDate,endDate);
 			if (list != null && list.size() > 0) {
 				for (LinkedHashMap map : list) {
 					if (map.get("ipAddr") != null) {
@@ -494,7 +558,7 @@ public class DashboardService extends BaseService {
 					}
 				}
 			}
-		}
+//		}
 		return list;
 	}
 
@@ -560,13 +624,13 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getAppList(String startTime, String endTime) {
-		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
+	public List<Map> getAppList(String startTime, String endTime,Integer appType) {
+//		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
-		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-			Date statTime = maxStatTime.getStatTime();
-			list = trafficAppStatisticDao.getAppList(statTime, startTime, endTime);
-		}
+//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+//			Date statTime = maxStatTime.getStatTime();
+			list = trafficAppStatisticDao.getAppList(startTime, endTime,appType);
+//		}
 		return list;
 	}
 
@@ -700,20 +764,42 @@ public class DashboardService extends BaseService {
 //		}
 //		return result;
 //	}
-
+	/**
+	 * 
+	 * 网站子域名详情
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
+	public List<Map> getWebsiteDetailsById(Integer websiteServiceId,Date beginDate,Date endDate){
+		List<Map> list = getDomainByWebsiteServiceId(websiteServiceId,beginDate,endDate,null);
+		return list;
+	}
+/**
+ * 
+ * 网站子域名TOP10 默认一小时
+ * @param beginDate
+ * @param endDate
+ * @return
+ */
+public List<Map> getWebsiteTop10ById(Integer websiteServiceId){
+	Date startTime = getBeforeByHourTime(1);// 获取上一个小时
+	List<Map> list = getDomainByWebsiteServiceId(websiteServiceId,startTime,new Date(),"top");
+	return list;
+}
 	/**
 	 * 根据网站服务查询子域名
 	 * 
 	 * @param websiteServiceId
 	 * @return list
 	 */
-	public List<Map> getDomainByWebsiteServiceId(Integer websiteServiceId) {
+	public List<Map> getDomainByWebsiteServiceId(Integer websiteServiceId,Date beginDate,Date endDate,String top) {
 
-		Date statTime = getBeforeByHourTime(1);// 获取上一个小时
+//		Date statTime = getBeforeByHourTime(1);// 获取上一个小时
 
 		List idList = trafficHttpStatisticDao.getIdByWebSiteId(websiteServiceId);
 
-		List<Map> matchList = trafficHttpStatisticDao.getDomainByWebsiteServiceId(idList, statTime, new Date());// 获取webid和count的对应关系,key是webid,val是count
+		List<Map> matchList = trafficHttpStatisticDao.getDomainByWebsiteServiceId(idList, beginDate, endDate);// 获取webid和count的对应关系,key是webid,val是count
 // 获取webid和count的对应关系,key是webid,val是count
 		Set<Long> set = new HashSet<>();
 		Map<Long, List<Map>> countMap = new HashMap();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
@@ -729,7 +815,12 @@ public class DashboardService extends BaseService {
 				countMap.put(count, listMap);
 			}
 		}
-		List<Map> top10Data = getTop10Data(set, countMap);
+		List<Map> top10Data =new ArrayList();
+		if(top!=null) {
+			top10Data = getTop10Data(set, countMap,1);
+		}else {
+			top10Data = getTop10Data(set, countMap,2);
+		}
 		List<String> notTop10List = new ArrayList<>();// 获取不在top10中的webid,用来查询标记为orther
 		for (Map map : matchList) {
 			String webIdStr = String.valueOf(map.get("webId"));
@@ -747,7 +838,7 @@ public class DashboardService extends BaseService {
 
 		// 查询固定网站下的域名除了TOP10以外的others域名
 		if (matchList != null && matchList.size() > 10) {
-			Map others = trafficHttpStatisticDao.websiteDomainOthers(notTop10List, statTime, new Date());
+			Map others = trafficHttpStatisticDao.websiteDomainOthers(notTop10List, beginDate, endDate);
 			if (others != null && others.size() > 0) {
 				others.put("webId", "-1");
 				top10Data.add(others);
@@ -756,17 +847,39 @@ public class DashboardService extends BaseService {
 		return top10Data;
 
 	}
-
+	
+	/**
+	 * 
+	 * 网站详情
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
+	public List<Map> getWebsiteDetails(Date beginDate,Date endDate){
+		List<Map> list = trafficHttpStatisticDao.getDomainList(beginDate,endDate);
+		return list;
+	}
+/**
+ * 
+ * 网站TOP10 默认一小时
+ * @param beginDate
+ * @param endDate
+ * @return
+ */
+public List<Map> getWebsiteTop10(){
+	Date startTime = getBeforeByHourTime(1);// 获取上一个小时
+	List<Map> list = getDomainByWebsiteList(startTime,new Date(),"top");
+	return list;
+}
 	/**
 	 * 获取网站列表
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map> getDomainByWebsiteList() {
-		Date statTime = getBeforeByHourTime(1);// 获取上一个小时
+	public List<Map> getDomainByWebsiteList(Date beginDate,Date endDate,String top) {
 		Map<String, List<String>> websiteIdAndIdMap = new HashMap<>();// 存储websiteServiceId和id的对应关系,一个websiteServiceId有多个id
-		List<Map> websiteIdAndidList = trafficHttpStatisticDao.getDomainByWebsiteList(statTime, new Date());// 获取website_service_id和id的对应关系,group
+		List<Map> websiteIdAndidList = trafficHttpStatisticDao.getDomainByWebsiteList(beginDate, endDate);// 获取website_service_id和id的对应关系,group
 																											// by
 																											// website_service_id,id
 		for (Map map : websiteIdAndidList) {
@@ -785,11 +898,13 @@ public class DashboardService extends BaseService {
 
 		Set<Long> set = new HashSet<>();
 		Map<Long, List<Map>> countAndViewMap = new HashMap<>();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
-		List<Map> webIdAndCountList = trafficHttpStatisticDao.preWebsiteListCount(statTime, new Date());// 获取最近一小时的webid和count的关系
-		List<Map> prevWebIdAndCountList = trafficHttpStatisticDao.preWebsiteListCount(getBeforeByHourTime(2), statTime);// 获取最近一小时的webid和count的关系
+		List<Map> webIdAndCountList = trafficHttpStatisticDao.preWebsiteListCount(beginDate, endDate);// 获取最近一小时的webid和count的关系
+		List<Map> prevWebIdAndCountList = trafficHttpStatisticDao.preWebsiteListCount(getBeforeByHourTime(2), beginDate);// 获取最近一小时的webid和count的关系
 		for (String websiteServiceId : websiteIdAndIdMap.keySet()) {// 遍历上面获取的websiteServiceId和id的对应关系,拼接json
 			Map viewMap = new HashMap<>();
 			long count = 0l;// 记录当前websiteServiceId所有的count
+//			long linkNum = 0l;// 
+//			long packets = 0l;// 
 			long prevCount = 0l;// 记录当前websiteServiceId所有的count
 			List<String> idList = websiteIdAndIdMap.get(websiteServiceId);// 根据websiteServiceId获取对应的id
 			for (String id : idList) {
@@ -797,9 +912,17 @@ public class DashboardService extends BaseService {
 					String webId = String.valueOf(webIdAndCountMap.get("webId"));
 					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
 						String countStr = String.valueOf(webIdAndCountMap.get("count"));
+//						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
+//						String packetsStr = String.valueOf(webIdAndCountMap.get("packets"));
 						if (countStr != null) {
 							count += Long.parseLong(countStr);// 将count累加
 						}
+//						if (linkNumStr != null) {
+//							linkNum += Long.parseLong(linkNumStr);// 将count累加
+//						}
+//						if (packetsStr != null) {
+//							packets += Long.parseLong(packetsStr);// 将count累加
+//						}
 					}
 				}
 				for (Map webIdAndCountMap : prevWebIdAndCountList) {// 遍历webid和count
@@ -815,6 +938,8 @@ public class DashboardService extends BaseService {
 			}
 			viewMap.put("websiteServiceId", websiteServiceId);
 			viewMap.put("count", count);
+//			viewMap.put("linkNum", linkNum);
+//			viewMap.put("packets", packets);
 			viewMap.put("pktNum", 0);
 			viewMap.put("byteLen", 0);
 			viewMap.put("preCount", prevCount);
@@ -828,18 +953,48 @@ public class DashboardService extends BaseService {
 			}
 			set.add(count);
 		}
-		return getTop10Data(set, countAndViewMap);
+		List<Map> dataList = new ArrayList();
+		if(top!=null) {
+			dataList = getTop10Data(set, countAndViewMap,1);// 取top10
+		}else {
+			dataList = getTop10Data(set, countAndViewMap,2);
+		}
+		return dataList;
 	}
-
+	
+	
+	/**
+	 * 
+	 * 主题详情
+	 * @param beginDate
+	 * @param endDate
+	 * @return
+	 */
+	public List<Map> getTopicDetails(Date beginDate,Date endDate){
+		List<Map> topicAndDomainList = getTopicAndDomainList(beginDate,endDate,null);
+		return topicAndDomainList;
+	}
+/**
+ * 
+ * 主题TOP10 默认一小时
+ * @param beginDate
+ * @param endDate
+ * @return
+ */
+public List<Map> getTopicTop10(){
+	Date startTime = getBeforeByHourTime(1);// 获取上一个小时
+	List<Map> topicAndDomainList = getTopicAndDomainList(startTime,new Date(),"top");
+	return topicAndDomainList;
+}
 	/**
 	 * 主题网站分类，域名
 	 * 
 	 **/
-	public List<Map> getTopicAndDomainList() {
+	public List<Map> getTopicAndDomainList(Date beginDate,Date endDate,String top) {
 
-		Date startTime = getBeforeByHourTime(1);// 获取上一个小时
+		
 		Map<String, List<String>> topicIdAndIdMap = new HashMap<>();// 存储topicid和id的对应关系,一个topicid有多个id
-		List<Map> topicIdAndIdList = trafficHttpStatisticDao.getDomainByTopicList(startTime, new Date());// 获取最近一个小时topicId和id的对应关系,group
+		List<Map> topicIdAndIdList = trafficHttpStatisticDao.getDomainByTopicList(beginDate,endDate );// 获取最近一个小时topicId和id的对应关系,group
 		for (Map map : topicIdAndIdList) {
 			Object topicIdObj = map.get("topicId");
 			Object idObj = map.get("id");
@@ -856,26 +1011,40 @@ public class DashboardService extends BaseService {
 
 		Set<Long> set = new HashSet<>();
 		Map<Long, List<Map>> countAndViewMap = new HashMap<>();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
-		List<Map> webIdAndCountList = trafficHttpStatisticDao.getDomainByTopicId(startTime, new Date());// 获取最近一小时的webid和count的关系
+		List<Map> webIdAndCountList = trafficHttpStatisticDao.getDomainByTopicId(beginDate, endDate);// 获取最近一小时的webid和count的关系
 		for (String topicId : topicIdAndIdMap.keySet()) {// 遍历上面获取的topicid和id的对应关系,拼接json
 			Map viewMap = new HashMap<>();
 			viewMap.put("topicId", topicId);
 			List<Map> list = new ArrayList<>();
 			long count = 0l;// 记录当前topicid所有的count
+			long linkNum = 0l; 
+			long packets = 0l;
 			List<String> idList = topicIdAndIdMap.get(topicId);// 根据topicid获取对应的id
 			for (String id : idList) {
 				for (Map webIdAndCountMap : webIdAndCountList) {// 遍历webid和count
 					String webId = String.valueOf(webIdAndCountMap.get("webId"));
 					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
 						String countStr = String.valueOf(webIdAndCountMap.get("count"));
+						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
+						String packetsStr = String.valueOf(webIdAndCountMap.get("packets"));
 						if (countStr != null) {
 							count += Long.parseLong(countStr);// 将count累加
+							list.add(webIdAndCountMap);
+						}
+						if (linkNumStr != null) {
+							linkNum += Long.parseLong(linkNumStr);// 将count累加
+							list.add(webIdAndCountMap);
+						}
+						if (packetsStr != null) {
+							packets += Long.parseLong(packetsStr);// 将count累加
 							list.add(webIdAndCountMap);
 						}
 					}
 				}
 			}
 			viewMap.put("count", count);
+			viewMap.put("linkNum", linkNum);
+			viewMap.put("packets", packets);
 			viewMap.put("domainData", list);
 			if (countAndViewMap.containsKey(count)) {// 将每个count和对应的viewmap放到map中,count可能相同所以value是list
 				countAndViewMap.get(count).add(viewMap);
@@ -886,7 +1055,13 @@ public class DashboardService extends BaseService {
 			}
 			set.add(count);
 		}
-		return getTop10Data(set, countAndViewMap);
+		List<Map> dataList = new ArrayList();
+		if(top!=null) {
+			dataList = getTop10Data(set, countAndViewMap,1);
+		}else {
+			dataList = getTop10Data(set, countAndViewMap,2);
+		}
+		return dataList;
 	}
 
 }

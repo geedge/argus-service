@@ -162,7 +162,7 @@ public abstract class BaseService {
 	 * @param set             所有的count
 	 * @param countAndViewMap key是count,val是viewmap
 	 */
-	protected List<Map> getTop10Data(Set<Long> set, Map<Long, List<Map>> countAndViewMap) {
+	protected List<Map> getTop10Data(Set<Long> set, Map<Long, List<Map>> countAndViewMap,int param) {
 		List<Map> topicList = new ArrayList<Map>();
 		Long[] countArr = new Long[set.size()];
 		set.toArray(countArr);
@@ -172,7 +172,7 @@ public abstract class BaseService {
 			boolean exit = false;
 			for (Map map : list) {
 				topicList.add(map);
-				if (topicList.size() == 10) {
+				if (param==1&&topicList.size() == 10) {
 					exit = true;
 					break;
 				}
