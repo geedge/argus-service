@@ -872,7 +872,7 @@
 				<![CDATA[AND ip_start_num>= #{searchIp} and ip_end_num<=#{searchIp}]]>
 			</if>
 		<if test="searchDesc != null and searchDesc !=''">
-				<![CDATA[AND desc= #{searchDesc ]]>
+				<![CDATA[AND desc= #{searchDesc} ]]>
 			</if>
 		</where>
 	</select>
