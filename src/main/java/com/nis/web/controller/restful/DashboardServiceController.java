@@ -626,7 +626,7 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficWebsiteList", method = RequestMethod.GET)
 	@ApiOperation(value = "网站流量分析统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String, ?> trafficWebsiteList(@RequestParam String beginDate, @RequestParam String endDate, Model model, HttpServletRequest request,
+	public Map<String, ?> trafficWebsiteList( Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -634,14 +634,10 @@ public class DashboardServiceController extends BaseRestController {
 				null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			if (!StringUtils.isEmpty(beginDate) && !StringUtils.isEmpty(endDate)) {
-				Date begin = DateUtils.parseDate(beginDate);
-				Date end = DateUtils.parseDate(endDate);
-				// 带查询时间查询所有
-				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin, end);
-				if (websiteChart != null && websiteChart.size() > 0) {
-					list = websiteChart;
-				}
+			// 不带时间默认top10
+			List<Map> websiteChart = dashboardService.getWebsiteTop10();
+			if (websiteChart != null && websiteChart.size() > 0) {
+				list = websiteChart;
 			}
 
 		} catch (Exception e) {
@@ -663,8 +659,8 @@ public class DashboardServiceController extends BaseRestController {
 	}
 
 	@RequestMapping(value = "trafficWebsiteListNoTime", method = RequestMethod.GET)
-	@ApiOperation(value = "网站流量分析统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String, ?> trafficWebsiteListNoTime(Model model, HttpServletRequest request,
+	@ApiOperation(value = "网站流量分析详情统计", httpMethod = "GET", notes = "对应网站http分类显示")
+	public Map<String, ?> trafficWebsiteListNoTime(@RequestParam String beginDate, @RequestParam String endDate,Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -672,10 +668,25 @@ public class DashboardServiceController extends BaseRestController {
 				null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			// 不带时间默认top10
-			List<Map> websiteChart = dashboardService.getWebsiteTop10();
-			if (websiteChart != null && websiteChart.size() > 0) {
-				list = websiteChart;
+			if (!StringUtils.isEmpty(beginDate) && !StringUtils.isEmpty(endDate)) {
+				Date begin = DateUtils.parseDate(beginDate);
+				Date end = DateUtils.parseDate(endDate);
+				// 带查询时间查询所有
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin, end);
+				if (websiteChart != null && websiteChart.size() > 0) {
+					list = websiteChart;
+				}
+			}else {
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(new Date());
+				Date begin1 = cal.getTime();// 获取到完整的时间
+				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+				Date end1 = cal.getTime();
+				// 带查询时间查询所有
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin1, end1);
+				if (websiteChart != null && websiteChart.size() > 0) {
+					list = websiteChart;
+				}
 			}
 
 		} catch (Exception e) {
@@ -742,9 +753,42 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficTopicAndDomainChart", method = RequestMethod.GET)
 	@ApiOperation(value = "HTTP网站主题分类分析统计", httpMethod = "GET", notes = "对应某个网站主题类型分类统计图")
-	public Map<String, ?> trafficTopicAndDomainChart(String beginDate, String endDate, Model model,
+	public Map<String, ?> trafficTopicAndDomainChart( Model model,
 			HttpServletRequest request, HttpServletResponse response) {
 
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		List<Map> list = new ArrayList<Map>();
+		try {
+				// 不带时间默认top10
+				List<Map> websiteChart = dashboardService.getTopicTop10();
+				if (websiteChart != null && websiteChart.size() > 0) {
+					list = websiteChart;
+			}
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("HTTP网站主题分类分析数据检索失败:" + e.getMessage());
+			logger.error("HTTP网站主题分类分析数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站主题分类分析数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站主题分类分析数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站主题分类分析数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站主题分类分析数据检索成功",
+				list, 0);
+	}
+	
+	@RequestMapping(value = "trafficTopicList", method = RequestMethod.GET)
+	@ApiOperation(value = "HTTP网站主题详情", httpMethod = "GET", notes = "对应某个网站主题类型分类统计")
+	public Map<String, ?> trafficTopicList(String beginDate, String endDate, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
@@ -759,8 +803,13 @@ public class DashboardServiceController extends BaseRestController {
 					list = websiteChart;
 				}
 			} else {
-				// 不带时间默认top10
-				List<Map> websiteChart = dashboardService.getTopicTop10();
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(new Date());
+				Date begin1 = cal.getTime();// 获取到完整的时间
+				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+				Date end1 = cal.getTime();
+				// 带查询时间查询所有
+				List<Map> websiteChart = dashboardService.getTopicDetails(begin1, end1);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
