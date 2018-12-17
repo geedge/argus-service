@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
-
 @Service
 public class DashboardService extends BaseService {
 
@@ -807,8 +806,8 @@ public class DashboardService extends BaseService {
 	 * @param endDate
 	 * @return
 	 */
-	public List<Map> getWebsiteDetails(Date beginDate, Date endDate) {
-		List<Map> list = trafficHttpStatisticDao.getTrafficHttpStatistic(beginDate, endDate);
+	public List<Map> getWebsiteDetails(Date beginDate, Date endDate,Integer domain,Integer entranceId) {
+		List<Map> list = trafficHttpStatisticDao.getTrafficHttpDomain(beginDate, endDate,domain,entranceId);
 		return list;
 	}
 
@@ -1130,5 +1129,61 @@ public class DashboardService extends BaseService {
 }
 		return resulMap;
 	}
-	
+	/**
+	 * 
+	 * @param beginDate
+	 * @param endDate
+	 * @param domain
+	 * @param entranceId
+	 * @return
+	 */
+	public List<HashMap> getDomainTrans(String beginDate, String endDate, Integer domain, Integer entranceId) {
+		List<HashMap> listMap = new ArrayList<HashMap>();
+		HashMap resulMap= new HashMap();
+		List<TrafficHttpFocusStatistic> domainList = new ArrayList<TrafficHttpFocusStatistic>();
+		domainList = trafficHttpStatisticDao.getDomainTrans(entranceId, beginDate, endDate, domain);
+		List timeList = new ArrayList();
+		List countList = new ArrayList();
+		if (domainList != null && domainList.size() > 0) {
+			Map<String, Comparable> m = new HashMap<String, Comparable>();
+			int inter = 1000 * 60 * 30;// 间隔时间为30分钟
+			// 开始时间，结束时间 时间戳
+			Long b = dateToStamp(beginDate);
+			Long e = dateToStamp(endDate);
+			int num = 0;
+			Long pointTime = b;
+			while (pointTime < e) {
+				Map rm = new HashMap();
+				Long sumL = 0l;
+				if (pointTime >= e) {
+					break; // 停止
+				}
+				for (TrafficHttpFocusStatistic tt : domainList) {
+					// 实际时间
+					String time = tt.getTime();
+					Long t = dateToStamp(time);
+					if (t >= pointTime && t < pointTime + inter) {
+						// 范围之内分到此pointTime组
+						sumL = sumL + tt.getCount();
+					}
+				}
+				// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
+				if (pointTime >= e - inter && sumL > 0) {
+					countList.add(sumL);
+					timeList.add(stampToDate(pointTime));
+				}
+				if (pointTime < e - inter) {
+					timeList.add(stampToDate(pointTime));
+					countList.add(sumL);
+				}
+				num = num + 1;
+				pointTime = b + inter * num;
+			}
+			resulMap.put("count", countList);
+			resulMap.put("statTime", timeList);
+			listMap.add(resulMap);
+		}
+		return listMap;
+	}
+
 }

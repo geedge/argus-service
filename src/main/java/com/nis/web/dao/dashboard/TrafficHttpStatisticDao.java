@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficHttpStatistic;
 import com.nis.web.dao.MyBatisDao;
 
@@ -27,4 +28,8 @@ public interface TrafficHttpStatisticDao {
 	List<Map> getHttpStatisticNoLinkAndPkt(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 	List<Map> getTrafficHttpStatistic(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 	List getIdByWebSiteId(@Param("websiteId") Integer websiteId);
+
+	List<Map> getTrafficHttpDomain(@Param("beginDate")Date beginDate,@Param("endDate") Date endDate,@Param("domain")Integer domain,@Param("entranceId")Integer entranceId);
+	List<TrafficHttpFocusStatistic> getDomainTrans(@Param("entranceId")Integer entranceId,@Param("beginDate")String beginDate,@Param("endDate")String endDate,@Param("domain")Integer domain);
+
 }

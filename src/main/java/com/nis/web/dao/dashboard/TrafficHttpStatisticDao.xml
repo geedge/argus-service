@@ -121,4 +121,26 @@ FROM
 		</if>
 		
 	</select>
+	<!--获取域名 -->
+	<select id="getTrafficHttpDomain" resultType="java.util.HashMap">
+		select 	web_id webId, unique_num uniqueNum,entrance_id entranceId,SUM(c2s_byte_len + s2c_byte_len) byteCount,
+		sum(c2s_pkt_num + s2c_pkt_num) pktCount from traffic_http_focus_statistic t where
+		<![CDATA[ stat_time>= #{beginDate} and stat_time< #{endDate}]]>
+		<if test="domain!=null">
+			and web_id=#{domain}
+		</if>
+		<if test="entranceId!=null">
+			and entrance_id=#{entranceId}
+		</if>
+		group by web_id order by uniqueNum
+	</select>
+	<select id="getDomainTrans" resultType="com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic">
+		select 	stat_time time, unique_num count from traffic_http_focus_statistic t where
+		<![CDATA[ stat_time>= #{beginDate} and stat_time< #{endDate}]]>
+			and web_id=#{domain}
+		<if test="entranceId!=null">
+			and entrance_id=#{entranceId}
+		</if>
+		 order by stat_time
+	</select>
 </mapper>

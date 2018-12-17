@@ -758,7 +758,7 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficWebsiteListNoTime", method = RequestMethod.GET)
 	@ApiOperation(value = "网站流量分析详情统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String, ?> trafficWebsiteListNoTime(@RequestParam String beginDate, @RequestParam String endDate,Model model, HttpServletRequest request,
+	public Map<String, ?> trafficWebsiteListNoTime(Integer domain,Integer entranceId , @RequestParam String beginDate, @RequestParam String endDate,Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -770,7 +770,7 @@ public class DashboardServiceController extends BaseRestController {
 				Date begin = DateUtils.parseDate(beginDate);
 				Date end = DateUtils.parseDate(endDate);
 				// 带查询时间查询所有
-				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin, end);
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin, end,domain,entranceId);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
@@ -781,7 +781,7 @@ public class DashboardServiceController extends BaseRestController {
 				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
 				Date end1 = cal.getTime();
 				// 带查询时间查询所有
-				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin1, end1);
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin1, end1,domain,entranceId);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
@@ -927,6 +927,40 @@ public class DashboardServiceController extends BaseRestController {
 			}
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站主题分类分析数据检索成功",
+				list, 0);
+	}
+	@RequestMapping(value = "trafficDomainTrans", method = RequestMethod.GET)
+	@ApiOperation(value = "域名详情趋势", httpMethod = "GET", notes = "域名UV")
+	public Map<String, ?> trafficDomainTrans(String beginDate, String endDate, Model model, Integer domain,Integer entranceId,
+			HttpServletRequest request, HttpServletResponse response) {
+		
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		List<HashMap> list = new ArrayList<HashMap>();
+		try {
+			
+				// 带查询时间查询所有
+				List<HashMap> websiteChart = dashboardService.getDomainTrans(beginDate, endDate,domain,entranceId);
+				if (websiteChart != null && websiteChart.size() > 0) {
+					list = websiteChart;
+				}
+			
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("HTTP网站主题分类分析数据检索失败:" + e.getMessage());
+			logger.error("HTTP网站域名分类分析数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站域名分类分析数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站域名分类分析数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"HTTP网站域名分类分析数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站域名分类分析数据检索成功",
 				list, 0);
 	}
 }
