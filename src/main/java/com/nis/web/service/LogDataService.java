@@ -228,7 +228,7 @@ public class LogDataService {
 								String type = filedsType.get(key).trim();
 								if (type.equals("java.lang.String")) {
 									String field = filedAndColumnMap.get(key).toLowerCase();
-									if (field.equals("url")) {
+									if (field.equals("url")||field.equals("website")) {
 										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
 									} else {
 										whereSB.append(" and " + field + "='"
