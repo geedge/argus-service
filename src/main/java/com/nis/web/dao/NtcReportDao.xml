@@ -863,10 +863,10 @@
 		traffic_ip_identify
 		<where>
 			<if test="searchType != null and searchType !=''">
-				<![CDATA[AND areaType = #{searchType}]]>
+				<![CDATA[AND area_Type = #{searchType}]]>
 			</if>
 			<if test="searchCountry != null and searchCountry !=''">
-				<![CDATA[AND country= #{searchCountry ]]>
+				<![CDATA[AND country= #{searchCountry} ]]>
 			</if>
 			<if test="searchIp != null and searchIp !=''">
 				<![CDATA[AND ip_start_num>= #{searchIp} and ip_end_num<=#{searchIp}]]>
