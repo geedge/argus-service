@@ -76,7 +76,6 @@
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="ipCount" jdbcType="BIGINT" property="ipCount" />
 		<result column="connCount" jdbcType="BIGINT" property="connCount" />
-		<result column="reportTime" jdbcType="TIMESTAMP" property="reportTime" />
 	</resultMap>
 
 	<resultMap id="NtcRadiusReportMap"
@@ -756,13 +755,12 @@
 				${page.fields}
 			</when>
 			<otherwise>
-				url, ipCount,connCount,reportTime
+				url, ipCount,connCount 
 			</otherwise>
 		</choose>
 		FROM (SELECT url,
 	count(distinct ip_addr) ipCount,
-	sum(sum) connCount,
-	stat_time reportTime
+	sum(sum) connCount 
 		FROM ntc_reject_url_statistic
 
 		<where>
@@ -775,17 +773,11 @@
 				<![CDATA[AND STAT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 			<if test="searchUrl != null and searchUrl !=''">
-				AND url = #{searchUrl}
+				AND url like concat(concat('%',#{searchUrl}),'%')
 			</if>
 		</where>
-		GROUP BY url,stat_time
-		) ntc_reject_url_statistic
-		<choose>
-			<when
-				test="page !=null and page.orderBy != null and page.orderBy != ''">
-				ORDER BY ${page.orderBy}
-			</when>
-		</choose>
+		GROUP BY url 
+		) ntc_reject_url_statistic 	 ORDER BY ipcount desc,connCount desc
 	</select>
 
 
