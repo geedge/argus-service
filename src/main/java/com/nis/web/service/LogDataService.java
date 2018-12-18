@@ -64,7 +64,7 @@ public class LogDataService {
 		}
 		long second = endTime - startTime;
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
+		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)/");
 		sql.append(second);
 		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/1024/");
 		sql.append(second);
@@ -98,9 +98,9 @@ public class LogDataService {
 
 		long second = endTime - startTime;
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)*8/");
+		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)/");
 		sql.append(second);
-		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/");
+		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/1024/");
 		sql.append(second);
 		sql.append(" AS bps,");
 		sql.append(asn);
@@ -124,8 +124,9 @@ public class LogDataService {
 		countSql.append("group by ");
 		countSql.append(asn + ")");
 		Integer startNum = 0;
-		Integer limitCount = startNum + 20;
-		sql.append(" limit " + limitCount + " ) ");
+//		Integer limitCount = startNum + 20;
+//		sql.append(" limit " + limitCount + " ) ");
+		sql.append(" ) ");
 		if (searchAsn != null && !searchAsn.equals("")) {
 			sql.append(" and " + asn + "='" + searchAsn + "'");
 		}

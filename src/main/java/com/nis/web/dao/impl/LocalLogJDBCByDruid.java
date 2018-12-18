@@ -149,9 +149,12 @@ public class LocalLogJDBCByDruid {
 					if (!allPps.equals("0")) {
 						ntcConnRecordPercent.setPpsPercent(
 								num.format(Double.valueOf(ntcConnRecordPercent.getPps()) / Double.valueOf(allPps)));
-						int idx = ntcConnRecordPercent.getPps().lastIndexOf(".");//查找小数点的位置
-				        String strNum = ntcConnRecordPercent.getPps().substring(0,idx);//截取从字符串开始到小数点位置的字符串，就是整数部分
-						ntcConnRecordPercent.setPps(strNum);
+						String ppsNum =ntcConnRecordPercent.getPps();
+						if(ntcConnRecordPercent.getPps().contains(".")) {
+							int idx =ntcConnRecordPercent.getPps().lastIndexOf(".");//查找小数点的位置
+							ppsNum= ntcConnRecordPercent.getPps().substring(0,idx);//截取从字符串开始到小数点位置的字符串，就是整数部分
+						}
+						ntcConnRecordPercent.setPps(ppsNum);
 					} else {
 						ntcConnRecordPercent.setPpsPercent("0%");
 					}
@@ -191,8 +194,13 @@ public class LocalLogJDBCByDruid {
 				NtcAsnRecord ntcAsnRecord = new NtcAsnRecord();
 				String bps = rs.getString("bps");
 				String pps = rs.getString("pps");
+				String ppsNum =pps;
+				if(pps.contains(".")) {
+					int idx =pps.lastIndexOf(".");//查找小数点的位置
+					ppsNum= pps.substring(0,idx);//截取从字符串开始到小数点位置的字符串，就是整数部分
+				}
 				ntcAsnRecord.setBps(subStr(bps));
-				ntcAsnRecord.setPps(subStr(pps));
+				ntcAsnRecord.setPps(ppsNum);
 				ntcAsnRecord.setAsn(rs.getString("asn"));
 				list.add(ntcAsnRecord);
 			}
