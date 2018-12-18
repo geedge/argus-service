@@ -21,6 +21,9 @@ public class NtcAsnRecord implements Serializable {
 	private String bps;
 	private String pps;
 	private String asn;
+	
+	
+	private String searchAsn;
 	private String searchFoundStartTime;// 开始发现时间
 	private String searchFoundEndTime;// 结束发现时间
 
@@ -48,6 +51,15 @@ public class NtcAsnRecord implements Serializable {
 
 	public void setAsn(String asn) {
 		this.asn = asn;
+	}
+
+	@JsonIgnore
+	public String getSearchAsn() {
+		return searchAsn;
+	}
+
+	public void setSearchAsn(String searchAsn) {
+		this.searchAsn = searchAsn;
 	}
 
 	@JsonIgnore

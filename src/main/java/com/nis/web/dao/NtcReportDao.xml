@@ -75,7 +75,8 @@
 		type="com.nis.domain.restful.NtcURLIpReport">
 		<result column="url" jdbcType="VARCHAR" property="url" />
 		<result column="ipCount" jdbcType="BIGINT" property="ipCount" />
-		<result column="connCount" jdbcType="BIGINT" property="connCount" />
+		<result column="connCount" jdbcType="BIGINT"
+			property="connCount" />
 	</resultMap>
 
 	<resultMap id="NtcRadiusReportMap"
@@ -97,7 +98,8 @@
 			property="ipEndNum" />
 		<result column="ip_sub" jdbcType="VARCHAR" property="ipSub" />
 		<result column="country" jdbcType="VARCHAR" property="country" />
-		<result column="area_type" jdbcType="VARCHAR" property="areaType" />
+		<result column="area_type" jdbcType="VARCHAR"
+			property="areaType" />
 		<result column="desc_detail" jdbcType="VARCHAR" property="desc" />
 	</resultMap>
 
@@ -755,12 +757,12 @@
 				${page.fields}
 			</when>
 			<otherwise>
-				url, ipCount,connCount 
+				url, ipCount,connCount
 			</otherwise>
 		</choose>
 		FROM (SELECT url,
-	count(distinct ip_addr) ipCount,
-	sum(sum) connCount 
+		count(distinct ip_addr) ipCount,
+		sum(sum) connCount
 		FROM ntc_reject_url_statistic
 
 		<where>
@@ -776,8 +778,8 @@
 				AND url like concat(concat('%',#{searchUrl}),'%')
 			</if>
 		</where>
-		GROUP BY url 
-		) ntc_reject_url_statistic 	 ORDER BY ipcount desc,connCount desc
+		GROUP BY url
+		) ntc_reject_url_statistic ORDER BY ipcount desc,connCount desc
 	</select>
 
 
@@ -850,7 +852,8 @@
 	<select id="findNtcIpRangeReport"
 		parameterType="com.nis.domain.restful.NtcIpRangeReport"
 		resultMap="NtcIpRangeReportMap">
-		SELECT ip_start,ip_end,ip_start_num,ip_end_num,ip_sub,country,area_type,desc_detail
+		SELECT
+		ip_start,ip_end,ip_start_num,ip_end_num,ip_sub,country,area_type,desc_detail
 		FROM
 		traffic_ip_identify
 		<where>
@@ -861,9 +864,9 @@
 				<![CDATA[AND country= #{searchCountry} ]]>
 			</if>
 			<if test="searchIp != null and searchIp !=''">
-				<![CDATA[AND ip_start_num>= #{searchIp} and ip_end_num<=#{searchIp}]]>
+				<![CDATA[AND  ip_end_num>=#{searchIp} and  ip_start_num<= #{searchIp} ]]>
 			</if>
-		<if test="searchDesc != null and searchDesc !=''">
+			<if test="searchDesc != null and searchDesc !=''">
 				<![CDATA[AND desc_detail= #{searchDesc} ]]>
 			</if>
 		</where>
@@ -877,7 +880,8 @@
 		VALUES
 		<foreach collection="list" item="ipRange" separator=",">
 			(#{ipRange.ipStart}, #{ipRange.ipEnd},
-			#{ipRange.ipStartNum}, #{ipRange.ipEndNum},
+			#{ipRange.ipStartNum},
+			#{ipRange.ipEndNum},
 			#{ipRange.ipSub}, #{ipRange.areaType},
 			#{ipRange.country})
 		</foreach>

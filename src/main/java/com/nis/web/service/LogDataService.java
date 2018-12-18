@@ -89,9 +89,8 @@ public class LogDataService {
 			throw new RestServiceException("searchFoundStartTime() can not exceed searchFoundEndTime",
 					RestBusinessCode.param_formate_error.getValue());
 		}
-		
-		
-		
+
+		String searchAsn = ntcAsnRecord.getSearchAsn();
 		String asn = "s_asn  ";
 		if (ntcAsnRecord.getSearchAsnType().trim().equals("1")) {
 			asn = "d_asn  ";
@@ -110,16 +109,27 @@ public class LogDataService {
 		sql.append(startTime);
 		sql.append(" and found_time< ");
 		sql.append(endTime);
+
+		if (searchAsn != null && !searchAsn.equals("")) {
+			sql.append(" and " + asn + "='" + searchAsn + "'");
+		}
+
 		StringBuffer countSql = new StringBuffer();
 		countSql.append("select count(1) from (");
 		countSql.append(sql);
-		countSql.append(" ) group by ");
-		countSql.append(asn+")");
-		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
-		Integer limitCount = startNum + page.getPageSize();
-
-		sql.append(" limit " + limitCount + " ) group by "+asn+" 	order by bps  desc,pps desc  limit " + startNum + "," + page.getPageSize());
-
+		countSql.append(" ) ");
+		if (searchAsn != null && !searchAsn.equals("")) {
+			countSql.append(" and " + asn + "='" + searchAsn + "'");
+		}
+		countSql.append("group by ");
+		countSql.append(asn + ")");
+		Integer startNum = 0;
+		Integer limitCount = startNum + 20;
+		sql.append(" limit " + limitCount + " ) ");
+		if (searchAsn != null && !searchAsn.equals("")) {
+			sql.append(" and " + asn + "='" + searchAsn + "'");
+		}
+		sql.append("group by " + asn + " 	order by bps  desc,pps desc  limit " + startNum + "," + 20);
 		localLogJDBCByDruid.getCount(page, countSql.toString());
 
 		page.setList(localLogJDBCByDruid.getNtcAsnRecordData(sql.toString()));
