@@ -75,7 +75,6 @@ public class SyncRedisToCluster {
 	@Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
 		JedisCluster jedisCluster = getResource();
-		System.out.println(jedisCluster);
 		String requestId = UUID.randomUUID().toString();
 		try {
 			if (lock(jedisCluster, requestId)) {// 避免集群环境下同一秒钟所有的机器都执行这个定时任务
@@ -180,7 +179,7 @@ public class SyncRedisToCluster {
 			}
 		}
 		for (String string : keys) {
-			System.out.println(string);
+//			System.out.println(string);
 		}
 		logger.debug("Keys gotten!");
 		return keys;

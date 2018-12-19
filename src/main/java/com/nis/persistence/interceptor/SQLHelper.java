@@ -1,5 +1,13 @@
 package com.nis.persistence.interceptor;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.ExecutorException;
 import org.apache.ibatis.logging.Log;
@@ -13,7 +21,8 @@ import org.apache.ibatis.scripting.xmltags.ForEachSqlNode;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.nis.datasource.CustomerContextHolder;
 import com.nis.domain.Page;
@@ -28,18 +37,8 @@ import com.nis.persistence.dialect.OracleDialect;
 import com.nis.persistence.dialect.PostgreSQLDialect;
 import com.nis.persistence.dialect.SQLServer2005Dialect;
 import com.nis.persistence.dialect.SybaseDialect;
-import com.nis.util.Configurations;
 import com.nis.util.Reflections;
 import com.nis.util.StringUtils;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * SQL工具类
@@ -48,7 +47,7 @@ import java.util.regex.Pattern;
  * @version 2013-8-28
  */
 public class SQLHelper {
-	static final Logger logger = Logger.getLogger(SQLHelper.class);
+	protected static Logger logger = LoggerFactory.getLogger(SQLHelper.class);
 	/**
 	 * 对SQL参数(?)设值,参考org.apache.ibatis.executor.parameter.DefaultParameterHandler
 	 *
@@ -165,7 +164,7 @@ public class SQLHelper {
 				countSql = "select count(*) from (" + removeOrders(sql) + ") tmp_count";
 			}
 		}
-		System.out.println("countSql:"+countSql);
+		logger.info("countSql:"+countSql);
 		Connection conn = connection;
 		PreparedStatement ps = null;
 		ResultSet rs = null;

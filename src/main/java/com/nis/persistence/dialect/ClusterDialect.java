@@ -3,6 +3,8 @@
  */
 package com.nis.persistence.dialect;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Cluster方言的实现[神通数据库]
@@ -12,7 +14,8 @@ package com.nis.persistence.dialect;
  * @since JDK 1.5
  */
 public class ClusterDialect implements Dialect {
-
+	
+	protected Logger logger = LoggerFactory.getLogger(ClusterDialect.class);
 
     @Override
     public String getLimitString(String sql, int offset, int limit) {
@@ -46,7 +49,7 @@ public class ClusterDialect implements Dialect {
             stringBuilder.append(" offset ");
             stringBuilder.append(offsetPlaceholder);
         }
-        System.out.println("cluster分页sql："+stringBuilder.toString());
+        logger.info("cluster分页sql："+stringBuilder.toString());
         return stringBuilder.toString();
     }
 

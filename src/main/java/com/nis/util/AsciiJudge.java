@@ -11,12 +11,6 @@ import java.util.List;
  */
 public class AsciiJudge {
 
-	public static void main(String[] args) {
-		String str = "fdsf你说说你发的是佛山东方啥的飞sdf    啥打法是否(\\&)";
-		boolean bool = asciiControlChar(str);
-		System.out.println(bool);
-	}
-
 	/**
 	 * 判断字符串是否包含控制字符
 	 * 

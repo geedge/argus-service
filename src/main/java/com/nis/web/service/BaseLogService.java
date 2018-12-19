@@ -46,10 +46,8 @@ public abstract class BaseLogService {
 	 * 
 	 * @param clazz
 	 * @param page
-	 * @throws Exception
-	 *             void
-	 * @exception @since
-	 *                1.0.0
+	 * @throws Exception void
+	 * @exception @since 1.0.0
 	 */
 	public void checkCloumnIsExist(AuditLogThread thread, long start, Class clazz, Page page) throws Exception {
 		String[] fieldsColoumn = null;
@@ -100,7 +98,8 @@ public abstract class BaseLogService {
 				}
 				if (!StringUtil.isBlank(notExistColumn)) {
 					notExistColumn = notExistColumn.substring(1);
-					throw new RestServiceException("fields中" + notExistColumn + "的字段不存在!", RestBusinessCode.param_formate_error.getValue());
+					throw new RestServiceException("fields中" + notExistColumn + "的字段不存在!",
+							RestBusinessCode.param_formate_error.getValue());
 				}
 			}
 			if (orderByColoumn != null) {
@@ -118,7 +117,8 @@ public abstract class BaseLogService {
 				}
 				if (!StringUtil.isBlank(notExistColumn)) {
 					notExistColumn = notExistColumn.substring(1);
-					throw new RestServiceException("orderBy中" + notExistColumn + "的字段不存在!", RestBusinessCode.param_formate_error.getValue());
+					throw new RestServiceException("orderBy中" + notExistColumn + "的字段不存在!",
+							RestBusinessCode.param_formate_error.getValue());
 				}
 			}
 
@@ -127,24 +127,30 @@ public abstract class BaseLogService {
 
 	/**
 	 * 验证日志查询条件格式是否正确
+	 * 
 	 * @param thread
 	 * @param start
 	 * @param entity
 	 * @param clazz
 	 * @param page
 	 */
-	public void queryConditionCheck(AuditLogThread thread, long start, LogEntity<?> entity, Class clazz,
-									Page page) {
+	public void queryConditionCheck(AuditLogThread thread, long start, LogEntity<?> entity, Class clazz, Page page) {
 		logger.info("请求参数校验开始----" + System.currentTimeMillis());
-		try {
-			if (!StringUtil.isBlank(entity.getSearchCfgId())) {
-				Long.parseLong(entity.getSearchCfgId());
+
+		if (!StringUtil.isBlank(entity.getSearchCfgId())) {
+			String[] split = org.apache.commons.lang.StringUtils.split(entity.getSearchCfgId(), ",");
+			if (split.length > 10) {
+				throw new RestServiceException("searchCfgId参数个数不能超过10个",
+						RestBusinessCode.param_formate_error.getValue());
 			}
-		} catch (NumberFormatException e) {
-			throw new RestServiceException("searchCfgId参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
-			throw new RestServiceException("searchCfgId参数错误",RestBusinessCode.param_formate_error.getValue());
+			for (String cfgId : split) {
+				try {
+					Long.parseLong(cfgId);
+				} catch (Exception e) {
+					throw new RestServiceException("searchCfgId参数错误", RestBusinessCode.param_formate_error.getValue());
+				}
+
+			}
 		}
 
 		try {
@@ -152,10 +158,9 @@ public abstract class BaseLogService {
 				Integer.parseInt(entity.getSearchDirection());
 			}
 		} catch (NumberFormatException e) {
-			throw new RestServiceException("getSearchDirection参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("getSearchDirection参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("getSearchDirection参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("getSearchDirection参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -163,10 +168,9 @@ public abstract class BaseLogService {
 				Long.parseLong(entity.getSearchEntranceId());
 			}
 		} catch (NumberFormatException e) {
-			throw new RestServiceException("searchEntranceId参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchEntranceId参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchEntranceId参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchEntranceId参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -175,10 +179,9 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundEndTime());
 			}
 		} catch (ParseException e) {
-			throw new RestServiceException("searchFoundEndTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchFoundEndTime参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -190,7 +193,7 @@ public abstract class BaseLogService {
 			throw new RestServiceException("searchFoundStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchFoundStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundStartTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -198,23 +201,25 @@ public abstract class BaseLogService {
 				Integer.parseInt(entity.getSearchService());
 			}
 		} catch (NumberFormatException e) {
-			throw new RestServiceException("searchService参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchService参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchService参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchService参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 		try {
 			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ServiceRuntimeException(ExceptionUtil.getExceptionMsg(e),RestBusinessCode.service_runtime_error.getValue());
+			throw new ServiceRuntimeException(ExceptionUtil.getExceptionMsg(e),
+					RestBusinessCode.service_runtime_error.getValue());
 		}
 		logger.info("请求参数校验结束----" + System.currentTimeMillis());
 
 	}
+
 	/**
 	 * 验证日志查询条件格式是否正确
+	 * 
 	 * @param thread
 	 * @param start
 	 * @param entity
@@ -222,7 +227,7 @@ public abstract class BaseLogService {
 	 * @param page
 	 */
 	public void collectConditionCheck(AuditLogThread thread, long start, NtcCollectVoipLog entity, Class clazz,
-									  Page page) {
+			Page page) {
 		logger.info("请求参数校验开始----" + System.currentTimeMillis());
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundEndTime())) {
@@ -230,10 +235,9 @@ public abstract class BaseLogService {
 				sdf.parse(entity.getSearchFoundEndTime());
 			}
 		} catch (ParseException e) {
-			throw new RestServiceException("searchFoundEndTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchFoundEndTime参数格式格式",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundEndTime参数格式格式", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -245,7 +249,7 @@ public abstract class BaseLogService {
 			throw new RestServiceException("searchFoundStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchFoundStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundStartTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -253,11 +257,13 @@ public abstract class BaseLogService {
 		} catch (RestServiceException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new ServiceRuntimeException(ExceptionUtil.getExceptionMsg(e),RestBusinessCode.service_runtime_error.getValue());
+			throw new ServiceRuntimeException(ExceptionUtil.getExceptionMsg(e),
+					RestBusinessCode.service_runtime_error.getValue());
 		}
 		logger.info("请求参数校验结束----" + System.currentTimeMillis());
 
 	}
+
 	/**
 	 * 
 	 * @Description:
@@ -270,41 +276,46 @@ public abstract class BaseLogService {
 	 * @param page
 	 */
 	public void queryReportConditionCheck(AuditLogThread thread, long start, NtcReportEntity<?> entity, Class clazz,
-										  Page page) {
+			Page page) {
 		logger.info("实时报表统计查询参数校验开始----" + System.currentTimeMillis());
-		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
-			throw new RestServiceException("searchBusinessType参数格式错误",RestBusinessCode.param_formate_error.getValue());
+		if (!StringUtil.isBlank(entity.getSearchBusinessType())
+				&& !StringUtil.isNumeric(entity.getSearchBusinessType())) {
+			throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		}
-		//searchService
+		// searchService
 		checkNumericCondition(thread, start, entity.getSearchService(), "searchService");
-		
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportStartTime())) {
 				sdf.parse(entity.getSearchReportStartTime());
 			}
 		} catch (ParseException e) {
-			throw new RestServiceException("searchReportStartTime参数格式错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportStartTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchReportStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportStartTime参数错误",
+					RestBusinessCode.param_formate_error.getValue());
 		}
-		
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
 				sdf.parse(entity.getSearchReportEndTime());
 			}
 		} catch (ParseException e) {
-			throw new RestServiceException("searchReportEndTime参数格式错误",RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
-			throw new RestServiceException("searchReportEndTime参数错误",RestBusinessCode.param_formate_error.getValue());
-		}
-		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
-			throw new RestServiceException("searchBusinessType参数格式错误",
+			throw new RestServiceException("searchReportEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			throw new RestServiceException("searchReportEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
-		
+		if (!StringUtil.isBlank(entity.getSearchBusinessType())
+				&& !StringUtil.isNumeric(entity.getSearchBusinessType())) {
+			throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
+		}
+
 		logger.info("实时报表统计查询参数校验结束----" + System.currentTimeMillis());
 
 	}
+
 	/**
 	 * @Description:用于验证数值类型格式，多个值以","分隔
 	 * @author (zdx)
@@ -315,38 +326,37 @@ public abstract class BaseLogService {
 	 * @param condName
 	 */
 	public void checkNumericCondition(AuditLogThread thread, long start, String condition, String condName) {
-		if (!StringUtil.isEmpty(condition)){
+		if (!StringUtil.isEmpty(condition)) {
 			Boolean flag = false;
 			if (condition.contains(",")) {
-				String services[] =condition.split(",");
+				String services[] = condition.split(",");
 				for (String service : services) {
-					if(!StringUtil.isNumeric(service)) {
+					if (!StringUtil.isNumeric(service)) {
 						flag = true;
 						break;
 					}
 				}
-			}else if(!StringUtil.isNumeric(condition)) {
+			} else if (!StringUtil.isNumeric(condition)) {
 				flag = true;
 			}
 			if (flag) {
-				throw new RestServiceException(condName+"参数格式错误",
-						RestBusinessCode.param_formate_error.getValue());
+				throw new RestServiceException(condName + "参数格式错误", RestBusinessCode.param_formate_error.getValue());
 			}
 		}
 	}
+
 	/**
 	 * @Description:验证用户行为日志统计查询条件
-	 * @author(zdx)
-	 * @date 2018年10月31日 下午4:53:27
+	 * @author(zdx) @date 2018年10月31日 下午4:53:27
 	 * @param thread
 	 * @param start
 	 * @param entity
 	 */
 	public void checkNtcRadiusReportCondition(AuditLogThread thread, long start, NtcRadiusReport entity) {
 		logger.info("用户行为日志统计参数校验开始----" + System.currentTimeMillis());
-		if (!StringUtil.isBlank(entity.getSearchBusinessType())&&!StringUtil.isNumeric(entity.getSearchBusinessType())) {
-			throw new RestServiceException("searchBusinessType参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+		if (!StringUtil.isBlank(entity.getSearchBusinessType())
+				&& !StringUtil.isNumeric(entity.getSearchBusinessType())) {
+			throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		int timeCount = 0;
@@ -359,7 +369,8 @@ public abstract class BaseLogService {
 			throw new RestServiceException("searchReportStartTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchReportStartTime参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportStartTime参数错误",
+					RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -371,22 +382,21 @@ public abstract class BaseLogService {
 			throw new RestServiceException("searchReportEndTime参数格式错误",
 					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchReportEndTime参数错误",RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
-		if (timeCount==1) {
+		if (timeCount == 1) {
 			throw new RestServiceException("searchReportStartTime和searchReportEndTime参数必须同时填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
 
-
-		//根据用户查看IP趋势时(searchBusinessType=2)，用户名必需填写
-		if ("2".equals(entity.getSearchBusinessType())&&StringUtil.isEmpty(entity.getSearchAccount())) {
+		// 根据用户查看IP趋势时(searchBusinessType=2)，用户名必需填写
+		if ("2".equals(entity.getSearchBusinessType()) && StringUtil.isEmpty(entity.getSearchAccount())) {
 			throw new RestServiceException("searchBusinessType=2时searchAccount参数必须填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
 
-		//根据用户查看IP趋势时(searchBusinessType=3)，用户名必需填写
-		if ("3".equals(entity.getSearchBusinessType())&&StringUtil.isEmpty(entity.getSearchNasIp())) {
+		// 根据用户查看IP趋势时(searchBusinessType=3)，用户名必需填写
+		if ("3".equals(entity.getSearchBusinessType()) && StringUtil.isEmpty(entity.getSearchNasIp())) {
 			throw new RestServiceException("searchBusinessType=3时searchNasIp参数必须填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
@@ -399,10 +409,8 @@ public abstract class BaseLogService {
 	 * 
 	 * @Title: getJedisKey
 	 * @Description: (日志查询/报表记录，"接口名称+查询条件"作为key，将结果存入redis中)
-	 * @param @param
-	 *            request
-	 * @param @param
-	 *            bool 查询数据中心缓存还是oracle缓存,false是oracle缓存
+	 * @param @param request
+	 * @param @param bool 查询数据中心缓存还是oracle缓存,false是oracle缓存
 	 * @param @return
 	 * @return Map 返回类型
 	 * @author （DDM）

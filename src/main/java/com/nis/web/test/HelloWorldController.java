@@ -69,7 +69,7 @@ public class HelloWorldController extends BaseController{
 	
 	@RequestMapping("/testPathVariable/{id}")
 	public String testPathVariable(@PathVariable("id") int id){
-		System.out.println(id);
+		logger.info(id);
 		return "success";
 	}
 	
@@ -82,7 +82,7 @@ public class HelloWorldController extends BaseController{
 	 */
 	@RequestMapping(value="/testRequestParam")
 	public String testRequestParam(@RequestParam(value="username",required=true) String username,@RequestParam(required=false,defaultValue="0") int age){
-		System.out.println(username+":"+age);
+		logger.info(username+":"+age);
 		return "success";
 	}
 	

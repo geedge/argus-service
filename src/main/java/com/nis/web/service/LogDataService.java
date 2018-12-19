@@ -2,7 +2,6 @@ package com.nis.web.service;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -248,8 +247,8 @@ public class LogDataService {
 								}
 								// clickhouse写法
 								String type = filedsType.get(key).trim();
+								String field = filedAndColumnMap.get(key).toLowerCase();
 								if (type.equals("java.lang.String")) {
-									String field = filedAndColumnMap.get(key).toLowerCase();
 									if (field.equals("url") || field.equals("website")) {
 										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
 									} else {
@@ -258,8 +257,15 @@ public class LogDataService {
 									}
 								} else if (type.equals("java.lang.Integer") || type.equals("int")
 										|| type.equals("java.lang.Long") || type.equals("long")) {
-									whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "="
-											+ value.toString().trim());
+									if(field.equals("cfg_id")) {
+										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " in("
+												+ value.toString().trim()+")");
+									}else {
+										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "="
+												+ value.toString().trim());
+									}
+									
+							
 								}
 
 							}

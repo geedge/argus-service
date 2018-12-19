@@ -11,13 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.json.JSONObject;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,9 +40,11 @@ import com.nis.util.GroupReuseVal;
 import com.nis.util.JsonMapper;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
-import com.zdjizhi.utils.StringUtil;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.BaseService;
+import com.zdjizhi.utils.StringUtil;
+
+import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ControlService

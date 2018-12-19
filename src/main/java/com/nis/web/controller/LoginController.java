@@ -183,7 +183,7 @@ public class LoginController extends BaseController {
 		try {
 			
 			if (StringUtils.isNotBlank(roleId)){
-				System.out.println("*****************");
+				logger.info("*****************");
 			}
 			
 		} catch (Exception e) {

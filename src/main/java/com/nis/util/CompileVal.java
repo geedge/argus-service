@@ -1020,26 +1020,4 @@ public class CompileVal {
 
 	}
 
-	public static void main(String[] args) {
-
-		long x = 2;
-		int count = 0;
-		for (int i = 1; i < 32; i++) {
-			count++;
-			x = x * 2;
-		}
-
-		System.out.println(count + "      " + x);
-
-		long maxValue = Long.MAX_VALUE;
-		System.out.println(maxValue);
-
-		String key = "中\\&国\\&人&民共和&国中央&中央人民政府";
-		String[] split = key.split("(?<=[^\\\\])&");
-		for (String str : split) {
-			System.out.println(str);
-		}
-
-	}
-
 }

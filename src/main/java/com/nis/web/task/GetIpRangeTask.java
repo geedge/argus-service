@@ -141,9 +141,6 @@ public class GetIpRangeTask {
 				String[] ipAddr = str.split("-");
 				if (ipAddr.length > 1) {
 					String startIp = ipAddr[0];
-					if(startIp.toString().length()>11) {
-						System.out.println("1");
-					}
 					String endIp = ipAddr[1];
 					NtcIpRangeReport ntcIpRangeReport = new NtcIpRangeReport();
 					String startIpStr = map.get(Long.parseLong(startIp));
@@ -165,11 +162,6 @@ public class GetIpRangeTask {
 				System.out.print(list.get(i) + "[" + map.get(list.get(i)) + "]");
 				if (i < list.size() - 1) {
 					Long startIp = list.get(i);
-					
-					if(startIp.toString().length()>11) {
-						System.out.println("1");
-					}
-					
 					Long endIp = list.get(i + 1);
 					NtcIpRangeReport ntcIpRangeReport = new NtcIpRangeReport();
 					String startIpStr = map.get(startIp);

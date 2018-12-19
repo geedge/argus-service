@@ -7,12 +7,6 @@ import java.net.UnknownHostException;
 import java.util.regex.Pattern;
 
 public class BasicProvingUtil {
-	public static void main(String[] args) {
-		// String ip = "::";
-		String ip = " fe80::d025:864c:3151:daa0";
-		System.out.println(ip + "=" + isIpv6(ip));
-
-	}
 
 	/**
 	 * 判断是否是Integer类型
