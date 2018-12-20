@@ -17,9 +17,9 @@
 		device.entrance_id entranceId,
 		CASE device.entrance_id
 		WHEN 1 THEN
-		'阿斯塔纳'
+		'Astana'
 		WHEN 2 THEN
-		'阿拉木图'
+		'Alamty'
 		ELSE
 		- 1
 		END AS area,
