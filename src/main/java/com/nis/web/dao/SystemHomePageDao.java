@@ -15,7 +15,8 @@ public interface SystemHomePageDao {
 	List<NtcAreaHomeReport> getTrafficAreaStatList(@Param("startTime") Date searchReportStartTime,
 			@Param("endTime") Date searchReportEndTime);
 
-	List<CfgLogInfo> getCfgSortLogStatList(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+	//List<CfgLogInfo> getCfgSortLogStatList(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+	List<CfgLogInfo> getCfgSortLogStatList(CfgLogInfo cfgLogInfo);
 
 	List<DropInfo> getBlockAndDropStatListAll(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 

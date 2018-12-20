@@ -6,18 +6,19 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisSentinelPool;
+import redis.clients.jedis.exceptions.JedisException;
+
 import com.google.common.collect.Lists;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.web.service.SpringContextHolder;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisSentinelPool;
-import redis.clients.jedis.exceptions.JedisException;
-
 public class JedisUtils {
 	private static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
-
+	private static final JedisPool jedisPool = SpringContextHolder.getBean(JedisPool.class);
 	/**
 	 * 获取缓存
 	 * 
@@ -212,15 +213,13 @@ public class JedisUtils {
 	 * @throws JedisException
 	 */
 	public static Jedis getResource(int redisDb) throws JedisException {
-		JedisSentinelPool jedisSentinelPool = SpringContextHolder.getBean(JedisSentinelPool.class);
-
-		if (jedisSentinelPool == null) {
+		Jedis jedis = null;
+		if (jedisPool == null) {
 			throw new ServiceRuntimeException("redis连接池为空,请联系管理员检查程序",
 					RestBusinessCode.CannotConnectionRedis.getValue());
 		}
-		Jedis jedis = null;
 		try {
-			jedis = jedisSentinelPool.getResource();
+			jedis = jedisPool.getResource();
 			jedis.select(redisDb);
 		} catch (JedisException e) {
 			returnBrokenResource(jedis);

@@ -3,6 +3,7 @@ package com.nis.domain.restful;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -47,13 +48,55 @@ public class CfgLogInfo implements Serializable {
 	@JsonInclude(value = Include.NON_NULL)
 	@ApiModelProperty(value = "统计时间")
 	private Date reportTime;// 五分钟统计时间
+	
+	private String searchService;
+	private String searchReportStartTime;
+	private String searchReportEndTime;
+	private long baseNum;
+	
+	@JsonIgnore
+	public long getBaseNum() {
+		return baseNum;
+	}
 
+	public void setBaseNum(long baseNum) {
+		this.baseNum = baseNum;
+	}
+
+	
 	public String getServiceCode() {
 		return serviceCode;
 	}
 
 	public void setServiceCode(String serviceCode) {
 		this.serviceCode = serviceCode;
+	}
+
+	@JsonIgnore
+	public String getSearchService() {
+		return searchService;
+	}
+
+	public void setSearchService(String searchService) {
+		this.searchService = searchService;
+	}
+
+	@JsonIgnore
+	public String getSearchReportStartTime() {
+		return searchReportStartTime;
+	}
+
+	public void setSearchReportStartTime(String searchReportStartTime) {
+		this.searchReportStartTime = searchReportStartTime;
+	}
+
+	@JsonIgnore
+	public String getSearchReportEndTime() {
+		return searchReportEndTime;
+	}
+
+	public void setSearchReportEndTime(String searchReportEndTime) {
+		this.searchReportEndTime = searchReportEndTime;
 	}
 
 	public String getServiceNameZh() {

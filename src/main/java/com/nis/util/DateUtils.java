@@ -4,17 +4,17 @@
 package com.nis.util;
 
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.zdjizhi.utils.StringUtil;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
+
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * 日期工具类, 继承org.apache.commons.lang.time.DateUtils类
@@ -232,7 +232,28 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		}
 		return timeMap;
 	}
-	
+	/**
+	   * 将短时间格式字符串转换为时间 yyyy-MM-dd 
+	   * 
+	   * @param strDate
+	   * @return
+	   */
+	/**
+	 * 将短时间格式字符串转换为指定时间
+	 * 
+	 * @param strDate
+	 * @param dateFormat "yyyy-MM-dd HH:mm:ss" 此参数为空，默认为："yyyy-MM-dd"
+	 * @return
+	 * @throws ParseException 
+	 */
+	public static Date strToDate(String strDate,String dateFormat) throws ParseException {
+	   if(dateFormat==null || "".equals(dateFormat)){
+		   dateFormat = "yyyy-MM-dd";
+	   }
+	   SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+	   Date strtodate = sdf.parse(strDate);
+	   return strtodate;
+	}
 	/**
 	 * @param args
 	 * @throws ParseException

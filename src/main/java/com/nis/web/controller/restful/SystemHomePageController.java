@@ -79,31 +79,47 @@ public class SystemHomePageController extends BaseRestController {
 
 	@RequestMapping(value = "/log/v1/logServiceTopn", method = RequestMethod.GET)
 	@ApiOperation(value = "日志TOP5业务统计量获取", httpMethod = "GET", notes = "对日志TOP5业务统计量信息进行查询", response = Map.class)
-	public Map<String, ?> cfgSortLogStat(String searchReportStartTime, String searchReportEndTime,
+	//public Map<String, ?> cfgSortLogStat(String searchReportStartTime, String searchReportEndTime,
+	public Map<String, ?> cfgSortLogStat(CfgLogInfo cfgLogInfo,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		Page<CfgLogInfo> cfgSortLogStat = null;
-
+		if(cfgLogInfo!=null){
+			if(cfgLogInfo.getSearchService() == null || "".equals(cfgLogInfo.getSearchService())){
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"error TOPN searchService parm ！",RestBusinessCode.param_formate_error.getValue());
+			}
+			if(cfgLogInfo.getSearchReportStartTime() == null || "".equals(cfgLogInfo.getSearchReportStartTime())){
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						" loss TOPN searchReportStartTime parm ！",RestBusinessCode.param_formate_error.getValue());
+			}
+			if(cfgLogInfo.getSearchReportEndTime() == null || "".equals(cfgLogInfo.getSearchReportEndTime())){
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"loss TOPN searchReportEndTime parm！",RestBusinessCode.param_formate_error.getValue());
+			}
+			if(cfgLogInfo.getBaseNum() < 1){
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"error TOPN baseNum parm！",RestBusinessCode.param_formate_error.getValue());
+			}
+		}
 		try {
-			cfgSortLogStat = systemHomePageService.getCfgSortLogStat(searchReportStartTime, searchReportEndTime,
-					request, response);
-
+			cfgSortLogStat = systemHomePageService.getCfgSortLogStat(cfgLogInfo);
 		} catch (Exception e) {
 			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			if (!(e instanceof RestServiceException)) {
 				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
-						"获取配置日志TOP5统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+						"获取TOP5Service失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			} else {
 				throw ((RestServiceException) e);
 			}
 		}
 
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取配置日志TOP5统计成功",
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取TOP5Service趋势统计数据成功",
 				cfgSortLogStat, 0);
 	}
 

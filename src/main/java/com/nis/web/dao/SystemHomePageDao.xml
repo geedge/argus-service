@@ -2,6 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nis.web.dao.SystemHomePageDao">
 
+	 <resultMap id="TopServiceMap" type="com.nis.domain.restful.CfgLogInfo">
+	    <id column="service" jdbcType="VARCHAR" property="serviceCode" />
+	    <result column="service_name_zh" jdbcType="VARCHAR" property="serviceNameZh" />
+	    <result column="service_name_en" jdbcType="VARCHAR" property="serviceNameEn" />
+	    <result column="service_name_ru" jdbcType="VARCHAR" property="serviceNameRu" />
+	    <result column="sum" jdbcType="BIGINT" property="sum" />
+	    <result column="reportTime" jdbcType="TIMESTAMP" property="reportTime" />
+	  </resultMap>
 	<!-- 地域流量 -->
 	<select id="getTrafficAreaStatList" resultType="com.nis.domain.restful.NtcAreaHomeReport"
 		useCache="false" flushCache="true">
@@ -48,7 +56,29 @@
 
 
 	<!-- 配置日志TOP统计 -->
-	<select id="getCfgSortLogStatList" resultType="com.nis.domain.restful.CfgLogInfo"
+	<!-- 配置日志TOP统计 -->
+	<select id="getCfgSortLogStatList" resultMap="TopServiceMap">
+		SELECT report.service,report.report_time,report.sum,dic.service_name_zh,dic.service_name_zh,dic.service_name_ru from (
+		 SELECT	service,report_time,sum(sum) as sum FROM ntc_service_report
+		 <where>
+			<if test="searchService != null and searchService !=''">
+				<![CDATA[AND service in (${searchService})]]>
+			</if>
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND report_time >= #{searchReportStartTime}]]>
+			</if>
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND report_time < #{searchReportEndTime}]]>
+			</if>
+		</where>
+			GROUP BY
+				service,
+				report_time
+			order by 
+			report_time ASC,sum DESC) report 
+			LEFT JOIN ntc_service_dic dic on report.service = dic.service_code
+	</select>
+	<!-- <select id="getCfgSortLogStatList" resultType="com.nis.domain.restful.CfgLogInfo"
 		useCache="false" flushCache="true">
 		SELECT
 		dic.service_code as serviceCode,
@@ -76,7 +106,7 @@
 		ORDER BY
 		service.report_time ASC,
 		service.sum DESC
-	</select>
+	</select> -->
 
 	<!-- 丢弃量 -->
 	<!-- 总量 -->
