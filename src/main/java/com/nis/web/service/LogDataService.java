@@ -250,7 +250,7 @@ public class LogDataService {
 								String field = filedAndColumnMap.get(key).toLowerCase();
 								if (type.equals("java.lang.String")) {
 									if (field.equals("url") || field.equals("website")) {
-										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
+										whereSB.append(" and " + field + " like '" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
 									} else {
 										whereSB.append(" and " + field + "='"
 												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
@@ -402,10 +402,11 @@ public class LogDataService {
 
 								if (typeName.equals("java.lang.String")) {
 									String field = filedAndColumnMap.get(key);
-									if (field.equals("url")) {
-										whereSB.append(" and " + field + " like '" + value.toString().trim() + "%'");
+									if (field.equals("url") || field.equals("website")) {
+										whereSB.append(" and " + field + " like '" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
 									} else {
-										whereSB.append(" and " + field + "='" + value.toString().trim() + "'");
+										whereSB.append(" and " + field + "='"
+												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
 									}
 								} else if (typeName.equals("java.lang.Integer") || typeName.equals("int")) {
 									whereSB.append(
