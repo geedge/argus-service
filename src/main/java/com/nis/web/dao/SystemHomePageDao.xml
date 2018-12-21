@@ -11,55 +11,24 @@
 	    <result column="reportTime" jdbcType="TIMESTAMP" property="reportTime" />
 	  </resultMap>
 	<!-- 地域流量 -->
-	<select id="findTrafficAreaStatList" resultType="com.nis.domain.restful.NtcAreaHomeReport"
+    <select id="findTrafficAreaStatList" resultType="com.nis.domain.restful.NtcAreaHomeReport"
 		useCache="false" flushCache="true">
 		SELECT
-		device.entrance_id entranceId,
-		CASE device.entrance_id
-		WHEN 1 THEN
-		'Astana'
-		WHEN 2 THEN
-		'Alamty'
-		ELSE
-		- 1
-		END AS area,
-		(netflow.INOCTETS_SPEED+
-		netflow.OUTOCTETS_SPEED) as sum,
-		netflow.RECV_TIME reportTime
+		entrance_id as entranceId,
+		(INOCTETS_SPEED+OUTOCTETS_SPEED) as sum,
+		RECV_TIME as reportTime
 		FROM
-		ntc_device_info device
-		LEFT JOIN (
-		SELECT
-		netflow.INOCTETS_SPEED
-		INOCTETS_SPEED,
-		netflow.OUTOCTETS_SPEED
-		OUTOCTETS_SPEED,
-		netflow.RECV_TIME,
-		netflow.NODE_IP
-		FROM
-		traffic_netflow_port_info netflow
+		traffic_netflow_port_info 		
 		<where>
 			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
-				<![CDATA[AND netflow.RECV_TIME >= #{searchReportStartTime}]]>
+				<![CDATA[AND RECV_TIME >= #{searchReportStartTime}]]>
 			</if>
 			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
-				<![CDATA[AND netflow.RECV_TIME < #{searchReportEndTime}]]>
-			</if>
-			<!-- <if
-				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
-				netflow.RECV_TIME&gt;#{startTime}
-				and
-				netflow.RECV_TIME&lt;=#{endTime}
-			</if> -->
+				<![CDATA[AND  RECV_TIME < #{searchReportEndTime}]]>
+			</if>			
 		</where>
-		) netflow
-		ON device.manager_ip = netflow.NODE_IP
-		WHERE
-		netflow.RECV_TIME
-		IS NOT
-		NULL
+		order by recv_time asc;
 	</select>
-
 
 	<!-- 配置日志TOP统计 -->
 	<!-- 配置日志TOP统计 -->
@@ -84,56 +53,16 @@
 			report_time ASC) report 
 			LEFT JOIN ntc_service_dic dic on report.service = dic.service_code
 	</select>
-	<!-- <select id="getCfgSortLogStatList" resultType="com.nis.domain.restful.CfgLogInfo"
-		useCache="false" flushCache="true">
-		SELECT
-		dic.service_code as serviceCode,
-		sum(service.sum) as sum,
-		dic.service_name_zh as serviceNameZh,
-		dic.service_name_en as
-		serviceNameEn,
-		dic.service_name_ru as serviceNameRu,
-		service.report_time as reportTime
-		FROM
-		ntc_service_report
-		service,ntc_service_dic dic
-		WHERE
-		service.service =
-		dic.service_code
-		and
-		<if
-			test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
-			service.report_time&gt;#{startTime} and
-			service.report_time&lt;=#{endTime}
-		</if>
-		GROUP BY
-		service.report_time,
-		service.service
-		ORDER BY
-		service.report_time ASC,
-		service.sum DESC
-	</select> -->
 
 	<!-- 丢弃量 -->
 	<!-- 总量 -->
 	<select id="findBlockAndDropStatListAll" resultType="com.nis.domain.restful.DropInfo"
 		useCache="false" flushCache="true">
 		SELECT
-		'drop' AS label,
-		IFNULL(
-		(
-		sum(reject_num) + SUM(drop_conn_num)
-		),
-		0
-		) AS sum,#{searchReportStartTime} as reportTime
+		 sum(reject_num+drop_conn_num) as sum
 		FROM
 		ntc_total_report
-		<where>
-			<!-- <if
-				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
-				report_time&gt;#{startTime} and
-				report_time&lt;=#{endTime}
-			</if> -->			
+		<where>			
 			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
 				<![CDATA[AND report_time >= #{searchReportStartTime}]]>
 			</if>
@@ -141,29 +70,16 @@
 				<![CDATA[AND report_time < #{searchReportEndTime}]]>
 			</if>
 		</where>
-		order by report_time
-		asc;
 	</select>
 
 	<!-- 五分钟业务 -->
 	<select id="findBlockAndDropStatListMinute" resultType="com.nis.domain.restful.DropInfo"
 		useCache="false" flushCache="true">
-		SELECT
-		'drop' AS label,
-		IFNULL(
-		(
-		sum(reject_num) + SUM(drop_conn_num)
-		),
-		0
-		) AS sum,report_time as reportTime
+		SELECT 	(reject_num+drop_conn_num) as sum,
+		report_time as reportTime
 		FROM
 		ntc_total_report
 		<where>
-			<!-- <if
-				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
-				report_time&gt;#{startTime} and
-				report_time&lt;=#{endTime}
-			</if> -->
 			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
 				<![CDATA[AND report_time >= #{searchReportStartTime}]]>
 			</if>
@@ -171,7 +87,6 @@
 				<![CDATA[AND report_time < #{searchReportEndTime}]]>
 			</if>
 		</where>
-		GROUP BY report_time
 		order by report_time
 		asc;
 	</select>

@@ -7,16 +7,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.nis.domain.Page;
 import com.nis.domain.restful.CfgLogInfo;
@@ -24,6 +21,7 @@ import com.nis.domain.restful.DropInfo;
 import com.nis.domain.restful.NtcAreaHomeReport;
 import com.nis.util.CalendarUtils;
 import com.nis.util.DateUtils;
+import com.nis.util.SortList;
 import com.nis.web.dao.SystemHomePageDao;
 
 
@@ -184,41 +182,35 @@ public class SystemHomePageService {
 			//list = systemHomePageDao.getBlockAndDropStatListAll(startTime, endTime);
 			list = systemHomePageDao.findBlockAndDropStatListAll(dropInfo);
 		}
-		if(2 != searchBusinessType && list!=null && list.size()>0){
-			DropInfo dropTemp = (DropInfo)list.get(0);
-			if(dropTemp!= null){
-				if(dropTemp.getSum()==0){
-					dropTemp.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
-					List<DropInfo> newlist = new LinkedList<DropInfo>();
-					newlist.add(dropTemp);
-					list = newlist;
+		if(2 != searchBusinessType){			
+			if(list!=null && list.size()>0){
+				DropInfo dropTemp = (DropInfo)list.get(0);
+				if(dropTemp!= null){
+					if(dropTemp.getSum()==0){
+						dropTemp.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
+						List<DropInfo> newlist = new LinkedList<DropInfo>();
+						newlist.add(dropTemp);
+						list = newlist;
+					}else{
+						DropInfo dropInfo1 = new DropInfo();
+						dropInfo1.setLabel("drop");
+						dropInfo1.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
+						dropInfo1.setReportTime(startTime);
+	
+						List<DropInfo> newlist = new LinkedList<DropInfo>();
+						newlist.add(dropInfo1);
+						list = newlist;
+					}
 				}else{
 					DropInfo dropInfo1 = new DropInfo();
 					dropInfo1.setLabel("drop");
 					dropInfo1.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
 					dropInfo1.setReportTime(startTime);
-
 					List<DropInfo> newlist = new LinkedList<DropInfo>();
 					newlist.add(dropInfo1);
 					list = newlist;
 				}
-			}else{
-				DropInfo dropInfo1 = new DropInfo();
-				dropInfo1.setLabel("drop");
-				dropInfo1.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
-				dropInfo1.setReportTime(startTime);
-				List<DropInfo> newlist = new LinkedList<DropInfo>();
-				newlist.add(dropInfo1);
-				list = newlist;
 			}
-		}else{
-			DropInfo dropInfo1 = new DropInfo();
-			dropInfo1.setLabel("drop");
-			dropInfo1.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
-			dropInfo1.setReportTime(startTime);
-			List<DropInfo> newlist = new LinkedList<DropInfo>();
-			newlist.add(dropInfo1);
-			list = newlist;
 		}
 		if(list!=null && list.size()>0){
 			page.setCount(list.size());
@@ -245,81 +237,49 @@ public class SystemHomePageService {
 		long sum = 0;
 		//long startTimesTemp = startTimes;
 		try{
-			if(list!=null && list.size()>0){
-				//获取最大
-				/*for (int i = 0; i < list.size(); i++) {
-					DropInfo dropInfo = list.get(i);
-					if(temp<dropInfo.getSum()){
-						temp = dropInfo.getSum();
-					}
-				}		*/	
-			//检查数据是否完整
-				for (int i = 0; i < list.size(); i++) {
-					DropInfo dropInfo = list.get(i);
-					for (; startTimes < endTimes; startTimes += 300000) {
-						if (dropInfo.getReportTime().getTime() == startTimes) {	
-							sum = dropInfo.getSum();
-							baseNum1 = sum;
-							/*if(startTimesTemp==dropInfo.getReportTime().getTime()){
-								dropInfo.setSum(temp);
-							}*/
-							newList.add(dropInfo);
-						}else{
-							baseNum1 = dropInfo.getSum();
-							DropInfo dropInfo1 = new DropInfo();
-							sum = Math.round(baseNum1*(Math.random()*0.2+0.9));
-							dropInfo1.setLabel("drop");
-							/*if(startTimesTemp==startTimes){
-								dropInfo1.setSum(temp);
-							}else{*/
-								dropInfo1.setSum(Math.round(sum*(Math.random()*0.2+0.9)));
-							//}
-							dropInfo1.setReportTime(new Date(startTimes));
-							newList.add(dropInfo1);
+			int nextStart = 0;
+			for (; startTimes < endTimes; startTimes += 300000) {
+				if(list!=null && list.size()>0){
+					//获取最大
+					/*for (int i = 0; i < list.size(); i++) {
+						DropInfo dropInfo = list.get(i);
+						if(temp<dropInfo.getSum()){
+							temp = dropInfo.getSum();
 						}
+					}		*/	
+				//检查数据是否完整
+					for (int i = nextStart; i < list.size(); i++) {
+						DropInfo dropInfo = list.get(i);
+							if (dropInfo.getReportTime().getTime() >= startTimes
+									&& dropInfo.getReportTime().getTime() < (startTimes + 300000)) {
+								sum += dropInfo.getSum();
+								baseNum1 = sum;
+								newList.add(dropInfo);
+							}else{
+								nextStart=i;
+								break;
+							}							
 					}
-				}
-			}else{//未取到数据则取随机数
-				DropInfo dropInfo1 = null;
-				//temp = Math.round(baseNum1*1.2);
-				for (; startTimes < endTimes; startTimes += 300000) {
-					dropInfo1 = new DropInfo();
-					/*if(startTimesTemp==startTimes){
-						sum = temp;
-					}else{*/
-						sum = Math.round(baseNum1*(Math.random()*0.2+0.9));
-					/*}*/
+					if(sum != 0){
+						baseNum1 = sum;
+					}
+					DropInfo dropInfo1 = new DropInfo();
 					dropInfo1.setLabel("drop");
 					dropInfo1.setSum(sum);
 					dropInfo1.setReportTime(new Date(startTimes));
 					newList.add(dropInfo1);
-				}
-			}
-			/*for (; startTimes < endTimes; startTimes += 300000) {
-				DropInfo dropInfo1 = new DropInfo();
-				if(list!=null && list.size()>0){
-					for (int i = 0; i < list.size(); i++) {
-						DropInfo dropInfo = list.get(i);
-						if (dropInfo.getReportTime().getTime() == startTimes) {	
-							sum = dropInfo.getSum();
-							baseNum1 = sum;
-							newList.add(dropInfo);
-							break;
-						}
+				}else{//未取到数据则取随机数
+					DropInfo dropInfo1 = null;
+					for (; startTimes < endTimes; startTimes += 300000) {
+						dropInfo1 = new DropInfo();
+						sum = Math.round(baseNum1*(Math.random()*0.2+0.9));
+						dropInfo1.setLabel("drop");
+						dropInfo1.setSum(sum);
+						dropInfo1.setReportTime(new Date(startTimes));
+						newList.add(dropInfo1);
 					}
-				}else{
-					sum = Math.round(baseNum1*(Math.random()*0.2+0.9));;
 				}
-				if(sum==0){
-					sum = Math.round(baseNum1*(Math.random()*0.2+0.9));
-				}else{
-					baseNum1 = sum; 
-				}
-				dropInfo1.setLabel("drop");
-				dropInfo1.setSum(sum);
-				dropInfo1.setReportTime(new Date(startTimes));
-				newList.add(dropInfo1);
-			}*/
+			}			
 		}catch(Exception e){
 			logger.error("获取区域参考值异常！");
 		}
@@ -617,19 +577,131 @@ public class SystemHomePageService {
 			if(baseNum2==0){
 				baseNum2 = baseNum;
 			}
+			int nextStart = 0;
+			/*logger.debug("code order by start");
+			if(list!=null && list.size()>0){
+				 SortList<NtcAreaHomeReport> sortList = new SortList<NtcAreaHomeReport>();  
+			        sortList.sort(list, "getReportTime", "asc");  
+			}
+			logger.debug("code order by end");*/
 			for (; startTimes < endTimes; startTimes += 300000) {
 				NtcAreaHomeReport ntcAreaHomeReportArea1 = new NtcAreaHomeReport();
 				NtcAreaHomeReport ntcAreaHomeReportArea2 = new NtcAreaHomeReport();
 				long sums1 = 0;
 				long sums2 = 0;	
 				if(list!=null && list.size()>0){
+					for (int i = nextStart; i < list.size(); i++) {
+						NtcAreaHomeReport ntcAreaHomeReport2 = list.get(i);
+						if (ntcAreaHomeReport2.getReportTime().getTime() >= startTimes
+								&& ntcAreaHomeReport2.getReportTime().getTime() < (startTimes + 300000)) {
+							if (1 == ntcAreaHomeReport2.getEntranceId()) {
+								sums1 = sums1 + ntcAreaHomeReport2.getSum();
+							} else if ( 2 == ntcAreaHomeReport2.getEntranceId()) {
+								sums2 = sums2 + ntcAreaHomeReport2.getSum();
+							} else {
+								logger.debug("未知地域,地域ID为：{" + ntcAreaHomeReport2.getEntranceId() + "}");
+							}
+						}else{
+							nextStart=i;
+							break;
+						}
+					}
+					ntcAreaHomeReportArea1.setEntranceId(1);
+					ntcAreaHomeReportArea2.setEntranceId(2);
+					ntcAreaHomeReportArea1.setArea(area1);
+					ntcAreaHomeReportArea2.setArea(area2);
+					if(sums1==0){
+						sums1 = Math.round(baseNum1*(Math.random()*0.2+0.9));
+					}else{
+						baseNum1 = sums1; 
+					}
+					if(sums2==0){
+						sums2 = Math.round(baseNum2*(Math.random()*0.2+0.9));
+					}else{
+						baseNum2 = sums2; 
+					}
+					ntcAreaHomeReportArea1.setSum(sums1);
+					ntcAreaHomeReportArea2.setSum(sums2);
+					ntcAreaHomeReportArea1.setReportTime(new Date(startTimes));
+					ntcAreaHomeReportArea2.setReportTime(new Date(startTimes));
+					newList.add(ntcAreaHomeReportArea1);
+					newList.add(ntcAreaHomeReportArea2);
+				}else{
+					sums1 = Math.round(baseNum1*(Math.random()*0.2+0.9));
+					sums2 = Math.round(baseNum2*(Math.random()*0.2+0.9));
+
+					ntcAreaHomeReportArea1.setEntranceId(1);
+					ntcAreaHomeReportArea2.setEntranceId(2);
+					ntcAreaHomeReportArea1.setArea(area1);
+					ntcAreaHomeReportArea2.setArea(area2);
+					/*if(sums1==0){
+						sums1 = Math.round(baseNum1*(Math.random()*0.2+0.9));
+					}else{
+						baseNum1 = sums1; 
+					}
+					if(sums2==0){
+						sums2 = Math.round(baseNum2*(Math.random()*0.2+0.9));
+					}else{
+						baseNum2 = sums2; 
+					}*/
+					ntcAreaHomeReportArea1.setSum(sums1);
+					ntcAreaHomeReportArea2.setSum(sums2);
+					ntcAreaHomeReportArea1.setReportTime(new Date(startTimes));
+					ntcAreaHomeReportArea2.setReportTime(new Date(startTimes));
+					newList.add(ntcAreaHomeReportArea1);
+					newList.add(ntcAreaHomeReportArea2);
+					
+				}
+			}
+		}catch(Exception e){
+			logger.error("获取区域参考值异常！");
+		}
+		return newList;
+	}public List<NtcAreaHomeReport> converNtcAreaHomeListBak(List<NtcAreaHomeReport> list, NtcAreaHomeReport ntcAreaHomeReportParm) throws ParseException {
+		final String area1 = "Astana";
+		final String area2 = "Alamty";
+		List<NtcAreaHomeReport> newList = new LinkedList<>();
+		String sTime = ntcAreaHomeReportParm.getSearchReportStartTime();
+		String eTime = ntcAreaHomeReportParm.getSearchReportEndTime();
+		long baseNum = ntcAreaHomeReportParm.getBaseNum();		
+		/*long startTimes = (startTime.getTime() + 300000);
+		long endTimes = endTime.getTime();*/
+		long startTimes = DateUtils.strToDate(sTime,"yyyy-MM-dd HH:mm:ss").getTime();
+		long endTimes = DateUtils.strToDate(eTime,"yyyy-MM-dd HH:mm:ss").getTime();
+		
+		long baseNum1 = baseNum;
+		long baseNum2 = baseNum;	
+		//先根据list获取参考时间
+		String getAreaParmSum = "";
+		String temp1 = "";//getAreaParmSum.substring(0,getAreaParmSum.indexOf(","));
+		String temp2 = "";
+		try{
+			getAreaParmSum = this.getAreaParmSum(list, area1, area2);
+			temp1 = getAreaParmSum.substring(0,getAreaParmSum.indexOf(","));
+			baseNum1 = Long.valueOf(temp1);	
+			if(baseNum1==0){
+				baseNum1 = baseNum;
+			}
+			temp2 = getAreaParmSum.substring(getAreaParmSum.indexOf(",")+1);
+			baseNum2 = Long.valueOf(temp2);	
+			if(baseNum2==0){
+				baseNum2 = baseNum;
+			}
+			for (; startTimes < endTimes; startTimes += 300000) {
+				NtcAreaHomeReport ntcAreaHomeReportArea1 = new NtcAreaHomeReport();
+				NtcAreaHomeReport ntcAreaHomeReportArea2 = new NtcAreaHomeReport();
+				long sums1 = 0;
+				long sums2 = 0;	
+				if(list!=null && list.size()>0){
+					 SortList<NtcAreaHomeReport> sortList = new SortList<NtcAreaHomeReport>();  
+				        sortList.sort(list, "reportTime", "asc");  
 					for (int i = 0; i < list.size(); i++) {
 						NtcAreaHomeReport ntcAreaHomeReport2 = list.get(i);
 						if (ntcAreaHomeReport2.getReportTime().getTime() >= startTimes
 								&& ntcAreaHomeReport2.getReportTime().getTime() < (startTimes + 300000)) {
-							if (ntcAreaHomeReport2.getEntranceId() == 1) {
+							if (1 == ntcAreaHomeReport2.getEntranceId()) {
 								sums1 = sums1 + ntcAreaHomeReport2.getSum();
-							} else if (ntcAreaHomeReport2.getEntranceId() == 2) {
+							} else if ( 2 == ntcAreaHomeReport2.getEntranceId()) {
 								sums2 = sums2 + ntcAreaHomeReport2.getSum();
 							} else {
 								logger.debug("未知地域,地域ID为：{" + ntcAreaHomeReport2.getEntranceId() + "}");
