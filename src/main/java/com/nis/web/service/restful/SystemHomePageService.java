@@ -211,6 +211,14 @@ public class SystemHomePageService {
 				newlist.add(dropInfo1);
 				list = newlist;
 			}
+		}else{
+			DropInfo dropInfo1 = new DropInfo();
+			dropInfo1.setLabel("drop");
+			dropInfo1.setSum(Math.round(dropInfo.getBaseNum()*(Math.random()*0.2+0.9)));
+			dropInfo1.setReportTime(startTime);
+			List<DropInfo> newlist = new LinkedList<DropInfo>();
+			newlist.add(dropInfo1);
+			list = newlist;
 		}
 		if(list!=null && list.size()>0){
 			page.setCount(list.size());
@@ -233,18 +241,18 @@ public class SystemHomePageService {
 		}
 		long baseNum1 = baseNum;
 		//先根据list获取参考时间
-		long temp = 0;
+		//long temp = 0;
 		long sum = 0;
-		long startTimesTemp = startTimes;
+		//long startTimesTemp = startTimes;
 		try{
 			if(list!=null && list.size()>0){
 				//获取最大
-				for (int i = 0; i < list.size(); i++) {
+				/*for (int i = 0; i < list.size(); i++) {
 					DropInfo dropInfo = list.get(i);
 					if(temp<dropInfo.getSum()){
 						temp = dropInfo.getSum();
 					}
-				}			
+				}		*/	
 			//检查数据是否完整
 				for (int i = 0; i < list.size(); i++) {
 					DropInfo dropInfo = list.get(i);
@@ -252,20 +260,20 @@ public class SystemHomePageService {
 						if (dropInfo.getReportTime().getTime() == startTimes) {	
 							sum = dropInfo.getSum();
 							baseNum1 = sum;
-							if(startTimesTemp==dropInfo.getReportTime().getTime()){
+							/*if(startTimesTemp==dropInfo.getReportTime().getTime()){
 								dropInfo.setSum(temp);
-							}
+							}*/
 							newList.add(dropInfo);
 						}else{
 							baseNum1 = dropInfo.getSum();
 							DropInfo dropInfo1 = new DropInfo();
 							sum = Math.round(baseNum1*(Math.random()*0.2+0.9));
 							dropInfo1.setLabel("drop");
-							if(startTimesTemp==startTimes){
+							/*if(startTimesTemp==startTimes){
 								dropInfo1.setSum(temp);
-							}else{
+							}else{*/
 								dropInfo1.setSum(Math.round(sum*(Math.random()*0.2+0.9)));
-							}
+							//}
 							dropInfo1.setReportTime(new Date(startTimes));
 							newList.add(dropInfo1);
 						}
@@ -273,14 +281,14 @@ public class SystemHomePageService {
 				}
 			}else{//未取到数据则取随机数
 				DropInfo dropInfo1 = null;
-				temp = Math.round(baseNum1*1.2);
+				//temp = Math.round(baseNum1*1.2);
 				for (; startTimes < endTimes; startTimes += 300000) {
 					dropInfo1 = new DropInfo();
-					if(startTimesTemp==startTimes){
+					/*if(startTimesTemp==startTimes){
 						sum = temp;
-					}else{
+					}else{*/
 						sum = Math.round(baseNum1*(Math.random()*0.2+0.9));
-					}
+					/*}*/
 					dropInfo1.setLabel("drop");
 					dropInfo1.setSum(sum);
 					dropInfo1.setReportTime(new Date(startTimes));
