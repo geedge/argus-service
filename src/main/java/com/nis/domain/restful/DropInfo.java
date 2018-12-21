@@ -3,6 +3,7 @@ package com.nis.domain.restful;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -36,6 +37,48 @@ public class DropInfo implements Serializable {
 	@ApiModelProperty(value = "统计时间")
 	private Date reportTime;// 五分钟统计时间
 
+	private long baseNum;
+	private String searchReportStartTime;
+	private String searchReportEndTime;
+	private int searchBusinessType;
+
+
+	@JsonIgnore
+	public int getSearchBusinessType() {
+		return searchBusinessType;
+	}
+
+	public void setSearchBusinessType(int searchBusinessType) {
+		this.searchBusinessType = searchBusinessType;
+	}
+
+	@JsonIgnore
+	public String getSearchReportStartTime() {
+		return searchReportStartTime;
+	}
+
+	public void setSearchReportStartTime(String searchReportStartTime) {
+		this.searchReportStartTime = searchReportStartTime;
+	}
+
+	@JsonIgnore
+	public String getSearchReportEndTime() {
+		return searchReportEndTime;
+	}
+
+	public void setSearchReportEndTime(String searchReportEndTime) {
+		this.searchReportEndTime = searchReportEndTime;
+	}
+
+	@JsonIgnore
+	public long getBaseNum() {
+		return baseNum;
+	}
+
+	public void setBaseNum(long baseNum) {
+		this.baseNum = baseNum;
+	}
+	
 	public String getLabel() {
 		return label;
 	}

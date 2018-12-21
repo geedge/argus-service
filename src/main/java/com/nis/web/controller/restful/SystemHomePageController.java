@@ -49,8 +49,9 @@ public class SystemHomePageController extends BaseRestController {
 
 	@RequestMapping(value = "/log/v1/trafficAreaStat", method = RequestMethod.GET)
 	@ApiOperation(value = "地域流量获取", httpMethod = "GET", notes = "对地域流量获取服务信息进行查询", response = Map.class)
-	public Map<String, ?> trafficAreaStat(String searchReportStartTime, String searchReportEndTime,
-			HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficAreaStat(NtcAreaHomeReport ntcAreaHomeReport, HttpServletRequest request, HttpServletResponse response) {
+	/*public Map<String, ?> trafficAreaStat(String searchReportStartTime, String searchReportEndTime,
+			HttpServletRequest request, HttpServletResponse response) {*/
 		long start = System.currentTimeMillis();
 
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
@@ -58,9 +59,7 @@ public class SystemHomePageController extends BaseRestController {
 		Page<NtcAreaHomeReport> trafficAreaStatPage = null;
 
 		try {
-			trafficAreaStatPage = systemHomePageService.getTrafficAreaStat(searchReportStartTime, searchReportEndTime,
-					request, response);
-
+			trafficAreaStatPage = systemHomePageService.getTrafficAreaStat(ntcAreaHomeReport);
 		} catch (Exception e) {
 			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			e.printStackTrace();
@@ -125,19 +124,19 @@ public class SystemHomePageController extends BaseRestController {
 
 	@RequestMapping(value = "/log/v1/blockAndDropStat", method = RequestMethod.GET)
 	@ApiOperation(value = "丢弃量获取", httpMethod = "GET", notes = "对阻断和丢弃量进行查询", response = Map.class)
-	public Map<String, ?> blockAndDropStat(String searchReportStartTime, String searchReportEndTime,
+	/*public Map<String, ?> blockAndDropStat(String searchReportStartTime, String searchReportEndTime,
 			int searchBusinessType, HttpServletRequest request,
+			HttpServletResponse response) {*/
+	public Map<String, ?> blockAndDropStat(DropInfo dropInfo, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-		Page<DropInfo> dropInfo = null;
-		if(searchBusinessType == 0)searchBusinessType = 1;
+		//if(searchBusinessType == 0)searchBusinessType = 1;
+		Page<DropInfo> dropInfoList=null;
 		try {
-			dropInfo = systemHomePageService.getBlockAndDropStat(searchReportStartTime, searchReportEndTime,
-					searchBusinessType, request, response);
-
+			dropInfoList = systemHomePageService.getBlockAndDropStat(dropInfo, request, response);
 		} catch (Exception e) {
 			saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
 			e.printStackTrace();
@@ -150,7 +149,7 @@ public class SystemHomePageController extends BaseRestController {
 			}
 		}
 
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取丢弃量成功", dropInfo, 0);
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取丢弃量成功", dropInfoList, 0);
 
 	}
 

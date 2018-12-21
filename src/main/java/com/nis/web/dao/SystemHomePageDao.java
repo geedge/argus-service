@@ -12,14 +12,17 @@ import com.nis.domain.restful.NtcAreaHomeReport;
 @MyBatisDao
 public interface SystemHomePageDao {
 
-	List<NtcAreaHomeReport> getTrafficAreaStatList(@Param("startTime") Date searchReportStartTime,
-			@Param("endTime") Date searchReportEndTime);
-
+	/*List<NtcAreaHomeReport> getTrafficAreaStatList(@Param("startTime") Date searchReportStartTime,
+			@Param("endTime") Date searchReportEndTime);*/
+	List<NtcAreaHomeReport> findTrafficAreaStatList(NtcAreaHomeReport ntcAreaHomeReport);
+	
 	//List<CfgLogInfo> getCfgSortLogStatList(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
-	List<CfgLogInfo> getCfgSortLogStatList(CfgLogInfo cfgLogInfo);
+	List<CfgLogInfo> findCfgSortLogStatList(CfgLogInfo cfgLogInfo);
 
-	List<DropInfo> getBlockAndDropStatListAll(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+	//List<DropInfo> getBlockAndDropStatListAll(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+	List<DropInfo> findBlockAndDropStatListAll(DropInfo dropInfo);
 
-	List<DropInfo> getBlockAndDropStatListMinute(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+	//List<DropInfo> getBlockAndDropStatListMinute(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+	List<DropInfo> findBlockAndDropStatListMinute(DropInfo dropInfo);
 
 }

@@ -890,16 +890,16 @@ public class TestDate{//VeDate {
 	   //System.out.print(Integer.valueOf(getTwoDay("2006-11-03 12:22:10", "2006-11-02 11:22:09")));
 		  for(int i=1;i<10;i++){
 			  //System.out.println(Long.valueOf(String.format("%d", Math.random()*5+94)));
-			 /* double te = Math.random()*0.2+0.9;
+			 double te = Math.random()*0.2+0.9;
 			  System.out.println( te);
 			  System.out.println(Math.floor( 10000*(te)));
-			  System.out.println(Math.round( 10000*(te)));*/
+			  System.out.println(Math.round( 10000*(te)));
 
-				String sTime = "2018-12-18 00:00:00";
+			/*	String sTime = "2018-12-18 00:00:00";
 				String eTime = "2018-12-19 00:00:00";
 				long startTimes = DateUtils.strToDate(sTime,"yyyy-MM-dd HH:mm:ss").getTime();
 				long endTimes = DateUtils.strToDate(eTime,"yyyy-MM-dd HH:mm:ss").getTime();
-				System.out.println(endTimes-startTimes);
+				System.out.println(endTimes-startTimes);*/
 		  }
 	  } catch (Exception e) {
 	   throw new Exception();

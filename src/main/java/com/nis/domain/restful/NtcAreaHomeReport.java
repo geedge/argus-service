@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -41,7 +42,38 @@ public class NtcAreaHomeReport implements Serializable {
 
 	@JsonInclude(value = Include.NON_NULL)
 	@ApiModelProperty(value = "统计时间")
-	private Date reportTime;// 统计时间
+	private Date reportTime;// 统计时间	
+
+	private long baseNum;
+	private String searchReportStartTime;
+	private String searchReportEndTime;
+
+	@JsonIgnore
+	public String getSearchReportStartTime() {
+		return searchReportStartTime;
+	}
+
+	public void setSearchReportStartTime(String searchReportStartTime) {
+		this.searchReportStartTime = searchReportStartTime;
+	}
+
+	@JsonIgnore
+	public String getSearchReportEndTime() {
+		return searchReportEndTime;
+	}
+
+	public void setSearchReportEndTime(String searchReportEndTime) {
+		this.searchReportEndTime = searchReportEndTime;
+	}
+
+	@JsonIgnore
+	public long getBaseNum() {
+		return baseNum;
+	}
+
+	public void setBaseNum(long baseNum) {
+		this.baseNum = baseNum;
+	}
 
 	public int getEntranceId() {
 		return entranceId;

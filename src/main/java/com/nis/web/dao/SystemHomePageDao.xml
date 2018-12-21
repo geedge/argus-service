@@ -11,7 +11,7 @@
 	    <result column="reportTime" jdbcType="TIMESTAMP" property="reportTime" />
 	  </resultMap>
 	<!-- 地域流量 -->
-	<select id="getTrafficAreaStatList" resultType="com.nis.domain.restful.NtcAreaHomeReport"
+	<select id="findTrafficAreaStatList" resultType="com.nis.domain.restful.NtcAreaHomeReport"
 		useCache="false" flushCache="true">
 		SELECT
 		device.entrance_id entranceId,
@@ -39,12 +39,18 @@
 		FROM
 		traffic_netflow_port_info netflow
 		<where>
-			<if
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND netflow.RECV_TIME >= #{searchReportStartTime}]]>
+			</if>
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND netflow.RECV_TIME < #{searchReportEndTime}]]>
+			</if>
+			<!-- <if
 				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
 				netflow.RECV_TIME&gt;#{startTime}
 				and
 				netflow.RECV_TIME&lt;=#{endTime}
-			</if>
+			</if> -->
 		</where>
 		) netflow
 		ON device.manager_ip = netflow.NODE_IP
@@ -57,7 +63,7 @@
 
 	<!-- 配置日志TOP统计 -->
 	<!-- 配置日志TOP统计 -->
-	<select id="getCfgSortLogStatList" resultMap="TopServiceMap">
+	<select id="findCfgSortLogStatList" resultMap="TopServiceMap">
 		SELECT report.service,report.report_time,report.sum,dic.service_name_zh,dic.service_name_zh,dic.service_name_ru from (
 		 SELECT	service,report_time,sum(sum) as sum FROM ntc_service_report
 		 <where>
@@ -75,7 +81,7 @@
 				service,
 				report_time
 			order by 
-			report_time ASC,sum DESC) report 
+			report_time ASC) report 
 			LEFT JOIN ntc_service_dic dic on report.service = dic.service_code
 	</select>
 	<!-- <select id="getCfgSortLogStatList" resultType="com.nis.domain.restful.CfgLogInfo"
@@ -110,7 +116,7 @@
 
 	<!-- 丢弃量 -->
 	<!-- 总量 -->
-	<select id="getBlockAndDropStatListAll" resultType="com.nis.domain.restful.DropInfo"
+	<select id="findBlockAndDropStatListAll" resultType="com.nis.domain.restful.DropInfo"
 		useCache="false" flushCache="true">
 		SELECT
 		'drop' AS label,
@@ -119,14 +125,20 @@
 		sum(reject_num) + SUM(drop_conn_num)
 		),
 		0
-		) AS sum,#{startTime} as reportTime
+		) AS sum,#{searchReportStartTime} as reportTime
 		FROM
 		ntc_total_report
 		<where>
-			<if
+			<!-- <if
 				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
 				report_time&gt;#{startTime} and
 				report_time&lt;=#{endTime}
+			</if> -->			
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND report_time >= #{searchReportStartTime}]]>
+			</if>
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND report_time < #{searchReportEndTime}]]>
 			</if>
 		</where>
 		order by report_time
@@ -134,7 +146,7 @@
 	</select>
 
 	<!-- 五分钟业务 -->
-	<select id="getBlockAndDropStatListMinute" resultType="com.nis.domain.restful.DropInfo"
+	<select id="findBlockAndDropStatListMinute" resultType="com.nis.domain.restful.DropInfo"
 		useCache="false" flushCache="true">
 		SELECT
 		'drop' AS label,
@@ -147,10 +159,16 @@
 		FROM
 		ntc_total_report
 		<where>
-			<if
+			<!-- <if
 				test="null!=startTime and null!=endTime and ''!=startTime and ''!=endTime">
 				report_time&gt;#{startTime} and
 				report_time&lt;=#{endTime}
+			</if> -->
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND report_time >= #{searchReportStartTime}]]>
+			</if>
+			<if	test="searchReportEndTime != null and searchReportEndTime !=''">
+				<![CDATA[AND report_time < #{searchReportEndTime}]]>
 			</if>
 		</where>
 		GROUP BY report_time

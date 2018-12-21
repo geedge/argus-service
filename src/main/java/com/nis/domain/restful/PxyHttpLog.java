@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -42,6 +43,8 @@ public class PxyHttpLog  extends LogEntity<PxyHttpLog> {
     @ApiModelProperty(value="域名", required=true)
     protected String website;
     
+    protected String searchUrl; //url查询条件a
+    protected String searchWebsite; //website查询条件
 	public String getUrl() {
 		return url;
 	}
@@ -126,5 +129,30 @@ public class PxyHttpLog  extends LogEntity<PxyHttpLog> {
 	
 	public void setWebsite(String website) {
 		this.website = website;
+	}
+	
+	/**
+	 * @return the searchUrl
+	 */
+
+	@JsonIgnore
+	public String getSearchUrl() {
+		return searchUrl;
+	}
+	
+	/**
+	 * @param searchUrl the searchUrl to set
+	 */
+	public void setSearchUrl(String searchUrl) {
+		this.searchUrl = searchUrl;
+	}
+
+	@JsonIgnore
+	public String getSearchWebsite() {
+		return searchWebsite;
+	}
+
+	public void setSearchWebsite(String searchWebsite) {
+		this.searchWebsite = searchWebsite;
 	}
 }
