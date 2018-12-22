@@ -592,13 +592,13 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getProtocolList(String startTime, String endTime) {
-		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
+	public List<Map> getProtocolList(String startTime, String endTime,Integer[] protoType) {
+//		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
-		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-			Date statTime = maxStatTime.getStatTime();
-			list = trafficProtocolStatisticDao.getProtocolList(statTime, startTime, endTime);
-		}
+//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+//			Date statTime = maxStatTime.getStatTime();
+			list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime,protoType);
+//		}
 		return list;
 	}
 
@@ -628,7 +628,7 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getAppList(String startTime, String endTime, Integer appType) {
+	public List<Map> getAppList(String startTime, String endTime, Integer[] appType) {
 //		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
@@ -830,7 +830,7 @@ public class DashboardService extends BaseService {
 	 * @param endDate
 	 * @return
 	 */
-	public List<Map> getWebsiteDetails(Date beginDate, Date endDate, Integer domain, Integer entranceId) {
+	public List<Map> getWebsiteDetails(Date beginDate, Date endDate, Integer domain[], Integer entranceId) {
 		List<Map> list = trafficHttpStatisticDao.getTrafficHttpDomain(beginDate, endDate, domain, entranceId);
 		return list;
 	}
@@ -997,7 +997,10 @@ public class DashboardService extends BaseService {
 //						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
 //						String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
 						if (countStr != null) {
-							count += Long.parseLong(countStr);// 将count累加
+							Long pl = (Long.parseLong(countStr))/(1024*1024*1024);
+							if(pl>0) {
+								count += Long.parseLong(countStr);// 将count累加 转换单位小于0的不加
+							}
 						}
 //						if (linkNumStr != null) {
 //							linkNum += Long.parseLong(linkNumStr);// 将count累加
@@ -1011,6 +1014,27 @@ public class DashboardService extends BaseService {
 					}
 				}
 			}
+			Collections.sort(list, new Comparator<Object>() {
+				@Override
+				public int compare(Object o1, Object o2) {
+					if(o1==null&&o2!=null){
+						return 1;
+					}
+					if(o1!=null&&o2==null){
+						return -1;
+					}
+					if(o1==o2&&o1==null){
+						return 0;
+					}
+					Map m1=(Map)o1;
+					Map m2=(Map)o2;
+					Object ob1 = m1.get("byteCount");
+					Object ob2 = m2.get("byteCount");
+					Long b1=Long.parseLong(ob1.toString());
+					Long b2=Long.parseLong(ob2.toString());
+					return -(b1).compareTo(b2);
+				}
+			});
 			if (list.size() > 0) {
 				viewMap.put("count", count);
 //				viewMap.put("linkNum", linkNum);

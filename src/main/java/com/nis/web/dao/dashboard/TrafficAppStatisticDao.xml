@@ -32,11 +32,12 @@
 	SELECT app_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
 	((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte 
 	FROM traffic_app_statistic WHERE
-	<if test="beginTime!=null and endTime!=null">
-			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
-	</if>
-	<if test="appType!=null and appType!=''">
-			and app_type=#{appType}
+	<![CDATA[ stat_time>= #{beginTime} and stat_time<= #{endTime}]]>
+	<if test="appType!=null">
+		 and app_type in 
+        <foreach collection="appType" index="index" item="item" open="(" separator="," close=")">  
+           	#{item}  
+       	</foreach>
 	</if>
 	GROUP BY app_type ) p
 	LEFT JOIN ui_code_app_dic c ON p.app_type=c.view_code ORDER BY p.GByte DESC

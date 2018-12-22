@@ -127,7 +127,10 @@ FROM
 		sum(c2s_pkt_num + s2c_pkt_num) pktCount from traffic_http_focus_statistic t where
 		<![CDATA[ stat_time>= #{beginDate} and stat_time< #{endDate}]]>
 		<if test="domain!=null">
-			and web_id=#{domain}
+			 and web_id in 
+         	 <foreach collection="domain" index="index" item="item" open="(" separator="," close=")">  
+            	#{item}  
+        	</foreach>
 		</if>
 		<if test="entranceId!=null">
 			and entrance_id=#{entranceId}

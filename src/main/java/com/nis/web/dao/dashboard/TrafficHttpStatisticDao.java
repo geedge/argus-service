@@ -29,7 +29,7 @@ public interface TrafficHttpStatisticDao {
 	List<Map> getTrafficHttpStatistic(@Param("statTime") Date statTime, @Param("endTime") Date endTime);
 	List getIdByWebSiteId(@Param("websiteId") Integer websiteId);
 
-	List<Map> getTrafficHttpDomain(@Param("beginDate")Date beginDate,@Param("endDate") Date endDate,@Param("domain")Integer domain,@Param("entranceId")Integer entranceId);
+	List<Map> getTrafficHttpDomain(@Param("beginDate")Date beginDate,@Param("endDate") Date endDate,@Param("domain")Integer[] domain,@Param("entranceId")Integer entranceId);
 	List<TrafficHttpFocusStatistic> getDomainTrans(@Param("entranceId")Integer entranceId,@Param("beginDate")String beginDate,@Param("endDate")String endDate,@Param("domain")Integer domain);
 
 }

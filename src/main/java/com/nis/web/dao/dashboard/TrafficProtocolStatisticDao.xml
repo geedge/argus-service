@@ -29,11 +29,12 @@
 	SELECT proto_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
 	 ((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte
 	FROM traffic_protocol_statistic WHERE 
-	<if test="beginTime==null or endTime==null">
-			stat_time > DATE_SUB(#{statTime},INTERVAL 1 HOUR)
-	</if>
-	<if test="beginTime!=null and endTime!=null">
-			stat_time >= #{beginTime} and stat_time &lt;= #{endTime}
+	<![CDATA[ stat_time>= #{beginTime} and stat_time<= #{endTime}]]>
+	<if test="protoType!=null">
+		 and proto_type in 
+        <foreach collection="protoType" index="index" item="item" open="(" separator="," close=")">  
+           	#{item}  
+       	</foreach>
 	</if>
 	GROUP BY proto_type ) p
 	LEFT JOIN ui_code_protocol_type_dic c ON p.proto_type=c.view_code ORDER BY p.GByte DESC

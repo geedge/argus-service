@@ -312,14 +312,14 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficProtocolList", method = RequestMethod.GET)
 	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
-	public Map<String, ?> trafficProtocolList(String beginDate, String endDate, Model model, HttpServletRequest request,
+	public Map<String, ?> trafficProtocolList(Integer[] protoType,String beginDate, String endDate, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate);
+			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate,protoType);
 			if (ipActiveList != null && ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString, HashMap.class);
@@ -507,7 +507,7 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficAppList", method = RequestMethod.GET)
 	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
-	public Map<String, ?> trafficAppList(Integer appType, String beginDate, String endDate, Model model,
+	public Map<String, ?> trafficAppList(Integer[] appType, String beginDate, String endDate, Model model,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
@@ -697,7 +697,7 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficWebsiteListNoTime", method = RequestMethod.GET)
 	@ApiOperation(value = "网站流量分析详情统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String, ?> trafficWebsiteListNoTime(Integer domain,Integer entranceId , @RequestParam String beginDate, @RequestParam String endDate,Model model, HttpServletRequest request,
+	public Map<String, ?> trafficWebsiteListNoTime(Integer domain[],Integer entranceId , @RequestParam String beginDate, @RequestParam String endDate,Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
