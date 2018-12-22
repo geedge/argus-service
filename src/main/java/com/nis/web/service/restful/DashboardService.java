@@ -11,6 +11,7 @@ import com.zdjizhi.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -435,56 +436,78 @@ public class DashboardService extends BaseService {
 	/**
 	 * 获取活跃IPtop10 的趋势图
 	 */
-	public List<HashMap> ipActiveFiveMinute(Date beginDate, Date endDate) {
-		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
-		ArrayList<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
+	public List<Map> ipActiveFiveMinute(Date beginDate, Date endDate) {
+		List<Map> listMap = new ArrayList<Map>();
+		List<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
 		if (ipListTop10 != null && ipListTop10.size() > 0) {
+			StringBuilder ipStr = new StringBuilder();
 			for (LinkedHashMap map : ipListTop10) {
-				HashMap m1 = new HashMap();
-				String ipAddr = (String) map.get("ipAddr");
-				m1.put("ipAddr", ipAddr);
-				ArrayList<TrafficIpActiveStatistic> ipList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipAddr,
-						beginDate, endDate);
-				List timeList = new ArrayList();
-				List sumList1 = new ArrayList();
-
-				Map<String, Comparable> m = new HashMap<String, Comparable>();
-				int inter = 1000 * 60 * 5;// 间隔时间为五分钟
-				// 开始时间，结束时间 时间戳
-				Long b = dateToStamp(DateUtils.formatDateTime(beginDate));
-				Long e = dateToStamp(DateUtils.formatDateTime(endDate));
-				int num = 0;
-				Long pointTime = b;
-				while (pointTime < e) {
-					Map rm = new HashMap();
-					Long sum1 = 0l;
-					if (pointTime >= e) {
-						break; // 停止
-					}
-					for (TrafficIpActiveStatistic e1 : ipList) {
-						// 实际时间
-						String time = e1.getTime();
-						Long t = dateToStamp(time);
-						if (t >= pointTime && t < pointTime + inter) {
-							// 范围之内分到此pointTime组
-							sum1 = sum1 + e1.getCount();
+				ipStr.append("'"+(String) map.get("ipAddr")+"',");
+			}
+			if (!StringUtil.isEmpty(ipStr)&&ipStr.indexOf(",")>0) {
+				ipStr.deleteCharAt(ipStr.lastIndexOf(","));
+			}
+			//如果所有IP在最后一个时间点的count都为0，则移除最后一个点
+			//开始划分时间段,间隔5分钟
+			List<Date> dateRangeList = new ArrayList<Date>();
+			List<String> strDateRangeList = new ArrayList<String>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			while (calendar.getTime().compareTo(endDate)<=0) {
+				dateRangeList.add(calendar.getTime());
+				strDateRangeList.add(sdf.format(calendar.getTime()));
+				calendar.add(Calendar.MINUTE, 5);
+			}
+			
+			ArrayList<TrafficIpActiveStatistic> ipInfoList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipStr.toString(),
+				beginDate, endDate);
+			//存放每个IP，每个时间点的总数
+			Map<String,List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+			int index=0;
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				//存放一个时间点中每个IP的总数
+				Map<String, Long> ipCountMap = new HashMap<String, Long>();
+				Date date = dateRangeList.get(i);
+				for (int j = index; j < ipInfoList.size(); j++) {
+					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
+					if (ipInfo.getStatTime()!=null){
+						if(ipInfo.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&ipInfo.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
+							Long num = ipInfo.getCount();
+							if (ipCountMap.containsKey(ipInfo.getIpAddr())) {
+								num=num+ipCountMap.get(ipInfo.getIpAddr());
+							}
+							ipCountMap.put(ipInfo.getIpAddr(), num);
+						}else{
+							index = j;
+							break;
 						}
 					}
-					// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
-					if (pointTime >= e - inter && sum1 > 0) {
-						sumList1.add(sum1);
-						timeList.add(stampToDate(pointTime));
-					}
-					if (pointTime < e - inter) {
-						sumList1.add(sum1);
-						timeList.add(stampToDate(pointTime));
-					}
-					num = num + 1;
-					pointTime = b + inter * num;
 				}
-				m1.put("linkNum", sumList1);
-				m1.put("statTime", timeList);
-				listMap.add(m1);
+				for (LinkedHashMap map : ipListTop10) {
+					String ip = (String) map.get("ipAddr");
+					Long sum = 0l;
+					if (ipCountMap.containsKey(ip)) {
+						sum=ipCountMap.get(ip);
+					}
+					if (ipCountListMap.containsKey(ip)) {
+						ipCountListMap.get(ip).add(sum);
+					}else{
+						List<Long> list = new ArrayList<Long>();
+						list.add(sum);
+						ipCountListMap.put(ip, list);
+					}
+				}
+			}
+			//整合IP count time 
+			Iterator iterator = ipCountListMap.keySet().iterator();
+			while (iterator.hasNext()) {
+				String ip = iterator.next()+"";
+				Map ipTrafficMap = new HashMap();
+				ipTrafficMap.put("ipAddr", ip);
+				ipTrafficMap.put("linkNum", ipCountListMap.get(ip));
+				ipTrafficMap.put("statTime", strDateRangeList);
+				listMap.add(ipTrafficMap);
 			}
 		}
 		return listMap;
@@ -1127,109 +1150,112 @@ public class DashboardService extends BaseService {
 		return fieldType == null ? null : fieldType.split(",");
 	}
 
-	public Map<String, List<HashMap>> getBandwidthTransEntrance(String beginDate, String endDate) {
-		long start = System.currentTimeMillis();
-		Map<String, List<TrafficTransStatistic>> listMap = new HashMap<String, List<TrafficTransStatistic>>();
-		List<TrafficTransStatistic> bandwidthList = new ArrayList<TrafficTransStatistic>();
-		bandwidthList = ntcTotalReportDao.getBandwidthTrans2(beginDate, endDate);
-		String[] addrTypes = getFiledTypeByName("addr_type");
-		String[] transTypes = getFiledTypeByName("trans_type");
-		String[] entranceIds = getFiledTypeByName("entrance_id");
-		for (String entranceId : entranceIds) {
-			for (String addrType : addrTypes) {
-				listMap.put("ipv" + addrType + "Type" + entranceId, new ArrayList<TrafficTransStatistic>());
+	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate) throws ParseException {
+		Map<String, Map> resultMap = new HashMap<String, Map>();
+		Map<String, ArrayList<TrafficTransStatistic>> listMap = new HashMap<String, ArrayList<TrafficTransStatistic>>();
+		List<TrafficTransStatistic> bandwidthListIPvx = new ArrayList<TrafficTransStatistic>();
+		List<TrafficTransStatistic> bandwidthListProtocol = new ArrayList<TrafficTransStatistic>();
+		bandwidthListIPvx = ntcTotalReportDao.getBandwidthTransIPVx(beginDate, endDate);
+		bandwidthListProtocol = ntcTotalReportDao.getBandwidthTransProtocol(beginDate, endDate);
+		Map<String, Map> trafficMap = new HashMap<String, Map>();
+		if((!StringUtil.isEmpty(bandwidthListIPvx)&&bandwidthListIPvx.size()>0)||(!StringUtil.isEmpty(bandwidthListProtocol)&&bandwidthListProtocol.size()>0)){
+			//划分时间段
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date startTime = sdf.parse(beginDate);
+			Date endTime = sdf.parse(endDate);
+			List<Date> dateRangeList = new ArrayList<Date>();
+			List<String> strDateRangeList = new ArrayList<String>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(startTime);
+			
+			while (calendar.getTime().compareTo(endTime)<=0) {
+				dateRangeList.add(calendar.getTime());
+				strDateRangeList.add(sdf.format(calendar.getTime()));
+				calendar.add(Calendar.MINUTE, 5);
 			}
-		}
-		for (String entranceId : entranceIds) {
-			for (String transType : transTypes) {
-				listMap.put("trans" + transType + "Type" + entranceId, new ArrayList<TrafficTransStatistic>());
-			}
-		}
-		for (TrafficTransStatistic tts : bandwidthList) {
-			String addrType = tts.getAddrType();
-			Integer entranceId = tts.getEntranceId();
-			Integer transType = tts.getTransType();
-			String key1 = "ipv" + addrType + "Type" + entranceId;
-			String key2 = "trans" + transType + "Type" + entranceId;
-			listMap.get(key1).add(tts);
-			listMap.get(key2).add(tts);
-		}
-		Map<String, List<HashMap>> resultMap = new HashMap<String, List<HashMap>>();
-		Set<Entry<String, List<TrafficTransStatistic>>> entrySet = listMap.entrySet();
-		for (Entry<String, List<TrafficTransStatistic>> entry : entrySet) {
-			String key = entry.getKey();
-			String entranceId = key.substring(key.length() - 1);
-			List<TrafficTransStatistic> value = entry.getValue();
-			HashMap newData = getNewData(beginDate, endDate, value);
-			newData.put("entranceId", entranceId);
-			ArrayList<HashMap> resultList = new ArrayList<HashMap>();
-			resultList.add(newData);
-			resultMap.put(key, resultList);
-		}
-		return resultMap;
-	}
-
-	private HashMap getNewData(String beginDate, String endDate, List<TrafficTransStatistic> bandwidthList) {
-		HashMap resulMap = new HashMap();
-		List timeList = new ArrayList();
-		List linkList = new ArrayList();
-		List gbpsList = new ArrayList();
-		List ppsList = new ArrayList();
-		if (bandwidthList != null && bandwidthList.size() > 0) {
-			Map<String, Comparable> m = new HashMap<String, Comparable>();
-			int inter = 1000 * 60 * 5;// 间隔时间为五分钟
-			// 开始时间，结束时间 时间戳
-			Long b = dateToStamp(beginDate);
-			Long e = dateToStamp(endDate);
-			int num = 0;
-			Long pointTime = b;
-			while (pointTime < e) {
-
-				Long sumL = 0l;
-				Long sumP = 0l;
-				Long sumG = 0l;
-				if (pointTime >= e) {
-					break; // 停止
-				}
-				for (TrafficTransStatistic tt : bandwidthList) {
-					// 实际时间
-					String time = tt.getTime();
-					Long t = dateToStamp(time);
-					if (t >= pointTime && t < pointTime + inter) {
-						// 范围之内分到此pointTime组
-						sumL = sumL + tt.getLinkNum();
-						sumP = sumP + tt.getPps();
-						sumG = sumG + tt.getGbps();
+			String[] addrTypes = getFiledTypeByName("addr_type");
+			String[] transTypes = getFiledTypeByName("trans_type");
+			String[] entranceIds = getFiledTypeByName("entrance_id");
+			if(bandwidthListIPvx!=null&&bandwidthListIPvx.size()>0&&bandwidthListProtocol!=null&&bandwidthListProtocol.size()>0&&addrTypes!=null&&addrTypes.length>0&&transTypes!=null&&transTypes.length>0
+					&&entranceIds!=null&&entranceIds.length>0){
+				//按区域和类型构建Map
+				for (String entranceId : entranceIds) {
+					for (String addrType : addrTypes) {
+						listMap.put("ipv" + addrType + "Type" + entranceId, new ArrayList<TrafficTransStatistic>());
 					}
 				}
-				// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
-				if (pointTime >= e - inter && sumL > 0) {
-					linkList.add(sumL);
+				for (String entranceId : entranceIds) {
+					for (String transType : transTypes) {
+						listMap.put("trans" + transType + "Type" + entranceId, new ArrayList<TrafficTransStatistic>());
+					}
 				}
-				if (pointTime >= e - inter && sumP > 0) {
-					ppsList.add(sumP);
+				//按区域和类型提取数据到列表中
+				for (TrafficTransStatistic tts : bandwidthListIPvx) {
+					String addrType = tts.getAddrType();
+					
+					Integer entranceId = tts.getEntranceId();
+					Integer transType = tts.getTransType();
+					String key = "ipv" + addrType + "Type" + entranceId;
+					listMap.get(key).add(tts);
 				}
-				if (pointTime >= e - inter && sumG > 0) {
-					gbpsList.add(sumG);
+				for (TrafficTransStatistic tts : bandwidthListProtocol) {
+					String addrType = tts.getAddrType();
+					Integer entranceId = tts.getEntranceId();
+					Integer transType = tts.getTransType();
+					String key = "trans" + transType + "Type" + entranceId;
+					listMap.get(key).add(tts);
 				}
-				if (pointTime >= e - inter && (sumL > 0 || sumG > 0 || sumP > 0)) {
-					timeList.add(stampToDate(pointTime));
+				Set<Entry<String, ArrayList<TrafficTransStatistic>>> entrySet = listMap.entrySet();
+				for (Entry<String, ArrayList<TrafficTransStatistic>> entry : entrySet) {
+					String key = entry.getKey();
+					String entranceId = key.substring(key.length() - 1);
+					ArrayList<TrafficTransStatistic> value = entry.getValue();
+					resultMap.put(key, getNewData(dateRangeList,strDateRangeList,value));
 				}
-				if (pointTime < e - inter) {
-					timeList.add(stampToDate(pointTime));
-					linkList.add(sumL);
-					gbpsList.add(sumG);
-					ppsList.add(sumP);
-				}
-
-				num = num + 1;
-				pointTime = b + inter * num;
+				return resultMap;
 			}
-			resulMap.put("linkNum", linkList);
-			resulMap.put("gbps", gbpsList);
-			resulMap.put("pps", ppsList);
-			resulMap.put("statTime", timeList);
 		}
+		return null;
+	}
+
+	private Map getNewData(List<Date> dateRangeList,List<String> timeList, List<TrafficTransStatistic> bandwidthList) {
+		Map<String,List> resulMap = new HashMap<String,List>();
+		int index = 0;
+		for (int i = 0; i < dateRangeList.size(); i++) {
+			Date date = dateRangeList.get(i);
+			Map<String, Long> countMap = new HashMap<String, Long>();
+			Long linkNum = 0L;
+			Long ppsNum = 0L;
+			Long gbpsNum = 0L;
+			for (int j = index; j < bandwidthList.size(); j++) {
+				TrafficTransStatistic info = bandwidthList.get(j);
+				if (info.getStatTime()!=null){
+					if(info.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&info.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
+						linkNum =info.getLinkNum() +linkNum;
+						ppsNum  = info.getPps()+ppsNum;
+						gbpsNum  = info.getGbps()+gbpsNum;
+					}else{
+						index = j;
+						break;
+					}
+				}
+			}
+			countMap.put("linkNum", linkNum);
+			countMap.put("pps", ppsNum);
+			countMap.put("gbps", gbpsNum);
+			Iterator iterator = countMap.keySet().iterator();
+			while (iterator.hasNext()) {
+				String key = iterator.next()+"";
+				if (resulMap.containsKey(key)) {
+					resulMap.get(key).add(countMap.get(key));
+				}else {
+					List<Long> list = new ArrayList<Long>();
+					list.add(countMap.get(key));
+					resulMap.put(key, list);
+				}
+			}
+		}
+		resulMap.put("statTime", timeList);
 		return resulMap;
 	}
 

@@ -39,10 +39,6 @@
 		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
 		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=2
     ) total_traffic
-    
-    
-    
-    
   </select>
   <!-- 获取近五分钟的带宽根据ip46，协议 tcp,udp变化 -->
 <!--  <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
@@ -70,6 +66,24 @@
 	ORDER by time
   </select> -->
   <!-- 获取近一小时的带宽根据ip46，协议 tcp,udp变化  -->
+  <select id="getBandwidthTransIPVx" resultMap="BandwidthResultMap">
+	select addr_type,trans_type,entrance_id,IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time from traffic_trans_statistic
+	WHERE
+	<![CDATA[stat_id BETWEEN  (select stat_id from traffic_trans_statistic where	stat_time >= #{beginDate} order by stat_id limit 1)
+	 and 
+	 (select stat_id from traffic_trans_statistic where	stat_time < #{endDate} order by stat_id desc limit 1)
+	  ]]>
+	and addr_type in (4,6)
+	group by addr_type,stat_time ,entrance_id order by stat_time
+</select>
+<select id="getBandwidthTransProtocol" resultMap="BandwidthResultMap">
+	select addr_type,trans_type,entrance_id,IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time from traffic_trans_statistic
+	WHERE stat_id BETWEEN  
+	<![CDATA[(select stat_id from traffic_trans_statistic where	stat_time >= #{beginDate} order by stat_id limit 1)
+	and (select stat_id from traffic_trans_statistic where	stat_time < #{endDate} order by stat_id desc limit 1) ]]>
+	and trans_type in (6,17) group by trans_type,stat_time ,entrance_id  order by stat_time 
+</select>
+  
 <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
 	select IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time time from traffic_trans_statistic
 	where <![CDATA[stat_time>=#{beginDate} and stat_time<=#{endDate}  ]]>
@@ -81,14 +95,6 @@
 	</if>
 	and entrance_id=#{entranceId}
 	group by stat_time order by stat_time
-</select>
-  <!-- 获取近一小时的带宽根据ip46，协议 tcp,udp变化  -->
-<select id="getBandwidthTrans2" resultMap="BandwidthResultMap">
-	select addr_type,trans_type,entrance_id,IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time time from traffic_trans_statistic
-	where <![CDATA[stat_time<=#{endDate} and stat_time>=#{beginDate}]]>
-		and addr_type !=0
-		and trans_type!=0
-	group by stat_time,addr_type,trans_type order by stat_time
 </select>
 
 <select id="getAddrType" resultType="String">
