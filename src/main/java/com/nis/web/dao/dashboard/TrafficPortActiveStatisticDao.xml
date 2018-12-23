@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nis.web.dao.dashboard.TrafficPortActiveStatisticDao">
   <resultMap id="BaseResultMap" type="com.nis.domain.restful.dashboard.TrafficPortActiveStatistic">
-    <id column="stat_id" jdbcType="INTEGER" property="statId" />
+   <!-- <id column="stat_id" jdbcType="INTEGER" property="statId" /> --> 
     <result column="port" jdbcType="INTEGER" property="port" />
     <result column="sum" jdbcType="BIGINT" property="sum" />
     <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
@@ -25,5 +25,31 @@
 	WHERE port=#{port} and stat_time &lt; DATE_SUB(#{statTime},INTERVAL 1 hour)
 	and stat_time > DATE_SUB(#{statTime},INTERVAL 2 hour)
 	GROUP BY port ORDER BY sum DESC limit 0,10
+  </select>
+  <!-- 获取指定时间段内的活跃端口详情数据 -->
+  <select id="findTrafficPortActive" resultMap="BaseResultMap">
+  	SELECT stat_time,port,sum(sum) as sum from traffic_port_active_statistic
+	WHERE <![CDATA[ port in (${port}) and stat_time >= #{statStartTime} and stat_time < #{statEndTime} ]]>
+	<!-- <if test="port!=null">
+		 and port in 
+        	 <foreach collection="port" index="index" item="item" open="(" separator="," close=")">  
+           	#{item}  
+       	</foreach>
+	</if> -->
+	GROUP BY stat_time,port ORDER BY stat_time ASC
+  </select>
+    
+  <select id="findTrafficPortActiveTopN"  resultType="java.util.LinkedHashMap">
+  	SELECT port,sum(sum) as sum from traffic_port_active_statistic
+	WHERE 
+	<!--  -->
+	<![CDATA[stat_time >= #{statStartTime} and stat_time < #{statEndTime}]]>
+	<!-- 
+			stat_id BETWEEN
+			(select stat_id from traffic_port_active_statistic where<![CDATA[	stat_time >= #{statStartTime} order by stat_id limit 1)]]>
+			AND 
+			(select stat_id from traffic_port_active_statistic where<![CDATA[	stat_time < #{statEndTime} order by stat_id desc limit 1)]]>
+	 -->
+	GROUP BY port order by sum desc LIMIT 0,10
   </select>
 </mapper>

@@ -902,4 +902,51 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站域名分类分析数据检索成功",
 				list, 0);
 	}
+	
+
+	@RequestMapping(value = "trafficPortActiveFiveMinute", method = RequestMethod.GET)
+	@ApiOperation(value = "流量端口详情趋势", httpMethod = "GET", notes = "域名UV")
+	public Map<String, ?> trafficPortAcitve(String beginDate, String endDate, Model model, Integer[] port,
+			HttpServletRequest request, HttpServletResponse response) {
+		
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		List<Map> list = new ArrayList<Map>();
+		try {
+			Calendar cal=Calendar.getInstance();
+			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if((beginDate == null || "".equals(beginDate)) && (endDate == null || "".equals(endDate))){
+				//如果时间全部为空查询最近一小时				
+				endDate = sdf.format(cal.getTime());
+				cal.add(Calendar.HOUR_OF_DAY, -1);
+				beginDate = sdf.format(cal.getTime());
+			}else if((beginDate == null || "".equals(beginDate)) && (endDate != null && !"".equals(endDate))){
+				beginDate = DateUtils.getSpecifiedDayBefore(endDate)+" "+endDate.substring(11);
+			}else if((endDate == null || "".equals(endDate)) && (beginDate != null && !"".equals(beginDate))){
+				endDate = DateUtils.getSpecifiedDayAfter(beginDate)+" "+beginDate.substring(11);
+			}
+			// 带查询时间查询所有
+			List<Map> portActiveChart = dashboardService.findTrafficPortActive(beginDate, endDate,port);
+			if (portActiveChart != null && portActiveChart.size() > 0) {
+				list = portActiveChart;
+			}
+			
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("流量端口详情趋势数据检索失败:" + e.getMessage());
+			logger.error("流量端口详情趋势数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"流量端口详情趋势数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"流量端口详情趋势数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"流量端口详情趋势数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流量端口详情趋势数据检索成功",
+				list, 0);
+	}
 }

@@ -1473,4 +1473,113 @@ public class DashboardService extends BaseService {
 		return listMap;
 	}
 
+	/**
+	 * 获取活跃Port top10 的趋势图
+	 * @throws ParseException 
+	 */
+	public List<Map> findTrafficPortActive(String beginDate, String endDate, Integer[] portArray) throws ParseException {
+		List<Map> listMap = new ArrayList<Map>();
+		StringBuilder portStr = new StringBuilder();
+		List<LinkedHashMap> portListTop10 = null; 
+		if(portArray!=null && portArray.length>0){//如果有传人参数，获取传人参数
+			for(int pi=0;pi<portArray.length;pi++){
+				portStr.append("'"+portArray[pi]+"',");
+			}
+		}else{//否则获取TOP10
+			portListTop10 = trafficPortActiveStatisticDao.findTrafficPortActiveTopN(beginDate, endDate);
+			for (LinkedHashMap map : portListTop10) {
+				portStr.append("'"+map.get("port")+"',");
+			}
+		}
+		if (!StringUtil.isEmpty(portStr)&&portStr.indexOf(",")>0) {
+			portStr.deleteCharAt(portStr.lastIndexOf(","));
+		}
+		Date beginDate1 = DateUtils.strToDate(beginDate, "yyyy-MM-dd HH:mm:ss");
+		Date endDate1 = DateUtils.strToDate(endDate, "yyyy-MM-dd HH:mm:ss");
+		//if (portListTop10 != null && portListTop10.size() > 0) {
+			//StringBuilder portStr = new StringBuilder();
+		if(!StringUtil.isEmpty(portStr)){	
+			//如果所有IP在最后一个时间点的count都为0，则移除最后一个点
+			//开始划分时间段,间隔5分钟
+			List<Date> dateRangeList = new ArrayList<Date>();
+			List<String> strDateRangeList = new ArrayList<String>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate1);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			while (calendar.getTime().compareTo(endDate1)<=0) {
+				dateRangeList.add(calendar.getTime());
+				strDateRangeList.add(sdf.format(calendar.getTime()));
+				calendar.add(Calendar.MINUTE, 5);
+			}
+			
+			ArrayList<TrafficPortActiveStatistic> portInfoList = trafficPortActiveStatisticDao.findTrafficPortActive(beginDate, endDate, portStr.toString());
+			//存放每个IP，每个时间点的总数
+			Map<String,List<Long>> portCountListMap = new HashMap<String, List<Long>>();
+			int index=0;
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				//存放一个时间点中每个IP的总数
+				Map<String, Long> portCountMap = new HashMap<String, Long>();
+				Date date = dateRangeList.get(i);
+				for (int j = index; j < portInfoList.size(); j++) {
+					TrafficPortActiveStatistic portInfo = portInfoList.get(j);
+					if (portInfo.getStatTime()!=null){
+						if(portInfo.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&portInfo.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
+							Long num = portInfo.getSum();
+							if (portCountMap.containsKey(portInfo.getPort())) {
+								num=num+portCountMap.get(portInfo.getPort());
+							}
+							portCountMap.put(portInfo.getPort().toString(), num);
+						}else{
+							index = j;
+							break;
+						}
+					}
+				}
+				if(portArray!=null && portArray.length>0){//如果有传人参数，获取传人参数
+					for(int m=0;m<portArray.length;m++){
+						String port = portArray[m].toString();
+						Long sum = 0l;
+						if (portCountMap.containsKey(port)) {
+							sum=portCountMap.get(port);
+						}
+						if (portCountListMap.containsKey(port)) {
+							portCountListMap.get(port).add(sum);
+						}else{
+							List<Long> list = new ArrayList<Long>();
+							list.add(sum);
+							portCountListMap.put(port, list);
+						}
+					}
+					
+				}else if(portListTop10!=null){
+					for (LinkedHashMap map : portListTop10) {
+						String port = map.get("port").toString();
+						Long sum = 0l;
+						if (portCountMap.containsKey(port)) {
+							sum=portCountMap.get(port);
+						}
+						if (portCountListMap.containsKey(port)) {
+							portCountListMap.get(port).add(sum);
+						}else{
+							List<Long> list = new ArrayList<Long>();
+							list.add(sum);
+							portCountListMap.put(port, list);
+						}
+					}
+				}
+			}
+			//整合port sum time 
+			Iterator iterator = portCountListMap.keySet().iterator();
+			while (iterator.hasNext()) {
+				String ip = iterator.next()+"";
+				Map trafficPortActiveMap = new HashMap();
+				trafficPortActiveMap.put("port", ip);
+				trafficPortActiveMap.put("sum", portCountListMap.get(ip));
+				trafficPortActiveMap.put("statTime", strDateRangeList);
+				listMap.add(trafficPortActiveMap);
+			}
+		}
+		return listMap;
+	}
+
 }
