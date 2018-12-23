@@ -100,7 +100,7 @@ public class DashboardServiceController extends BaseRestController {
 				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
 				beginDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cal.getTime());
 			}
-			List<HashMap> resultList = dashboardService.getActionTrans(beginDate, endDate, searchAction);
+			List<HashMap> resultList = dashboardService.getActionTrans2(beginDate, endDate, searchAction);
 			if (resultList != null && resultList.size() > 0) {
 				list = resultList;
 			}
@@ -880,7 +880,7 @@ public class DashboardServiceController extends BaseRestController {
 		try {
 			
 				// 带查询时间查询所有
-				List<HashMap> websiteChart = dashboardService.getDomainTrans(beginDate, endDate,domain,entranceId);
+				List<HashMap> websiteChart = dashboardService.getDomainTrans2(beginDate, endDate,domain,entranceId);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
