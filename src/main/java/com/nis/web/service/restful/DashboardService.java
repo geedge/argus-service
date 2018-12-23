@@ -291,7 +291,7 @@ public class DashboardService extends BaseService {
 		String sql = "";
 		String sqlBlock = "((service>=16 and service<=40) or (service>=258 and service<=273) or (service=576))"; // 阻断
 		String sqlMonitor = "((service>=128 and service<=152) or (service>=384 and service<=513) or (service=592) or (service>=848 and service<=1030) or (service=1152))"; // 监测
-		String sqlDrop = "((service1040 and service<=1042) or (service=3) or (service=5) or (service=25) or (service=28) or (service=274))"; // 丢弃
+		String sqlDrop = "((service>=1040 and service<=1042) or (service=3) or (service=5) or (service=25) or (service=28) or (service=274))"; // 丢弃
 		String sqlLoop = "((service=4) or (service>=832 and service<=834))"; // 回流
 		// 区分动作
 		if (StringUtils.isNotBlank(serviceType)) {
@@ -387,20 +387,20 @@ public class DashboardService extends BaseService {
 		String sql = "";
 		String sqlBlock = "((service>=16 and service<=40) or (service>=258 and service<=273) or (service=576))"; // 阻断
 		String sqlMonitor = "((service>=128 and service<=152) or (service>=384 and service<=513) or (service=592) or (service>=848 and service<=1030) or (service=1152))"; // 监测
-		String sqlDrop = "((service1040 and service<=1042) or (service=3) or (service=5) or (service=25) or (service=28) or (service=274))"; // 丢弃
+		String sqlDrop = "((service>=1040 and service<=1042) or (service=3) or (service=5) or (service=25) or (service=28) or (service=274))"; // 丢弃
 		String sqlLoop = "((service=4) or (service>=832 and service<=834))"; // 回流
 		// 区分动作
 		if (StringUtils.isNotBlank(serviceType)) {
-			if (serviceType.equalsIgnoreCase("block")) {
+			if (serviceType.equalsIgnoreCase("action_reject")) {
 				sql = sqlBlock;
 			}
-			if (serviceType.equalsIgnoreCase("monitor")) {
+			if (serviceType.equalsIgnoreCase("action_monit")) {
 				sql = sqlMonitor;
 			}
-			if (serviceType.equalsIgnoreCase("drop")) {
+			if (serviceType.equalsIgnoreCase("action_drop")) {
 				sql = sqlDrop;
 			}
-			if (serviceType.equalsIgnoreCase("loop")) {
+			if (serviceType.equalsIgnoreCase("action_loop")) {
 				sql = sqlLoop;
 			}
 		}
@@ -556,7 +556,7 @@ public class DashboardService extends BaseService {
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
 			while (calendar.getTime().compareTo(endDate)<=0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
@@ -631,9 +631,10 @@ public class DashboardService extends BaseService {
 				for (LinkedHashMap map : list) {
 					if (map.get("ipAddr") != null) {
 						String ipAddr = (String) map.get("ipAddr");
-						ArrayList<HashMap> iplList = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate,
-								endDate);
-						listMap.add(iplList.get(0));
+						HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate,endDate);
+						if(resMap!=null){
+							listMap.add(resMap);
+						}
 					}
 				}
 			}

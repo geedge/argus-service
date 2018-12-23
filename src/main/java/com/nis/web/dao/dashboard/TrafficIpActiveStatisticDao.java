@@ -17,7 +17,7 @@ public interface TrafficIpActiveStatisticDao {
 
 	ArrayList<TrafficIpActiveStatistic> ipActiveFiveMinute( @Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
 
-	ArrayList<HashMap> ipActiveOneHour(@Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
+	HashMap ipActiveOneHour(@Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
 
 	ArrayList<LinkedHashMap> ipActiveChart(@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
 }
