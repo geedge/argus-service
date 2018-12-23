@@ -271,16 +271,69 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		// System.out.println(getDate("yyyy年MM月dd日 E"));
 		// long time = new Date().getTime()-parseDate("2012-11-19").getTime();
 		// System.out.println(time/(24*60*60*1000));
-		Date date = new Date();
+	/*	Date date = new Date();
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, date.getMonth() - 2);
 		cal.set(Calendar.DAY_OF_MONTH, 1);
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		// timeMap.put("startTime", sdf.format(cal2.getTime()));
 		// timeMap.put("endTime", sdf.format(cal.getTime()));
-		logger.info("月报默认开始时间条件：" + sdf.format(cal.getTime()));
+		logger.info("月报默认开始时间条件：" + sdf.format(cal.getTime()));*/
+		
+		String beginDate = DateUtils.getSpecifiedDayBefore("2018-12-23 10:10:10");
+		System.out.println(beginDate);
+		String bhour = DateUtils.getSpecifiedHourBefore("2018-12-23 10:10:10");
+		System.out.println(bhour);
+		String bhour1 = DateUtils.getSpecifiedHourBefore("2018-12-23 00:10:10");
+		System.out.println(bhour1);
+
+		
+	}
+	/**
+	 * 获得指定日期的前一小时
+	 * 
+	 * @param specifiedDay
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getSpecifiedHourBefore(String specifiedDay) {
+		// SimpleDateFormat simpleDateFormat = new
+		// SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = Calendar.getInstance();
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(specifiedDay);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		c.setTime(date);
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		c.set(Calendar.HOUR_OF_DAY, hour - 1);
+		String dayBefore = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
+		return dayBefore;
 	}
 
+	/**
+	 * 获得指定日期的后一小时
+	 * 
+	 * @param specifiedDay
+	 * @return
+	 */
+	public static String getSpecifiedHourAfter(String specifiedDay) {
+		Calendar c = Calendar.getInstance();
+		Date date = null;
+		try {
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(specifiedDay);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		c.setTime(date);
+		int hour = c.get(Calendar.HOUR_OF_DAY);
+		c.set(Calendar.HOUR_OF_DAY, hour + 1);
+
+		String dayAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
+		return dayAfter;
+	}
 	/**
 	 * 获得指定日期的前一天
 	 * 
@@ -294,7 +347,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		Calendar c = Calendar.getInstance();
 		Date date = null;
 		try {
-			date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(specifiedDay);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -302,7 +355,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		int day = c.get(Calendar.DATE);
 		c.set(Calendar.DATE, day - 1);
 
-		String dayBefore = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+		String dayBefore = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
 		return dayBefore;
 	}
 
@@ -316,7 +369,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		Calendar c = Calendar.getInstance();
 		Date date = null;
 		try {
-			date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+			date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(specifiedDay);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -324,7 +377,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 		int day = c.get(Calendar.DATE);
 		c.set(Calendar.DATE, day + 1);
 
-		String dayAfter = new SimpleDateFormat("yyyy-MM-dd").format(c.getTime());
+		String dayAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(c.getTime());
 		return dayAfter;
 	}
 }

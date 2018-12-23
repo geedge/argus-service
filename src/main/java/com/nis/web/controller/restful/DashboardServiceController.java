@@ -922,9 +922,9 @@ public class DashboardServiceController extends BaseRestController {
 				cal.add(Calendar.HOUR_OF_DAY, -1);
 				beginDate = sdf.format(cal.getTime());
 			}else if((beginDate == null || "".equals(beginDate)) && (endDate != null && !"".equals(endDate))){
-				beginDate = DateUtils.getSpecifiedDayBefore(endDate)+" "+endDate.substring(11);
+				beginDate = DateUtils.getSpecifiedHourBefore(endDate);
 			}else if((endDate == null || "".equals(endDate)) && (beginDate != null && !"".equals(beginDate))){
-				endDate = DateUtils.getSpecifiedDayAfter(beginDate)+" "+beginDate.substring(11);
+				endDate = DateUtils.getSpecifiedHourAfter(beginDate);
 			}
 			// 带查询时间查询所有
 			List<Map> portActiveChart = dashboardService.findTrafficPortActive(beginDate, endDate,port);
