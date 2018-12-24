@@ -102,6 +102,7 @@ public class DashboardService extends BaseService {
 	 * @param transType
 	 * @return
 	 */
+	@Deprecated
 	public List<HashMap> getBandwidthTrans(String addrType, Integer transType, String beginDate, String endDate) {
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 
@@ -121,6 +122,7 @@ public class DashboardService extends BaseService {
 	 * @param transType
 	 * @return
 	 */
+	@Deprecated
 	public List<HashMap> getBandwidthTrans2(String addrType, Integer transType, String beginDate, String endDate) {
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 
@@ -143,6 +145,7 @@ public class DashboardService extends BaseService {
 	 * @param entranceId
 	 * @return
 	 */
+	@Deprecated
 	public HashMap getBandwidthTransEntrance(String addrType, Integer transType, String beginDate, String endDate,
 			Integer entranceId) {
 		long start = System.currentTimeMillis();
@@ -177,8 +180,8 @@ public class DashboardService extends BaseService {
 					if (t >= pointTime && t < pointTime + inter) {
 						// 范围之内分到此pointTime组
 						sumL = sumL + tt.getLinkNum();
-						sumP = sumP + tt.getPps();
-						sumG = sumG + tt.getGbps();
+						sumP = sumP + Long.parseLong(tt.getPps().substring(0, tt.getPps().lastIndexOf(".")));
+						sumG = sumG + Long.parseLong(tt.getGbps().substring(0, tt.getGbps().lastIndexOf(".")));
 					}
 				}
 				// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
@@ -220,6 +223,7 @@ public class DashboardService extends BaseService {
 	 * @param li
 	 * @return
 	 */
+	@Deprecated
 	public static List<Map> formatDateData(String begin, String end, List<Map> li) {
 		List<Map> resList = new ArrayList<Map>();
 		Map<String, Comparable> m = new HashMap<String, Comparable>();
@@ -260,6 +264,7 @@ public class DashboardService extends BaseService {
 	 * @param format 如：yyyy-MM-dd HH:mm:ss
 	 * @return
 	 */
+	@Deprecated
 	public static Long dateToStamp(String date_str) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -277,6 +282,7 @@ public class DashboardService extends BaseService {
 	 * @param format 如：yyyy-MM-dd HH:mm:ss
 	 * @return
 	 */
+	@Deprecated
 	public static String stampToDate(long timeStamp) {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");// 这个是你要转成后的时间的格式
 		String sd = sdf.format(new Date(timeStamp)); // 时间戳转换成时间
@@ -286,100 +292,49 @@ public class DashboardService extends BaseService {
 	/**
 	 * 根据service 动作查询近五分钟变化趋势 entrance 默认为1,2
 	 */
-/*	
-  public List<HashMap> getActionTrans(String begin, String end, String serviceType) {
-		String sql = "";
-		String sqlBlock = "((service>=16 and service<=40) or (service>=258 and service<=273) or (service=576))"; // 阻断
-		String sqlMonitor = "((service>=128 and service<=152) or (service>=384 and service<=513) or (service=592) or (service>=848 and service<=1030) or (service=1152))"; // 监测
-		String sqlDrop = "((service>=1040 and service<=1042) or (service=3) or (service=5) or (service=25) or (service=28) or (service=274))"; // 丢弃
-		String sqlLoop = "((service=4) or (service>=832 and service<=834))"; // 回流
-		// 区分动作
-		if (StringUtils.isNotBlank(serviceType)) {
-			if (serviceType.equalsIgnoreCase("block")) {
-				sql = sqlBlock;
-			}
-			if (serviceType.equalsIgnoreCase("monitor")) {
-				sql = sqlMonitor;
-			}
-			if (serviceType.equalsIgnoreCase("drop")) {
-				sql = sqlDrop;
-			}
-			if (serviceType.equalsIgnoreCase("loop")) {
-				sql = sqlLoop;
-			}
-		}
-		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
-		List<NtcEntranceReport> entrance1 = new ArrayList<NtcEntranceReport>();
-		List<NtcEntranceReport> entrance2 = new ArrayList<NtcEntranceReport>();
-		HashMap m1 = new HashMap();
-		HashMap m2 = new HashMap();
-		entrance1 = ntcTotalReportDao.getActionTrans(begin, end, 1, sql);
-		entrance2 = ntcTotalReportDao.getActionTrans(begin, end, 2, sql);
-		List timeList = new ArrayList();
-		List sumList1 = new ArrayList();
-		List sumList2 = new ArrayList();
-
-		Map<String, Comparable> m = new HashMap<String, Comparable>();
-		int inter = 1000 * 60 * 5;// 间隔时间为五分钟
-		// 开始时间，结束时间 时间戳
-		Long b = dateToStamp(begin);
-		Long e = dateToStamp(end);
-		int num = 0;
-		Long pointTime = b;
-		while (pointTime < e) {
-			Map rm = new HashMap();
-			Long sum1 = 0l;
-			Long sum2 = 0l;
-			if (pointTime >= e) {
-				break; // 停止
-			}
-			for (NtcEntranceReport e1 : entrance1) {
-				// 实际时间
-				String time = e1.getTime();
-				Long t = dateToStamp(time);
-				if (t >= pointTime && t < pointTime + inter) {
-					// 范围之内分到此pointTime组
-					sum1 = sum1 + e1.getSum();
-				}
-			}
-			for (NtcEntranceReport e2 : entrance2) {
-				// 实际时间
-				String time = e2.getTime();
-				Long t = dateToStamp(time);
-				if (t >= pointTime && t < pointTime + inter) {
-					// 范围之内分到此pointTime组
-					sum2 = sum2 + e2.getSum();
-				}
-			}
-			// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
-			if (pointTime >= e - inter && sum1 > 0) {
-				sumList1.add(sum1);
-			}
-			if (pointTime >= e - inter && sum2 > 0) {
-				sumList2.add(sum2);
-			}
-			if (pointTime >= e - inter && (sum1 > 0 || sum2 > 0)) {
-				timeList.add(stampToDate(pointTime));
-			}
-			if (pointTime < e - inter) {
-				sumList1.add(sum1);
-				sumList2.add(sum2);
-				timeList.add(stampToDate(pointTime));
-			}
-			num = num + 1;
-			pointTime = b + inter * num;
-		}
-		m1.put("count", sumList1);
-		m1.put("statTime", timeList);
-		m1.put("entranceId", 1);
-		m2.put("count", sumList2);//
-		m2.put("statTime", timeList);
-		m2.put("entranceId", 2);
-		listMap.add(m1);
-		listMap.add(m2);
-		return listMap;
-	}
-	*/
+	/*
+	 * public List<HashMap> getActionTrans(String begin, String end, String
+	 * serviceType) { String sql = ""; String sqlBlock =
+	 * "((service>=16 and service<=40) or (service>=258 and service<=273) or (service=576))"
+	 * ; // 阻断 String sqlMonitor =
+	 * "((service>=128 and service<=152) or (service>=384 and service<=513) or (service=592) or (service>=848 and service<=1030) or (service=1152))"
+	 * ; // 监测 String sqlDrop =
+	 * "((service>=1040 and service<=1042) or (service=3) or (service=5) or (service=25) or (service=28) or (service=274))"
+	 * ; // 丢弃 String sqlLoop = "((service=4) or (service>=832 and service<=834))";
+	 * // 回流 // 区分动作 if (StringUtils.isNotBlank(serviceType)) { if
+	 * (serviceType.equalsIgnoreCase("block")) { sql = sqlBlock; } if
+	 * (serviceType.equalsIgnoreCase("monitor")) { sql = sqlMonitor; } if
+	 * (serviceType.equalsIgnoreCase("drop")) { sql = sqlDrop; } if
+	 * (serviceType.equalsIgnoreCase("loop")) { sql = sqlLoop; } }
+	 * ArrayList<HashMap> listMap = new ArrayList<HashMap>();
+	 * List<NtcEntranceReport> entrance1 = new ArrayList<NtcEntranceReport>();
+	 * List<NtcEntranceReport> entrance2 = new ArrayList<NtcEntranceReport>();
+	 * HashMap m1 = new HashMap(); HashMap m2 = new HashMap(); entrance1 =
+	 * ntcTotalReportDao.getActionTrans(begin, end, 1, sql); entrance2 =
+	 * ntcTotalReportDao.getActionTrans(begin, end, 2, sql); List timeList = new
+	 * ArrayList(); List sumList1 = new ArrayList(); List sumList2 = new
+	 * ArrayList();
+	 * 
+	 * Map<String, Comparable> m = new HashMap<String, Comparable>(); int inter =
+	 * 1000 * 60 * 5;// 间隔时间为五分钟 // 开始时间，结束时间 时间戳 Long b = dateToStamp(begin); Long
+	 * e = dateToStamp(end); int num = 0; Long pointTime = b; while (pointTime < e)
+	 * { Map rm = new HashMap(); Long sum1 = 0l; Long sum2 = 0l; if (pointTime >= e)
+	 * { break; // 停止 } for (NtcEntranceReport e1 : entrance1) { // 实际时间 String time
+	 * = e1.getTime(); Long t = dateToStamp(time); if (t >= pointTime && t <
+	 * pointTime + inter) { // 范围之内分到此pointTime组 sum1 = sum1 + e1.getSum(); } } for
+	 * (NtcEntranceReport e2 : entrance2) { // 实际时间 String time = e2.getTime(); Long
+	 * t = dateToStamp(time); if (t >= pointTime && t < pointTime + inter) { //
+	 * 范围之内分到此pointTime组 sum2 = sum2 + e2.getSum(); } } //
+	 * 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会 if (pointTime >= e - inter && sum1 > 0) {
+	 * sumList1.add(sum1); } if (pointTime >= e - inter && sum2 > 0) {
+	 * sumList2.add(sum2); } if (pointTime >= e - inter && (sum1 > 0 || sum2 > 0)) {
+	 * timeList.add(stampToDate(pointTime)); } if (pointTime < e - inter) {
+	 * sumList1.add(sum1); sumList2.add(sum2); timeList.add(stampToDate(pointTime));
+	 * } num = num + 1; pointTime = b + inter * num; } m1.put("count", sumList1);
+	 * m1.put("statTime", timeList); m1.put("entranceId", 1); m2.put("count",
+	 * sumList2);// m2.put("statTime", timeList); m2.put("entranceId", 2);
+	 * listMap.add(m1); listMap.add(m2); return listMap; }
+	 */
 	/**
 	 * 根据service 动作查询近五分钟变化趋势 entrance 默认为1,2
 	 */
@@ -411,66 +366,68 @@ public class DashboardService extends BaseService {
 		HashMap m2 = new HashMap();
 		entrance1 = ntcTotalReportDao.getActionTrans(begin, end, 1, sql);
 		entrance2 = ntcTotalReportDao.getActionTrans(begin, end, 2, sql);
-		
+
 		Map<String, Comparable> m = new HashMap<String, Comparable>();
 		Date beginDate = DateUtils.parseDate(begin);
 		Date endDate = DateUtils.parseDate(end);
-		
-			List<Date> dateRangeList = new ArrayList<Date>();
-			List<String> strDateRangeList = new ArrayList<String>();
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(beginDate);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate)<=0) {
-				dateRangeList.add(calendar.getTime());
-				strDateRangeList.add(sdf.format(calendar.getTime()));
-				calendar.add(Calendar.MINUTE, 5);
-			}
-			//存放每个时间点的总数
-			Map<String,List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
-			int index=0;
-			List sumList1 =new ArrayList();
-			List sumList2 =new ArrayList();
-			for (int i = 0; i < dateRangeList.size(); i++) {
-				//存放一个时间点中总数
-				Map<String, Long> ipCountMap = new HashMap<String, Long>();
-				Date date = dateRangeList.get(i);
-				Long num1 = 0L;
-				Long num2 = 0L;
-				for (int j = index; j < entrance1.size(); j++) {
-					NtcEntranceReport ipInfo = entrance1.get(j);
-					if (ipInfo.getReportTime()!=null){
-						if(ipInfo.getReportTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&ipInfo.getReportTime().compareTo(dateRangeList.get(i+1))<0)) {
-								num1=num1+ipInfo.getSum();
-						}else{
-							index = j;
-							break;
-						}
+
+		List<Date> dateRangeList = new ArrayList<Date>();
+		List<String> strDateRangeList = new ArrayList<String>();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(beginDate);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+		while (calendar.getTime().compareTo(endDate) <= 0) {
+			dateRangeList.add(calendar.getTime());
+			strDateRangeList.add(sdf.format(calendar.getTime()));
+			calendar.add(Calendar.MINUTE, 5);
+		}
+		// 存放每个时间点的总数
+		Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+		int index = 0;
+		List sumList1 = new ArrayList();
+		List sumList2 = new ArrayList();
+		for (int i = 0; i < dateRangeList.size(); i++) {
+			// 存放一个时间点中总数
+			Map<String, Long> ipCountMap = new HashMap<String, Long>();
+			Date date = dateRangeList.get(i);
+			Long num1 = 0L;
+			Long num2 = 0L;
+			for (int j = index; j < entrance1.size(); j++) {
+				NtcEntranceReport ipInfo = entrance1.get(j);
+				if (ipInfo.getReportTime() != null) {
+					if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+							&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						num1 = num1 + ipInfo.getSum();
+					} else {
+						index = j;
+						break;
 					}
 				}
-				sumList1.add(num1);
-				for (int j = index; j < entrance2.size(); j++) {
-					NtcEntranceReport ipInfo = entrance2.get(j);
-					if (ipInfo.getReportTime()!=null){
-						if(ipInfo.getReportTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&ipInfo.getReportTime().compareTo(dateRangeList.get(i+1))<0)) {
-							num2=num2+ipInfo.getSum();
-						}else{
-							index = j;
-							break;
-						}
+			}
+			sumList1.add(num1);
+			for (int j = index; j < entrance2.size(); j++) {
+				NtcEntranceReport ipInfo = entrance2.get(j);
+				if (ipInfo.getReportTime() != null) {
+					if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+							&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						num2 = num2 + ipInfo.getSum();
+					} else {
+						index = j;
+						break;
 					}
 				}
-				sumList2.add(num2);
 			}
-			//整合 count time 
-			m1.put("count", sumList1);
-			m1.put("statTime", strDateRangeList);
-			m1.put("entranceId", 1);
-			m2.put("count", sumList2);//
-			m2.put("statTime", strDateRangeList);
-			m2.put("entranceId", 2);
-			listMap.add(m1);
-			listMap.add(m2);
+			sumList2.add(num2);
+		}
+		// 整合 count time
+		m1.put("count", sumList1);
+		m1.put("statTime", strDateRangeList);
+		m1.put("entranceId", 1);
+		m2.put("count", sumList2);//
+		m2.put("statTime", strDateRangeList);
+		m2.put("entranceId", 2);
+		listMap.add(m1);
+		listMap.add(m2);
 		return listMap;
 	}
 
@@ -545,43 +502,44 @@ public class DashboardService extends BaseService {
 		if (ipListTop10 != null && ipListTop10.size() > 0) {
 			StringBuilder ipStr = new StringBuilder();
 			for (LinkedHashMap map : ipListTop10) {
-				ipStr.append("'"+(String) map.get("ipAddr")+"',");
+				ipStr.append("'" + (String) map.get("ipAddr") + "',");
 			}
-			if (!StringUtil.isEmpty(ipStr)&&ipStr.indexOf(",")>0) {
+			if (!StringUtil.isEmpty(ipStr) && ipStr.indexOf(",") > 0) {
 				ipStr.deleteCharAt(ipStr.lastIndexOf(","));
 			}
-			//如果所有IP在最后一个时间点的count都为0，则移除最后一个点
-			//开始划分时间段,间隔5分钟
+			// 如果所有IP在最后一个时间点的count都为0，则移除最后一个点
+			// 开始划分时间段,间隔5分钟
 			List<Date> dateRangeList = new ArrayList<Date>();
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate)<=0) {
+			while (calendar.getTime().compareTo(endDate) <= 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
 			}
-			
-			ArrayList<TrafficIpActiveStatistic> ipInfoList = trafficIpActiveStatisticDao.ipActiveFiveMinute(ipStr.toString(),
-				beginDate, endDate);
-			//存放每个IP，每个时间点的总数
-			Map<String,List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
-			int index=0;
+
+			ArrayList<TrafficIpActiveStatistic> ipInfoList = trafficIpActiveStatisticDao
+					.ipActiveFiveMinute(ipStr.toString(), beginDate, endDate);
+			// 存放每个IP，每个时间点的总数
+			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
-				//存放一个时间点中每个IP的总数
+				// 存放一个时间点中每个IP的总数
 				Map<String, Long> ipCountMap = new HashMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				for (int j = index; j < ipInfoList.size(); j++) {
 					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
-					if (ipInfo.getStatTime()!=null){
-						if(ipInfo.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&ipInfo.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
+					if (ipInfo.getStatTime() != null) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
 							Long num = ipInfo.getCount();
 							if (ipCountMap.containsKey(ipInfo.getIpAddr())) {
-								num=num+ipCountMap.get(ipInfo.getIpAddr());
+								num = num + ipCountMap.get(ipInfo.getIpAddr());
 							}
 							ipCountMap.put(ipInfo.getIpAddr(), num);
-						}else{
+						} else {
 							index = j;
 							break;
 						}
@@ -591,21 +549,21 @@ public class DashboardService extends BaseService {
 					String ip = (String) map.get("ipAddr");
 					Long sum = 0l;
 					if (ipCountMap.containsKey(ip)) {
-						sum=ipCountMap.get(ip);
+						sum = ipCountMap.get(ip);
 					}
 					if (ipCountListMap.containsKey(ip)) {
 						ipCountListMap.get(ip).add(sum);
-					}else{
+					} else {
 						List<Long> list = new ArrayList<Long>();
 						list.add(sum);
 						ipCountListMap.put(ip, list);
 					}
 				}
 			}
-			//整合IP count time 
+			// 整合IP count time
 			Iterator iterator = ipCountListMap.keySet().iterator();
 			while (iterator.hasNext()) {
-				String ip = iterator.next()+"";
+				String ip = iterator.next() + "";
 				Map ipTrafficMap = new HashMap();
 				ipTrafficMap.put("ipAddr", ip);
 				ipTrafficMap.put("linkNum", ipCountListMap.get(ip));
@@ -622,23 +580,23 @@ public class DashboardService extends BaseService {
 	 * @return
 	 */
 	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate) {
-		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
+//		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
-		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-			Date statTime = maxStatTime.getStatTime();
-			ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
-			if (list != null && list.size() > 0) {
-				for (LinkedHashMap map : list) {
-					if (map.get("ipAddr") != null) {
-						String ipAddr = (String) map.get("ipAddr");
-						HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate,endDate);
-						if(resMap!=null){
-							listMap.add(resMap);
-						}
+//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+//			Date statTime = maxStatTime.getStatTime();
+		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
+		if (list != null && list.size() > 0) {
+			for (LinkedHashMap map : list) {
+				if (map.get("ipAddr") != null) {
+					String ipAddr = (String) map.get("ipAddr");
+					HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate, endDate);
+					if (resMap != null) {
+						listMap.add(resMap);
 					}
 				}
 			}
 		}
+//		}
 
 		return listMap;
 	}
@@ -696,12 +654,12 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getProtocolList(String startTime, String endTime,Integer[] protoType) {
+	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType) {
 //		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 //			Date statTime = maxStatTime.getStatTime();
-			list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime,protoType);
+		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType);
 //		}
 		return list;
 	}
@@ -1101,8 +1059,8 @@ public class DashboardService extends BaseService {
 //						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
 //						String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
 						if (countStr != null) {
-							Long pl = (Long.parseLong(countStr))/(1024*1024*1024);
-							if(pl>0) {
+							Long pl = (Long.parseLong(countStr)) / (1024 * 1024 * 1024);
+							if (pl > 0) {
 								count += Long.parseLong(countStr);// 将count累加 转换单位小于0的不加
 							}
 						}
@@ -1121,21 +1079,21 @@ public class DashboardService extends BaseService {
 			Collections.sort(list, new Comparator<Object>() {
 				@Override
 				public int compare(Object o1, Object o2) {
-					if(o1==null&&o2!=null){
+					if (o1 == null && o2 != null) {
 						return 1;
 					}
-					if(o1!=null&&o2==null){
+					if (o1 != null && o2 == null) {
 						return -1;
 					}
-					if(o1==o2&&o1==null){
+					if (o1 == o2 && o1 == null) {
 						return 0;
 					}
-					Map m1=(Map)o1;
-					Map m2=(Map)o2;
+					Map m1 = (Map) o1;
+					Map m2 = (Map) o2;
 					Object ob1 = m1.get("byteCount");
 					Object ob2 = m2.get("byteCount");
-					Long b1=Long.parseLong(ob1.toString());
-					Long b2=Long.parseLong(ob2.toString());
+					Long b1 = Long.parseLong(ob1.toString());
+					Long b2 = Long.parseLong(ob2.toString());
 					return -(b1).compareTo(b2);
 				}
 			});
@@ -1164,11 +1122,6 @@ public class DashboardService extends BaseService {
 		return dataList;
 	}
 
-	
-	
-	
-	
-	
 	public List<Map> getTopicAndDomainList(Date beginDate, Date endDate, String top) {
 
 		Map<String, List<String>> topicIdAndIdMap = new HashMap<>();// 存储topicid和id的对应关系,一个topicid有多个id
@@ -1243,24 +1196,7 @@ public class DashboardService extends BaseService {
 		}
 		return dataList;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	public String[] getFiledTypeByName(String fieldName) {
 		if (fieldName == null) {
 			return null;
@@ -1286,8 +1222,9 @@ public class DashboardService extends BaseService {
 		bandwidthListIPvx = ntcTotalReportDao.getBandwidthTransIPVx(beginDate, endDate);
 		bandwidthListProtocol = ntcTotalReportDao.getBandwidthTransProtocol(beginDate, endDate);
 		Map<String, Map> trafficMap = new HashMap<String, Map>();
-		if((!StringUtil.isEmpty(bandwidthListIPvx)&&bandwidthListIPvx.size()>0)||(!StringUtil.isEmpty(bandwidthListProtocol)&&bandwidthListProtocol.size()>0)){
-			//划分时间段
+		if ((!StringUtil.isEmpty(bandwidthListIPvx) && bandwidthListIPvx.size() > 0)
+				|| (!StringUtil.isEmpty(bandwidthListProtocol) && bandwidthListProtocol.size() > 0)) {
+			// 划分时间段
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			Date startTime = sdf.parse(beginDate);
 			Date endTime = sdf.parse(endDate);
@@ -1295,8 +1232,8 @@ public class DashboardService extends BaseService {
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(startTime);
-			
-			while (calendar.getTime().compareTo(endTime)<=0) {
+
+			while (calendar.getTime().compareTo(endTime) <= 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
@@ -1304,9 +1241,10 @@ public class DashboardService extends BaseService {
 			String[] addrTypes = getFiledTypeByName("addr_type");
 			String[] transTypes = getFiledTypeByName("trans_type");
 			String[] entranceIds = getFiledTypeByName("entrance_id");
-			if(bandwidthListIPvx!=null&&bandwidthListIPvx.size()>0&&bandwidthListProtocol!=null&&bandwidthListProtocol.size()>0&&addrTypes!=null&&addrTypes.length>0&&transTypes!=null&&transTypes.length>0
-					&&entranceIds!=null&&entranceIds.length>0){
-				//按区域和类型构建Map
+			if (bandwidthListIPvx != null && bandwidthListIPvx.size() > 0 && bandwidthListProtocol != null
+					&& bandwidthListProtocol.size() > 0 && addrTypes != null && addrTypes.length > 0
+					&& transTypes != null && transTypes.length > 0 && entranceIds != null && entranceIds.length > 0) {
+				// 按区域和类型构建Map
 				for (String entranceId : entranceIds) {
 					for (String addrType : addrTypes) {
 						listMap.put("ipv" + addrType + "Type" + entranceId, new ArrayList<TrafficTransStatistic>());
@@ -1317,10 +1255,10 @@ public class DashboardService extends BaseService {
 						listMap.put("trans" + transType + "Type" + entranceId, new ArrayList<TrafficTransStatistic>());
 					}
 				}
-				//按区域和类型提取数据到列表中
+				// 按区域和类型提取数据到列表中
 				for (TrafficTransStatistic tts : bandwidthListIPvx) {
 					String addrType = tts.getAddrType();
-					
+
 					Integer entranceId = tts.getEntranceId();
 					Integer transType = tts.getTransType();
 					String key = "ipv" + addrType + "Type" + entranceId;
@@ -1338,7 +1276,7 @@ public class DashboardService extends BaseService {
 					String key = entry.getKey();
 					String entranceId = key.substring(key.length() - 1);
 					ArrayList<TrafficTransStatistic> value = entry.getValue();
-					resultMap.put(key, getNewData(dateRangeList,strDateRangeList,value));
+					resultMap.put(key, getNewData(dateRangeList, strDateRangeList, value));
 				}
 				return resultMap;
 			}
@@ -1346,8 +1284,8 @@ public class DashboardService extends BaseService {
 		return null;
 	}
 
-	private Map getNewData(List<Date> dateRangeList,List<String> timeList, List<TrafficTransStatistic> bandwidthList) {
-		Map<String,List> resulMap = new HashMap<String,List>();
+	private Map getNewData(List<Date> dateRangeList, List<String> timeList, List<TrafficTransStatistic> bandwidthList) {
+		Map<String, List> resulMap = new HashMap<String, List>();
 		int index = 0;
 		for (int i = 0; i < dateRangeList.size(); i++) {
 			Date date = dateRangeList.get(i);
@@ -1357,12 +1295,14 @@ public class DashboardService extends BaseService {
 			Long gbpsNum = 0L;
 			for (int j = index; j < bandwidthList.size(); j++) {
 				TrafficTransStatistic info = bandwidthList.get(j);
-				if (info.getStatTime()!=null){
-					if(info.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&info.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
-						linkNum =info.getLinkNum() +linkNum;
-						ppsNum  = info.getPps()+ppsNum;
-						gbpsNum  = info.getGbps()+gbpsNum;
-					}else{
+				if (info.getStatTime() != null) {
+					if (info.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+							&& info.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						linkNum = info.getLinkNum() + linkNum;
+						ppsNum = Long.parseLong(info.getPps().substring(0, info.getPps().lastIndexOf("."))) + ppsNum;
+						gbpsNum = Long.parseLong(info.getGbps().substring(0, info.getGbps().lastIndexOf(".")))
+								+ gbpsNum;
+					} else {
 						index = j;
 						break;
 					}
@@ -1373,10 +1313,10 @@ public class DashboardService extends BaseService {
 			countMap.put("gbps", gbpsNum);
 			Iterator iterator = countMap.keySet().iterator();
 			while (iterator.hasNext()) {
-				String key = iterator.next()+"";
+				String key = iterator.next() + "";
 				if (resulMap.containsKey(key)) {
 					resulMap.get(key).add(countMap.get(key));
-				}else {
+				} else {
 					List<Long> list = new ArrayList<Long>();
 					list.add(countMap.get(key));
 					resulMap.put(key, list);
@@ -1396,31 +1336,31 @@ public class DashboardService extends BaseService {
 	 * @return
 	 */
 	/*
-	 * public List<HashMap> getDomainTrans(String beginDate, String endDate,
-	 * Integer domain, Integer entranceId) { List<HashMap> listMap = new
+	 * public List<HashMap> getDomainTrans(String beginDate, String endDate, Integer
+	 * domain, Integer entranceId) { List<HashMap> listMap = new
 	 * ArrayList<HashMap>(); HashMap resulMap = new HashMap();
 	 * List<TrafficHttpFocusStatistic> domainList = new
 	 * ArrayList<TrafficHttpFocusStatistic>(); domainList =
 	 * trafficHttpStatisticDao.getDomainTrans(entranceId, beginDate, endDate,
-	 * domain); List timeList = new ArrayList(); List countList = new
-	 * ArrayList(); if (domainList != null && domainList.size() > 0) {
-	 * Map<String, Comparable> m = new HashMap<String, Comparable>(); int inter
-	 * = 1000 * 60 * 30;// 间隔时间为30分钟 // 开始时间，结束时间 时间戳 Long b =
-	 * dateToStamp(beginDate); Long e = dateToStamp(endDate); int num = 0; Long
-	 * pointTime = b; while (pointTime < e) { Map rm = new HashMap(); Long sumL
-	 * = 0l; if (pointTime >= e) { break; // 停止 } for (TrafficHttpFocusStatistic
-	 * tt : domainList) { // 实际时间 String time = tt.getTime(); Long t =
-	 * dateToStamp(time); if (t >= pointTime && t < pointTime + inter) { //
-	 * 范围之内分到此pointTime组 sumL = sumL + tt.getCount(); } } //
+	 * domain); List timeList = new ArrayList(); List countList = new ArrayList();
+	 * if (domainList != null && domainList.size() > 0) { Map<String, Comparable> m
+	 * = new HashMap<String, Comparable>(); int inter = 1000 * 60 * 30;// 间隔时间为30分钟
+	 * // 开始时间，结束时间 时间戳 Long b = dateToStamp(beginDate); Long e =
+	 * dateToStamp(endDate); int num = 0; Long pointTime = b; while (pointTime < e)
+	 * { Map rm = new HashMap(); Long sumL = 0l; if (pointTime >= e) { break; // 停止
+	 * } for (TrafficHttpFocusStatistic tt : domainList) { // 实际时间 String time =
+	 * tt.getTime(); Long t = dateToStamp(time); if (t >= pointTime && t < pointTime
+	 * + inter) { // 范围之内分到此pointTime组 sumL = sumL + tt.getCount(); } } //
 	 * 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会 if (pointTime >= e - inter && sumL > 0) {
-	 * countList.add(sumL); timeList.add(stampToDate(pointTime)); } if
-	 * (pointTime < e - inter) { timeList.add(stampToDate(pointTime));
-	 * countList.add(sumL); } num = num + 1; pointTime = b + inter * num; }
-	 * resulMap.put("count", countList); resulMap.put("statTime", timeList);
-	 * listMap.add(resulMap); } return listMap; }
+	 * countList.add(sumL); timeList.add(stampToDate(pointTime)); } if (pointTime <
+	 * e - inter) { timeList.add(stampToDate(pointTime)); countList.add(sumL); } num
+	 * = num + 1; pointTime = b + inter * num; } resulMap.put("count", countList);
+	 * resulMap.put("statTime", timeList); listMap.add(resulMap); } return listMap;
+	 * }
 	 */
 	/**
 	 * 优化后的网站详情域名趋势查询
+	 * 
 	 * @param beginDate
 	 * @param endDate
 	 * @param domain
@@ -1433,134 +1373,139 @@ public class DashboardService extends BaseService {
 		Date beginDate = DateUtils.parseDate(begin);
 		Date endDate = DateUtils.parseDate(end);
 		List<HashMap> listMap = new ArrayList<HashMap>();
-			List<Date> dateRangeList = new ArrayList<Date>();
-			List<String> strDateRangeList = new ArrayList<String>();
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(beginDate);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate)<=0) {
-				dateRangeList.add(calendar.getTime());
-				strDateRangeList.add(sdf.format(calendar.getTime()));
-				calendar.add(Calendar.MINUTE, 5);
-			}
-			//存放每个时间点的总数
-			Map<String,List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
-			int index=0;
-			List countList =new ArrayList();
-			for (int i = 0; i < dateRangeList.size(); i++) {
-				//存放一个时间点中总数
-				Map<String, Long> ipCountMap = new HashMap<String, Long>();
-				Date date = dateRangeList.get(i);
-				Long num = 0L;
-				for (int j = index; j < domainList.size(); j++) {
-					TrafficHttpFocusStatistic ipInfo = domainList.get(j);
-					if (ipInfo.getStatTime()!=null){
-						if(ipInfo.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&ipInfo.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
-								num=num+ipInfo.getCount();
-						}else{
-							index = j;
-							break;
-						}
+		List<Date> dateRangeList = new ArrayList<Date>();
+		List<String> strDateRangeList = new ArrayList<String>();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(beginDate);
+		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+		while (calendar.getTime().compareTo(endDate) <= 0) {
+			dateRangeList.add(calendar.getTime());
+			strDateRangeList.add(sdf.format(calendar.getTime()));
+			calendar.add(Calendar.MINUTE, 5);
+		}
+		// 存放每个时间点的总数
+		Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+		int index = 0;
+		List countList = new ArrayList();
+		for (int i = 0; i < dateRangeList.size(); i++) {
+			// 存放一个时间点中总数
+			Map<String, Long> ipCountMap = new HashMap<String, Long>();
+			Date date = dateRangeList.get(i);
+			Long num = 0L;
+			for (int j = index; j < domainList.size(); j++) {
+				TrafficHttpFocusStatistic ipInfo = domainList.get(j);
+				if (ipInfo.getStatTime() != null) {
+					if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+							&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						num = num + ipInfo.getCount();
+					} else {
+						index = j;
+						break;
 					}
 				}
-				countList.add(num);
 			}
-			//整合 count time 
-			HashMap ipTrafficMap = new HashMap();
-			ipTrafficMap.put("count", countList);
-			ipTrafficMap.put("statTime", strDateRangeList);
-			listMap.add(ipTrafficMap);
+			countList.add(num);
+		}
+		// 整合 count time
+		HashMap ipTrafficMap = new HashMap();
+		ipTrafficMap.put("count", countList);
+		ipTrafficMap.put("statTime", strDateRangeList);
+		listMap.add(ipTrafficMap);
 		return listMap;
 	}
 
 	/**
 	 * 获取活跃Port top10 的趋势图
-	 * @throws ParseException 
+	 * 
+	 * @throws ParseException
 	 */
-	public List<Map> findTrafficPortActive(String beginDate, String endDate, Integer[] portArray) throws ParseException {
+	public List<Map> findTrafficPortActive(String beginDate, String endDate, Integer[] portArray)
+			throws ParseException {
 		List<Map> listMap = new ArrayList<Map>();
 		StringBuilder portStr = new StringBuilder();
-		List<LinkedHashMap> portListTop10 = null; 
-		if(portArray!=null && portArray.length>0){//如果有传人参数，获取传人参数
-			for(int pi=0;pi<portArray.length;pi++){
-				portStr.append("'"+portArray[pi]+"',");
+		List<LinkedHashMap> portListTop10 = null;
+		if (portArray != null && portArray.length > 0) {// 如果有传人参数，获取传人参数
+			for (int pi = 0; pi < portArray.length; pi++) {
+				portStr.append("'" + portArray[pi] + "',");
 			}
-		}else{//否则获取TOP10
+		} else {// 否则获取TOP10
 			portListTop10 = trafficPortActiveStatisticDao.findTrafficPortActiveTopN(beginDate, endDate);
 			for (LinkedHashMap map : portListTop10) {
-				portStr.append("'"+map.get("port")+"',");
+				portStr.append("'" + map.get("port") + "',");
 			}
 		}
-		if (!StringUtil.isEmpty(portStr)&&portStr.indexOf(",")>0) {
+		if (!StringUtil.isEmpty(portStr) && portStr.indexOf(",") > 0) {
 			portStr.deleteCharAt(portStr.lastIndexOf(","));
 		}
 		Date beginDate1 = DateUtils.strToDate(beginDate, "yyyy-MM-dd HH:mm:ss");
 		Date endDate1 = DateUtils.strToDate(endDate, "yyyy-MM-dd HH:mm:ss");
-		//if (portListTop10 != null && portListTop10.size() > 0) {
-			//StringBuilder portStr = new StringBuilder();
-		if(!StringUtil.isEmpty(portStr)){	
-			//如果所有IP在最后一个时间点的count都为0，则移除最后一个点
-			//开始划分时间段,间隔5分钟
+		// if (portListTop10 != null && portListTop10.size() > 0) {
+		// StringBuilder portStr = new StringBuilder();
+		if (!StringUtil.isEmpty(portStr)) {
+			// 如果所有IP在最后一个时间点的count都为0，则移除最后一个点
+			// 开始划分时间段,间隔5分钟
 			List<Date> dateRangeList = new ArrayList<Date>();
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate1);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate1)<=0) {
+			while (calendar.getTime().compareTo(endDate1) <= 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
 			}
-			
-			ArrayList<TrafficPortActiveStatistic> portInfoList = trafficPortActiveStatisticDao.findTrafficPortActive(beginDate, endDate, portStr.toString());
-			//存放每个IP，每个时间点的总数
-			Map<String,List<Long>> portCountListMap = new HashMap<String, List<Long>>();
-			int index=0;
+
+			ArrayList<TrafficPortActiveStatistic> portInfoList = trafficPortActiveStatisticDao
+					.findTrafficPortActive(beginDate, endDate, portStr.toString());
+			// 存放每个IP，每个时间点的总数
+			Map<String, List<Long>> portCountListMap = new HashMap<String, List<Long>>();
+			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
-				//存放一个时间点中每个IP的总数
+				// 存放一个时间点中每个IP的总数
 				Map<String, Long> portCountMap = new HashMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				for (int j = index; j < portInfoList.size(); j++) {
 					TrafficPortActiveStatistic portInfo = portInfoList.get(j);
-					if (portInfo.getStatTime()!=null){
-						if(portInfo.getStatTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&portInfo.getStatTime().compareTo(dateRangeList.get(i+1))<0)) {
+					if (portInfo.getStatTime() != null) {
+						if (portInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								&& portInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
 							Long num = portInfo.getSum();
 							if (portCountMap.containsKey(portInfo.getPort())) {
-								num=num+portCountMap.get(portInfo.getPort());
+								num = num + portCountMap.get(portInfo.getPort());
 							}
 							portCountMap.put(portInfo.getPort().toString(), num);
-						}else{
+						} else {
 							index = j;
 							break;
 						}
 					}
 				}
-				if(portArray!=null && portArray.length>0){//如果有传人参数，获取传人参数
-					for(int m=0;m<portArray.length;m++){
+				if (portArray != null && portArray.length > 0) {// 如果有传人参数，获取传人参数
+					for (int m = 0; m < portArray.length; m++) {
 						String port = portArray[m].toString();
 						Long sum = 0l;
 						if (portCountMap.containsKey(port)) {
-							sum=portCountMap.get(port);
+							sum = portCountMap.get(port);
 						}
 						if (portCountListMap.containsKey(port)) {
 							portCountListMap.get(port).add(sum);
-						}else{
+						} else {
 							List<Long> list = new ArrayList<Long>();
 							list.add(sum);
 							portCountListMap.put(port, list);
 						}
 					}
-					
-				}else if(portListTop10!=null){
+
+				} else if (portListTop10 != null) {
 					for (LinkedHashMap map : portListTop10) {
 						String port = map.get("port").toString();
 						Long sum = 0l;
 						if (portCountMap.containsKey(port)) {
-							sum=portCountMap.get(port);
+							sum = portCountMap.get(port);
 						}
 						if (portCountListMap.containsKey(port)) {
 							portCountListMap.get(port).add(sum);
-						}else{
+						} else {
 							List<Long> list = new ArrayList<Long>();
 							list.add(sum);
 							portCountListMap.put(port, list);
@@ -1568,10 +1513,10 @@ public class DashboardService extends BaseService {
 					}
 				}
 			}
-			//整合port sum time 
+			// 整合port sum time
 			Iterator iterator = portCountListMap.keySet().iterator();
 			while (iterator.hasNext()) {
-				String ip = iterator.next()+"";
+				String ip = iterator.next() + "";
 				Map trafficPortActiveMap = new HashMap();
 				trafficPortActiveMap.put("port", ip);
 				trafficPortActiveMap.put("sum", portCountListMap.get(ip));

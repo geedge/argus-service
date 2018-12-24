@@ -76,17 +76,10 @@ public interface ConfigRedisService {
 	 * 删除maat类配置,key是业务类型,value是配置id集合
 	 * 
 	 * @param serviceConfigMap
+	 * @param isStart 是否置为生效,
 	 * @return 成功返回true,失败返回false或抛出异常
 	 */
-	public boolean delMaatConfig(Map<Integer, List<Long>> serviceConfigMap);
-	/**
-	 * 停启用maat类配置,key是业务类型,value是配置id集合
-	 * 
-	 * @param serviceConfigMap
-	 * @param isStart 是否置位生效,
-	 * @return 成功返回true,失败返回false或抛出异常
-	 */
-	public boolean startStopMaatConfig(Map<Integer, List<Long>> serviceConfigMap,	boolean isStart);
+	public boolean delMaatConfig(Map<Integer, List<Long>> serviceConfigMap,boolean isStart);
 
 	/**
 	 * 删除分组复用的域配置

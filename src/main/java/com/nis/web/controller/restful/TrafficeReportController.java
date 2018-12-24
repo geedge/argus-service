@@ -51,7 +51,7 @@ import com.zdjizhi.utils.StringUtil;
  *
  */
 @RestController
-@RequestMapping("${servicePath}/ckLog/v1")
+@RequestMapping("${servicePath}/log/v2")
 @Api(value = "TrafficeReportController", description = "流量统计查询报表controller")
 public class TrafficeReportController extends BaseRestController {
 

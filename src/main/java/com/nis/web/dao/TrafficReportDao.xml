@@ -170,11 +170,11 @@
 			</if>
 			<if
 				test="searchReportStartTime != null and searchReportStartTime !=''">
-				<![CDATA[AND REPORT_TIME > STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+				<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 			<if
 				test="searchReportEndTime != null and searchReportEndTime !=''">
-				<![CDATA[AND REPORT_TIME <= STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+				<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
 			</if>
 		</where>
 		<choose>
@@ -913,17 +913,19 @@
 	
 	
 	<resultMap id="BandwidthResultMap" type="com.nis.domain.restful.dashboard.TrafficTransStatistic">
-    <id column="stat_id" jdbcType="INTEGER" property="statId" />
-    <result column="addr_type" jdbcType="INTEGER" property="addrType" />
-    <result column="trans_type" jdbcType="INTEGER" property="transType" />
-    <result column="entrance_id" jdbcType="INTEGER" property="entranceId" />
-    <result column="link_num" jdbcType="BIGINT" property="linkNum" />
-    <result column="c2s_pkt_num" jdbcType="BIGINT" property="c2sPktNum" />
-    <result column="s2c_pkt_num" jdbcType="BIGINT" property="s2cPktNum" />
-    <result column="c2s_byte_len" jdbcType="BIGINT" property="c2sByteLen" />
-    <result column="s2c_byte_len" jdbcType="BIGINT" property="s2cByteLen" />
-    <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
-  </resultMap> 
+	    <id column="stat_id" jdbcType="INTEGER" property="statId" />
+	    <result column="addr_type" jdbcType="INTEGER" property="addrType" />
+	    <result column="trans_type" jdbcType="INTEGER" property="transType" />
+	    <result column="entrance_id" jdbcType="INTEGER" property="entranceId" />
+	    <result column="link_num" jdbcType="BIGINT" property="linkNum" />
+	    <result column="c2s_pkt_num" jdbcType="BIGINT" property="c2sPktNum" />
+	    <result column="s2c_pkt_num" jdbcType="BIGINT" property="s2cPktNum" />
+	    <result column="c2s_byte_len" jdbcType="BIGINT" property="c2sByteLen" />
+	    <result column="s2c_byte_len" jdbcType="BIGINT" property="s2cByteLen" />
+	    <result column="pps" jdbcType="BIGINT" property="pps" />
+	    <result column="gbps" jdbcType="BIGINT" property="gbps" />
+	    <result column="stat_time" jdbcType="TIMESTAMP" property="statTime" />
+	</resultMap> 
 
   <!-- 获取取阻断，监测等流量信息最近时间 -->
   <select id="getMaxReportTime" resultType="com.nis.domain.restful.dashboard.NtcTotalReport">
@@ -950,17 +952,13 @@
 		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
 		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=2
     ) total_traffic
-    
-    
-    
-    
   </select>
  
 
   <!-- 获取近一小时的带宽根据ip46，协议 tcp,udp变化  -->
 <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
-	select IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time time from traffic_trans_statistic
-	where <![CDATA[stat_time>=#{beginDate} and stat_time<=#{endDate}  ]]>
+	select  (SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024  gbps, SUM(c2s_pkt_num+s2c_pkt_num)/300  pps, SUM(link_num) linkNum, stat_time time from traffic_trans_statistic
+	where <![CDATA[stat_time>=#{beginDate} and stat_time<#{endDate}  ]]>
 	<if test="addrType != null">
 		and addr_type=#{addrType}
 	</if>
@@ -972,8 +970,8 @@
 </select>
   <!-- 获取近一小时的带宽根据ip46，协议 tcp,udp变化  -->
 <select id="getBandwidthTrans2" resultMap="BandwidthResultMap">
-	select addr_type,trans_type,entrance_id,IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time time from traffic_trans_statistic
-	where <![CDATA[stat_time<=#{endDate} and stat_time>=#{beginDate}]]>
+	select addr_type,trans_type,entrance_id, (SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024  gbps, SUM(c2s_pkt_num+s2c_pkt_num)/300 pps, SUM(link_num)  linkNum, stat_time time from traffic_trans_statistic
+	where <![CDATA[stat_time<#{endDate} and stat_time>=#{beginDate}]]>
 		and addr_type !=0
 		and trans_type!=0
 	group by stat_time,addr_type,trans_type order by stat_time
@@ -988,7 +986,7 @@
 <!-- entrance 1,2 ,动作为阻断，近一小时 间隔5分钟数据 -->
 <select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">
 	select sum(sum) sum,report_time time from ntc_entrance_report r where
-	<![CDATA[${serviceSql} and report_time<=#{endDate} and report_time>=#{beginDate}]]>
+	<![CDATA[${serviceSql} and report_time<#{endDate} and report_time>=#{beginDate}]]>
 	and entrance_id=#{entranceId}
 	group by report_time order by report_time
 </select>

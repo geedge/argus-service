@@ -62,10 +62,6 @@ public interface TrafficReportDao extends CrudDao {
 	
 	
 	
-	
-	
-	
-	
 	NtcTotalReport getMaxReportTime();
 	Map getMaxStatTime();
 	List<Map> getTotalReportList(@Param("reportTime") Date reportTime);

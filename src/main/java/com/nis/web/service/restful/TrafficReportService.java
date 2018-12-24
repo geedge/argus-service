@@ -21,12 +21,11 @@ import com.nis.web.service.BaseLogService;
 
 @Service
 public class TrafficReportService extends BaseLogService {
-	
+
 	@Autowired
 	protected TrafficReportDao trafficReportDao;
 
-
-	public Page<NtcRadiusReport> findNtcRadiusReport(Page page,NtcRadiusReport entity) throws Exception {
+	public Page<NtcRadiusReport> findNtcRadiusReport(Page page, NtcRadiusReport entity) throws Exception {
 		entity.setPage(page);
 		List resultList = null;
 		if ("1".equals(entity.getSearchBusinessType())) {
@@ -69,11 +68,7 @@ public class TrafficReportService extends BaseLogService {
 		return page;
 
 	}
-	
-	
-	
-	
-	
+
 	/**
 	 * 根据ip46,协议tcp，udp查询带宽
 	 * 
@@ -92,7 +87,6 @@ public class TrafficReportService extends BaseLogService {
 		return listMap;
 
 	}
-	
 
 	/**
 	 * 根据ip46,协议tcp，udp查询带宽
@@ -112,8 +106,16 @@ public class TrafficReportService extends BaseLogService {
 		return listMap;
 
 	}
-	
-	
+
+	public static void main(String[] args) {
+//		long a = Long.parseLong("123.3");
+		Long.valueOf("123.3");
+
+//		long b = Long.parseLong("123.3",1); 
+
+		long c = Long.valueOf("123.3").longValue();
+	}
+
 	/**
 	 * 查询单个局点流量的数据信息
 	 * 
@@ -158,8 +160,11 @@ public class TrafficReportService extends BaseLogService {
 					if (t >= pointTime && t < pointTime + inter) {
 						// 范围之内分到此pointTime组
 						sumL = sumL + tt.getLinkNum();
-						sumP = sumP + tt.getPps();
-						sumG = sumG + tt.getGbps();
+						sumP = sumP +Long.parseLong(
+				tt.getPps().substring(0,tt.getPps().lastIndexOf(".")));
+						sumG = sumG + 
+								 Long.parseLong(
+										tt.getGbps().substring(0,tt.getGbps().lastIndexOf(".")));
 					}
 				}
 				// 在结束时间只有当值大于0时才记录数据，防止折线降为0引起误会
@@ -192,8 +197,7 @@ public class TrafficReportService extends BaseLogService {
 		}
 		return resulMap;
 	}
-	
-	
+
 	/**
 	 * 时间戳 换成日期格式字符串转
 	 * 
@@ -206,8 +210,7 @@ public class TrafficReportService extends BaseLogService {
 		String sd = sdf.format(new Date(timeStamp)); // 时间戳转换成时间
 		return sd;
 	}
-	
-	
+
 	/**
 	 * 日期格式字符串转换成时间戳
 	 * 

@@ -1,8 +1,13 @@
 package com.nis.domain.restful.dashboard;
+import java.io.Serializable;
 import java.util.Date;
 
-public class TrafficTransStatistic {
+public class TrafficTransStatistic implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Integer statId 		;
 	private String addrType	;
 	private Integer transType 	;
@@ -15,19 +20,19 @@ public class TrafficTransStatistic {
 	private Date statTime 	;
 	
 	private String time;
-	private Long pps;
-	private Long gbps;
+	private String pps;
+	private String gbps;
 	
-	public Long getPps() {
+	public String getPps() {
 		return pps;
 	}
-	public void setPps(Long pps) {
+	public void setPps(String pps) {
 		this.pps = pps;
 	}
-	public Long getGbps() {
+	public String getGbps() {
 		return gbps;
 	}
-	public void setGbps(Long gbps) {
+	public void setGbps(String gbps) {
 		this.gbps = gbps;
 	}
 	public String getTime() {

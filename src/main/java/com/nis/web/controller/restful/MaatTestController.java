@@ -109,7 +109,7 @@ public class MaatTestController {
 		// }
 		// }
 		try {
-			if (!configRedisService.delMaatConfig(compileMap)) {
+			if (!configRedisService.delMaatConfig(compileMap,false)) {
 				FileUtils.addStrToFile(
 						sdf.format(new Date()) + "\t" + "error:删除业务类型" + serviceType + "下的maat配置" + configId + "失败\n",
 						Configurations.getStringProperty("maatTestLogPath", ""), true);

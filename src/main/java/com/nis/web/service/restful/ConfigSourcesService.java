@@ -370,7 +370,7 @@ public class ConfigSourcesService extends BaseService {
 
 		if (!isConfigStartStop) {
 			// 所有的都删除成功返回true
-			if (!configRedisService.delMaatConfig(compileMap)) {
+			if (!configRedisService.delMaatConfig(compileMap,false)) {
 				throw new ServiceRuntimeException("取消MAAT配置时出现异常，具体原因不详，请联系管理员",
 						RestBusinessCode.service_runtime_error.getValue());
 			}
@@ -380,7 +380,7 @@ public class ConfigSourcesService extends BaseService {
 			if (isValid == 0) {
 				isStart = false;// 置为失效
 			}
-			if (!configRedisService.startStopMaatConfig(compileMap, isStart)) {
+			if (!configRedisService.delMaatConfig(compileMap, isStart)) {
 				throw new ServiceRuntimeException("停启用MAAT配置时出现异常，具体原因不详，请联系管理员",
 						RestBusinessCode.service_runtime_error.getValue());
 			}
