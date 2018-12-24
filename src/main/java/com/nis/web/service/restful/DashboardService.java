@@ -102,6 +102,7 @@ public class DashboardService extends BaseService {
 	 * @param transType
 	 * @return
 	 */
+	@Deprecated
 	public List<HashMap> getBandwidthTrans(String addrType, Integer transType, String beginDate, String endDate) {
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 
@@ -121,6 +122,7 @@ public class DashboardService extends BaseService {
 	 * @param transType
 	 * @return
 	 */
+	@Deprecated
 	public List<HashMap> getBandwidthTrans2(String addrType, Integer transType, String beginDate, String endDate) {
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 
@@ -143,6 +145,7 @@ public class DashboardService extends BaseService {
 	 * @param entranceId
 	 * @return
 	 */
+	@Deprecated
 	public HashMap getBandwidthTransEntrance(String addrType, Integer transType, String beginDate, String endDate,
 			Integer entranceId) {
 		long start = System.currentTimeMillis();
@@ -220,6 +223,7 @@ public class DashboardService extends BaseService {
 	 * @param li
 	 * @return
 	 */
+	@Deprecated
 	public static List<Map> formatDateData(String begin, String end, List<Map> li) {
 		List<Map> resList = new ArrayList<Map>();
 		Map<String, Comparable> m = new HashMap<String, Comparable>();
@@ -260,6 +264,7 @@ public class DashboardService extends BaseService {
 	 * @param format 如：yyyy-MM-dd HH:mm:ss
 	 * @return
 	 */
+	@Deprecated
 	public static Long dateToStamp(String date_str) {
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -277,6 +282,7 @@ public class DashboardService extends BaseService {
 	 * @param format 如：yyyy-MM-dd HH:mm:ss
 	 * @return
 	 */
+	@Deprecated
 	public static String stampToDate(long timeStamp) {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");// 这个是你要转成后的时间的格式
 		String sd = sdf.format(new Date(timeStamp)); // 时间戳转换成时间
@@ -622,23 +628,23 @@ public class DashboardService extends BaseService {
 	 * @return
 	 */
 	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate) {
-		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
+//		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
-		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-			Date statTime = maxStatTime.getStatTime();
-			ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
-			if (list != null && list.size() > 0) {
-				for (LinkedHashMap map : list) {
-					if (map.get("ipAddr") != null) {
-						String ipAddr = (String) map.get("ipAddr");
-						HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate,endDate);
-						if(resMap!=null){
-							listMap.add(resMap);
-						}
+//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+//			Date statTime = maxStatTime.getStatTime();
+		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
+		if (list != null && list.size() > 0) {
+			for (LinkedHashMap map : list) {
+				if (map.get("ipAddr") != null) {
+					String ipAddr = (String) map.get("ipAddr");
+					HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate,endDate);
+					if(resMap!=null){
+						listMap.add(resMap);
 					}
 				}
 			}
 		}
+//		}
 
 		return listMap;
 	}

@@ -29,7 +29,7 @@
 	SELECT proto_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
 	 ((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte
 	FROM traffic_protocol_statistic WHERE 
-	<![CDATA[ stat_time>= #{beginTime} and stat_time<= #{endTime}]]>
+	<![CDATA[ stat_time>= #{beginTime} and stat_time< #{endTime}]]>
 	<if test="protoType!=null">
 		 and proto_type in 
         <foreach collection="protoType" index="index" item="item" open="(" separator="," close=")">  
