@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nis.domain.restful.CommonSourceFieldCfg;
 import com.nis.domain.restful.ConfigCompile;
+import com.nis.domain.restful.ConfigCompileStartStop;
 import com.nis.domain.restful.ConfigGroupRelation;
 import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.GroupReuse;
@@ -123,7 +124,7 @@ public class ConfigSourcesService extends BaseService {
 			StringBuffer sb) throws Exception {
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
-		
+
 		for (ConfigCompile configCompile : configCompileList) {
 			Integer service = Integer.valueOf(configCompile.getService().toString());
 			MaatConfig maatConfig = new MaatConfig();
@@ -225,54 +226,17 @@ public class ConfigSourcesService extends BaseService {
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
+
 					// 分发到阀门有些业务需要添加编译属性到域配置
 					List<MaatConfig> newMaatConfigList = new ArrayList<MaatConfig>();
 					newMaatConfigList.addAll(maatMap.get(service));
-					if (dbIndex.intValue() == ServiceAndRDBIndexReal.getValveDBIndex().intValue()) {
+					if (dbIndex.intValue() == Constants.TAPREDISDB) {
 						Map<Integer, Map<String, String[]>> maatToValueMap = ServiceAndRDBIndexReal.getMaatToValveMap();
-						if (maatToValueMap.containsKey(service)) {
-
-							Map<String, String[]> regionAndFiledMap = maatToValueMap.get(service);
-							for (int i = 0; i < newMaatConfigList.size(); i++) {
-								MaatConfig maatConfig = newMaatConfigList.get(i);
-								MaatConfig newMaatConfig = (MaatConfig) JsonMapper
-										.fromJsonString(JsonMapper.toJsonString(maatConfig), MaatConfig.class);
-								Iterator iterator = regionAndFiledMap.keySet().iterator();
-								while (iterator.hasNext()) {
-									String regionName = iterator.next().toString();
-									PropertyDescriptor pd;
-									try {
-										pd = new PropertyDescriptor(regionName + "MapList", MaatConfig.class);
-										Method method = pd.getReadMethod();
-										Object object = method.invoke(newMaatConfig);
-
-										if (object != null) {
-
-											List<Map<String, String>> listMaps = new ArrayList<Map<String, String>>();
-											listMaps.addAll((List<Map<String, String>>) object);
-											String[] fields = regionAndFiledMap.get(regionName);
-											for (String fieldName : fields) {
-												String value = newMaatConfig.getCompileMap()
-														.get(fieldName.toLowerCase());
-												if (!StringUtil.isEmpty(value)) {
-													for (Map<String, String> map : listMaps) {
-														map.put(fieldName.toLowerCase(), value);
-													}
-												}
-											}
-											method = pd.getWriteMethod();
-											method.invoke(newMaatConfig, listMaps);
-										}
-										newMaatConfigList.set(i, newMaatConfig);
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										throw new RestServiceException("未找到域列表，请检查配置文件中域类型是否正确！:" + e.getMessage(),
-												RestBusinessCode.service_runtime_error.getValue());
-									}
-
-								}
-							}
-						}
+						addFieldToValveOrWebFocus(service, newMaatConfigList, maatToValueMap, false);
+					} else if (dbIndex.intValue() == Constants.WEBFOCUSREDISDB) {
+						Map<Integer, Map<String, String[]>> maatToWebFocusMap = ServiceAndRDBIndexReal
+								.getMaatToWebFocusMap();
+						addFieldToValveOrWebFocus(service, newMaatConfigList, maatToWebFocusMap, true);
 					}
 
 					if (configMap.containsKey(dbIndex)) {
@@ -291,6 +255,61 @@ public class ConfigSourcesService extends BaseService {
 		}
 		logger.info("---------------调用Redis maat配置新增接口---------------------");
 		configRedisService.saveMaatConfig(configMap);
+	}
+
+	/**
+	 * 添加额外属性到阀门或者webfocus
+	 * 
+	 * @param maatToValueMap
+	 */
+	private void addFieldToValveOrWebFocus(Integer service, List<MaatConfig> newMaatConfigList,
+			Map<Integer, Map<String, String[]>> maatToValueMap, Boolean isWebFocus) {
+
+		if (maatToValueMap.containsKey(service)) {
+
+			Map<String, String[]> regionAndFiledMap = maatToValueMap.get(service);
+			for (int i = 0; i < newMaatConfigList.size(); i++) {
+				MaatConfig maatConfig = newMaatConfigList.get(i);
+				if (isWebFocus && maatConfig.getGroupMapList().size() > 1) {// 如果当前配置需要向webfocus中入,但是groupsize大于1,此时就不入了,只有groupsize=1的时候入
+					continue;
+				}
+				MaatConfig newMaatConfig = (MaatConfig) JsonMapper.fromJsonString(JsonMapper.toJsonString(maatConfig),
+						MaatConfig.class);
+				Iterator iterator = regionAndFiledMap.keySet().iterator();
+				while (iterator.hasNext()) {
+					String regionName = iterator.next().toString();
+					PropertyDescriptor pd;
+					try {
+						pd = new PropertyDescriptor(regionName + "MapList", MaatConfig.class);
+						Method method = pd.getReadMethod();
+						Object object = method.invoke(newMaatConfig);
+
+						if (object != null) {
+
+							List<Map<String, String>> listMaps = new ArrayList<Map<String, String>>();
+							listMaps.addAll((List<Map<String, String>>) object);
+							String[] fields = regionAndFiledMap.get(regionName);
+							for (String fieldName : fields) {
+								String value = newMaatConfig.getCompileMap().get(fieldName.toLowerCase());
+								if (!StringUtil.isEmpty(value)) {
+									for (Map<String, String> map : listMaps) {
+										map.put(fieldName.toLowerCase(), value);
+									}
+								}
+							}
+							method = pd.getWriteMethod();
+							method.invoke(newMaatConfig, listMaps);
+						}
+						newMaatConfigList.set(i, newMaatConfig);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						throw new RestServiceException("未找到域列表，请检查配置文件中域类型是否正确！:" + e.getMessage(),
+								RestBusinessCode.service_runtime_error.getValue());
+					}
+
+				}
+			}
+		}
 	}
 
 	private Map<String, String> convertObjectToMap(Object obj, Class clazz) throws Exception {
@@ -318,15 +337,18 @@ public class ConfigSourcesService extends BaseService {
 	}
 
 	public void updateConfigSources(AuditLogThread thread, long start, List<ConfigCompile> compileList, Date opTime,
-			StringBuffer sb) throws Exception {
+			StringBuffer sb, boolean isConfigStartStop) throws Exception {
+		// 所有状态更新的配置isValid的值必须相同
+		Map<String, String> validIdMap = new HashMap<String, String>();
+
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
-				checkCompileOptForUpdate(config);
+				checkCompileOptForUpdate(config, isConfigStartStop);
+				validIdMap.put(config.getIsValid().toString(), config.getIsValid().toString());
 				if (config.getOpTime() == null) {
 					config.setOpTime(opTime);
 				}
-
 				// compileAllList.add(config);
 				if (compileMap.containsKey(config.getService())) {
 					compileMap.get(config.getService()).add(config.getCompileId());
@@ -340,34 +362,29 @@ public class ConfigSourcesService extends BaseService {
 		} else {
 			throw new RestServiceException("编译配置不能为空" + sb.toString(), RestBusinessCode.CompileIsNull.getValue());
 		}
-		// Map<DBIndex,Map<Service,List<CompileId>>
-		// Map<Integer, Map<Integer, List<Long>>> restMap = new HashMap<Integer,
-		// Map<Integer, List<Long>>>();
-		// Iterator serviceIterator = compileMap.keySet().iterator();
-		// while (serviceIterator.hasNext()) {
-		// Integer service = Integer.valueOf(serviceIterator.next().toString());
-		// List<Integer> dbIndexList =
-		// ServiceAndRDBIndexReal.getRedisDBByService(service);
-		// if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
-		// for (Integer dbIndex : dbIndexList) {
-		// if (restMap.containsKey(dbIndex)) {
-		// restMap.get(dbIndex).put(service, compileMap.get(service));
-		// } else {
-		// Map<Integer, List<Long>> map = new HashMap<Integer, List<Long>>();
-		// map.put(service, compileMap.get(service));
-		// restMap.put(dbIndex, map);
-		// }
-		// }
-		// } else {
-		// ServiceRuntimeException e = new ServiceRuntimeException("service值为" + service
-		// + ",与写入数据库序号映射关系不存在",
-		// RestBusinessCode.ServiceNoFoundDBIndex.getValue());
-		// }
-		// }
-		// 所有的都删除成功返回true
-		if (!configRedisService.delMaatConfig(compileMap)) {
-			throw new ServiceRuntimeException("取消MAAT配置时出现异常，具体原因不详，请联系管理员",
-					RestBusinessCode.service_runtime_error.getValue());
+
+		if (validIdMap.size() > 1) {
+			throw new RestServiceException(RestBusinessCode.IsValidNonUniq.getErrorReason(),
+					RestBusinessCode.IsValidNonUniq.getValue());
+		}
+
+		if (!isConfigStartStop) {
+			// 所有的都删除成功返回true
+			if (!configRedisService.delMaatConfig(compileMap)) {
+				throw new ServiceRuntimeException("取消MAAT配置时出现异常，具体原因不详，请联系管理员",
+						RestBusinessCode.service_runtime_error.getValue());
+			}
+		} else {
+			boolean isStart = true;// 置为生效
+			Integer isValid = compileList.get(0).getIsValid();
+			if (isValid == 0) {
+				isStart = false;// 置为失效
+			}
+			if (!configRedisService.startStopMaatConfig(compileMap, isStart)) {
+				throw new ServiceRuntimeException("停启用MAAT配置时出现异常，具体原因不详，请联系管理员",
+						RestBusinessCode.service_runtime_error.getValue());
+			}
+
 		}
 	}
 
@@ -384,7 +401,7 @@ public class ConfigSourcesService extends BaseService {
 	 * @param config
 	 * @return
 	 */
-	private void checkCompileOptForUpdate(ConfigCompile config) throws Exception {
+	private void checkCompileOptForUpdate(ConfigCompile config, boolean isConfigStartStop) throws Exception {
 
 		if (StringUtil.isEmpty(config.getCompileId())) {
 			throw new RestServiceException(RestBusinessCode.CompileIdIsNull.getErrorReason(),
@@ -398,9 +415,12 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException("编译配置id为" + config.getCompileId() + "的IsValid字段不能为空",
 					RestBusinessCode.IsValidIsNull.getValue());
 		}
-		if (config.getIsValid() != 0) {
-			throw new RestServiceException("编译配置id为" + config.getCompileId() + "的配置在修改时不能为有效",
-					RestBusinessCode.IsValidIsF.getValue());
+
+		if (!isConfigStartStop) {
+			if (config.getIsValid() != 0) {
+				throw new RestServiceException("编译配置id为" + config.getCompileId() + "的配置在修改时不能为有效",
+						RestBusinessCode.IsValidIsF.getValue());
+			}
 		}
 	}
 
@@ -413,8 +433,8 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
-		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
-			thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
+		if (jsonObjectList != null && jsonObjectList.size() > Constants.MAX_LIST_SIZE) {
+			thread.setContent("批量提交数量超过" + Constants.MAX_LIST_SIZE + "条,不记录请求内容");
 		}
 		Map<Integer, List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String, String>>>();
 		for (int i = 0; i < jsonObjectList.size(); i++) {
@@ -486,7 +506,7 @@ public class ConfigSourcesService extends BaseService {
 									maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
 							dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
 						} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
-							//dstStr = dstStr.substring(dstStr.indexOf("group"));
+							// dstStr = dstStr.substring(dstStr.indexOf("group"));
 						}
 					}
 					switch (commonSourceFieldCfg.getFieldType()) {
@@ -635,8 +655,8 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
-		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
-			thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
+		if (jsonObjectList != null && jsonObjectList.size() > Constants.MAX_LIST_SIZE) {
+			thread.setContent("批量提交数量超过" + Constants.MAX_LIST_SIZE + "条,不记录请求内容");
 		}
 		// <service,cfgIdList>
 		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
@@ -869,12 +889,11 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
 			}
-			
-			//maatConfig.setService(groupReuse.getService());
+
+			// maatConfig.setService(groupReuse.getService());
 			list.add(maatConfig);
 		}
-		
-	
+
 		// 调用接口入redis
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
 		configRedisService.saveGroupReuseConfig(list);
@@ -942,9 +961,9 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		logger.info("调用接口删除Redis中分组复用的域配置接口");
-		if (reuseMap!=null&&reuseMap.size()>Constants.MAX_LIST_SIZE) {
-			thread.setContent("批量提交数量超过"+Constants.MAX_LIST_SIZE+"条,不记录请求内容");
-		}		
+		if (reuseMap != null && reuseMap.size() > Constants.MAX_LIST_SIZE) {
+			thread.setContent("批量提交数量超过" + Constants.MAX_LIST_SIZE + "条,不记录请求内容");
+		}
 		// 所有的都删除成功返回true
 		if (!configRedisService.delGroupReuseConfig(reuseMap)) {
 //			if (!configRedisService.delGroupReuseConfigByPipeline(reuseMap)) {

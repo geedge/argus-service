@@ -216,11 +216,10 @@
 		</mvc:interceptor>
 
 		<!-- 日志数据源拦截器，该拦截路径下使用数据源C -->
-		<!-- <mvc:interceptor> -->
-		<!-- <mvc:mapping path="/service/log/**" /> -->
-		<!-- <mvc:mapping path="/log/**"/> -->
-		<!-- <bean class="com.nis.interceptor.DataSourceCInterceptor"></bean> -->
-		<!-- </mvc:interceptor> -->
+		<mvc:interceptor>
+		<mvc:mapping path="/service/ckLog/**" />
+		<bean class="com.nis.interceptor.DataSourceBInterceptor"></bean>
+		</mvc:interceptor>
 
 		<!-- 数据源拦截器，该拦截路径下使用数据源B -->
 		<mvc:interceptor>

@@ -72,7 +72,7 @@ public class SyncRedisToCluster {
 		}
 	}
 
-	@Scheduled(cron = "${syncRedisToClusterCron}")
+//	@Scheduled(cron = "${syncRedisToClusterCron}")
 	public void syncRedisToCluster() {
 		JedisCluster jedisCluster = getResource();
 		String requestId = UUID.randomUUID().toString();

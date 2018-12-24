@@ -15,6 +15,7 @@ public class TrafficNetflowPortInfo implements Serializable {
 	@JsonIgnore
 	private long stat_id;
 	private long port;
+	private long entranceId;
 	private String nodeName;
 	private String nodeIp;
 	private String portDesc;
@@ -43,6 +44,14 @@ public class TrafficNetflowPortInfo implements Serializable {
 
 	public void setPort(long port) {
 		this.port = port;
+	}
+	
+	public long getEntranceId() {
+		return entranceId;
+	}
+
+	public void setEntranceId(long entranceId) {
+		this.entranceId = entranceId;
 	}
 
 	public String getNodeName() {

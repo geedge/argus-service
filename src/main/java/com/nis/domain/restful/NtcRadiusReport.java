@@ -3,14 +3,17 @@ package com.nis.domain.restful;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nis.domain.Page;
 import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
-public class NtcRadiusReport implements Serializable{
+public class NtcRadiusReport<T>  implements Serializable{
 	
 	private static final long serialVersionUID = 7635016645942704971L;
 	@JsonInclude(value = Include.NON_NULL)
@@ -39,6 +42,9 @@ public class NtcRadiusReport implements Serializable{
 	protected String searchAccount;
 	protected String groupType;
 
+	
+	protected Page<T> page;
+	
 	public String getNasIp() {
 		return nasIp;
 	}
@@ -135,5 +141,18 @@ public class NtcRadiusReport implements Serializable{
 	public void setGroupType(String groupType) {
 		this.groupType = groupType;
 	}
+	
+	@JsonIgnore
+	@XmlTransient
+	public Page<T> getPage() {
+		if (page == null) {
+			page = new Page<T>();
+		}
+		return page;
+	}
 
+	public Page<T> setPage(Page<T> page) {
+		this.page = page;
+		return page;
+	}
 }

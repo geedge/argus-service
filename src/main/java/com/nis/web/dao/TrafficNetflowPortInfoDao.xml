@@ -14,7 +14,8 @@
 		OUTOCTETS_SPEED ,
 		INPKTS_SPEED ,
 		OUTPKTS_SPEED ,
-		RECV_TIME
+		RECV_TIME,
+		ENTRANCE_ID
 		) VALUES (
 		#{port},
 		#{nodeName},
@@ -27,6 +28,7 @@
 		#{outoctetsSpeed},
 		#{inpktsSpeed},
 		#{outpktsSpeed},
-		#{recvTime})
+		#{recvTime},
+		#{entranceId})
 	</insert>
 </mapper>

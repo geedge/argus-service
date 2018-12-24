@@ -56,11 +56,14 @@ public class ServiceAndRDBIndexReal {
 	 * Map<service,Map<regionType,fields>>
 	 */
 	private static Map<Integer, Map<String, String[]>> maatToValveMap = new HashMap<Integer, Map<String, String[]>>();
+	
 
 	/**
-	 * 阀门保存的redis数据库Index，在nis.properties中定义
+	 * 保存maat分发到webFocus需要添加到域的属性：maat2WebFocus
+	 * Map<service,Map<regionType,fields>>
 	 */
-	private static Integer valveDBIndex = Configurations.getIntProperty("tapRedisDb", 5);
+	private static Map<Integer, Map<String, String[]>> maatToWebFocusMap = new HashMap<Integer, Map<String, String[]>>();
+	
 	static {
 
 		String unMaatService = Configurations.getStringProperty("unMaatService", "");
@@ -130,7 +133,7 @@ public class ServiceAndRDBIndexReal {
 			}
 		}
 
-		String maat2Valve = Configurations.getStringProperty("maat2Valve", "");
+		String maat2Valve= Configurations.getStringProperty("maat2Valve", "");
 		if (maat2Valve != null && !maat2Valve.trim().equals("")) {
 			String[] maat2ValveAry = maat2Valve.split(";");
 			for (String maat2ValveStr : maat2ValveAry) {
@@ -151,6 +154,29 @@ public class ServiceAndRDBIndexReal {
 
 					maatToValveMap.put(Integer.parseInt(serviceAndRegion[0]), fieldMap);
 
+				}
+			}
+		}
+		String maat2WebFocus = Configurations.getStringProperty("maat2WebFocus", "");
+		if (maat2WebFocus != null && !maat2WebFocus.trim().equals("")) {
+			String[] maat2ValveAry = maat2WebFocus.split(";");
+			for (String maat2ValveStr : maat2ValveAry) {
+				String[] serviceAndRegion = maat2ValveStr.split(":");
+				if (serviceAndRegion != null && serviceAndRegion.length == 2) {
+					String[] regionAndFields = serviceAndRegion[1].split("@");
+					Map<String, String[]> fieldMap = new HashMap<String, String[]>();
+					String[] fields = regionAndFields[1].split("&");
+					// 同一service有不同的域类型，多个之间用“|”分隔
+					if (regionAndFields[0].contains("|")) {
+						String[] regionTypeAry = regionAndFields[0].split("\\|");
+						for (String regionType : regionTypeAry) {
+							fieldMap.put(regionType, fields);
+						}
+					} else {
+						fieldMap.put(regionAndFields[0], fields);
+					}
+					maatToWebFocusMap.put(Integer.parseInt(serviceAndRegion[0]), fieldMap);
+					
 				}
 			}
 		}
@@ -351,6 +377,7 @@ public class ServiceAndRDBIndexReal {
 		return isValve;
 	}
 
+	
 	/**
 	 * 根据业务类型获取unmaat配置表名
 	 * @param service
@@ -391,19 +418,19 @@ public class ServiceAndRDBIndexReal {
 		ServiceAndRDBIndexReal.maatToValveMap = maatToValveMap;
 	}
 
-	/**
-	 * @param valveDBIndex the valveDBIndex to set
-	 */
-	public static void setValveDBIndex(Integer valveDBIndex) {
-		ServiceAndRDBIndexReal.valveDBIndex = valveDBIndex;
+	
+	
+	
+	
+	public static Map<Integer, Map<String, String[]>> getMaatToWebFocusMap() {
+		return maatToWebFocusMap;
 	}
 
-	/**
-	 * @return the valveDBIndex
-	 */
-	public static Integer getValveDBIndex() {
-		return valveDBIndex;
+	public static void setMaatToWebFocusMap(Map<Integer, Map<String, String[]>> maatToWebFocusMap) {
+		ServiceAndRDBIndexReal.maatToWebFocusMap = maatToWebFocusMap;
 	}
+
+
 
 	public static Map<Integer, String> getUnMaatSercieNameMap() {
 		return unMaatSercieNameMap;

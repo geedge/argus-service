@@ -243,13 +243,12 @@
 
 	</bean>
 	
-	
 
 	<bean id="dynamicDataSource" class="com.nis.datasource.DynamicDataSource">
 		<property name="targetDataSources">
 			<map key-type="java.lang.String">
 				<entry value-ref="ProductDataSource" key="dataSourceA"></entry>
-
+				<entry value-ref="LocalClickHouseDataSourceByDruid" key="dataSourceB"></entry>
 			</map>
 		</property>
 		<property name="defaultTargetDataSource" ref="ProductDataSource"></property>

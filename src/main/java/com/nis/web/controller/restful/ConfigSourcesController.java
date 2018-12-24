@@ -10,9 +10,6 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.zdjizhi.utils.StringUtil;
-import net.sf.json.JSONObject;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nis.domain.restful.ConfigCompile;
+import com.nis.domain.restful.ConfigCompileStartStop;
 import com.nis.domain.restful.ConfigSource;
+import com.nis.domain.restful.ConfigSourceStartStop;
 import com.nis.domain.restful.FileDesc;
 import com.nis.domain.restful.GroupReuse;
 import com.nis.domain.restful.GroupReuseSource;
@@ -45,6 +44,9 @@ import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+import com.zdjizhi.utils.StringUtil;
+
+import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ConfigSourcesController
@@ -121,6 +123,50 @@ public class ConfigSourcesController extends BaseRestController {
 				"Maat规则下发成功" + sb.toString(), Constants.IS_DEBUG ? configSource : null);
 	}
 
+	@RequestMapping(value = "/cfg/v2/configStartStop", method = RequestMethod.PUT)
+	@ApiOperation(value = "MAAT规则停用启用接口", httpMethod = "PUT", response = Map.class, notes = "接收MAAT类配置,对配置停用还是启用")
+	@ApiParam(value = "MAAT规则停用启用接口", name = "configStartStop", required = true)
+	public Map configStartStop(@RequestBody ConfigSourceStartStop configSourceStartStop, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_PUT, request,
+				configSourceStartStop);
+		// 分布式锁的标识,谁加锁,谁解锁,如果中间发生了异常则根据失效时间自动失效,默认五分钟失效
+		StringBuffer sb = new StringBuffer();
+		String requestId = UUID.randomUUID().toString();
+		try {
+			if (getLock(requestId)) {
+				checkOpAction(thread, System.currentTimeMillis() - start, configSourceStartStop.getOpAction(),
+						Constants.OPACTION_PUT);
+
+				configSourcesService.updateConfigSources(thread, start, configSourceStartStop.getConfigCompileStartStopList(),
+						configSourceStartStop.getOpTime(), sb,true);
+				
+				
+			}
+		} catch (Exception e) {
+			thread.setExceptionInfo("Maat 规则停启用异常:" + ExceptionUtil.getExceptionMsg(e));
+			logger.error("Maat 规则停启用异常:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(thread, System.currentTimeMillis() - start,
+						"Maat 规则停启用异常:" + ExceptionUtil.getExceptionMsg(e), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						"Maat 规则停启用异常:" + ExceptionUtil.getExceptionMsg(e),
+						((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						"Maat 规则停启用异常:" + ExceptionUtil.getExceptionMsg(e),
+						RestBusinessCode.service_runtime_error.getValue());
+			}
+		} finally {
+			deblocking(requestId);
+		}
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"Maat规则停启用成功" + sb.toString(), Constants.IS_DEBUG ? configSourceStartStop : null);
+
+	}
+
 	@RequestMapping(value = "/cfg/v1/configSources", method = RequestMethod.PUT)
 	@ApiOperation(value = "MAAT规则状态更新接口", httpMethod = "PUT", response = Map.class, notes = "接收Maat规则,对其状态置为失效")
 	@ApiParam(value = "MAAT规则对象", name = "configSource", required = true)
@@ -145,7 +191,7 @@ public class ConfigSourcesController extends BaseRestController {
 					}
 					checkOpAction(thread, System.currentTimeMillis() - start, opAction, 2);
 					configSourcesService.updateConfigSources(thread, start, configSource.getConfigCompileList(),
-							configSource.getOpTime(), sb);
+							configSource.getOpTime(), sb,false);
 
 				} else {
 					throw new RestServiceException("Maat规则不能为空" + sb.toString(),

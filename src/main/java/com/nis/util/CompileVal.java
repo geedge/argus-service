@@ -901,8 +901,8 @@ public class CompileVal {
 					"编译配置id为" + compileId + "的配置中service的值为" + configCompile.getService() + "时action只能为" + action,
 					RestBusinessCode.ServiceUnmatchAction.getValue());
 		}
-		if (configCompile.getDoBlacklist() != 1) {
-			throw new RestServiceException("编译配置id为" + compileId + "的配置中doBlacklist的值只能是1",
+		if (configCompile.getDoBlacklist() != 1&&configCompile.getDoBlacklist() != 0) {
+			throw new RestServiceException("编译配置id为" + compileId + "的配置中doBlacklist的值只能是1或0",
 					RestBusinessCode.DoBlacklistIsWrongRange.getValue());
 		}
 
@@ -923,12 +923,12 @@ public class CompileVal {
 
 	public static void serviceStrRegionVal(StrRegion strRegion, Long compileId, boolean isDirtrict) throws Exception {
 
-		Integer exprType = strRegion.getExprType();
+		Integer exprType= strRegion.getExprType();
 		Integer matchMethod = strRegion.getMatchMethod();
 		Integer isHexbin = strRegion.getIsHexbin();
-		if (exprType != 0 && exprType != 1) {
+		if (exprType != 0 && exprType != 1 && exprType != 3) {
 			throw new RestServiceException("编译配置id为" + compileId + "的配置中strRegionList中regionId为"
-					+ strRegion.getRegionId() + "的域配置exprType的值只能是0(无表达式)或者1(与表达式)",
+					+ strRegion.getRegionId() + "的域配置exprType的值只能是0(无表达式)或者1(与表达式)或者3(偏移表达式)",
 					RestBusinessCode.ExprTypeIsWrongRange.getValue());
 		}
 		if (matchMethod != 0 && matchMethod != 1 && matchMethod != 2 && matchMethod != 3) {

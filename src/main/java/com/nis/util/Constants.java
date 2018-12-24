@@ -233,4 +233,11 @@ public final class Constants {
 	
 	
 	
+	//阀门库db
+	public static final int TAPREDISDB = Configurations.getIntProperty("tapRedisDb", 5);
+	//webfocus库db
+	public static final int WEBFOCUSREDISDB = Configurations.getIntProperty("webFocusDb", 7);
+	
+	
+	
 }
