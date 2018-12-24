@@ -580,6 +580,7 @@ public class DashboardService extends BaseService {
 	 * @return
 	 */
 	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate) {
+
 //		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
@@ -599,6 +600,7 @@ public class DashboardService extends BaseService {
 //		}
 
 		return listMap;
+	
 	}
 
 	/**

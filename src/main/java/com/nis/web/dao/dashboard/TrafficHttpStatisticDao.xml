@@ -125,7 +125,7 @@ FROM
 	<select id="getTrafficHttpDomain" resultType="java.util.HashMap">
 		select 	web_id webId, max(unique_num) uniqueNum,entrance_id entranceId,SUM(c2s_byte_len + s2c_byte_len) byteCount,
 		sum(c2s_pkt_num + s2c_pkt_num) pktCount from traffic_http_focus_statistic t where
-		<![CDATA[ stat_time> #{beginDate} and stat_time<= #{endDate}]]>
+		<![CDATA[ stat_time>= #{beginDate} and stat_time< #{endDate}]]>
 		<if test="domain!=null">
 			 and web_id in 
          	 <foreach collection="domain" index="index" item="item" open="(" separator="," close=")">  

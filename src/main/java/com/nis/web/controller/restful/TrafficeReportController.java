@@ -88,7 +88,7 @@ public class TrafficeReportController extends BaseRestController {
 			}
 		}
 
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "用户行为统计查询成功", page, 0);
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "用户行为统计查询成功", page.getList(), 0);
 	}
 
 	/**

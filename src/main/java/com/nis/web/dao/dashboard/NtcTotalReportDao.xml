@@ -129,7 +129,7 @@
 <!-- entrance 1,2 ,动作为阻断，近一小时 间隔5分钟数据 -->
 <select id="getActionTrans" resultType="com.nis.domain.restful.NtcEntranceReport">
 	select sum(sum) sum,report_time reportTime from ntc_entrance_report r where
-	<![CDATA[${serviceSql} and report_time<=#{endDate} and report_time>=#{beginDate}]]>
+	<![CDATA[${serviceSql} and report_time<#{endDate} and report_time>=#{beginDate}]]>
 	and entrance_id=#{entranceId}
 	group by report_time order by report_time
 </select>
