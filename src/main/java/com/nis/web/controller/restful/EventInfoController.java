@@ -27,7 +27,7 @@ import java.util.Map;
  * @data 2018/12/24 15:21
  */
 @RestController
-@RequestMapping("${servicePath}")
+@RequestMapping("${servicePath}/log/v1")
 @Api(value = "EventInfoController", description = "事件封堵、监测、保障接口")
 @SuppressWarnings("all")
 public class EventInfoController extends BaseRestController {
@@ -37,7 +37,7 @@ public class EventInfoController extends BaseRestController {
     @Autowired
     EventService eventService;
 
-    @RequestMapping(value = "/log/v1/ntcEventKeyProtection", method = RequestMethod.GET)
+    @RequestMapping(value = "/ntcEventKeyProtection", method = RequestMethod.GET)
     @ApiOperation(value = "重点保障事件总览", httpMethod = "GET", notes = "获取重点保障事件信息", response = Map.class)
     public Map<String, ?> getEventKeyProtection(EventKeyProtection eventKeyProtection, HttpServletRequest request, HttpServletResponse response) {
         long start = System.currentTimeMillis();
@@ -61,7 +61,7 @@ public class EventInfoController extends BaseRestController {
                 eventKeyProtectionPage, 0);
     }
 
-    @RequestMapping(value = "/log/v1/ntcEventsMonitorOrBlock", method = RequestMethod.GET)
+    @RequestMapping(value = "/ntcEventsMonitorOrBlock", method = RequestMethod.GET)
     @ApiOperation(value = "事件监测、封堵", httpMethod = "GET", notes = "获取事件监测、封堵信息", response = Map.class)
     public Map<String, ?> getEventsMonitorOrBlock(EventMonitorOrBlock eventMonitorOrBlock, HttpServletRequest request, HttpServletResponse response) {
         long start = System.currentTimeMillis();
