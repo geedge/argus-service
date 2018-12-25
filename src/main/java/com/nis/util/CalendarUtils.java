@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 /**
  * 常用日历操作辅助类
@@ -169,4 +170,75 @@ public class CalendarUtils {
 		// }
 		// System.out.println(n);
 	}
+	/**
+     * 获取time时间的前整点时间点
+     * eg:2018-12-12 12:06:36 结果为：2018-12-12 00:00:00
+     * 2018-12-12 00:59:36 结果为：2018-12-12 00:00:00
+     *
+     * @param time
+     * @return 取前一个整天的时间, 如果返回为null检查输入的String类型时间格式
+     */
+    public static String getRangeOfday(String time) {
+        if (time == null || time.isEmpty()) {
+            return "";
+        }
+        int length = time.length();
+        int cut = 8;
+        if (length <= cut) {
+            return "";
+        }
+        try {
+            time = time.substring(0, length - cut);
+            time = time.concat("00:00:00");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+        return time;
+    }
+
+    /**
+     * 获取距离time时间hour小时的时间,之前需加符号-、之后为正+
+     *
+     * @param time
+     * @param hour
+     * @return
+     */
+    public static String getRangeNhourOfTime(String time, int hour) {
+        if (time == null) {
+            return "";
+        }
+        Date date = DateUtils.parseDate(time);
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(date);
+        gc.add(Calendar.HOUR, hour);
+        return DateUtils.formatDateTime(gc.getTime());
+    }
+
+    /**
+     * 获取time时间的前整点时间点
+     * eg:2018-12-12 12:06:36 结果为：2018-12-12 12:00:00
+     * 2018-12-12 00:59:36 结果为：2018-12-12 00:00:00
+     *
+     * @param time
+     * @return 取前一个整点的时间, 如果返回为null检查输入的String类型时间格式
+     */
+    public static String getRangeOfhour(String time) {
+        if (time == null || time.isEmpty()) {
+            return "";
+        }
+        int length = time.length();
+        int cut = 8;
+        if (length <= cut) {
+            return "";
+        }
+        try {
+            time = time.substring(0, length - 5);
+            time = time.concat("00:00");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+        return time;
+    }
 }
