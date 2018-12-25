@@ -61,17 +61,17 @@ public class EventService {
         }catch(Exception ex){
         	logger.error("时间参数处理转换异常,{}", ex);
         	 String rangeOfday = CalendarUtils.getRangeOfday(DateUtils.getDateTime());
-             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24);
+             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24*30);
              eventKeyProtection = new EventKeyProtection();
              eventKeyProtection.setSearchReportStartTime(startTemp);
-             logger.info("获取重点保障事件API请求参数转换异常,默认查询昨天"+startTemp+"至今数据");
+             logger.info("获取重点保障事件API请求参数转换异常,默认查询起始时间"+startTemp+"至今数据");
         }
-        if(countParamEmpty == 6){
+        if(countParamEmpty == 5){
         	String rangeOfday = CalendarUtils.getRangeOfday(DateUtils.getDateTime());
-            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24);
+            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24*30);
             eventKeyProtection = new EventKeyProtection();
             eventKeyProtection.setSearchReportStartTime(startTemp);
-            logger.info("获取重点保障事件API请求参数为空,默认查询昨天"+startTemp+"至今数据");
+            logger.info("获取重点保障事件API请求参数为空,默认查询起始时间"+startTemp+"至今数据");
         }
         try {
             list = eventServiceDao.getEventsKeyProtection(eventKeyProtection);
@@ -117,21 +117,21 @@ public class EventService {
         }catch(Exception ex){
         	 logger.error("时间参数处理转换异常,{}", ex);
         	 String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
-             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -1);
+             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -24);
              int typeId = eventMonitorOrBlock.getReportType();
              eventMonitorOrBlock = new EventMonitorOrBlock();
              eventMonitorOrBlock.setSearchReportStartTime(startTemp);
              eventMonitorOrBlock.setReportType(typeId);
-             logger.info("获取"+logMark+"API请求参数转换异常,默认查询上一小时"+startTemp+"到现在的数据");
+             logger.info("获取"+logMark+"API请求参数转换异常,默认查询起始时间"+startTemp+"到现在的数据");
         }
-        if(countParamEmpty==6){
+        if(countParamEmpty==5){
         	 String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
-             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -1);
+             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -24);
              int typeId = eventMonitorOrBlock.getReportType();
              eventMonitorOrBlock = new EventMonitorOrBlock();
              eventMonitorOrBlock.setSearchReportStartTime(startTemp);
              eventMonitorOrBlock.setReportType(typeId);
-             logger.info("获取"+logMark+"API请求参数为空,默认查询上一小时"+startTemp+"到现在的数据");
+             logger.info("获取"+logMark+"API请求参数为空,默认查询起始时间"+startTemp+"到现在的数据");
         }
         try {
             list = eventServiceDao.getEventsMonitorOrBlock(eventMonitorOrBlock);
