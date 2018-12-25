@@ -1255,7 +1255,8 @@ public class DashboardService extends BaseService {
 		if ((!StringUtil.isEmpty(bandwidthListIPvx) && bandwidthListIPvx.size() > 0)
 				|| (!StringUtil.isEmpty(bandwidthListProtocol) && bandwidthListProtocol.size() > 0)) {
 			// 划分时间段
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat sdf2 = new SimpleDateFormat("MM-dd HH:mm");
 			Date startTime = sdf.parse(beginDate);
 			Date endTime = sdf.parse(endDate);
 			List<Date> dateRangeList = new ArrayList<Date>();
@@ -1265,7 +1266,7 @@ public class DashboardService extends BaseService {
 
 			while (calendar.getTime().compareTo(endTime) <= 0) {
 				dateRangeList.add(calendar.getTime());
-				strDateRangeList.add(sdf.format(calendar.getTime()));
+				strDateRangeList.add(sdf2.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
 			}
 			String[] addrTypes = getFiledTypeByName("addr_type");
