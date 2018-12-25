@@ -133,4 +133,48 @@
 	and entrance_id=#{entranceId}
 	group by report_time order by report_time
 </select>
+
+  <!-- 根据指标(1:drop   2:loop	3:newLink  4:clockLink  5:liveLink  6:pass)统计各业务的趋势-->
+ <select id="trendTotalReport" parameterType="com.nis.domain.restful.NtcConnNumReport" resultType="com.nis.domain.restful.NtcConnNumReport">
+    SELECT 
+    	<choose>
+    		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 2 ">
+    			loop_conn_num
+    		</when>
+    		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
+    			new_uni_conn_num
+    		</when>
+    		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
+    			live_conn_num
+    		</when>
+    		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 5 ">
+    			(new_uni_conn_num-reject_num)
+    		</when>
+    		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 6 ">
+    			(new_uni_conn_num-drop_conn_num)
+    		</when>
+    		<otherwise>
+    			drop_conn_num 
+    		</otherwise>
+    	</choose>
+    	num,report_time
+     	FROM ntc_total_report
+    	<where>
+    		<choose>
+    			<when test="searchReportStartTime != null and searchReportStartTime !='' and searchReportEndTime != null and searchReportEndTime !=''">
+    				<if test="searchReportStartTime != null and searchReportStartTime !=''" >
+						<![CDATA[AND REPORT_TIME >= STR_TO_DATE(#{searchReportStartTime},'%Y-%m-%d %H:%i:%s')]]>
+		    		</if>
+		    		<if test="searchReportEndTime != null and searchReportEndTime !=''">
+						<![CDATA[AND REPORT_TIME < STR_TO_DATE(#{searchReportEndTime},'%Y-%m-%d %H:%i:%s')]]>
+		    		</if>
+    			</when>
+    			<otherwise>
+    			AND report_time  > DATE_SUB(now(),INTERVAL 1 hour) 
+    			</otherwise>
+    		</choose>
+    	</where>
+   	 	order by report_time
+  </select>
+
 </mapper>

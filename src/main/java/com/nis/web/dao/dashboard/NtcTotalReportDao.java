@@ -6,7 +6,9 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.NtcIpRangeReport;
 import com.nis.domain.restful.dashboard.NtcTotalReport;
 import com.nis.domain.restful.dashboard.TrafficTransStatistic;
 import com.nis.web.dao.MyBatisDao;
@@ -25,4 +27,5 @@ public interface NtcTotalReportDao {
 	List<TrafficTransStatistic> getBandwidthTrans2(@Param("beginDate") String beginDate,@Param("endDate") String endDate);
 	Map getEntranceMaxReportTime();
 	List<NtcEntranceReport> getActionTrans(@Param("beginDate") String beginDate,@Param("endDate") String endDate ,@Param("entranceId") Integer entranceId,@Param("serviceSql") String serviceSql);
+	List<NtcConnNumReport> trendTotalReport(NtcConnNumReport pz);
 }

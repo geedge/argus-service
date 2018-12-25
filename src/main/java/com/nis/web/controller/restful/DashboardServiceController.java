@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -33,6 +34,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DashboardService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.zdjizhi.utils.StringUtil;
 
 @SuppressWarnings("unchecked")
 @RestController
@@ -948,5 +950,39 @@ public class DashboardServiceController extends BaseRestController {
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流量端口详情趋势数据检索成功",
 				list, 0);
+	}
+	@RequestMapping(value = "/trendTotalReport", method = RequestMethod.GET)
+	@ApiOperation(value = "流量各指标趋势统计", httpMethod = "GET", notes = "根据指标(drop,loop,New Link,Close Link,Pass,Live Link)统计各业务的趋势")
+	public Map<String, ?> trendTotalReport(NtcConnNumReport ntcConnNumReport, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+
+		Map<String, List> restMap = new HashMap<String, List>();
+		try {
+			// 验证serachBusinessType
+			if (!StringUtil.isBlank(ntcConnNumReport.getSearchBusinessType())
+					&& !StringUtil.isNumeric(ntcConnNumReport.getSearchBusinessType())) {
+				throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
+			}
+			restMap = dashboardService.trendTotalReport(ntcConnNumReport);
+		} catch (Exception e) {
+			saveLogThread.setExceptionInfo("流量各指标趋势统计失败:" + e.getMessage());
+			logger.error("流量各指标趋势统计失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(saveLogThread, System.currentTimeMillis() - start,
+						"流量各指标趋势统计失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"流量各指标趋势统计失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
+						"流量各指标趋势统计失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "流量各指标趋势统计成功",
+				restMap, 0);
 	}
 }

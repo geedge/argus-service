@@ -1,20 +1,48 @@
 package com.nis.web.service.restful;
 
-import com.beust.jcommander.internal.Maps;
-import com.nis.domain.restful.NtcEntranceReport;
-import com.nis.domain.restful.dashboard.*;
-import com.nis.util.DateUtils;
-import com.nis.util.StringUtils;
-import com.nis.web.dao.dashboard.*;
-import com.nis.web.service.BaseService;
-import com.zdjizhi.utils.StringUtil;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
+import com.beust.jcommander.internal.Maps;
+import com.nis.domain.restful.NtcConnNumReport;
+import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.dashboard.NtcTotalReport;
+import com.nis.domain.restful.dashboard.TrafficAppStatistic;
+import com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic;
+import com.nis.domain.restful.dashboard.TrafficIpActiveStatistic;
+import com.nis.domain.restful.dashboard.TrafficPortActiveStatistic;
+import com.nis.domain.restful.dashboard.TrafficProtocolStatistic;
+import com.nis.domain.restful.dashboard.TrafficTransStatistic;
+import com.nis.domain.restful.dashboard.TrafficUaStatistic;
+import com.nis.restful.RestBusinessCode;
+import com.nis.restful.RestServiceException;
+import com.nis.util.DateUtils;
+import com.nis.util.StringUtils;
+import com.nis.web.dao.dashboard.NtcTotalReportDao;
+import com.nis.web.dao.dashboard.TrafficAppStatisticDao;
+import com.nis.web.dao.dashboard.TrafficHttpStatisticDao;
+import com.nis.web.dao.dashboard.TrafficIpActiveStatisticDao;
+import com.nis.web.dao.dashboard.TrafficPortActiveStatisticDao;
+import com.nis.web.dao.dashboard.TrafficProtocolStatisticDao;
+import com.nis.web.dao.dashboard.TrafficUaStatisticDao;
+import com.nis.web.service.BaseService;
+import com.zdjizhi.utils.StringUtil;
 
 @Service
 public class DashboardService extends BaseService {
@@ -1227,7 +1255,7 @@ public class DashboardService extends BaseService {
 		if ((!StringUtil.isEmpty(bandwidthListIPvx) && bandwidthListIPvx.size() > 0)
 				|| (!StringUtil.isEmpty(bandwidthListProtocol) && bandwidthListProtocol.size() > 0)) {
 			// 划分时间段
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
 			Date startTime = sdf.parse(beginDate);
 			Date endTime = sdf.parse(endDate);
 			List<Date> dateRangeList = new ArrayList<Date>();
@@ -1280,10 +1308,9 @@ public class DashboardService extends BaseService {
 					ArrayList<TrafficTransStatistic> value = entry.getValue();
 					resultMap.put(key, getNewData(dateRangeList, strDateRangeList, value));
 				}
-				return resultMap;
 			}
 		}
-		return null;
+		return resultMap;
 	}
 
 	private Map getNewData(List<Date> dateRangeList, List<String> timeList, List<TrafficTransStatistic> bandwidthList) {
@@ -1529,4 +1556,57 @@ public class DashboardService extends BaseService {
 		return listMap;
 	}
 
+	/**
+	 * 根据指标(drop,loop,New Link,Close Link,Pass,Live Link)统计各业务的趋势
+	 * @throws ParseException 
+	 */
+	public Map<String, List> trendTotalReport(NtcConnNumReport ntcConnNumReport){
+		Map<String, List> restMap = new HashMap<String, List>();
+		List<NtcConnNumReport> list = ntcTotalReportDao.trendTotalReport(ntcConnNumReport);
+		if (list!=null && list.size()>0) {
+			//开始划分时间段,间隔5分钟
+			Date beginDate;
+			Date endDate;
+			try {
+				beginDate = DateUtils.strToDate(ntcConnNumReport.getSearchReportStartTime(), "yyyy-MM-dd HH:mm:ss");
+				endDate = DateUtils.strToDate(ntcConnNumReport.getSearchReportEndTime(), "yyyy-MM-dd HH:mm:ss");
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				throw new RestServiceException("searchReportStartTime或searchReportEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
+			}
+			List<Date> dateRangeList = new ArrayList<Date>();
+			List<String> strDateRangeList = new ArrayList<String>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			while (calendar.getTime().compareTo(endDate)<=0) {
+				dateRangeList.add(calendar.getTime());
+				strDateRangeList.add(sdf.format(calendar.getTime()));
+				calendar.add(Calendar.MINUTE, 5);
+			}
+			int index = 0;
+			List<Long> sumList = new ArrayList<Long>();
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				//存放一个时间点中每个IP的总数
+				Map<String, Long> ipCountMap = new HashMap<String, Long>();
+				Date date = dateRangeList.get(i);
+				Long sum = 0l;
+				for (int j = index; j < list.size(); j++) {
+					NtcConnNumReport info = list.get(j);
+					if (info.getReportTime()!=null){
+						if(info.getReportTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&info.getReportTime().compareTo(dateRangeList.get(i+1))<0)) {
+							sum = sum+info.getNum();
+						}else{
+							index = j;
+							break;
+						}
+					}
+				}
+				sumList.add(sum);
+			}
+			restMap.put("sum", sumList);
+			restMap.put("statTime", strDateRangeList);
+		}
+		return restMap;
+	}
 }
