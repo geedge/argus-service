@@ -308,3 +308,50 @@ CREATE TABLE `ui_http_url_cfg` (
    `user_region5` varchar(1024) DEFAULT '' COMMENT '预留自定义域5',
    PRIMARY KEY (`cfg_id`)
  ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/http_url_cfg';
+
+
+
+
+DROP TABLE IF EXISTS `remote_nms_di_rule`;
+CREATE TABLE `di_rule`  (
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `dete  `ServiceIndex` bigint(20) NULL DEFAULT NULL,
+  ction_info_id` bigint(20) NOT NULL,
+  `ServiceCode` bigint(20) NULL DEFAULT NULL,
+  `ServiceDesc` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `agedTime` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `ClientNum` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RefluxPort` varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `RuleNumber` varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `usedRuleNum` varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `leftRuleNum` varchar(1024) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `HitTotalNum` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `DETECTIONED_STATE` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `SEQ_ID` int(11) NULL DEFAULT NULL,
+  `DETECTION_SET_INFO_ID` bigint(20) NULL DEFAULT NULL,
+  `data_check_time` datetime(0) NOT NULL,
+  `data_arrive_time` datetime(0) NULL DEFAULT NULL,
+  `data_check_time_digital` bigint(20) NULL DEFAULT NULL,
+  `data_arrive_time_digital` bigint(20) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`, `data_check_time`) USING BTREE,
+  INDEX `DI_SUGON_RULE_1`(`data_check_time`) USING BTREE,
+  INDEX `DI_SUGON_RULE_2`(`SEQ_ID`) USING BTREE,
+  INDEX `DI_SUGON_RULE_3`(`DETECTION_SET_INFO_ID`) USING BTREE,
+  INDEX `index_DI_RULE_DETECTION_INFO_ID`(`detection_info_id`) USING BTREE
+) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.223:3306/nms/di_rule';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
