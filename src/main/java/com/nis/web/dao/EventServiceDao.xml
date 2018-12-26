@@ -6,12 +6,12 @@
         
         SELECT task_time as taskTime,
                 report_time as reportTime,
-        		task_id as taskId,
+                task_id as taskIds,
                 task_name as taskName,
                 letter_num as letterNum,
                 config_num as configNum,
-                monitor_num as monitorTime,
-                control_num as controlerNum
+                monitor_num as monitorNum,
+                control_num as controlNum
         FROM ntc_major_task_report
         <where>
             <if test="searchReportStartTime != null and searchReportStartTime !=''">
@@ -26,20 +26,23 @@
             <if test="searchTaskEndTime != null and searchTaskEndTime !=''">
                 <![CDATA[AND task_time < #{searchTaskEndTime}]]>
             </if>
-            <if test="taskId != null and taskId !='' and taskId != 0">
-                AND task_id = #{taskId}
+            <if test="taskIdList != null and taskIdList.size() > 0">
+                and task_id in
+                <foreach item="item" index="index" collection="taskIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="taskName != null and taskName !=''">
                 AND task_name like concat(concat('%',#{taskName}),'%')
             </if>
         </where>
-        order by taskId asc;
+        order by reportTime desc;
     </select>
     <select id="getEventsMonitorOrBlock" resultType="com.nis.domain.restful.EventMonitorOrBlock"
             useCache="false" flushCache="true">
         SELECT task_time as taskTime,
-        		report_time as reportTime,
-        		task_id as taskId,
+                report_time as reportTime,
+                task_id as taskIds,
                 task_name as taskName,
                 ip_num as ipNum,
                 http_num as httpNum,
@@ -60,8 +63,11 @@
             <if test="searchTaskEndTime != null and searchTaskEndTime !=''">
                 <![CDATA[AND task_time < #{searchTaskEndTime}]]>
             </if>
-            <if test="taskId != null and taskId !='' and taskId != 0">
-                AND task_id = #{taskId}
+            <if test="taskIdList != null and taskIdList.size() > 0">
+                and task_id in
+                <foreach item="item" index="index" collection="taskIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="reportType != null and reportType !=''">
                 AND report_type = #{reportType}
@@ -70,6 +76,6 @@
                 AND task_name like concat(concat('%',#{taskName}),'%')
             </if>
         </where>
-        order by taskId asc;
+        order by reportTime desc;
     </select>
 </mapper>

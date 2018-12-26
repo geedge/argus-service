@@ -6,10 +6,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
-
 import java.util.Date;
-
-import org.apache.commons.httpclient.util.DateUtil;
+import java.util.List;
 
 /**
  * @author GouGe
@@ -21,7 +19,7 @@ public class EventKeyProtection {
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "审核时间")
     private Date taskTime;
-    
+
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "统计时间")
     private Date reportTime;
@@ -29,10 +27,10 @@ public class EventKeyProtection {
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "事件名称")
     private String taskName;
-    
+
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "事件ID")
-    private long taskId;
+    private String taskIds;
 
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "来函件数")
@@ -54,7 +52,16 @@ public class EventKeyProtection {
     private String searchReportEndTime;
     private String searchTaskStartTime;
     private String searchTaskEndTime;
+    private List<Long> taskIdList;
 
+    @JsonIgnore
+    public List<Long> getTaskIdList() {
+        return taskIdList;
+    }
+
+    public void setTaskIdList(List<Long> taskIdList) {
+        this.taskIdList = taskIdList;
+    }
 
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getTaskTime() {
@@ -141,28 +148,35 @@ public class EventKeyProtection {
         this.searchTaskEndTime = searchTaskEndTime;
     }
 
-    public long getTaskId() {
-        return taskId;
+    public String getTaskIds() {
+        return taskIds;
     }
 
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
+    public void setTaskIds(String taskIds) {
+        this.taskIds = taskIds;
     }
-    
+
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getReportTime() {
-		return reportTime;
-	}
+        return reportTime;
+    }
 
-	public void setReportTime(Date reportTime) {
-		this.reportTime = reportTime;
-	}
+    public void setReportTime(Date reportTime) {
+        this.reportTime = reportTime;
+    }
 
-	@Override
-	public String toString() {
-		return "EventKeyProtection [taskTime=" + taskTime + ", reportTime=" + reportTime + ", taskName=" + taskName
-				+ ", taskId=" + taskId + ", letterNum=" + letterNum + ", configNum=" + configNum + ", monitorNum="
-				+ monitorNum + ", controlNum=" + controlNum + "]";
-	}
-
+    @Override
+    public String toString() {
+        return "EventKeyProtection{" +
+                "taskTime=" + taskTime +
+                ", reportTime=" + reportTime +
+                ", taskName='" + taskName + '\'' +
+                ", taskIds='" + taskIds + '\'' +
+                ", letterNum=" + letterNum +
+                ", configNum=" + configNum +
+                ", monitorNum=" + monitorNum +
+                ", controlNum=" + controlNum +
+                ", taskIdList=" + taskIdList +
+                '}';
+    }
 }

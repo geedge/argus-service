@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -43,35 +43,45 @@ public class EventService {
         String searchTaskStartTime = eventKeyProtection.getSearchTaskStartTime();
         String searchTaskEndTime = eventKeyProtection.getSearchTaskEndTime();
         String taskName = eventKeyProtection.getTaskName();
-        long taskId = eventKeyProtection.getTaskId();
-        int countParamEmpty = 0;
-        try{
-        logger.info("开始获取重点保障事件信息,参数为{"
-                + ((null == searchReportStartTime && !"".equals(searchReportStartTime)) ? "无"+countParamEmpty++ : format.parse(searchReportStartTime))
-                + "},{"
-                + ((null == searchReportEndTime && !"".equals(searchReportEndTime)) ? "无"+countParamEmpty++ : format.parse(searchReportEndTime))
-                + "},{"
-                + ((null == searchTaskStartTime && !"".equals(searchTaskStartTime)) ? "无"+countParamEmpty++ : format.parse(searchTaskStartTime))
-                + "},{"
-                + ((null == searchTaskEndTime && !"".equals(searchTaskEndTime)) ? "无"+countParamEmpty++ : format.parse(searchTaskEndTime))
-                + "},{"
-                + ((null == taskName && !"".equals(taskName)) ? "无"+countParamEmpty++ : taskName)
-                + "},{"
-                + ((null == String.valueOf(taskId) && !"".equals(String.valueOf(taskId))) ? "无"+countParamEmpty++ : (long)taskId));
-        }catch(Exception ex){
-        	logger.error("时间参数处理转换异常,{}", ex);
-        	 String rangeOfday = CalendarUtils.getRangeOfday(DateUtils.getDateTime());
-             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24*30);
-             eventKeyProtection = new EventKeyProtection();
-             eventKeyProtection.setSearchReportStartTime(startTemp);
-             logger.info("获取重点保障事件API请求参数转换异常,默认查询起始时间"+startTemp+"至今数据");
+        String taskIds = eventKeyProtection.getTaskIds();
+        List<Long> longList = new ArrayList<>();
+        if (taskIds != null) {
+            String[] strarr = taskIds.split(",");
+            List<String> strings = Arrays.asList(strarr);
+            for (String str : strings) {
+                Long i = Long.parseLong(str);
+                longList.add(i);
+            }
         }
-        if(countParamEmpty == 5){
-        	String rangeOfday = CalendarUtils.getRangeOfday(DateUtils.getDateTime());
-            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24*30);
+        eventKeyProtection.setTaskIdList(longList);
+        int countParamEmpty = 0;
+        try {
+            logger.info("开始获取重点保障事件信息,参数为{"
+                    + ((null == searchReportStartTime && !"".equals(searchReportStartTime)) ? "无" + countParamEmpty++ : format.parse(searchReportStartTime))
+                    + "},{"
+                    + ((null == searchReportEndTime && !"".equals(searchReportEndTime)) ? "无" + countParamEmpty++ : format.parse(searchReportEndTime))
+                    + "},{"
+                    + ((null == searchTaskStartTime && !"".equals(searchTaskStartTime)) ? "无" + countParamEmpty++ : format.parse(searchTaskStartTime))
+                    + "},{"
+                    + ((null == searchTaskEndTime && !"".equals(searchTaskEndTime)) ? "无" + countParamEmpty++ : format.parse(searchTaskEndTime))
+                    + "},{"
+                    + ((null == taskName && !"".equals(taskName)) ? "无" + countParamEmpty++ : taskName)
+                    + "},{"
+                    + ((null == taskIds && !"".equals(taskIds)) ? "无" + countParamEmpty++ : taskIds) + "}");
+        } catch (Exception ex) {
+            logger.error("时间参数处理转换异常,{}", ex);
+            String rangeOfday = CalendarUtils.getRangeOfday(DateUtils.getDateTime());
+            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24 * 30);
             eventKeyProtection = new EventKeyProtection();
             eventKeyProtection.setSearchReportStartTime(startTemp);
-            logger.info("获取重点保障事件API请求参数为空,默认查询起始时间"+startTemp+"至今数据");
+            logger.info("获取重点保障事件API请求参数转换异常,默认查询起始时间" + startTemp + "至今数据");
+        }
+        if (countParamEmpty == 6) {
+            String rangeOfday = CalendarUtils.getRangeOfday(DateUtils.getDateTime());
+            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeOfday, -24 * 30);
+            eventKeyProtection = new EventKeyProtection();
+            eventKeyProtection.setSearchReportStartTime(startTemp);
+            logger.info("获取重点保障事件API请求参数为空,默认查询起始时间" + startTemp + "至今数据");
         }
         try {
             list = eventServiceDao.getEventsKeyProtection(eventKeyProtection);
@@ -88,7 +98,7 @@ public class EventService {
      * @param eventMonitorOrBlock
      * @return
      */
-    public Page<EventMonitorOrBlock> getEventsMonitorOrBlock(EventMonitorOrBlock eventMonitorOrBlock,String logMark) {
+    public Page<EventMonitorOrBlock> getEventsMonitorOrBlock(EventMonitorOrBlock eventMonitorOrBlock, String logMark) {
         List<EventMonitorOrBlock> list = new ArrayList();
         Page<EventMonitorOrBlock> page = new Page<>();
         String searchReportStartTime = eventMonitorOrBlock.getSearchReportStartTime();
@@ -96,47 +106,57 @@ public class EventService {
         String searchTaskStartTime = eventMonitorOrBlock.getSearchTaskStartTime();
         String searchTaskEndTime = eventMonitorOrBlock.getSearchTaskEndTime();
         String taskName = eventMonitorOrBlock.getTaskName();
-        long taskId = eventMonitorOrBlock.getTaskId();    
+        String taskIds = eventMonitorOrBlock.getTaskIds();
+        List<Long> longList = new ArrayList<>();
+        if (taskIds != null) {
+            String[] strarr = taskIds.split(",");
+            List<String> strings = Arrays.asList(strarr);
+            for (String str : strings) {
+                Long i = Long.parseLong(str);
+                longList.add(i);
+            }
+        }
+        eventMonitorOrBlock.setTaskIdList(longList);
         int countParamEmpty = 0;
         if (taskName != null) {
             eventMonitorOrBlock.setTaskName(taskName.trim());
         }
-        try{
-        logger.info("开始获取"+logMark+",参数为{"
-                + ((null == searchReportStartTime && !"".equals(searchReportStartTime)) ? "无"+countParamEmpty++ : format.parse(searchReportStartTime))
-                + "},{"
-                + ((null == searchReportEndTime && !"".equals(searchReportEndTime)) ? "无"+countParamEmpty++ : format.parse(searchReportEndTime))
-                + "},{"
-                + ((null == searchTaskStartTime && !"".equals(searchTaskStartTime)) ? "无"+countParamEmpty++ : format.parse(searchTaskStartTime))
-                + "},{"
-                + ((null == searchTaskEndTime && !"".equals(searchTaskEndTime)) ? "无"+countParamEmpty++ : format.parse(searchTaskEndTime))
-                + "},{"
-                + ((null == taskName && !"".equals(taskName)) ? "无"+countParamEmpty++ : taskName)
-                + "},{"
-                + ((null == String.valueOf(taskId) && !"".equals(String.valueOf(taskId))) ? "无"+countParamEmpty++ : (long)taskId));
-        }catch(Exception ex){
-        	 logger.error("时间参数处理转换异常,{}", ex);
-        	 String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
-             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -24);
-             int typeId = eventMonitorOrBlock.getReportType();
-             eventMonitorOrBlock = new EventMonitorOrBlock();
-             eventMonitorOrBlock.setSearchReportStartTime(startTemp);
-             eventMonitorOrBlock.setReportType(typeId);
-             logger.info("获取"+logMark+"API请求参数转换异常,默认查询起始时间"+startTemp+"到现在的数据");
+        try {
+            logger.info("开始获取" + logMark + ",参数为{"
+                    + ((null == searchReportStartTime && !"".equals(searchReportStartTime)) ? "无" + countParamEmpty++ : format.parse(searchReportStartTime))
+                    + "},{"
+                    + ((null == searchReportEndTime && !"".equals(searchReportEndTime)) ? "无" + countParamEmpty++ : format.parse(searchReportEndTime))
+                    + "},{"
+                    + ((null == searchTaskStartTime && !"".equals(searchTaskStartTime)) ? "无" + countParamEmpty++ : format.parse(searchTaskStartTime))
+                    + "},{"
+                    + ((null == searchTaskEndTime && !"".equals(searchTaskEndTime)) ? "无" + countParamEmpty++ : format.parse(searchTaskEndTime))
+                    + "},{"
+                    + ((null == taskName && !"".equals(taskName)) ? "无" + countParamEmpty++ : taskName)
+                    + "},{"
+                    + ((null == taskIds && !"".equals(taskIds)) ? "无" + countParamEmpty++ : taskIds)+ "}");
+        } catch (Exception ex) {
+            logger.error("时间参数处理转换异常", ex);
+            String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
+            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -24);
+            int typeId = eventMonitorOrBlock.getReportType();
+            eventMonitorOrBlock = new EventMonitorOrBlock();
+            eventMonitorOrBlock.setSearchReportStartTime(startTemp);
+            eventMonitorOrBlock.setReportType(typeId);
+            logger.info("获取" + logMark + "API请求参数转换异常,默认查询起始时间" + startTemp + "到现在的数据");
         }
-        if(countParamEmpty==5){
-        	 String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
-             String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -24);
-             int typeId = eventMonitorOrBlock.getReportType();
-             eventMonitorOrBlock = new EventMonitorOrBlock();
-             eventMonitorOrBlock.setSearchReportStartTime(startTemp);
-             eventMonitorOrBlock.setReportType(typeId);
-             logger.info("获取"+logMark+"API请求参数为空,默认查询起始时间"+startTemp+"到现在的数据");
+        if (countParamEmpty == 6) {
+            String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
+            String startTemp = CalendarUtils.getRangeNhourOfTime(rangeNhourOfTime, -24);
+            int typeId = eventMonitorOrBlock.getReportType();
+            eventMonitorOrBlock = new EventMonitorOrBlock();
+            eventMonitorOrBlock.setSearchReportStartTime(startTemp);
+            eventMonitorOrBlock.setReportType(typeId);
+            logger.info("获取" + logMark + "API请求参数为空,默认查询起始时间" + startTemp + "到现在的数据");
         }
         try {
             list = eventServiceDao.getEventsMonitorOrBlock(eventMonitorOrBlock);
         } catch (Exception ex) {
-            logger.error(logMark+"查询异常,{}", ex);
+            logger.error(logMark + "查询异常", ex);
         }
         page.setList(list);
         return page;

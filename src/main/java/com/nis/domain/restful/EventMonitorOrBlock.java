@@ -1,6 +1,7 @@
 package com.nis.domain.restful;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.httpclient.util.DateUtil;
 
@@ -27,7 +28,7 @@ public class EventMonitorOrBlock {
     private String taskName;
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "事件ID")
-    private long taskId;
+    private String taskIds;
     @JsonInclude(value = JsonInclude.Include.NON_NULL)
     @ApiModelProperty(value = "ip数量")
     private long ipNum;
@@ -49,7 +50,16 @@ public class EventMonitorOrBlock {
     private String searchTaskStartTime;
     private String searchTaskEndTime;
     private int reportType;
+    private List<Long> taskIdList;
 
+    @JsonIgnore
+    public List<Long> getTaskIdList() {
+        return taskIdList;
+    }
+
+    public void setTaskIdList(List<Long> taskIdList) {
+        this.taskIdList = taskIdList;
+    }
 
     @JsonIgnore
     public int getReportType() {
@@ -59,7 +69,7 @@ public class EventMonitorOrBlock {
     public void setReportType(int reportType) {
         this.reportType = reportType;
     }
-    
+
     @JsonSerialize(using = JsonDateSerializer.class)
     public Date getTaskTime() {
         return taskTime;
@@ -153,27 +163,37 @@ public class EventMonitorOrBlock {
         this.searchTaskEndTime = searchTaskEndTime;
     }
 
-    public long getTaskId() {
-        return taskId;
+    public String getTaskIds() {
+        return taskIds;
     }
 
-    public void setTaskId(long taskId) {
-        this.taskId = taskId;
+    public void setTaskIds(String taskIds) {
+        this.taskIds = taskIds;
     }
 
     @JsonSerialize(using = JsonDateSerializer.class)
-	public Date getReportTime() {
-		return reportTime;
-	}
+    public Date getReportTime() {
+        return reportTime;
+    }
 
-	public void setReportTime(Date reportTime) {
-		this.reportTime = reportTime;
-	}
+    public void setReportTime(Date reportTime) {
+        this.reportTime = reportTime;
+    }
 
-	@Override
-	public String toString() {
-		return "EventMonitorOrBlock [taskTime=" + taskTime + ", reportTime=" + reportTime + ", taskName=" + taskName
-				+ ", taskId=" + taskId + ", ipNum=" + ipNum + ", httpNum=" + httpNum + ", mailNum=" + mailNum
-				+ ", vedioNum=" + vedioNum + ", agentNum=" + agentNum + "]";
-	}
+    @Override
+    public String toString() {
+        return "EventMonitorOrBlock{" +
+                "taskTime=" + taskTime +
+                ", reportTime=" + reportTime +
+                ", taskName='" + taskName + '\'' +
+                ", taskIds='" + taskIds + '\'' +
+                ", ipNum=" + ipNum +
+                ", httpNum=" + httpNum +
+                ", mailNum=" + mailNum +
+                ", vedioNum=" + vedioNum +
+                ", agentNum=" + agentNum +
+                ", reportType=" + reportType +
+                ", taskIdList=" + taskIdList +
+                '}';
+    }
 }
