@@ -412,7 +412,8 @@ public class DashboardService extends BaseService {
 			}
 			// 存放每个时间点的总数
 			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
-			int index = 0;
+			int index1 = 0;
+			int index2 = 0;
 			List sumList1 = new ArrayList();
 			List sumList2 = new ArrayList();
 			for (int i = 0; i < dateRangeList.size(); i++) {
@@ -421,27 +422,27 @@ public class DashboardService extends BaseService {
 				Date date = dateRangeList.get(i);
 				Long num1 = 0L;
 				Long num2 = 0L;
-				for (int j = index; j < entrance1.size(); j++) {
+				for (int j = index1; j < entrance1.size(); j++) {
 					NtcEntranceReport ipInfo = entrance1.get(j);
 					if (ipInfo.getReportTime() != null) {
 						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
 								&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
 							num1 = num1 + ipInfo.getSum();
 						} else {
-							index = j;
+							index1 = j;
 							break;
 						}
 					}
 				}
 				sumList1.add(num1);
-				for (int j = index; j < entrance2.size(); j++) {
+				for (int j = index2; j < entrance2.size(); j++) {
 					NtcEntranceReport ipInfo = entrance2.get(j);
 					if (ipInfo.getReportTime() != null) {
 						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
 								&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
 							num2 = num2 + ipInfo.getSum();
 						} else {
-							index = j;
+							index2 = j;
 							break;
 						}
 					}
