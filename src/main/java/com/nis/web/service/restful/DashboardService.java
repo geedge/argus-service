@@ -395,67 +395,70 @@ public class DashboardService extends BaseService {
 		entrance1 = ntcTotalReportDao.getActionTrans(begin, end, 1, sql);
 		entrance2 = ntcTotalReportDao.getActionTrans(begin, end, 2, sql);
 
-		Map<String, Comparable> m = new HashMap<String, Comparable>();
-		Date beginDate = DateUtils.parseDate(begin);
-		Date endDate = DateUtils.parseDate(end);
-
-		List<Date> dateRangeList = new ArrayList<Date>();
-		List<String> strDateRangeList = new ArrayList<String>();
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(beginDate);
-		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-		while (calendar.getTime().compareTo(endDate) <= 0) {
-			dateRangeList.add(calendar.getTime());
-			strDateRangeList.add(sdf.format(calendar.getTime()));
-			calendar.add(Calendar.MINUTE, 5);
-		}
-		// 存放每个时间点的总数
-		Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
-		int index = 0;
-		List sumList1 = new ArrayList();
-		List sumList2 = new ArrayList();
-		for (int i = 0; i < dateRangeList.size(); i++) {
-			// 存放一个时间点中总数
-			Map<String, Long> ipCountMap = new HashMap<String, Long>();
-			Date date = dateRangeList.get(i);
-			Long num1 = 0L;
-			Long num2 = 0L;
-			for (int j = index; j < entrance1.size(); j++) {
-				NtcEntranceReport ipInfo = entrance1.get(j);
-				if (ipInfo.getReportTime() != null) {
-					if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-							&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
-						num1 = num1 + ipInfo.getSum();
-					} else {
-						index = j;
-						break;
+		if(!StringUtil.isEmpty(entrance1)||!StringUtil.isEmpty(entrance2)){
+			Map<String, Comparable> m = new HashMap<String, Comparable>();
+			Date beginDate = DateUtils.parseDate(begin);
+			Date endDate = DateUtils.parseDate(end);
+	
+			List<Date> dateRangeList = new ArrayList<Date>();
+			List<String> strDateRangeList = new ArrayList<String>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			while (calendar.getTime().compareTo(endDate) <=0) {
+				dateRangeList.add(calendar.getTime());
+				strDateRangeList.add(sdf.format(calendar.getTime()));
+				calendar.add(Calendar.MINUTE, 5);
+			}
+			// 存放每个时间点的总数
+			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+			int index1 = 0;
+			int index2 = 0;
+			List sumList1 = new ArrayList();
+			List sumList2 = new ArrayList();
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				// 存放一个时间点中总数
+				Map<String, Long> ipCountMap = new HashMap<String, Long>();
+				Date date = dateRangeList.get(i);
+				Long num1 = 0L;
+				Long num2 = 0L;
+				for (int j = index1; j < entrance1.size(); j++) {
+					NtcEntranceReport ipInfo = entrance1.get(j);
+					if (ipInfo.getReportTime() != null) {
+						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+							num1 = num1 + ipInfo.getSum();
+						} else {
+							index1 = j;
+							break;
+						}
 					}
 				}
-			}
-			sumList1.add(num1);
-			for (int j = index; j < entrance2.size(); j++) {
-				NtcEntranceReport ipInfo = entrance2.get(j);
-				if (ipInfo.getReportTime() != null) {
-					if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-							&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
-						num2 = num2 + ipInfo.getSum();
-					} else {
-						index = j;
-						break;
+				sumList1.add(num1);
+				for (int j = index2; j < entrance2.size(); j++) {
+					NtcEntranceReport ipInfo = entrance2.get(j);
+					if (ipInfo.getReportTime() != null) {
+						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+							num2 = num2 + ipInfo.getSum();
+						} else {
+							index2 = j;
+							break;
+						}
 					}
 				}
+				sumList2.add(num2);
 			}
-			sumList2.add(num2);
+			// 整合 count time
+			m1.put("count", sumList1);
+			m1.put("statTime", strDateRangeList);
+			m1.put("entranceId", 1);
+			m2.put("count", sumList2);//
+			m2.put("statTime", strDateRangeList);
+			m2.put("entranceId", 2);
+			listMap.add(m1);
+			listMap.add(m2);
 		}
-		// 整合 count time
-		m1.put("count", sumList1);
-		m1.put("statTime", strDateRangeList);
-		m1.put("entranceId", 1);
-		m2.put("count", sumList2);//
-		m2.put("statTime", strDateRangeList);
-		m2.put("entranceId", 2);
-		listMap.add(m1);
-		listMap.add(m2);
 		return listMap;
 	}
 
@@ -542,7 +545,7 @@ public class DashboardService extends BaseService {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate) <= 0) {
+			while (calendar.getTime().compareTo(endDate) < 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
@@ -1264,7 +1267,7 @@ public class DashboardService extends BaseService {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(startTime);
 
-			while (calendar.getTime().compareTo(endTime) <= 0) {
+			while (calendar.getTime().compareTo(endTime) < 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf2.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
@@ -1400,47 +1403,50 @@ public class DashboardService extends BaseService {
 	public List<HashMap> getDomainTrans2(String begin, String end, Integer domain, Integer entranceId) {
 		List<TrafficHttpFocusStatistic> domainList = new ArrayList<TrafficHttpFocusStatistic>();
 		domainList = trafficHttpStatisticDao.getDomainTrans(entranceId, begin, end, domain);
-		Date beginDate = DateUtils.parseDate(begin);
-		Date endDate = DateUtils.parseDate(end);
 		List<HashMap> listMap = new ArrayList<HashMap>();
-		List<Date> dateRangeList = new ArrayList<Date>();
-		List<String> strDateRangeList = new ArrayList<String>();
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(beginDate);
-		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-		while (calendar.getTime().compareTo(endDate) <= 0) {
-			dateRangeList.add(calendar.getTime());
-			strDateRangeList.add(sdf.format(calendar.getTime()));
-			calendar.add(Calendar.MINUTE, 5);
-		}
-		// 存放每个时间点的总数
-		Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
-		int index = 0;
-		List countList = new ArrayList();
-		for (int i = 0; i < dateRangeList.size(); i++) {
-			// 存放一个时间点中总数
-			Map<String, Long> ipCountMap = new HashMap<String, Long>();
-			Date date = dateRangeList.get(i);
-			Long num = 0L;
-			for (int j = index; j < domainList.size(); j++) {
-				TrafficHttpFocusStatistic ipInfo = domainList.get(j);
-				if (ipInfo.getStatTime() != null) {
-					if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-							&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
-						num = num + ipInfo.getCount();
-					} else {
-						index = j;
-						break;
+		if(!StringUtil.isEmpty(domainList)){
+			Date beginDate = DateUtils.parseDate(begin);
+			Date endDate = DateUtils.parseDate(end);
+			
+			List<Date> dateRangeList = new ArrayList<Date>();
+			List<String> strDateRangeList = new ArrayList<String>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			while (calendar.getTime().compareTo(endDate) < 0) {
+				dateRangeList.add(calendar.getTime());
+				strDateRangeList.add(sdf.format(calendar.getTime()));
+				calendar.add(Calendar.MINUTE, 5);
+			}
+			// 存放每个时间点的总数
+			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+			int index = 0;
+			List countList = new ArrayList();
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				// 存放一个时间点中总数
+				Map<String, Long> ipCountMap = new HashMap<String, Long>();
+				Date date = dateRangeList.get(i);
+				Long num = 0L;
+				for (int j = index; j < domainList.size(); j++) {
+					TrafficHttpFocusStatistic ipInfo = domainList.get(j);
+					if (ipInfo.getStatTime() != null) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+							num = num + ipInfo.getCount();
+						} else {
+							index = j;
+							break;
+						}
 					}
 				}
+				countList.add(num);
 			}
-			countList.add(num);
+			// 整合 count time
+			HashMap ipTrafficMap = new HashMap();
+			ipTrafficMap.put("count", countList);
+			ipTrafficMap.put("statTime", strDateRangeList);
+			listMap.add(ipTrafficMap);
 		}
-		// 整合 count time
-		HashMap ipTrafficMap = new HashMap();
-		ipTrafficMap.put("count", countList);
-		ipTrafficMap.put("statTime", strDateRangeList);
-		listMap.add(ipTrafficMap);
 		return listMap;
 	}
 
@@ -1479,7 +1485,7 @@ public class DashboardService extends BaseService {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate1);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate1) <= 0) {
+			while (calendar.getTime().compareTo(endDate1) < 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
@@ -1580,7 +1586,7 @@ public class DashboardService extends BaseService {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
 			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
-			while (calendar.getTime().compareTo(endDate)<=0) {
+			while (calendar.getTime().compareTo(endDate)<0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
