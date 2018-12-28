@@ -39,13 +39,20 @@ public class EventInfoController extends BaseRestController {
 
     @RequestMapping(value = "/ntcEventKeyProtection", method = RequestMethod.GET)
     @ApiOperation(value = "重点保障事件总览", httpMethod = "GET", notes = "获取重点保障事件信息", response = Map.class)
-    public Map<String, ?> getEventKeyProtection(EventKeyProtection eventKeyProtection, HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, ?> getEventKeyProtection(Page page, EventKeyProtection eventKeyProtection, HttpServletRequest request, HttpServletResponse response) {
         long start = System.currentTimeMillis();
         AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
-
-        Page<EventKeyProtection> eventKeyProtectionPage = null;
+        Page<?> reportPage = null;
         try {
-            eventKeyProtectionPage = eventService.getEventsKeyProtection(eventKeyProtection);
+            String orderBy = "";
+            if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+                orderBy = Page.getOrderBySql(EventKeyProtection.class.getSimpleName(), page.getOrderBy());
+            } else {
+                orderBy = "report_time";
+            }
+            page.setOrderBy(orderBy);
+            reportPage = eventService.getEventsKeyProtection(
+                    new Page<EventKeyProtection>(request, response, EventKeyProtection.class), eventKeyProtection);
         } catch (Exception e) {
             saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
             e.printStackTrace();
@@ -58,40 +65,47 @@ public class EventInfoController extends BaseRestController {
             }
         }
         return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取重点保障事件信息成功",
-                eventKeyProtectionPage, 0);
+                reportPage, 0);
     }
 
     @RequestMapping(value = "/ntcEventsMonitorOrBlock", method = RequestMethod.GET)
     @ApiOperation(value = "事件监测、封堵", httpMethod = "GET", notes = "获取事件监测、封堵信息", response = Map.class)
-    public Map<String, ?> getEventsMonitorOrBlock(EventMonitorOrBlock eventMonitorOrBlock, HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, ?> getEventsMonitorOrBlock(Page page,EventMonitorOrBlock eventMonitorOrBlock, HttpServletRequest request, HttpServletResponse response) {
         long start = System.currentTimeMillis();
         AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
-        
+        Page<?> reportPage = null;
         int typeId = eventMonitorOrBlock.getReportType();
         String logMark = null;
-        if(typeId == 1){
-        	logMark = "事件封堵";
-        }else if(typeId == 2){
-        	logMark = "事件监测";
-        }else{
-        	logMark = "事件类型未定义、默认查询事件封堵";
-        	eventMonitorOrBlock.setReportType(1);
+        if (typeId == 1) {
+            logMark = "事件封堵";
+        } else if (typeId == 2) {
+            logMark = "事件监测";
+        } else {
+            logMark = "事件类型未定义、默认查询事件封堵";
+            eventMonitorOrBlock.setReportType(1);
         }
         Page<EventMonitorOrBlock> eventMonitorPage = null;
         try {
-            eventMonitorPage = eventService.getEventsMonitorOrBlock(eventMonitorOrBlock,logMark);
+            String orderBy = "";
+            if (null != page.getOrderBy() && !page.getOrderBy().equals("")) {
+                orderBy = Page.getOrderBySql(EventKeyProtection.class.getSimpleName(), page.getOrderBy());
+            } else {
+                orderBy = "report_time";
+            }
+            page.setOrderBy(orderBy);
+            reportPage = eventService.getEventsMonitorOrBlock(new Page<EventKeyProtection>(request, response, EventMonitorOrBlock.class), eventMonitorOrBlock,logMark);
         } catch (Exception e) {
             saveLogThread.setExceptionInfo(e.getMessage() + " " + e.getCause());
             e.printStackTrace();
             logger.error(e.getMessage());
             if (!(e instanceof RestServiceException)) {
                 throw new ServiceRuntimeException(saveLogThread, System.currentTimeMillis() - start,
-                        "获取"+logMark+"信息失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+                        "获取" + logMark + "信息失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
             } else {
                 throw ((RestServiceException) e);
             }
         }
-        return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取"+logMark+"信息成功",
-                eventMonitorPage, 0);
+        return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "获取" + logMark + "信息成功",
+                reportPage, 0);
     }
 }

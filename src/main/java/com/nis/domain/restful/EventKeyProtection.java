@@ -3,9 +3,13 @@ package com.nis.domain.restful;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.nis.domain.Page;
 import com.nis.util.JsonDateSerializer;
 import com.wordnik.swagger.annotations.ApiModel;
 import com.wordnik.swagger.annotations.ApiModelProperty;
+import org.apache.poi.ss.formula.functions.T;
+
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +57,7 @@ public class EventKeyProtection {
     private String searchTaskStartTime;
     private String searchTaskEndTime;
     private List<Long> taskIdList;
+    protected Page<T> page;
 
     @JsonIgnore
     public List<Long> getTaskIdList() {
@@ -163,6 +168,20 @@ public class EventKeyProtection {
 
     public void setReportTime(Date reportTime) {
         this.reportTime = reportTime;
+    }
+
+    @JsonIgnore
+    @XmlTransient
+    public Page<T> getPage() {
+        if (page == null) {
+            page = new Page<T>();
+        }
+        return page;
+    }
+
+    public Page<T> setPage(Page<T> page) {
+        this.page = page;
+        return page;
     }
 
     @Override

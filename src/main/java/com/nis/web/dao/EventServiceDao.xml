@@ -36,7 +36,7 @@
                 AND task_name like concat(concat('%',#{taskName}),'%')
             </if>
         </where>
-        order by reportTime desc;
+        order by reportTime desc
     </select>
     <select id="getEventsMonitorOrBlock" resultType="com.nis.domain.restful.EventMonitorOrBlock"
             useCache="false" flushCache="true">
@@ -76,6 +76,6 @@
                 AND task_name like concat(concat('%',#{taskName}),'%')
             </if>
         </where>
-        order by reportTime desc;
+        order by reportTime desc
     </select>
 </mapper>

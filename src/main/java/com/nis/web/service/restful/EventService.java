@@ -35,9 +35,8 @@ public class EventService {
      * @return
      * @throws ParseException
      */
-    public Page<EventKeyProtection> getEventsKeyProtection(EventKeyProtection eventKeyProtection) throws ParseException {
+    public Page<EventKeyProtection> getEventsKeyProtection(Page page, EventKeyProtection eventKeyProtection) throws ParseException {
         List<EventKeyProtection> list = new ArrayList();
-        Page<EventKeyProtection> page = new Page<>();
         String searchReportStartTime = eventKeyProtection.getSearchReportStartTime();
         String searchReportEndTime = eventKeyProtection.getSearchReportEndTime();
         String searchTaskStartTime = eventKeyProtection.getSearchTaskStartTime();
@@ -84,9 +83,10 @@ public class EventService {
             logger.info("获取重点保障事件API请求参数为空,默认查询起始时间" + startTemp + "至今数据");
         }
         try {
+            eventKeyProtection.setPage(page);
             list = eventServiceDao.getEventsKeyProtection(eventKeyProtection);
         } catch (Exception ex) {
-            logger.error("重点保障事件查询异常,{}", ex);
+            logger.error("重点保障事件查询异常", ex);
         }
         page.setList(list);
         return page;
@@ -98,9 +98,8 @@ public class EventService {
      * @param eventMonitorOrBlock
      * @return
      */
-    public Page<EventMonitorOrBlock> getEventsMonitorOrBlock(EventMonitorOrBlock eventMonitorOrBlock, String logMark) {
+    public Page<EventMonitorOrBlock> getEventsMonitorOrBlock(Page page,EventMonitorOrBlock eventMonitorOrBlock, String logMark) {
         List<EventMonitorOrBlock> list = new ArrayList();
-        Page<EventMonitorOrBlock> page = new Page<>();
         String searchReportStartTime = eventMonitorOrBlock.getSearchReportStartTime();
         String searchReportEndTime = eventMonitorOrBlock.getSearchReportEndTime();
         String searchTaskStartTime = eventMonitorOrBlock.getSearchTaskStartTime();
@@ -133,7 +132,7 @@ public class EventService {
                     + "},{"
                     + ((null == taskName && !"".equals(taskName)) ? "无" + countParamEmpty++ : taskName)
                     + "},{"
-                    + ((null == taskIds && !"".equals(taskIds)) ? "无" + countParamEmpty++ : taskIds)+ "}");
+                    + ((null == taskIds && !"".equals(taskIds)) ? "无" + countParamEmpty++ : taskIds) + "}");
         } catch (Exception ex) {
             logger.error("时间参数处理转换异常", ex);
             String rangeNhourOfTime = CalendarUtils.getRangeOfhour(DateUtils.getDateTime());
@@ -154,6 +153,7 @@ public class EventService {
             logger.info("获取" + logMark + "API请求参数为空,默认查询起始时间" + startTemp + "到现在的数据");
         }
         try {
+            eventMonitorOrBlock.setPage(page);
             list = eventServiceDao.getEventsMonitorOrBlock(eventMonitorOrBlock);
         } catch (Exception ex) {
             logger.error(logMark + "查询异常", ex);
