@@ -1091,10 +1091,7 @@ public class DashboardService extends BaseService {
 //						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
 //						String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
 						if (countStr != null) {
-							Long pl = (Long.parseLong(countStr)) / (1024 * 1024 * 1024);
-							if (pl > 0) {
-								count += Long.parseLong(countStr);// 将count累加 转换单位小于0的不加
-							}
+							count += Long.parseLong(countStr);// 将count累加 转换单位小于0的不加
 						}
 //						if (linkNumStr != null) {
 //							linkNum += Long.parseLong(linkNumStr);// 将count累加
