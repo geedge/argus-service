@@ -405,7 +405,7 @@ public class DashboardService extends BaseService {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			while (calendar.getTime().compareTo(endDate) <=0) {
+			while (calendar.getTime().compareTo(endDate) < 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
