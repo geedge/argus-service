@@ -876,14 +876,16 @@
 	<insert id="insertNtcIpRangeBatch"
 		parameterType="com.nis.domain.restful.NtcIpRangeReport">
 		INSERT INTO traffic_ip_identify
-		(ip_start,ip_end,ip_start_num,ip_end_num,ip_sub,area_type,country)
+		(ip_start,ip_end,ip_start_num,ip_end_num,ip_sub,area_type,country,desc_detail)
 		VALUES
 		<foreach collection="list" item="ipRange" separator=",">
 			(#{ipRange.ipStart}, #{ipRange.ipEnd},
 			#{ipRange.ipStartNum},
 			#{ipRange.ipEndNum},
 			#{ipRange.ipSub}, #{ipRange.areaType},
-			#{ipRange.country})
+			#{ipRange.country},
+			#{ipRange.desc}
+			)
 		</foreach>
 	</insert>
 

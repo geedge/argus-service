@@ -68,7 +68,7 @@ public class LogDataService {
 		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/1024/");
 		sql.append(second);
 		sql.append(
-				" AS bps  FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
+				" AS bps  FROM tbs_ods_ntc_conn_record_log t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log WHERE  found_time >= ");
 		sql.append(startTime);
 		sql.append(" and found_time< ");
 		sql.append(endTime);
@@ -104,7 +104,7 @@ public class LogDataService {
 		sql.append(" AS bps,");
 		sql.append(asn);
 		sql.append(
-				" asn FROM tbs_ods_ntc_conn_record_log_local t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log_local WHERE  found_time >= ");
+				" asn FROM tbs_ods_ntc_conn_record_log t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log WHERE  found_time >= ");
 		sql.append(startTime);
 		sql.append(" and found_time< ");
 		sql.append(endTime);
@@ -302,7 +302,7 @@ public class LogDataService {
 		}
 		sql.append(orderBy.toLowerCase() + "  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
 
-		if (tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG_LOCAL")) {
+		if (tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG")) {
 			searchFromLocalCK(page, bean, sql, countSql);
 		} else {
 			searchFromDataCenter(page, bean, sql, countSql);

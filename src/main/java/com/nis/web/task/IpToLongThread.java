@@ -25,6 +25,7 @@ public class IpToLongThread implements Callable<Map<Long, String>> {
 	@Override
 	public Map<Long, String> call() throws Exception {
 		Map<Long, String> map=new HashMap<>();
+//		logger.info("线程{}开始执行,list.size={}", Thread.currentThread().getName(),list.size());
 		logger.info("线程{}开始执行", Thread.currentThread().getName());
 		for (int i = 0; i < list.size(); i++) {
 			map.put(ipToLong(list.get(i)), list.get(i));
