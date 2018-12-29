@@ -34,11 +34,8 @@
 	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>-->
   <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
-	SELECT ip_addr ipAddr,SUM(c2s_byte_len + s2c_byte_len) linkNum FROM traffic_ip_active_statistic WHERE
-			stat_id BETWEEN
-			(select stat_id from traffic_ip_active_statistic where<![CDATA[	stat_time >= #{beginDate} order by stat_id limit 1)]]>
-			AND 
-			(select stat_id from traffic_ip_active_statistic where<![CDATA[	stat_time < #{endDate} order by stat_id desc limit 1)]]>
+	SELECT ip_addr ipAddr,SUM(c2s_byte_len + s2c_byte_len) linkNum FROM traffic_ip_active_statistic WHERE 
+	<![CDATA[	stat_time >= #{beginDate}  AND  stat_time < #{endDate}]]>
 	GROUP BY ip_addr ORDER BY linkNum DESC LIMIT 0,10
   </select>
   

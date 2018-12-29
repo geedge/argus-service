@@ -209,12 +209,12 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficBandwidthTransThree", method = RequestMethod.GET)
 	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
-	public Map<String,?> trafficBandwidthTransThree(String beginDate,String endDate,Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String,?> trafficBandwidthTransThree(String beginDate,String endDate,String searchQuotaType,Model model, HttpServletRequest request, HttpServletResponse response) {
 		String[] addrTypes=dashboardService.getFiledTypeByName("addr_type");
 		String[] transTypes=dashboardService.getFiledTypeByName("trans_type");
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
-		Map<String, Map> resultMap=new HashMap<String,Map>();
+		Map resultMap=new HashMap();
 		try {
 			if(StringUtils.isEmpty(beginDate)&&StringUtils.isEmpty(endDate)) {
 				Calendar cal = Calendar. getInstance ();
@@ -223,7 +223,7 @@ public class DashboardServiceController extends BaseRestController {
 		        cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
 		        beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
 			}
-			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate);
+			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate,searchQuotaType);
 			
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());

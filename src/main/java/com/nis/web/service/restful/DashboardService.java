@@ -404,7 +404,7 @@ public class DashboardService extends BaseService {
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			while (calendar.getTime().compareTo(endDate) <=0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
@@ -425,8 +425,7 @@ public class DashboardService extends BaseService {
 				for (int j = index1; j < entrance1.size(); j++) {
 					NtcEntranceReport ipInfo = entrance1.get(j);
 					if (ipInfo.getReportTime() != null) {
-						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-								&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
 							num1 = num1 + ipInfo.getSum();
 						} else {
 							index1 = j;
@@ -438,8 +437,7 @@ public class DashboardService extends BaseService {
 				for (int j = index2; j < entrance2.size(); j++) {
 					NtcEntranceReport ipInfo = entrance2.get(j);
 					if (ipInfo.getReportTime() != null) {
-						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-								&& ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
 							num2 = num2 + ipInfo.getSum();
 						} else {
 							index2 = j;
@@ -563,8 +561,7 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < ipInfoList.size(); j++) {
 					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
 					if (ipInfo.getStatTime() != null) {
-						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-								&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
 							Long num = ipInfo.getCount();
 							if (ipCountMap.containsKey(ipInfo.getIpAddr())) {
 								num = num + ipCountMap.get(ipInfo.getIpAddr());
@@ -1244,7 +1241,7 @@ public class DashboardService extends BaseService {
 		return fieldType == null ? null : fieldType.split(",");
 	}
 
-	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate) throws ParseException {
+	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate,String searchQuotaType) throws ParseException {
 		Map<String, Map> resultMap = new HashMap<String, Map>();
 		Map<String, ArrayList<TrafficTransStatistic>> listMap = new HashMap<String, ArrayList<TrafficTransStatistic>>();
 		List<TrafficTransStatistic> bandwidthListIPvx = new ArrayList<TrafficTransStatistic>();
@@ -1256,17 +1253,14 @@ public class DashboardService extends BaseService {
 				|| (!StringUtil.isEmpty(bandwidthListProtocol) && bandwidthListProtocol.size() > 0)) {
 			// 划分时间段
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			SimpleDateFormat sdf2 = new SimpleDateFormat("MM-dd HH:mm");
 			Date startTime = sdf.parse(beginDate);
 			Date endTime = sdf.parse(endDate);
 			List<Date> dateRangeList = new ArrayList<Date>();
-			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(startTime);
 
 			while (calendar.getTime().compareTo(endTime) < 0) {
 				dateRangeList.add(calendar.getTime());
-				strDateRangeList.add(sdf2.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
 			}
 			String[] addrTypes = getFiledTypeByName("addr_type");
@@ -1307,54 +1301,48 @@ public class DashboardService extends BaseService {
 					String key = entry.getKey();
 					String entranceId = key.substring(key.length() - 1);
 					ArrayList<TrafficTransStatistic> value = entry.getValue();
-					resultMap.put(key, getNewData(dateRangeList, strDateRangeList, value));
+					resultMap.put(key, getNewData(dateRangeList,value,searchQuotaType));
 				}
 			}
 		}
 		return resultMap;
 	}
 
-	private Map getNewData(List<Date> dateRangeList, List<String> timeList, List<TrafficTransStatistic> bandwidthList) {
-		Map<String, List> resulMap = new HashMap<String, List>();
+	private Map getNewData(List<Date> dateRangeList,List<TrafficTransStatistic> bandwidthList,String searchQuotaType) {
+		Map restMap = new HashMap();
+		List<List> restList = new ArrayList<List>();
 		int index = 0;
+		Long sum = 0l;
 		for (int i = 0; i < dateRangeList.size(); i++) {
 			Date date = dateRangeList.get(i);
-			Map<String, Long> countMap = new HashMap<String, Long>();
-			Long linkNum = 0L;
-			Long ppsNum = 0L;
-			Long gbpsNum = 0L;
+
+			List countList = new ArrayList();
+			countList.add(date.getTime());
+			long num = 0l;
 			for (int j = index; j < bandwidthList.size(); j++) {
 				TrafficTransStatistic info = bandwidthList.get(j);
 				if (info.getStatTime() != null) {
-					if (info.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-							&& info.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
-						linkNum = info.getLinkNum() + linkNum;
-						ppsNum = Long.parseLong(info.getPps().substring(0, info.getPps().lastIndexOf("."))) + ppsNum;
-						gbpsNum = Long.parseLong(info.getGbps().substring(0, info.getGbps().lastIndexOf(".")))
-								+ gbpsNum;
+					if (info.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if ("pps".equalsIgnoreCase(searchQuotaType)) {
+							num = Long.parseLong(info.getPps().substring(0, info.getPps().lastIndexOf("."))) + num;
+						}else if ("linkNumber".equalsIgnoreCase(searchQuotaType)) {
+							num = Long.parseLong(info.getPps().substring(0, info.getPps().lastIndexOf("."))) + num;
+						}else {
+							num = Long.parseLong(info.getGbps().substring(0, info.getGbps().lastIndexOf(".")))+ num;
+						}
 					} else {
 						index = j;
 						break;
 					}
 				}
 			}
-			countMap.put("linkNum", linkNum);
-			countMap.put("pps", ppsNum);
-			countMap.put("gbps", gbpsNum);
-			Iterator iterator = countMap.keySet().iterator();
-			while (iterator.hasNext()) {
-				String key = iterator.next() + "";
-				if (resulMap.containsKey(key)) {
-					resulMap.get(key).add(countMap.get(key));
-				} else {
-					List<Long> list = new ArrayList<Long>();
-					list.add(countMap.get(key));
-					resulMap.put(key, list);
-				}
-			}
+			countList.add(num);
+			sum+=num;
+			restList.add(countList);
 		}
-		resulMap.put("statTime", timeList);
-		return resulMap;
+		restMap.put("sum", sum);
+		restMap.put("result", restList);
+		return restMap;
 	}
 
 	/**
@@ -1409,7 +1397,7 @@ public class DashboardService extends BaseService {
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			while (calendar.getTime().compareTo(endDate) < 0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
@@ -1427,8 +1415,7 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < domainList.size(); j++) {
 					TrafficHttpFocusStatistic ipInfo = domainList.get(j);
 					if (ipInfo.getStatTime() != null) {
-						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-								&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
 							num = num + ipInfo.getCount();
 						} else {
 							index = j;
@@ -1481,10 +1468,8 @@ public class DashboardService extends BaseService {
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate1);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
 			while (calendar.getTime().compareTo(endDate1) < 0) {
 				dateRangeList.add(calendar.getTime());
-				strDateRangeList.add(sdf.format(calendar.getTime()));
 				calendar.add(Calendar.MINUTE, 5);
 			}
 
@@ -1500,8 +1485,7 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < portInfoList.size(); j++) {
 					TrafficPortActiveStatistic portInfo = portInfoList.get(j);
 					if (portInfo.getStatTime() != null) {
-						if (portInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-								&& portInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						if (portInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?portInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
 							Long num = portInfo.getSum();
 							if (portCountMap.containsKey(portInfo.getPort())) {
 								num = num + portCountMap.get(portInfo.getPort());
@@ -1516,6 +1500,8 @@ public class DashboardService extends BaseService {
 				if (portArray != null && portArray.length > 0) {// 如果有传人参数，获取传人参数
 					for (int m = 0; m < portArray.length; m++) {
 						String port = portArray[m].toString();
+						List sumList = new ArrayList();
+						sumList.add(date.getTime());
 						Long sum = 0l;
 						if (portCountMap.containsKey(port)) {
 							sum = portCountMap.get(port);
@@ -1582,7 +1568,7 @@ public class DashboardService extends BaseService {
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
-			SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm");
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			while (calendar.getTime().compareTo(endDate)<0) {
 				dateRangeList.add(calendar.getTime());
 				strDateRangeList.add(sdf.format(calendar.getTime()));
@@ -1598,7 +1584,7 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < list.size(); j++) {
 					NtcConnNumReport info = list.get(j);
 					if (info.getReportTime()!=null){
-						if(info.getReportTime().compareTo(date)>=0&&(i+1<dateRangeList.size()&&info.getReportTime().compareTo(dateRangeList.get(i+1))<0)) {
+						if(info.getReportTime().compareTo(date)>=0&&(i+1<dateRangeList.size()?info.getReportTime().compareTo(dateRangeList.get(i+1))<0:true)) {
 							sum = sum+info.getNum();
 						}else{
 							index = j;
