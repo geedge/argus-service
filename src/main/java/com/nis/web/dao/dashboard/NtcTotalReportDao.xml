@@ -21,7 +21,7 @@
  
   <!-- 根据最近的时间获取阻断，监测等流量信息 -->
  <select id="getTotalReportList" resultType="java.util.HashMap">
-    SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(live_conn_num) liveConnNum,
+    SELECT SUM(reject_num) rejectNum,SUM(monitor_num) monitorNum,SUM(c2s_pkt_num) c2sPktNum,SUM(s2c_pkt_num) s2cPktNum,SUM(c2s_byte_len) c2sByteLen,SUM(s2c_byte_len) s2cByteLen,SUM(new_uni_conn_num) newUniConnNum,SUM(close_conn_num) closeConnNum,
     SUM(drop_conn_num) dropConnNum,SUM(loop_conn_num) loopConnNum FROM ntc_total_report
     where report_time  > DATE_SUB(#{reportTime},INTERVAL 1 hour)
   </select>
@@ -145,7 +145,7 @@
     			new_uni_conn_num
     		</when>
     		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 4 ">
-    			live_conn_num
+    			close_conn_num
     		</when>
     		<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 5 ">
     			(new_uni_conn_num-reject_num)
