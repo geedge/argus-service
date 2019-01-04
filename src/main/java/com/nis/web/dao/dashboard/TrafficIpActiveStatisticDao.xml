@@ -34,8 +34,8 @@
 	GROUP BY ip_addr ORDER BY linkNum DESC limit 0,10
   </select>-->
   <select id="ipActiveChart" resultType="java.util.LinkedHashMap">
-	SELECT ip_addr ipAddr,SUM(c2s_byte_len + s2c_byte_len) linkNum FROM traffic_ip_active_statistic WHERE 
-	<![CDATA[	stat_time >= #{beginDate}  AND  stat_time < #{endDate}]]>
+	SELECT ip_addr ipAddr,SUM(link_num) linkNum FROM traffic_ip_active_statistic WHERE 
+	<![CDATA[stat_time >= #{beginDate}  AND  stat_time < #{endDate}]]>
 	GROUP BY ip_addr ORDER BY linkNum DESC LIMIT 0,10
   </select>
   
@@ -59,7 +59,7 @@
   </select> -->
   
   <select id="ipActiveFiveMinute" resultMap="BaseResultMap">
-  	select ip_addr,SUM(c2s_byte_len+s2c_byte_len) count ,stat_time from traffic_ip_active_statistic
+  	select ip_addr,SUM(link_num) count ,stat_time from traffic_ip_active_statistic
   	WHERE 
   	<![CDATA[ip_addr in (${ipAddr}) and
 	 stat_time>= #{beginDate} and stat_time<#{endDate}  GROUP BY stat_time,ip_addr order by stat_time asc]]>
