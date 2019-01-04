@@ -878,11 +878,11 @@ public class DashboardServiceController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-		List<HashMap> list = new ArrayList<HashMap>();
+		List list = new ArrayList();
 		try {
 			
 				// 带查询时间查询所有
-				List<HashMap> websiteChart = dashboardService.getDomainTrans2(beginDate, endDate,domain,entranceId);
+				List websiteChart = dashboardService.getDomainTrans2(beginDate, endDate,domain,entranceId);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
@@ -959,7 +959,7 @@ public class DashboardServiceController extends BaseRestController {
 		AuditLogThread saveLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 
-		Map<String, List> restMap = new HashMap<String, List>();
+		Map restMap = new HashMap();
 		try {
 			// 验证serachBusinessType
 			if (!StringUtil.isBlank(ntcConnNumReport.getSearchBusinessType())

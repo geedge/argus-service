@@ -238,6 +238,7 @@ public final class Constants {
 	//webfocus库db
 	public static final int WEBFOCUSREDISDB = Configurations.getIntProperty("webFocusDb", 7);
 	
-	
+	//
+	public static final int TREND_TIME_INTERVAL = Configurations.getIntProperty("traffic.trend.timeInterval", 5);
 	
 }
