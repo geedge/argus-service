@@ -1,5 +1,6 @@
 package com.nis.web.controller.restful;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -19,7 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nis.datasource.CustomerContextHolder;
 import com.nis.domain.restful.NtcConnNumReport;
+import com.nis.domain.restful.NtcRadiusReport;
+import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
+import com.nis.domain.restful.dashboard.AppTrendEntity;
+import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -984,5 +990,162 @@ public class DashboardServiceController extends BaseRestController {
 
 		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "流量各指标趋势统计成功",
 				restMap, 0);
+	}
+	/**
+	 * @Description:
+	 * @author(zdx)
+	 * @date 2019年1月4日 下午8:57:32
+	 * @param model
+	 * @param entity
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "trafficAppTrend", method = RequestMethod.GET)
+	@ApiOperation(value = "App趋势详情查询", httpMethod = "GET", notes = "对App趋势详情提供数据查询服务")
+	public Map<String, ?> trafficAppTrend(TrafficAppFocusStatistic entity, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		Map resultMap = new  HashMap();
+		try {
+			//验证
+			checkAppTrendCondition(entity);
+			if (StringUtil.isEmpty(entity.getSearchStartTime())
+					&& StringUtil.isEmpty(entity.getSearchEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
+				entity.setSearchStartTime(map.get("startTime"));
+				entity.setSearchEndTime(map.get("endTime"));
+			}
+			//将数据源切换到本地clickhouse
+			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
+			resultMap = dashboardService.getAppTrend(entity);
+			CustomerContextHolder.clearCustomerType();
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("App趋势详情数据检索失败:" + e.getMessage());
+			logger.error("App趋势详情数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"App趋势详情数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App趋势详情数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App趋势详情数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App趋势详情数据检索成功",
+				resultMap, 0);
+	}
+	
+	/**
+	 * @Description:
+	 * @author(zdx)
+	 * @date 2019年1月4日 下午8:57:12
+	 * @param beginDate
+	 * @param endDate
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "appConnRecordTop100", method = RequestMethod.GET)
+	@ApiOperation(value = "App通联关系Top100", httpMethod = "GET", notes = "对App通联关系Top100提供查询服务。")
+	public Map<String, ?> appConnRecordTop100(AppConnRecordStatistic entity,Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		List<AppConnRecordStatistic> list = new ArrayList<AppConnRecordStatistic>();
+		try {
+			//验证
+			checkAppTrendCondition(entity);
+			if (StringUtil.isEmpty(entity.getSearchStartTime())
+					&& StringUtil.isEmpty(entity.getSearchEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
+				entity.setSearchStartTime(map.get("startTime"));
+				entity.setSearchEndTime(map.get("endTime"));
+			}
+			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
+			list = dashboardService.appConnRecordTop100(entity);
+			CustomerContextHolder.clearCustomerType();
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("App通联关系Top100数据检索失败:" + e.getMessage());
+			logger.error("App通联关系Top100检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"App通联关系Top100数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App通联关系Top100数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App通联关系Top100数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App通联关系Top100数据检索成功", list,
+				0);
+	}
+	/**
+	 */
+	public void checkAppTrendCondition(AppTrendEntity entity) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		int timeCount = 0;
+		try {
+			if (!StringUtil.isBlank(entity.getSearchStartTime())) {
+				sdf.parse(entity.getSearchStartTime());
+				timeCount++;
+			}
+		} catch (ParseException e) {
+			throw new RestServiceException("searchStartTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			throw new RestServiceException("searchStartTime参数错误",
+					RestBusinessCode.param_formate_error.getValue());
+		}
+
+		try {
+			if (!StringUtil.isBlank(entity.getSearchEndTime())) {
+				sdf.parse(entity.getSearchEndTime());
+				timeCount++;
+			}
+		} catch (ParseException e) {
+			throw new RestServiceException("searchEndTime参数格式错误",
+					RestBusinessCode.param_formate_error.getValue());
+		} catch (Exception e) {
+			throw new RestServiceException("searchEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
+		}
+		if (timeCount == 1) {
+			throw new RestServiceException("searchStartTime和searchEndTime参数必须同时填写",
+					RestBusinessCode.config_integrity_error.getValue());
+		}
+		//验证AppId和EntranceId必须是数值
+		checkNumericCondition(entity.getSearchAppId(),"searchAppId");
+		checkNumericCondition(entity.getSearchEntranceId(),"searchEntranceId");
+		logger.info("用户行为日志统计参数校验结束----" + System.currentTimeMillis());
+
+	}
+	public void checkNumericCondition(String condition, String condName) {
+		if (!StringUtil.isEmpty(condition)) {
+			Boolean flag = false;
+			if (condition.contains(",")) {
+				String services[] = condition.split(",");
+				for (String service : services) {
+					if (!StringUtil.isNumeric(service)) {
+						flag = true;
+						break;
+					}
+				}
+			} else if (!StringUtil.isNumeric(condition)) {
+				flag = true;
+			}
+			if (flag) {
+				throw new RestServiceException(condName + "参数格式错误", RestBusinessCode.param_formate_error.getValue());
+			}
+		}
 	}
 }

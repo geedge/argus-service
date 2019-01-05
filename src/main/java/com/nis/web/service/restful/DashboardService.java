@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import com.beust.jcommander.internal.Maps;
 import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.domain.restful.NtcEntranceReport;
+import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.NtcTotalReport;
+import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficAppStatistic;
 import com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficIpActiveStatistic;
@@ -1632,5 +1634,69 @@ public class DashboardService extends BaseService {
 			restMap.put("result", sumList);
 		}
 		return restMap;
+	}
+	
+	public Map getAppTrend(TrafficAppFocusStatistic entity) {
+		List<TrafficAppFocusStatistic> appFocusList = new ArrayList<TrafficAppFocusStatistic>();
+		appFocusList = trafficAppStatisticDao.getAppTrend(entity);
+		Map resultMap = new  HashMap();
+		if(!StringUtil.isEmpty(appFocusList)){
+			Date beginDate = DateUtils.parseDate(entity.getSearchStartTime());
+			Date endDate = DateUtils.parseDate(entity.getSearchEndTime());
+			List<Date> dateRangeList = new ArrayList<Date>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			while (calendar.getTime().compareTo(endDate) < 0) {
+				dateRangeList.add(calendar.getTime());
+				calendar.add(Calendar.MINUTE, Constants.TREND_TIME_INTERVAL);
+			}
+			// 存放每个时间点的总数
+			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
+			int index = 0;
+			List resultSipList = new ArrayList();
+			List resultDipList = new ArrayList();
+			Long sipTotal = 0L;
+			Long dipTotal = 0L;
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				// 存放一个时间点中总数
+				List sipList = new ArrayList();
+				List dipList = new ArrayList();
+				Date date = dateRangeList.get(i);
+				Long sipNum = 0L;
+				Long dipNum = 0L;
+				for (int j = index; j < appFocusList.size(); j++) {
+					TrafficAppFocusStatistic info = appFocusList.get(j);
+					if (info.getTime() != null) {
+						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+							sipNum = sipNum + info.getSipNum();
+							dipNum = dipNum + info.getDipNum();
+						} else {
+							index = j;
+							break;
+						}
+					}
+				}
+				sipList.add(date.getTime());
+				sipList.add(sipNum);
+				resultSipList.add(sipList);
+				dipList.add(date.getTime());
+				dipList.add(dipNum);
+				resultDipList.add(dipList);
+				sipTotal+=sipNum;
+				dipTotal+=dipNum;
+			}
+			resultMap.put("sipResult", resultSipList);
+			resultMap.put("dipResult", resultDipList);
+			resultMap.put("sipSum", sipTotal);
+			resultMap.put("dipSum", dipTotal);
+		}
+		return resultMap;
+	}
+	
+	public List<AppConnRecordStatistic> appConnRecordTop100(AppConnRecordStatistic entity) {
+		List<AppConnRecordStatistic> list = new ArrayList<AppConnRecordStatistic>();
+		list = trafficAppStatisticDao.appConnRecordTop100(entity);
+		return list;
 	}
 }
