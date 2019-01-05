@@ -1649,7 +1649,7 @@ public class DashboardService extends BaseService {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			while (calendar.getTime().compareTo(endDate) < 0) {
 				dateRangeList.add(calendar.getTime());
-				calendar.add(Calendar.MINUTE, Constants.TREND_TIME_INTERVAL);
+				calendar.add(Calendar.MINUTE, 1);
 			}
 			// 存放每个时间点的总数
 			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
