@@ -251,13 +251,15 @@ public class LogDataService {
 								if (type.equals("java.lang.String")) {
 									if (field.equals("url") || field.equals("website")) {
 										whereSB.append(" and " + field + " like '" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
+									} else if (field.equals("client_locate")  || field.equals("server_locate") ) {
+										whereSB.append(" and " + field + " like '%" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
 									} else {
 										whereSB.append(" and " + field + "='"
 												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
 									}
 								} else if (type.equals("java.lang.Integer") || type.equals("int")
 										|| type.equals("java.lang.Long") || type.equals("long")) {
-									if(field.equals("cfg_id")) {
+									if(field.equals("cfg_id") || field.equals("web_id") || field.equals("app_id") || field.equals("proto_id")) {
 										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " in("
 												+ value.toString().trim()+")");
 									}else {

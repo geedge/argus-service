@@ -696,6 +696,7 @@ public class NtcLogSearchController extends BaseRestController {
 				ntcConnRecordLog.setSearchFoundEndTime(map.get("endTime"));
 			}
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
+			ntcLogService.ntcConnRecordLogsQueryConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
 			logDataService.getData(page, ntcConnRecordLog);
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("通联关系日志检索失败:" + e.getMessage());

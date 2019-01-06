@@ -109,6 +109,26 @@ public abstract class LogEntity<T> implements Serializable {
 	protected String searchCapIp;//处理机IP
 	protected String searchFoundStartTime;//开始发现时间
 	protected String searchFoundEndTime;//结束发现时间
+	
+	//add by dxy 2019-01-05 仅限于NtcConnRecordLog需求，考虑以后可能会放开其他日志查询，所以放到公共类
+	protected String searchServerLocate;//serverLocate
+	protected String searchClientLocate;//clientLocate
+
+	public String getSearchServerLocate() {
+		return searchServerLocate;
+	}
+
+	public void setSearchServerLocate(String searchServerLocate) {
+		this.searchServerLocate = searchServerLocate;
+	}
+
+	public String getSearchClientLocate() {
+		return searchClientLocate;
+	}
+
+	public void setSearchClientLocate(String searchClientLocate) {
+		this.searchClientLocate = searchClientLocate;
+	}
 
 	/**
 	 * 当前实体分页对象
