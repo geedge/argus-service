@@ -97,42 +97,46 @@ public class LogDataService {
 
 		long second = endTime - startTime;
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)/");
+		sql.append("SELECT SUM(s2c_pkt_num + c2s_pkt_num)/");
 		sql.append(second);
 		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/1024/");
 		sql.append(second);
 		sql.append(" AS bps,");
 		sql.append(asn);
 		sql.append(
-				" asn FROM tbs_ods_ntc_conn_record_log t WHERE found_time IN ( SELECT DISTINCT found_time FROM tbs_ods_ntc_conn_record_log WHERE  found_time >= ");
+				" asn FROM tbs_ods_ntc_conn_record_log t WHERE found_time >=" );
 		sql.append(startTime);
 		sql.append(" and found_time< ");
 		sql.append(endTime);
 
+		
+	
+//		sql.append(" IN ( SELECT  found_time FROM tbs_ods_ntc_conn_record_log WHERE  found_time >= ");
+//		sql.append(startTime);
+//		sql.append(" and found_time< ");
+//		sql.append(endTime);
+
 		if (searchAsn != null && !searchAsn.equals("")) {
 			sql.append(" and " + asn + "='" + searchAsn + "'");
 		}
-
+		
+		sql.append(" group by " + asn);
+//		countSql.append(" ) ");
+		
+		
 		StringBuffer countSql = new StringBuffer();
 		countSql.append("select count(1) from (");
 		countSql.append(sql);
-		countSql.append(" ) ");
-		if (searchAsn != null && !searchAsn.equals("")) {
-			countSql.append(" and " + asn + "='" + searchAsn + "'");
-		}
-		countSql.append("group by ");
-		countSql.append(asn + ")");
-		Integer startNum = 0;
-//		Integer limitCount = startNum + 20;
+		countSql.append( ")");
+		
+		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
+//		Integer limitCount = startNum + page.getPageSize();
 //		sql.append(" limit " + limitCount + " ) ");
-		sql.append(" ) ");
-		if (searchAsn != null && !searchAsn.equals("")) {
-			sql.append(" and " + asn + "='" + searchAsn + "'");
-		}
-		sql.append("group by " + asn + " 	order by bps  desc,pps desc  limit " + startNum + "," + 20);
+		sql.append(" 	order by bps  desc,pps desc  limit " + startNum + "," +  page.getPageSize());
 		localLogJDBCByDruid.getCount(page, countSql.toString());
-
-		page.setList(localLogJDBCByDruid.getNtcAsnRecordData(sql.toString()));
+		if (page.getCount() > 0) {
+			page.setList(localLogJDBCByDruid.getNtcAsnRecordData(sql.toString()));
+		}
 	}
 
 	/**
@@ -249,15 +253,20 @@ public class LogDataService {
 								String type = filedsType.get(key).trim();
 								String field = filedAndColumnMap.get(key).toLowerCase();
 								if (type.equals("java.lang.String")) {
+
 									if (field.equals("url") || field.equals("website")) {
 										whereSB.append(" and " + field + " like '" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
+									} else if (field.equals("client_locate")  || field.equals("server_locate") ) {
+										whereSB.append(" and " + field + " like '%" + StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
 									} else {
 										whereSB.append(" and " + field + "='"
 												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
 									}
+								
 								} else if (type.equals("java.lang.Integer") || type.equals("int")
 										|| type.equals("java.lang.Long") || type.equals("long")) {
-									if(field.equals("cfg_id")) {
+
+									if(field.equals("cfg_id") || field.equals("web_id") || field.equals("app_id") || field.equals("proto_id")) {
 										whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " in("
 												+ value.toString().trim()+")");
 									}else {
