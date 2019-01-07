@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -28,7 +29,23 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	protected String c2sByteNum;
 	@ApiModelProperty(value = "", required = true)
 	protected String s2cByteNum;
+	
+	@ApiModelProperty(value = "", required = true)
+	protected Long protoId;
+	@ApiModelProperty(value = "", required = true)
+	protected Long appId;
+	@ApiModelProperty(value = "", required = true)
+	protected Long webId;
 
+	protected String searchSAsn;//sAsn
+	protected String searchDAsn;//dAsn
+	protected String searchAppId;//app
+	protected String searchWebId;//web
+	protected String searchProtoId;//proto
+	//protected String searchServerLocate;//serverLocate
+	//protected String searchClientLocate;//clientLocate
+	
+	@JsonIgnore
 	public String getAppLabel() {
 		return appLabel;
 	}
@@ -68,5 +85,77 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	public void setS2cByteNum(String s2cByteNum) {
 		this.s2cByteNum = s2cByteNum;
 	}
+
+	public Long getProtoId() {
+		return protoId;
+	}
+
+	public void setProtoId(Long protoId) {
+		this.protoId = protoId;
+	}
+
+	public Long getAppId() {
+		return appId;
+	}
+
+	public void setAppId(Long appId) {
+		this.appId = appId;
+	}
+
+	public Long getWebId() {
+		return webId;
+	}
+
+	public void setWebId(Long webId) {
+		this.webId = webId;
+	}
+
+
+	@JsonIgnore
+	public String getSearchSAsn() {
+		return searchSAsn;
+	}
+
+	public void setSearchSAsn(String searchSAsn) {
+		this.searchSAsn = searchSAsn;
+	}
+
+	@JsonIgnore
+	public String getSearchDAsn() {
+		return searchDAsn;
+	}
+
+	public void setSearchDAsn(String searchDAsn) {
+		this.searchDAsn = searchDAsn;
+	}
+
+	@JsonIgnore
+	public String getSearchAppId() {
+		return searchAppId;
+	}
+
+	public void setSearchAppId(String searchAppId) {
+		this.searchAppId = searchAppId;
+	}
+
+	@JsonIgnore
+	public String getSearchWebId() {
+		return searchWebId;
+	}
+
+	public void setSearchWebId(String searchWebId) {
+		this.searchWebId = searchWebId;
+	}
+
+	@JsonIgnore
+	public String getSearchProtoId() {
+		return searchProtoId;
+	}
+
+	public void setSearchProtoId(String searchProtoId) {
+		this.searchProtoId = searchProtoId;
+	}
+	
+	
 
 }

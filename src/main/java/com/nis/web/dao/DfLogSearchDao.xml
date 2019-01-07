@@ -1523,6 +1523,15 @@
 		<result column="c2s_byte_num" jdbcType="VARCHAR" property="c2sByteNum" />
 		<result column="s2c_byte_num" jdbcType="VARCHAR" property="s2cByteNum" />
 		
+		<result column="proto_id" jdbcType="BIGINT" property="protoId" />
+		<result column="app_id" jdbcType="BIGINT" property="appId" />
+		<result column="web_id" jdbcType="BIGINT" property="webId" />
+		<!-- 
+		<result column="os_id" jdbcType="BIGINT" property="osId" />
+		<result column="bs_id" jdbcType="BIGINT" property="bsId" />
+		<result column="behav_id" jdbcType="BIGINT" property="behavId" />		
+		 -->
+		
 		</resultMap>
 	
 </mapper>
