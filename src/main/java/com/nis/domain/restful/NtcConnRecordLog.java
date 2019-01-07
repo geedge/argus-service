@@ -37,8 +37,7 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	@ApiModelProperty(value = "", required = true)
 	protected Long webId;
 
-	protected String searchSAsn;//sAsn
-	protected String searchDAsn;//dAsn
+	
 	protected String searchAppId;//app
 	protected String searchWebId;//web
 	protected String searchProtoId;//proto
@@ -108,25 +107,6 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 
 	public void setWebId(Long webId) {
 		this.webId = webId;
-	}
-
-
-	@JsonIgnore
-	public String getSearchSAsn() {
-		return searchSAsn;
-	}
-
-	public void setSearchSAsn(String searchSAsn) {
-		this.searchSAsn = searchSAsn;
-	}
-
-	@JsonIgnore
-	public String getSearchDAsn() {
-		return searchDAsn;
-	}
-
-	public void setSearchDAsn(String searchDAsn) {
-		this.searchDAsn = searchDAsn;
 	}
 
 	@JsonIgnore

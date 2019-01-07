@@ -111,9 +111,52 @@ public abstract class LogEntity<T> implements Serializable {
 	protected String searchFoundEndTime;//结束发现时间
 	
 	//add by dxy 2019-01-05 仅限于NtcConnRecordLog需求，考虑以后可能会放开其他日志查询，所以放到公共类
+	protected String searchSAsn;//sAsn
+	protected String searchDAsn;//dAsn
 	protected String searchServerLocate;//serverLocate
 	protected String searchClientLocate;//clientLocate
+	protected String searchSSubscribeId;//sSubscribeId
+	protected String searchDSubscribeId;//dSubscribeId
 
+	@JsonIgnore
+	public String getSearchSAsn() {
+		return searchSAsn;
+	}
+
+	public void setSearchSAsn(String searchSAsn) {
+		this.searchSAsn = searchSAsn;
+	}
+
+	@JsonIgnore
+	public String getSearchDAsn() {
+		return searchDAsn;
+	}
+
+	public void setSearchDAsn(String searchDAsn) {
+		this.searchDAsn = searchDAsn;
+	}
+
+	@JsonIgnore
+	public String getSearchSSubscribeId() {
+		return searchSSubscribeId;
+	}
+
+	public void setSearchSSubscribeId(String searchSSubscribeId) {
+		this.searchSSubscribeId = searchSSubscribeId;
+	}
+
+
+	@JsonIgnore
+	public String getSearchDSubscribeId() {
+		return searchDSubscribeId;
+	}
+
+	public void setSearchDSubscribeId(String searchDSubscribeId) {
+		this.searchDSubscribeId = searchDSubscribeId;
+	}
+
+
+	@JsonIgnore
 	public String getSearchServerLocate() {
 		return searchServerLocate;
 	}
@@ -122,6 +165,8 @@ public abstract class LogEntity<T> implements Serializable {
 		this.searchServerLocate = searchServerLocate;
 	}
 
+
+	@JsonIgnore
 	public String getSearchClientLocate() {
 		return searchClientLocate;
 	}
