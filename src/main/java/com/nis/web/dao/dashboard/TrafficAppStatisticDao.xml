@@ -56,15 +56,14 @@
 	</select>
 	<!-- App通联关系Top100 -->
 	<select id="appConnRecordTop100" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
-		select found_time,s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(found_time) logNum 
+		select s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
 		from tbs_ods_ntc_conn_record_log t where
 		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
 			and app_id=toInt64(#{searchAppId})  ]]>
 		<if test="searchEntranceId">
 			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		</if>
-		
-		group by found_time,s_ip
-		 order by logNum limit 100
+		group by s_ip
+		order by logNum desc limit 100
 	</select>
 </mapper>
