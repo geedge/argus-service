@@ -30,7 +30,7 @@
   <select id="getAppList" resultType="java.util.HashMap">
 	SELECT IFNULL(c.app_name,p.app_type) appName,p.app_type appType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
 	SELECT app_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
-	((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte 
+	((SUM(c2s_byte_len+s2c_byte_len))/1024/1024/1024) AS GByte 
 	FROM traffic_app_statistic WHERE
 	<![CDATA[ stat_time>= #{beginTime} and stat_time< #{endTime}]]>
 	<if test="appType!=null">
@@ -38,6 +38,9 @@
         <foreach collection="appType" index="index" item="item" open="(" separator="," close=")">  
            	#{item}  
        	</foreach>
+	</if>
+	<if test="entranceId !=null">
+		and entrance_id=#{entranceId}
 	</if>
 	GROUP BY app_type ) p
 	LEFT JOIN ui_code_app_dic c ON p.app_type=c.view_code ORDER BY p.GByte DESC

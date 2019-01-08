@@ -27,7 +27,7 @@
   <select id="getProtocolList" resultType="java.util.HashMap">
 	SELECT IFNULL(c.protocol_type,p.proto_type) protocolType,p.proto_type protoType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
 	SELECT proto_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
-	 ((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte
+	 ((SUM(c2s_byte_len+s2c_byte_len))/1024/1024/1024) AS GByte
 	FROM traffic_protocol_statistic WHERE 
 	<![CDATA[ stat_time>= #{beginTime} and stat_time< #{endTime}]]>
 	<if test="protoType!=null">
@@ -35,6 +35,9 @@
         <foreach collection="protoType" index="index" item="item" open="(" separator="," close=")">  
            	#{item}  
        	</foreach>
+	</if>
+	<if test="entranceId !=null">
+		and entrance_id=#{entranceId}
 	</if>
 	GROUP BY proto_type ) p
 	LEFT JOIN ui_code_protocol_type_dic c ON p.proto_type=c.view_code ORDER BY p.GByte DESC
