@@ -63,7 +63,7 @@ public class LogDataService {
 		}
 		long second = endTime - startTime;
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT SUM(s2c_pkt_num + s2c_pkt_num)/");
+		sql.append("SELECT SUM(s2c_pkt_num + c2s_pkt_num)/");
 		sql.append(second);
 		sql.append(" AS pps ,  SUM(c2s_byte_num + s2c_byte_num)*8/1024/1024/1024/");
 		sql.append(second);
@@ -74,8 +74,17 @@ public class LogDataService {
 		sql.append(endTime);
 		StringBuffer totalSql = new StringBuffer();
 		totalSql.append(sql);
-		totalSql.append(" and stream_dir in(1,2,3)) and stream_dir in(1,2,3)");
-		sql.append(" and stream_dir in(1,2) ) and stream_dir in(1,2)");
+		if (ntcConnRecordPercent.getSearchEntranceId() != null
+				&& !ntcConnRecordPercent.getSearchEntranceId().trim().equals("")) {
+			totalSql.append(" and stream_dir in(1,2,3)   and entrance_id =" + ntcConnRecordPercent.getSearchEntranceId()
+					+ " ) and stream_dir in(1,2,3) and entrance_id =" + ntcConnRecordPercent.getSearchEntranceId());
+			sql.append(" and stream_dir in(1,2)  and entrance_id =" + ntcConnRecordPercent.getSearchEntranceId()
+					+ " ) and stream_dir in(1,2) and entrance_id =" + ntcConnRecordPercent.getSearchEntranceId());
+		} else {
+			totalSql.append(" and stream_dir in(1,2,3)) and stream_dir in(1,2,3)");
+			sql.append(" and stream_dir in(1,2) ) and stream_dir in(1,2) ");
+		}
+
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, sql.toString(), false);
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent, totalSql.toString(), true);
 		return ntcConnRecordPercent;
