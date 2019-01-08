@@ -46,24 +46,40 @@
   <select id="getAppTrend" parameterType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic" resultType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic">
 		select stat_time time, max(unique_sip_num) sipNum,max(unique_dip_num) dipNum from traffic_app_focus_statistic t where
 		<![CDATA[ stat_time>= toDateTime(#{searchStartTime}) and stat_time< toDateTime(#{searchEndTime})
-			and app_id=toInt64(#{searchAppId})  ]]>
-		<if test="searchEntranceId">
-			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
-		</if>
-		
+			and app_id=toInt64(#{searchAppId})  and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		group by stat_time
 		 order by stat_time
 	</select>
-	<!-- App通联关系Top100 -->
+	<!-- App 活跃IP Top100 -->
 	<select id="appConnRecordTop100" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
 		select s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
 		from tbs_ods_ntc_conn_record_log t where
 		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
+			and app_id=toInt64(#{searchAppId})  and entrance_id=toInt64(#{searchEntranceId}) ]]>
+		group by s_ip
+		order by
+		<choose>
+			<when test="searchQuota !=null and searchQuota != '' and searchQuota == 2 ">
+				pktNum
+			</when>
+			<when test="searchQuota !=null and searchQuota != '' and searchQuota == 3 ">
+				byteNum
+			</when>
+			<otherwise>
+				logNum 
+			</otherwise>
+		</choose>
+		desc limit 100
+	</select>
+	<!-- App 所有IP 连接数、包数、字节数 总量统计 用于计算活跃IP Top100的占比情况  -->
+	<select id="appConnRecordTotal" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
+		select sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
+		from tbs_ods_ntc_conn_record_log t where
+		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
 			and app_id=toInt64(#{searchAppId})  ]]>
-		<if test="searchEntranceId">
+		<if test="searchEntranceId !=null and searchEntranceId != ''">
 			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		</if>
-		group by s_ip
-		order by logNum desc limit 100
 	</select>
+	
 </mapper>

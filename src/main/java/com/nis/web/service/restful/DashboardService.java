@@ -1,5 +1,6 @@
 package com.nis.web.service.restful;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -565,7 +567,7 @@ public class DashboardService extends BaseService {
 			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
 				// 存放一个时间点中每个IP的总数
-				Map<String, Long> ipCountMap = new HashMap<String, Long>();
+				Map<String, Long> ipCountMap = new TreeMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				for (int j = index; j < ipInfoList.size(); j++) {
 					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
@@ -1695,8 +1697,18 @@ public class DashboardService extends BaseService {
 	}
 	
 	public List<AppConnRecordStatistic> appConnRecordTop100(AppConnRecordStatistic entity) {
+		DecimalFormat df = new DecimalFormat("##.##");
 		List<AppConnRecordStatistic> list = new ArrayList<AppConnRecordStatistic>();
 		list = trafficAppStatisticDao.appConnRecordTop100(entity);
+		if (!StringUtil.isEmpty(list)) {
+			//统计总量
+			AppConnRecordStatistic sum = trafficAppStatisticDao.appConnRecordTotal(entity).get(0);
+			for (AppConnRecordStatistic obj : list) {
+				obj.setBytePercent(df.format(obj.getByteNum()/sum.getByteNum()*100));
+				obj.setPktPercent(df.format(obj.getPktNum()/sum.getPktNum()*100));
+				obj.setLogPercent(df.format(obj.getLogNum()/sum.getLogNum()*100));
+			}
+		}
 		return list;
 	}
 }

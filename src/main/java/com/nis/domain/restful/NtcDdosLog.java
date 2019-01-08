@@ -2,6 +2,7 @@ package com.nis.domain.restful;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -33,6 +34,8 @@ public class NtcDdosLog  extends LogEntity<NtcDdosLog> {
     protected Integer isBlock;
     
     protected String searchIsBlock; //攻击流量是否被丢弃
+    protected String searchAttackType; //攻击类型
+    
 	public Integer getAttackType() {
 		return attackType;
 	}
@@ -82,11 +85,21 @@ public class NtcDdosLog  extends LogEntity<NtcDdosLog> {
 		this.isBlock = isBlock;
 	}    
 
+	@JsonIgnore
 	public String getSearchIsBlock() {
 		return searchIsBlock;
 	}
 	
 	public void setSearchIsBlock(String searchIsBlock) {
 		this.searchIsBlock = searchIsBlock;
+	}
+	
+	@JsonIgnore
+	public String getSearchAttackType() {
+		return searchAttackType;
+	}
+	
+	public void setSearchAttackType(String searchAttackType) {
+		this.searchAttackType = searchAttackType;
 	}
 }

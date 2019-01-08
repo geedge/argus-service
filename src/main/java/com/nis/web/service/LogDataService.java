@@ -250,7 +250,7 @@ public class LogDataService {
 								String field = filedAndColumnMap.get(key).toLowerCase();
 								if (type.equals("java.lang.String")) {
 
-									if (field.equals("url") || field.equals("website")) {
+									if (field.contains("url") || field.equals("website")) {
 										whereSB.append(" and " + field + " like '"
 												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
 									} else if (field.equals("client_locate") || field.equals("server_locate")) {
@@ -407,7 +407,7 @@ public class LogDataService {
 
 								if (typeName.equals("java.lang.String")) {
 									String field = filedAndColumnMap.get(key);
-									if (field.equals("url") || field.equals("website")) {
+									if (field.contains("url") || field.equals("website")) {
 										whereSB.append(" and " + field + " like '"
 												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
 									} else {

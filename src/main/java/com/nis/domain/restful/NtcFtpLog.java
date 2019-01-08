@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -17,7 +18,8 @@ public class NtcFtpLog  extends LogEntity {
     @ApiModelProperty(value = "FTP内容", required = true)
     protected String ftpContent;
 
-
+    protected String searchFtpUrl;
+    
     public String getFtpUrl() {
         return ftpUrl;
     }
@@ -33,4 +35,12 @@ public class NtcFtpLog  extends LogEntity {
     public void setFtpContent(String ftpContent) {
         this.ftpContent = ftpContent;
     }
+    @JsonIgnore
+    public String getSearchFtpUrl() {
+		return searchFtpUrl;
+	}
+    
+    public void setSearchFtpUrl(String searchFtpUrl) {
+		this.searchFtpUrl = searchFtpUrl;
+	}
 }
