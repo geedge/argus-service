@@ -696,7 +696,8 @@ public class NtcLogSearchController extends BaseRestController {
 				ntcConnRecordLog.setSearchFoundEndTime(map.get("endTime"));
 			}
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
-			ntcLogService.ntcConnRecordLogsQueryConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
+			ntcLogService.ntcConnRecordLogsQueryConditionCheck(auditLogThread, start, ntcConnRecordLog,
+					NtcConnRecordLog.class, page);
 			logDataService.getData(page, ntcConnRecordLog);
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("通联关系日志检索失败:" + e.getMessage());
@@ -749,13 +750,23 @@ public class NtcLogSearchController extends BaseRestController {
 				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundStartTime())) {
 					sdf.setLenient(false);
 					sdf.parse(ntcConnRecordPercent.getSearchFoundStartTime());
-				} 
+				}
 			} catch (ParseException e) {
 				throw new RestServiceException("searchFoundStartTime参数格式错误",
 						RestBusinessCode.param_formate_error.getValue());
 			} catch (Exception e) {
 				throw new RestServiceException("searchFoundStartTime参数错误",
 						RestBusinessCode.param_formate_error.getValue());
+			}
+			try {
+				if (!StringUtil.isBlank(ntcConnRecordPercent.getSearchEntranceId())) {
+					Integer.parseInt(ntcConnRecordPercent.getSearchEntranceId());
+				}
+			} catch (NumberFormatException e) {
+				throw new RestServiceException("searchEntranceId参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchEntranceId参数错误", RestBusinessCode.param_formate_error.getValue());
 			}
 
 			logDataService.getNtcConnRecordPercent(ntcConnRecordPercent);
@@ -823,14 +834,16 @@ public class NtcLogSearchController extends BaseRestController {
 			try {
 				if (!StringUtil.isBlank(ntcAsnRecord.getSearchAsnType())) {
 					Integer.parseInt(ntcAsnRecord.getSearchAsnType());
-				}else {
+				} else {
 					throw new RestServiceException("searchAsnType参数不能为空",
 							RestBusinessCode.param_formate_error.getValue());
 				}
 			} catch (NumberFormatException e) {
-				throw new RestServiceException("searchAsnType参数格式错误"+e.getMessage(), RestBusinessCode.param_formate_error.getValue());
+				throw new RestServiceException("searchAsnType参数格式错误" + e.getMessage(),
+						RestBusinessCode.param_formate_error.getValue());
 			} catch (Exception e) {
-				throw new RestServiceException("searchAsnType参数错误"+e.getMessage(), RestBusinessCode.param_formate_error.getValue());
+				throw new RestServiceException("searchAsnType参数错误" + e.getMessage(),
+						RestBusinessCode.param_formate_error.getValue());
 			}
 
 			logDataService.getNtcAsnRecord(page, ntcAsnRecord);

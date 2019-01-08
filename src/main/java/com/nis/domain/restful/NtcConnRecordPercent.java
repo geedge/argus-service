@@ -24,6 +24,7 @@ public class NtcConnRecordPercent implements Serializable {
 	private String ppsPercent;
 	private String searchFoundStartTime;// 开始发现时间
 	private String searchFoundEndTime;// 结束发现时间
+	private String searchEntranceId;
 
 	public String getBps() {
 		return bps;
@@ -74,4 +75,16 @@ public class NtcConnRecordPercent implements Serializable {
 	public void setSearchFoundEndTime(String searchFoundEndTime) {
 		this.searchFoundEndTime = searchFoundEndTime;
 	}
+	@JsonIgnore
+	public String getSearchEntranceId() {
+		return searchEntranceId;
+	}
+
+	public void setSearchEntranceId(String searchEntranceId) {
+		this.searchEntranceId = searchEntranceId;
+	}
+	
+	
+	
+	
 }
