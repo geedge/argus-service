@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -22,6 +23,8 @@ public class NtcP2pLog extends LogEntity<NtcP2pLog> {
 	@ApiModelProperty(value = "Emule搜索关键词", required = true)
 	private String p2pKeyword;
 	
+	protected String searchP2pFileId;
+	protected String searchP2pKeyword;
 	/**
 	 * @return the p2pProto
 	 */
@@ -57,5 +60,23 @@ public class NtcP2pLog extends LogEntity<NtcP2pLog> {
 	 */
 	public void setP2pKeyword(String p2pKeyword) {
 		this.p2pKeyword = p2pKeyword;
+	}
+	
+	@JsonIgnore
+	public String getSearchP2pFileId() {
+		return searchP2pFileId;
+	}
+	
+	public void setSearchP2pFileId(String searchP2pFileId) {
+		this.searchP2pFileId = searchP2pFileId;
+	}
+	
+	@JsonIgnore
+	public String getSearchP2pKeyword() {
+		return searchP2pKeyword;
+	}
+	
+	public void setSearchP2pKeyword(String searchP2pKeyword) {
+		this.searchP2pKeyword = searchP2pKeyword;
 	}
 }

@@ -42,7 +42,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.zdjizhi.utils.StringUtil;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 @RestController
 @RequestMapping(value = "${servicePath}/log/v1")
 @Api(value = "DashboardServiceController", description = "统计分析图表基本服务接口")
@@ -320,14 +320,14 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficProtocolList", method = RequestMethod.GET)
 	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
-	public Map<String, ?> trafficProtocolList(Integer[] protoType,String beginDate, String endDate, Model model, HttpServletRequest request,
+	public Map<String, ?> trafficProtocolList(Integer[] protoType,String beginDate, String endDate,Integer entranceId, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate,protoType);
+			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate,protoType,entranceId);
 			if (ipActiveList != null && ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString, HashMap.class);
@@ -403,7 +403,7 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActiveOneHour", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP统计一个小时的活跃IP", httpMethod = "GET", notes = "对应活跃IP实时统计查询服务。")
-	public Map<String, ?> trafficIpActiveOneHour(String beginDate, String endDate, Model model,
+	public Map<String, ?> trafficIpActiveOneHour(String beginDate, String endDate, Model model,Integer entranceId,
 			HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -413,7 +413,7 @@ public class DashboardServiceController extends BaseRestController {
 		try {
 			Date begin = DateUtils.parseDate(beginDate);
 			Date end = DateUtils.parseDate(endDate);
-			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour(begin, end);
+			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour(begin, end,entranceId);
 			if (ipActiveChart != null && ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
@@ -440,7 +440,7 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActiveFiveMinute", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP最近一个小时的变化趋势统计", httpMethod = "GET", notes = "对最新TOP10的活跃IP，在近一个小时的变化情况进行统计")
-	public Map<String, ?> trafficIpActiveFiveMinute(String beginDate, String endDate, Model model,
+	public Map<String, ?> trafficIpActiveFiveMinute(String beginDate, String endDate, Model model,Integer entranceId,
 			HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -454,7 +454,7 @@ public class DashboardServiceController extends BaseRestController {
 				begin = DateUtils.parseDate(beginDate);
 				end = DateUtils.parseDate(endDate);
 			}
-			List<Map> ipActiveChart = dashboardService.ipActiveFiveMinute(begin, end);
+			List<Map> ipActiveChart = dashboardService.ipActiveFiveMinute(begin, end,entranceId);
 			if (ipActiveChart != null && ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
@@ -515,14 +515,14 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficAppList", method = RequestMethod.GET)
 	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
-	public Map<String, ?> trafficAppList(Integer[] appType, String beginDate, String endDate, Model model,
+	public Map<String, ?> trafficAppList(Integer[] appType, String beginDate, String endDate, Model model,Integer entranceId,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> appList = dashboardService.getAppList(beginDate, endDate, appType);
+			List<Map> appList = dashboardService.getAppList(beginDate, endDate, appType,entranceId);
 			if (appList != null && appList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(appList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString, HashMap.class);

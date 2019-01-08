@@ -1,5 +1,6 @@
 package com.nis.web.service.restful;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -536,9 +538,9 @@ public class DashboardService extends BaseService {
 	/**
 	 * 获取活跃IPtop10 的趋势图
 	 */
-	public List<Map> ipActiveFiveMinute(Date beginDate, Date endDate) {
+	public List<Map> ipActiveFiveMinute(Date beginDate, Date endDate,Integer entranceId) {
 		List<Map> listMap = new ArrayList<Map>();
-		List<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
+		List<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate,entranceId);
 		if (ipListTop10 != null && ipListTop10.size() > 0) {
 			StringBuilder ipStr = new StringBuilder();
 			for (LinkedHashMap map : ipListTop10) {
@@ -559,13 +561,13 @@ public class DashboardService extends BaseService {
 			}
 
 			ArrayList<TrafficIpActiveStatistic> ipInfoList = trafficIpActiveStatisticDao
-					.ipActiveFiveMinute(ipStr.toString(), beginDate, endDate);
+					.ipActiveFiveMinute(ipStr.toString(), beginDate, endDate,entranceId);
 			// 存放每个IP，每个时间点的总数
 			Map<String, List> ipCountListMap = new HashMap<String, List>();
 			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
 				// 存放一个时间点中每个IP的总数
-				Map<String, Long> ipCountMap = new HashMap<String, Long>();
+				Map<String, Long> ipCountMap = new TreeMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				for (int j = index; j < ipInfoList.size(); j++) {
 					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
@@ -627,18 +629,18 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate) {
+	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate,Integer entranceId) {
 
 //		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 //			Date statTime = maxStatTime.getStatTime();
-		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
+		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate,entranceId);
 		if (list != null && list.size() > 0) {
 			for (LinkedHashMap map : list) {
 				if (map.get("ipAddr") != null) {
 					String ipAddr = (String) map.get("ipAddr");
-					HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate, endDate);
+					HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate, endDate,entranceId);
 					if (resMap != null) {
 						listMap.add(resMap);
 					}
@@ -664,7 +666,7 @@ public class DashboardService extends BaseService {
 		ArrayList<LinkedHashMap> list = new ArrayList<>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 //			Date statTime = maxStatTime.getStatTime();
-		list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate);
+		list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate,null);
 		if (list != null && list.size() > 0) {
 			for (LinkedHashMap map : list) {
 				if (map.get("ipAddr") != null) {
@@ -704,12 +706,12 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType) {
+	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType,Integer entranceId) {
 //		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 //			Date statTime = maxStatTime.getStatTime();
-		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType);
+		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType,entranceId);
 //		}
 		return list;
 	}
@@ -740,12 +742,12 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getAppList(String startTime, String endTime, Integer[] appType) {
+	public List<Map> getAppList(String startTime, String endTime, Integer[] appType,Integer entranceId) {
 //		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 //			Date statTime = maxStatTime.getStatTime();
-		list = trafficAppStatisticDao.getAppList(startTime, endTime, appType);
+		list = trafficAppStatisticDao.getAppList(startTime, endTime, appType,entranceId);
 //		}
 		return list;
 	}
@@ -1695,8 +1697,18 @@ public class DashboardService extends BaseService {
 	}
 	
 	public List<AppConnRecordStatistic> appConnRecordTop100(AppConnRecordStatistic entity) {
+		DecimalFormat df = new DecimalFormat("##.##");
 		List<AppConnRecordStatistic> list = new ArrayList<AppConnRecordStatistic>();
 		list = trafficAppStatisticDao.appConnRecordTop100(entity);
+		if (!StringUtil.isEmpty(list)) {
+			//统计总量
+			AppConnRecordStatistic sum = trafficAppStatisticDao.appConnRecordTotal(entity).get(0);
+			for (AppConnRecordStatistic obj : list) {
+				obj.setBytePercent(df.format(obj.getByteNum()/sum.getByteNum()*100));
+				obj.setPktPercent(df.format(obj.getPktNum()/sum.getPktNum()*100));
+				obj.setLogPercent(df.format(obj.getLogNum()/sum.getLogNum()*100));
+			}
+		}
 		return list;
 	}
 }

@@ -14,7 +14,8 @@ public interface TrafficAppStatisticDao {
 
 	TrafficAppStatistic getMaxStatTime();
 	List<Map> appChart(@Param("statTime")Date statTime);
-	List<Map> getAppList(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("appType")Integer[] appType);
+	List<Map> getAppList(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("appType")Integer[] appType,@Param("entranceId")Integer entranceId);
 	List<TrafficAppFocusStatistic> getAppTrend(TrafficAppFocusStatistic entity);
 	List<AppConnRecordStatistic> appConnRecordTop100(AppConnRecordStatistic entity);
+	List<AppConnRecordStatistic> appConnRecordTotal(AppConnRecordStatistic entity);
 }

@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -26,6 +27,10 @@ public class NtcAppLog extends LogEntity<NtcAppLog> {
 	private Integer labelAppId;
 	@ApiModelProperty(value = "应用来源", required = true)
 	private Integer labelAppSource;
+	
+	
+	protected String searchLabelAppId;//App Id
+	protected String searchLabelProtoId;//协议类型ID
 
 	public Integer getLabelProtoId() {
 		return labelProtoId;
@@ -70,5 +75,21 @@ public class NtcAppLog extends LogEntity<NtcAppLog> {
 
 	public void setLabelAppSource(Integer labelAppSource) {
 		this.labelAppSource = labelAppSource;
+	}
+	@JsonIgnore
+	public String getSearchLabelAppId() {
+		return searchLabelAppId;
+	}
+	
+	public void setSearchLabelAppId(String searchLabelAppId) {
+		this.searchLabelAppId = searchLabelAppId;
+	}
+	@JsonIgnore
+	public String getSearchLabelProtoId() {
+		return searchLabelProtoId;
+	}
+	
+	public void setSearchLabelProtoId(String searchLabelProtoId) {
+		this.searchLabelProtoId = searchLabelProtoId;
 	}
 }

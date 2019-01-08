@@ -5,44 +5,94 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class AppConnRecordStatistic extends AppTrendEntity{
 	
 	protected String ipAddr;
-	protected String pktNum;
-	protected String byteNum;
-	protected String logNum;	//日志数量
+	protected Double pktNum;
+	protected String pktPercent;
+	protected Double byteNum;
+	protected String bytePercent;
+	protected Double logNum;	//日志数量
+	protected String logPercent;
+	protected String searchQuota="1"; //统计指标 1:连接数 2：包数 3：字节数
 	
 	public AppConnRecordStatistic() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public AppConnRecordStatistic(String ipAddr, String pktNum, String byteNum,
-			String logNum) {
+	
+	public AppConnRecordStatistic(String ipAddr, Double pktNum,
+			String pktPercent, Double byteNum, String bytePercent,
+			Double logNum, String logPercent) {
 		super();
 		this.ipAddr = ipAddr;
 		this.pktNum = pktNum;
+		this.pktPercent = pktPercent;
 		this.byteNum = byteNum;
+		this.bytePercent = bytePercent;
 		this.logNum = logNum;
+		this.logPercent = logPercent;
 	}
+
 	public String getIpAddr() {
 		return ipAddr;
 	}
 	public void setIpAddr(String ipAddr) {
 		this.ipAddr = ipAddr;
 	}
-	public String getPktNum() {
+
+	public Double getPktNum() {
 		return pktNum;
 	}
-	public void setPktNum(String pktNum) {
+
+	public void setPktNum(Double pktNum) {
 		this.pktNum = pktNum;
 	}
-	public String getByteNum() {
+
+	public String getPktPercent() {
+		return pktPercent;
+	}
+
+	public void setPktPercent(String pktPercent) {
+		this.pktPercent = pktPercent;
+	}
+
+	public Double getByteNum() {
 		return byteNum;
 	}
-	public void setByteNum(String byteNum) {
+
+	public void setByteNum(Double byteNum) {
 		this.byteNum = byteNum;
 	}
-	public String getLogNum() {
+
+	public String getBytePercent() {
+		return bytePercent;
+	}
+
+	public void setBytePercent(String bytePercent) {
+		this.bytePercent = bytePercent;
+	}
+
+	public Double getLogNum() {
 		return logNum;
 	}
-	public void setLogNum(String logNum) {
+
+	public void setLogNum(Double logNum) {
 		this.logNum = logNum;
 	}
+
+	public String getLogPercent() {
+		return logPercent;
+	}
+
+	public void setLogPercent(String logPercent) {
+		this.logPercent = logPercent;
+	}
+
+	@JsonIgnore
+	public String getSearchQuota() {
+		return searchQuota;
+	}
+
+	public void setSearchQuota(String searchQuota) {
+		this.searchQuota = searchQuota;
+	}
+	
 }

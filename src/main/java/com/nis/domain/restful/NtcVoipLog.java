@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -25,6 +26,9 @@ public class NtcVoipLog  extends LogEntity<NtcVoipLog> {
     protected String callingNumber;
     @ApiModelProperty(value="VOIP被叫电信号码", required=true)
     protected String calledNumber;
+    
+    protected String searchCallingAccount;
+    protected String searchCalledAccount;
 	/**
 	 * @return the voipProtocol
 	 */
@@ -66,5 +70,22 @@ public class NtcVoipLog  extends LogEntity<NtcVoipLog> {
 	}
 	public void setCalledNumber(String calledNumber) {
 		this.calledNumber = calledNumber;
+	}
+	
+	@JsonIgnore
+	public String getSearchCalledAccount() {
+		return searchCalledAccount;
+	}
+	
+	public void setSearchCalledAccount(String searchCalledAccount) {
+		this.searchCalledAccount = searchCalledAccount;
+	}
+	@JsonIgnore
+	public String getSearchCallingAccount() {
+		return searchCallingAccount;
+	}
+	
+	public void setSearchCallingAccount(String searchCallingAccount) {
+		this.searchCallingAccount = searchCallingAccount;
 	}
 }

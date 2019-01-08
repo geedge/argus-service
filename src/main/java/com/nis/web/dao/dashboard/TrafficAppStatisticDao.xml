@@ -30,7 +30,7 @@
   <select id="getAppList" resultType="java.util.HashMap">
 	SELECT IFNULL(c.app_name,p.app_type) appName,p.app_type appType,p.link_num linkNum, p.packets packets, p.GByte GByte FROM (
 	SELECT app_type,SUM(link_num) AS link_num,SUM(c2s_pkt_num+s2c_pkt_num) AS packets,
-	((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024) AS GByte 
+	((SUM(c2s_byte_len+s2c_byte_len))/1024/1024/1024) AS GByte 
 	FROM traffic_app_statistic WHERE
 	<![CDATA[ stat_time>= #{beginTime} and stat_time< #{endTime}]]>
 	<if test="appType!=null">
@@ -39,6 +39,9 @@
            	#{item}  
        	</foreach>
 	</if>
+	<if test="entranceId !=null">
+		and entrance_id=#{entranceId}
+	</if>
 	GROUP BY app_type ) p
 	LEFT JOIN ui_code_app_dic c ON p.app_type=c.view_code ORDER BY p.GByte DESC
   </select>
@@ -46,24 +49,40 @@
   <select id="getAppTrend" parameterType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic" resultType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic">
 		select stat_time time, max(unique_sip_num) sipNum,max(unique_dip_num) dipNum from traffic_app_focus_statistic t where
 		<![CDATA[ stat_time>= toDateTime(#{searchStartTime}) and stat_time< toDateTime(#{searchEndTime})
-			and app_id=toInt64(#{searchAppId})  ]]>
-		<if test="searchEntranceId">
-			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
-		</if>
-		
+			and app_id=toInt64(#{searchAppId})  and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		group by stat_time
 		 order by stat_time
 	</select>
-	<!-- App通联关系Top100 -->
+	<!-- App 活跃IP Top100 -->
 	<select id="appConnRecordTop100" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
 		select s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
 		from tbs_ods_ntc_conn_record_log t where
 		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
+			and app_id=toInt64(#{searchAppId})  and entrance_id=toInt64(#{searchEntranceId}) ]]>
+		group by s_ip
+		order by
+		<choose>
+			<when test="searchQuota !=null and searchQuota != '' and searchQuota == 2 ">
+				pktNum
+			</when>
+			<when test="searchQuota !=null and searchQuota != '' and searchQuota == 3 ">
+				byteNum
+			</when>
+			<otherwise>
+				logNum 
+			</otherwise>
+		</choose>
+		desc limit 100
+	</select>
+	<!-- App 所有IP 连接数、包数、字节数 总量统计 用于计算活跃IP Top100的占比情况  -->
+	<select id="appConnRecordTotal" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
+		select sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
+		from tbs_ods_ntc_conn_record_log t where
+		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
 			and app_id=toInt64(#{searchAppId})  ]]>
-		<if test="searchEntranceId">
+		<if test="searchEntranceId !=null and searchEntranceId != ''">
 			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		</if>
-		group by s_ip
-		order by logNum desc limit 100
 	</select>
+	
 </mapper>

@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -16,6 +17,8 @@ public class NtcStreamingMediaLog  extends LogEntity<NtcStreamingMediaLog> {
     protected String url;
     @ApiModelProperty(value="传输协议", required=true)
     protected String protocol;
+    
+    protected String searchUrl;
 	public String getUrl() {
 		return url;
 	}
@@ -27,5 +30,14 @@ public class NtcStreamingMediaLog  extends LogEntity<NtcStreamingMediaLog> {
 	}
 	public void setProtocol(String protocol) {
 		this.protocol = protocol;
+	}
+	
+	@JsonIgnore
+	public String getSearchUrl() {
+		return searchUrl;
+	}
+	
+	public void setSearchUrl(String searchUrl) {
+		this.searchUrl = searchUrl;
 	}
 }

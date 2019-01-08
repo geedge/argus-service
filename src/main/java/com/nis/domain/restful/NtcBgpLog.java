@@ -1,5 +1,6 @@
 package com.nis.domain.restful;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.nis.domain.LogEntity;
 import com.wordnik.swagger.annotations.ApiModelProperty;
 
@@ -21,6 +22,8 @@ public class NtcBgpLog extends LogEntity<NtcBgpLog> {
     @ApiModelProperty(value="路由信息", required=true)
     protected String route;
     
+    protected String searchAsNum;//ASN号
+    
     public void setType(Integer type) {
 		this.type = type;
 	}
@@ -40,4 +43,12 @@ public class NtcBgpLog extends LogEntity<NtcBgpLog> {
 		return route;
 	}
     
+    @JsonIgnore
+    public String getSearchAsNum() {
+		return searchAsNum;
+	}
+    
+    public void setSearchAsNum(String searchAsNum) {
+		this.searchAsNum = searchAsNum;
+	}
 }

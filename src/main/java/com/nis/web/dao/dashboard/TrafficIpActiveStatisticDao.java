@@ -15,9 +15,9 @@ public interface TrafficIpActiveStatisticDao {
 //	List<TrafficIpActiveStatistic> getIpList(TrafficIpActiveStatistic trafficIpActiveStatistic);
 	TrafficIpActiveStatistic getMaxStatTime();
 
-	ArrayList<TrafficIpActiveStatistic> ipActiveFiveMinute( @Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
+	ArrayList<TrafficIpActiveStatistic> ipActiveFiveMinute( @Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate,@Param("entranceId")Integer entranceId);
 
-	HashMap ipActiveOneHour(@Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
+	HashMap ipActiveOneHour(@Param("ipAddr") String ipAddr,@Param("beginDate")Date beginDate,@Param("endDate")Date endDate,@Param("entranceId")Integer entranceId);
 
-	ArrayList<LinkedHashMap> ipActiveChart(@Param("beginDate")Date beginDate,@Param("endDate")Date endDate);
+	ArrayList<LinkedHashMap> ipActiveChart(@Param("beginDate")Date beginDate,@Param("endDate")Date endDate,@Param("entranceId")Integer entranceId);
 }
