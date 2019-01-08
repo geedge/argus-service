@@ -66,7 +66,14 @@ public class DashboardService extends BaseService {
 	public NtcTotalReportDao ntcTotalReportDao;
 	@Autowired
 	public TrafficPortActiveStatisticDao trafficPortActiveStatisticDao;
-
+	//ip地址类型
+	private final String[] addrTypes = {"4","6"} ;
+	//tcp udp
+	private final String[] transTypes ={"17","6"} ;  
+	//区域
+	private final String[] entranceIds ={"1","2"} ;  
+	
+	
 	/**
 	 * 流量统计 数据显示 info：先查询最近时间，根据时间条件查询数据 效率提高
 	 */
@@ -1285,9 +1292,6 @@ public class DashboardService extends BaseService {
 				dateRangeList.add(calendar.getTime());
 				calendar.add(Calendar.MINUTE, Constants.TREND_TIME_INTERVAL);
 			}
-			String[] addrTypes = getFiledTypeByName("addr_type");
-			String[] transTypes = getFiledTypeByName("trans_type");
-			String[] entranceIds = getFiledTypeByName("entrance_id");
 			if (bandwidthListIPvx != null && bandwidthListIPvx.size() > 0 && bandwidthListProtocol != null
 					&& bandwidthListProtocol.size() > 0 && addrTypes != null && addrTypes.length > 0
 					&& transTypes != null && transTypes.length > 0 && entranceIds != null && entranceIds.length > 0) {
