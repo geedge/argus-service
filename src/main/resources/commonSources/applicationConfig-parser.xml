@@ -239,8 +239,10 @@
 		<t:field fieldType="String" srcName="originalDestIp" dstName="original_dest_ip" isRequired="true"/>
 		<t:field fieldType="String" srcName="originalDestPort" dstName="original_dest_port" isRequired="true"/>
 		<t:field fieldType="String" srcName="originalProtocol" dstName="original_protocol" isRequired="true"/>
-		<t:field fieldType="String" srcName="translatedDestIp" dstName="translated_dest_ip" isRequired="true"/>
+		<!-- <t:field fieldType="String" srcName="translatedDestIp" dstName="translated_dest_ip" isRequired="true"/> -->
 		<t:field fieldType="String" srcName="translatedDestPort" dstName="translated_dest_port" isRequired="true"/>
+		<t:field fieldType="String" srcName="translatedUserType" dstName="translated_user_type" isRequired="true"/>
+		<t:field fieldType="String" srcName="translatedUserId" dstName="translated_user_id" isRequired="true"/>
 		<t:field fieldType="Number" srcName="doLog" dstName="do_log" isRequired="true" regexp="[0|1|2]"/>
 		<t:field fieldType="Number" srcName="isValid" dstName="is_valid" isRequired="true" regexp="[1]"/>
 		<t:field fieldType="String" srcName="effectiveRange" dstName="effective_range" isRequired="true"/>

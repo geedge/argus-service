@@ -425,8 +425,6 @@ public class DashboardService extends BaseService {
 				dateRangeList.add(calendar.getTime());
 				calendar.add(Calendar.MINUTE, Constants.TREND_TIME_INTERVAL);
 			}
-			// 存放每个时间点的总数
-			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
 			int index1 = 0;
 			int index2 = 0;
 			List sumList1 = new ArrayList();
@@ -452,10 +450,7 @@ public class DashboardService extends BaseService {
 						}
 					}
 				}
-				sumEnt1+=num1;
-				listEnt1.add(date.getTime());
-				listEnt1.add(num1);
-				sumList1.add(listEnt1);
+				
 				for (int j = index2; j < entrance2.size(); j++) {
 					NtcEntranceReport ipInfo = entrance2.get(j);
 					if (ipInfo.getReportTime() != null) {
@@ -466,7 +461,16 @@ public class DashboardService extends BaseService {
 							break;
 						}
 					}
+				}				
+				//最后一个时间点,全为0 直接跳过不存入列表
+				if(i+1==dateRangeList.size()&&num1.compareTo(0L)==0&&num2.compareTo(0L)==0){
+					break;
 				}
+				sumEnt1+=num1;
+				listEnt1.add(date.getTime());
+				listEnt1.add(num1);
+				sumList1.add(listEnt1);
+				
 				sumEnt2+=num2;
 				listEnt2.add(date.getTime());
 				listEnt2.add(num2);
@@ -575,17 +579,18 @@ public class DashboardService extends BaseService {
 			ArrayList<TrafficIpActiveStatistic> ipInfoList = trafficIpActiveStatisticDao
 					.ipActiveFiveMinute(ipStr.toString(), beginDate, endDate,entranceId);
 			// 存放每个IP，每个时间点的总数
-			Map<String, List> ipCountListMap = new HashMap<String, List>();
+			Map<String, List> ipCountListMap = new LinkedHashMap<String, List>();
+			//如果所有IP的最后一个点都为0，删除
+			Boolean delLastFlag = true;
 			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
 				// 存放一个时间点中每个IP的总数
-				Map<String, Long> ipCountMap = new TreeMap<String, Long>();
+				Map<String, Long> ipCountMap = new LinkedHashMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				for (int j = index; j < ipInfoList.size(); j++) {
 					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
 					if (ipInfo.getStatTime() != null) {
-						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
-								&& ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0)) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
 							Long num = ipInfo.getCount();
 							if (ipCountMap.containsKey(ipInfo.getIpAddr())) {
 								num = num + ipCountMap.get(ipInfo.getIpAddr());
@@ -601,7 +606,10 @@ public class DashboardService extends BaseService {
 					String ip = (String) map.get("ipAddr");
 					List sumList= new ArrayList();
 					sumList.add(date.getTime());
-					
+					//最后一个时间点
+					if(i+1==dateRangeList.size()&&!StringUtil.isEmpty(ipCountMap.get(ip))){
+						delLastFlag = false ;
+					}
 					Long sum = 0l;
 					if (ipCountMap.containsKey(ip)) {
 						sum = ipCountMap.get(ip);
@@ -627,6 +635,9 @@ public class DashboardService extends BaseService {
 				for (Object obj : ipCountListMap.get(ip)) {
 					List<Long> list = (List) obj;
 					total+=list.get(1);
+				}
+				if (delLastFlag) {
+					ipCountListMap.get(ip).remove(ipCountListMap.get(ip).size()-1);
 				}
 				ipTrafficMap.put("result", ipCountListMap.get(ip));
 				ipTrafficMap.put("sum", total);
@@ -1327,19 +1338,30 @@ public class DashboardService extends BaseService {
 					String key = "trans" + transType + "Type" + entranceId;
 					listMap.get(key).add(tts);
 				}
+				//所有的数据最后一个点都为0，删除
+				Boolean delLastFlag = true;
 				Set<Entry<String, ArrayList<TrafficTransStatistic>>> entrySet = listMap.entrySet();
 				for (Entry<String, ArrayList<TrafficTransStatistic>> entry : entrySet) {
 					String key = entry.getKey();
 					String entranceId = key.substring(key.length() - 1);
 					ArrayList<TrafficTransStatistic> value = entry.getValue();
-					resultMap.put(key, getNewData(dateRangeList,value,searchQuotaType));
+					resultMap.put(key, getNewData(dateRangeList,value,searchQuotaType,delLastFlag));
+				}
+				//删除最后一个点
+				if (delLastFlag) {
+					Iterator iterator = resultMap.keySet().iterator();
+					while (iterator.hasNext()) {
+						String key = iterator.next()+"";
+						List list = (List) resultMap.get(key).get("result");
+						list.remove(list.size()-1);
+					}
 				}
 			}
 		}
 		return resultMap;
 	}
 
-	private Map getNewData(List<Date> dateRangeList,List<TrafficTransStatistic> bandwidthList,String searchQuotaType) {
+	private Map getNewData(List<Date> dateRangeList,List<TrafficTransStatistic> bandwidthList,String searchQuotaType,Boolean delLastFlag) {
 		Map restMap = new HashMap();
 		List<List> restList = new ArrayList<List>();
 		int index = 0;
@@ -1370,6 +1392,10 @@ public class DashboardService extends BaseService {
 			countList.add(num);
 			sum+=num;
 			restList.add(countList);
+			//最后一个时间点
+			if(i+1==dateRangeList.size()&&num!=0l){
+				delLastFlag = false ;
+			}
 		}
 		restMap.put("sum", sum);
 		restMap.put("result", restList);
@@ -1432,8 +1458,6 @@ public class DashboardService extends BaseService {
 				dateRangeList.add(calendar.getTime());
 				calendar.add(Calendar.MINUTE, Constants.TREND_TIME_INTERVAL);
 			}
-			// 存放每个时间点的总数
-			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
 			int index = 0;
 			List resultList = new ArrayList();
 			Long total = 0L;
@@ -1452,6 +1476,11 @@ public class DashboardService extends BaseService {
 							break;
 						}
 					}
+				}
+				
+				//最后一个时间点，值为0不记录
+				if(i+1==dateRangeList.size()&&num.compareTo(0L)==0){
+					break;
 				}
 				sumList.add(date.getTime());
 				sumList.add(num);
@@ -1495,7 +1524,8 @@ public class DashboardService extends BaseService {
 		// if (portListTop10 != null && portListTop10.size() > 0) {
 		// StringBuilder portStr = new StringBuilder();
 		if (!StringUtil.isEmpty(portStr)) {
-			// 如果所有IP在最后一个时间点的count都为0，则移除最后一个点
+			// 如果所有Port在最后一个时间点的count都为0，则移除最后一个点
+			Boolean delLastFlag = true;
 			// 开始划分时间段,间隔5分钟
 			List<Date> dateRangeList = new ArrayList<Date>();
 			Calendar calendar = Calendar.getInstance();
@@ -1507,12 +1537,12 @@ public class DashboardService extends BaseService {
 
 			ArrayList<TrafficPortActiveStatistic> portInfoList = trafficPortActiveStatisticDao
 					.findTrafficPortActive(beginDate, endDate, portStr.toString());
-			// 存放每个IP，每个时间点的总数
-			Map<String, List<Long>> portCountListMap = new HashMap<String, List<Long>>();
+			// 存放每个Port，每个时间点的总数
+			Map<String, List<Long>> portCountListMap = new LinkedHashMap<String, List<Long>>();
 			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
 				// 存放一个时间点中每个IP的总数
-				Map<String, Long> portCountMap = new HashMap<String, Long>();
+				Map<String, Long> portCountMap = new LinkedHashMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				for (int j = index; j < portInfoList.size(); j++) {
 					TrafficPortActiveStatistic portInfo = portInfoList.get(j);
@@ -1539,6 +1569,10 @@ public class DashboardService extends BaseService {
 							sum = portCountMap.get(port);
 						}
 						sumList.add(sum);
+						//最后一个时间点
+						if(i+1==dateRangeList.size()&&sum.compareTo(0L)>0){
+							delLastFlag = false ;
+						}
 						if (portCountListMap.containsKey(port)) {
 							List list = portCountListMap.get(port);
 							list.add(sumList);
@@ -1559,6 +1593,10 @@ public class DashboardService extends BaseService {
 							sum = portCountMap.get(port);
 						}
 						sumList.add(sum);
+						//最后一个时间点
+						if(i+1==dateRangeList.size()&&sum.compareTo(0L)>0){
+							delLastFlag = false ;
+						}
 						if (portCountListMap.containsKey(port)) {
 							List list = portCountListMap.get(port);
 							list.add(sumList);
@@ -1579,6 +1617,10 @@ public class DashboardService extends BaseService {
 				for (Object obj : portCountListMap.get(port)) {
 					List<Long> list = (List) obj;
 					total+=list.get(1);
+				}
+				if (delLastFlag) {
+					List list = portCountListMap.get(port);
+					list.remove(list.size()-1);
 				}
 				trafficPortActiveMap.put("port", port);
 				trafficPortActiveMap.put("result", portCountListMap.get(port));
@@ -1620,9 +1662,8 @@ public class DashboardService extends BaseService {
 			List sumList = new ArrayList();
 			Long totalNum = 0L;
 			for (int i = 0; i < dateRangeList.size(); i++) {
-				//存放一个时间点中每个IP的总数
+				//存放一个时间点的总数
 				List tempList = new ArrayList();
-				Map<String, Long> ipCountMap = new HashMap<String, Long>();
 				Date date = dateRangeList.get(i);
 				Long sum = 0l;
 				for (int j = index; j < list.size(); j++) {
@@ -1635,6 +1676,11 @@ public class DashboardService extends BaseService {
 							break;
 						}
 					}
+				}
+				
+				//最后一个时间点，值为0不记录
+				if(i+1==dateRangeList.size()&&sum.compareTo(0L)==0){
+					break;
 				}
 				totalNum+=sum;
 				tempList.add(date.getTime());
@@ -1662,8 +1708,6 @@ public class DashboardService extends BaseService {
 				dateRangeList.add(calendar.getTime());
 				calendar.add(Calendar.MINUTE, 1);
 			}
-			// 存放每个时间点的总数
-			Map<String, List<Long>> ipCountListMap = new HashMap<String, List<Long>>();
 			int index = 0;
 			List resultSipList = new ArrayList();
 			List resultDipList = new ArrayList();
@@ -1687,6 +1731,11 @@ public class DashboardService extends BaseService {
 							break;
 						}
 					}
+				}
+				
+				//最后一个时间点
+				if(i+1==dateRangeList.size()&&sipNum.compareTo(0L)==0&&dipNum.compareTo(0L)==0){
+					break;
 				}
 				sipList.add(date.getTime());
 				sipList.add(sipNum);

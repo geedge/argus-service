@@ -1221,6 +1221,9 @@ public class DashboardServiceController extends BaseRestController {
 			throw new RestServiceException("searchStartTime和searchEndTime参数必须同时填写",
 					RestBusinessCode.config_integrity_error.getValue());
 		}
+		if (StringUtil.isEmpty(entity.getSearchAppId())) {
+			throw new RestServiceException("searchAppId参数不能为空", RestBusinessCode.missing_args.getValue());
+		}
 		//验证AppId和EntranceId必须是数值
 		checkNumericCondition(entity.getSearchAppId(),"searchAppId");
 		checkNumericCondition(entity.getSearchEntranceId(),"searchEntranceId");

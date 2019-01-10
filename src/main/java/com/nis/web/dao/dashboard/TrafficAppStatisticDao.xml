@@ -39,7 +39,7 @@
            	#{item}  
        	</foreach>
 	</if>
-	<if test="entranceId !=null">
+	<if test="entranceId !=null and searchEntranceId != ''">
 		and entrance_id=#{entranceId}
 	</if>
 	GROUP BY app_type ) p
@@ -49,7 +49,10 @@
   <select id="getAppTrend" parameterType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic" resultType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic">
 		select stat_time time, max(unique_sip_num) sipNum,max(unique_dip_num) dipNum from traffic_app_focus_statistic t where
 		<![CDATA[ stat_time>= toDateTime(#{searchStartTime}) and stat_time< toDateTime(#{searchEndTime})
-			and app_id=toInt64(#{searchAppId})  and entrance_id=toInt64(#{searchEntranceId}) ]]>
+			and app_id=toInt64(#{searchAppId}) ]]>
+		<if test="searchEntranceId !=null and searchEntranceId != ''">
+			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
+		</if>
 		group by stat_time
 		 order by stat_time
 	</select>
@@ -58,7 +61,10 @@
 		select s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
 		from tbs_ods_ntc_conn_record_log t where
 		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
-			and app_id=toInt64(#{searchAppId})  and entrance_id=toInt64(#{searchEntranceId}) ]]>
+			and app_id=toInt64(#{searchAppId}) ]]>
+		<if test="searchEntranceId !=null and searchEntranceId != ''">
+			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
+		</if>
 		group by s_ip
 		order by
 		<choose>
