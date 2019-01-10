@@ -39,7 +39,7 @@
            	#{item}  
        	</foreach>
 	</if>
-	<if test="entranceId !=null and searchEntranceId != ''">
+	<if test="entranceId !=null and entranceId != ''">
 		and entrance_id=#{entranceId}
 	</if>
 	GROUP BY app_type ) p
