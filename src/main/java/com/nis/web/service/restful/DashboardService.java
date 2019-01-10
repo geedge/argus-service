@@ -22,12 +22,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.beust.jcommander.internal.Maps;
+import com.nis.domain.Page;
 import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.NtcTotalReport;
 import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficAppStatistic;
+import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficIpActiveStatistic;
 import com.nis.domain.restful.dashboard.TrafficPortActiveStatistic;
@@ -41,6 +43,7 @@ import com.nis.util.DateUtils;
 import com.nis.util.StringUtils;
 import com.nis.web.dao.dashboard.NtcTotalReportDao;
 import com.nis.web.dao.dashboard.TrafficAppStatisticDao;
+import com.nis.web.dao.dashboard.TrafficAsnStatisticDao;
 import com.nis.web.dao.dashboard.TrafficHttpStatisticDao;
 import com.nis.web.dao.dashboard.TrafficIpActiveStatisticDao;
 import com.nis.web.dao.dashboard.TrafficPortActiveStatisticDao;
@@ -64,6 +67,8 @@ public class DashboardService extends BaseService {
 	public TrafficHttpStatisticDao trafficHttpStatisticDao;
 	@Autowired
 	public NtcTotalReportDao ntcTotalReportDao;
+	@Autowired
+	public TrafficAsnStatisticDao trafficAsnStatisticDao;
 	@Autowired
 	public TrafficPortActiveStatisticDao trafficPortActiveStatisticDao;
 	//ip地址类型
@@ -1714,5 +1719,9 @@ public class DashboardService extends BaseService {
 			}
 		}
 		return list;
+	}
+	public void getTrafficAsnStatisticList(Page page, TrafficAsnStatistic ntcAsnRecord){
+		ntcAsnRecord.setPage(page);
+		page.setList(trafficAsnStatisticDao.getTrafficAsnStatisticList(ntcAsnRecord));
 	}
 }

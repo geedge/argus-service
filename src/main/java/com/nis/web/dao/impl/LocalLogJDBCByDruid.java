@@ -26,10 +26,9 @@ import org.springframework.stereotype.Repository;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.nis.domain.Page;
-import com.nis.domain.restful.NtcAsnRecord;
 import com.nis.domain.restful.NtcConnRecordPercent;
+import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.web.service.SpringContextHolder;
-import com.zdjizhi.utils.CommonUtil;
 import com.zdjizhi.utils.StringUtil;
 
 /**
@@ -181,8 +180,8 @@ public class LocalLogJDBCByDruid {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<NtcAsnRecord> getNtcAsnRecordData(String sql) throws Exception {
-		List<NtcAsnRecord> list = new LinkedList<>();
+	public List<TrafficAsnStatistic> getNtcAsnRecordData(String sql) throws Exception {
+		List<TrafficAsnStatistic> list = new LinkedList<>();
 		try {
 			conn = getConnection();
 			logger.info("连接数据中心日志库成功--------------------------");
@@ -191,7 +190,7 @@ public class LocalLogJDBCByDruid {
 			rs = st.executeQuery(sql);
 			num.setMinimumFractionDigits(2);// 保留两位小数
 			while (rs.next()) {
-				NtcAsnRecord ntcAsnRecord = new NtcAsnRecord();
+				TrafficAsnStatistic ntcAsnRecord = new TrafficAsnStatistic();
 				String bps = rs.getString("bps");
 				String pps = rs.getString("pps");
 				String ppsNum =pps;
@@ -212,10 +211,10 @@ public class LocalLogJDBCByDruid {
 	}
 
 	public List<String> getAllIp(Integer frontier) throws Exception {
-		List<String> list = new LinkedList<>();
+		List<String> list = new ArrayList<>();
 		try {
 //			String sql = "select distinct ip from  ip_location_database_local where  ip like '145%'	and frontier='"+frontier+"'";
-			String sql = "select distinct ip from  ip_location_database_local where   frontier='"+frontier+"'";
+			String sql = "select distinct ip from  (select ip,frontier from	ip_location_database )  where   frontier='"+frontier+"'";
 			conn = getConnection();
 			logger.info("连接数据中心日志库成功--------------------------");
 			st = conn.createStatement();

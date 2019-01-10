@@ -1,8 +1,8 @@
 #==========日志库 Mysql=======================
 jdbc.log.driver=com.mysql.jdbc.Driver
 #阿斯坦纳
-jdbc.log.url=jdbc:mysql://10.0.4.22:8066/galaxy-service?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
-jdbc.log.username=mycat
+jdbc.log.url=jdbc:mysql://10.0.4.222:3306/galaxy-service?useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+jdbc.log.username=galaxy
 #实际密码ceiec2018!
 jdbc.log.key=73FU0t+Z8+PUxD/PArzvkQ==
 jdbc.log.password=lKZSz7h4AIhgKJb2l2GBMw==

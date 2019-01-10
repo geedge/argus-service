@@ -26,7 +26,7 @@
 	</bean>
 
 	<bean id="jedisPool" class="redis.clients.jedis.JedisSentinelPool">
-		<constructor-arg name="masterName" value="mymaster" />
+		<constructor-arg name="masterName" value="pzff_master" />
 		<constructor-arg name="sentinels">
 			<set>
 				<value>${redis.hostAndPort1}</value>

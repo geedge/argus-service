@@ -18,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nis.domain.Page;
-import com.nis.domain.restful.NtcAsnRecord;
 import com.nis.domain.restful.NtcConnRecordPercent;
+import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Configurations;
@@ -90,7 +90,7 @@ public class LogDataService {
 		return ntcConnRecordPercent;
 	}
 
-	public void getNtcAsnRecord(Page page, NtcAsnRecord ntcAsnRecord) throws Exception {
+	public void getNtcAsnRecord(Page page, TrafficAsnStatistic ntcAsnRecord) throws Exception {
 		long startTime = sdf.parse(ntcAsnRecord.getSearchFoundStartTime().toString().trim()).getTime() / 1000;
 		long endTime = sdf.parse(ntcAsnRecord.getSearchFoundEndTime().toString().trim()).getTime() / 1000;
 		if (endTime - startTime < 0) {

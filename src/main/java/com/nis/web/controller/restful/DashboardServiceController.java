@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.datasource.CustomerContextHolder;
+import com.nis.domain.Page;
 import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.AppTrendEntity;
 import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
+import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -1088,6 +1090,104 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App通联关系Top100数据检索成功", list,
 				0);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+
+	@RequestMapping(value = "/ntcAsnRecord", method = RequestMethod.GET)
+	@ApiOperation(value = "ASN通联关系(源,目的)查询", httpMethod = "GET", notes = "对日志功能“ASN通联关系(源,目的)查询”提供数据基础查询服务")
+	public Map<String, ?> ntcAsnRecord(Page page, TrafficAsnStatistic ntcAsnRecord, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		try {
+			if (StringUtil.isEmpty(ntcAsnRecord.getSearchFoundStartTime())
+					&& StringUtil.isEmpty(ntcAsnRecord.getSearchFoundEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
+				ntcAsnRecord.setSearchFoundStartTime(map.get("startTime"));
+				ntcAsnRecord.setSearchFoundEndTime(map.get("endTime"));
+			}
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+			try {
+				if (!StringUtil.isBlank(ntcAsnRecord.getSearchFoundEndTime())) {
+					sdf.setLenient(false);
+					sdf.parse(ntcAsnRecord.getSearchFoundEndTime());
+				}
+
+			} catch (ParseException e) {
+				throw new RestServiceException("searchFoundEndTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchFoundEndTime参数错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+
+			try {
+				if (!StringUtil.isBlank(ntcAsnRecord.getSearchFoundStartTime())) {
+					sdf.setLenient(false);
+					sdf.parse(ntcAsnRecord.getSearchFoundStartTime());
+				}
+
+			} catch (ParseException e) {
+				throw new RestServiceException("searchFoundStartTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchFoundStartTime参数错误",
+						RestBusinessCode.param_formate_error.getValue());
+			}
+			try {
+				if (!StringUtil.isBlank(ntcAsnRecord.getSearchAsnType())) {
+					Integer.parseInt(ntcAsnRecord.getSearchAsnType());
+				} else {
+					throw new RestServiceException("searchAsnType参数不能为空",
+							RestBusinessCode.param_formate_error.getValue());
+				}
+			} catch (NumberFormatException e) {
+				throw new RestServiceException("searchAsnType参数格式错误" + e.getMessage(),
+						RestBusinessCode.param_formate_error.getValue());
+			} catch (Exception e) {
+				throw new RestServiceException("searchAsnType参数错误" + e.getMessage(),
+						RestBusinessCode.param_formate_error.getValue());
+			}
+
+			dashboardService.getTrafficAsnStatisticList(page, ntcAsnRecord);
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("ASN通联关系(源,目的)日志检索失败:" + e.getMessage());
+			logger.error("ASN通联关系(源,目的)检索失败：" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"ASN通联关系(源,目的)检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"ASN通联关系(源,目的)检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"ASN通联关系(源,目的)检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "ASN通联关系(源,目的)检索成功",
+				page, 0);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 */
 	public void checkAppTrendCondition(AppTrendEntity entity) {

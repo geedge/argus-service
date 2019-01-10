@@ -1,8 +1,13 @@
-package com.nis.domain.restful;
+package com.nis.domain.restful.dashboard;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlTransient;
+
+import org.apache.poi.ss.formula.functions.T;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.nis.domain.Page;
 
 /**
  * 
@@ -12,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @date 2018年12月12日 下午2:00:16
  * @version V1.0
  */
-public class NtcAsnRecord implements Serializable {
+public class TrafficAsnStatistic<T> implements Serializable {
 
 	/**
 	 * 
@@ -29,6 +34,10 @@ public class NtcAsnRecord implements Serializable {
 
 	private String searchAsnType;// 1是d_asn,2是s_asn
 
+	
+	protected Page<T> page;
+	
+	
 	public String getBps() {
 		return bps;
 	}
@@ -88,4 +97,19 @@ public class NtcAsnRecord implements Serializable {
 	public void setSearchFoundEndTime(String searchFoundEndTime) {
 		this.searchFoundEndTime = searchFoundEndTime;
 	}
+	
+	@JsonIgnore
+	@XmlTransient
+	public Page<T> getPage() {
+		if (page == null) {
+			page = new Page<T>();
+		}
+		return page;
+	}
+
+	public Page<T> setPage(Page<T> page) {
+		this.page = page;
+		return page;
+	}
+
 }

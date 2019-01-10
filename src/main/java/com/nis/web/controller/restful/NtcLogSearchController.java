@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAppLog;
-import com.nis.domain.restful.NtcAsnRecord;
 import com.nis.domain.restful.NtcBgpLog;
 import com.nis.domain.restful.NtcCollectRadiusLog;
 import com.nis.domain.restful.NtcCollectVoipLog;
@@ -37,6 +36,7 @@ import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
 import com.nis.domain.restful.NtcStreamingMediaLog;
 import com.nis.domain.restful.NtcVoipLog;
+import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -788,9 +788,9 @@ public class NtcLogSearchController extends BaseRestController {
 				ntcConnRecordPercent, 0);
 	}
 
-	@RequestMapping(value = "/ntcAsnRecord", method = RequestMethod.GET)
+	@RequestMapping(value = "/ntcAsnRecordold", method = RequestMethod.GET)
 	@ApiOperation(value = "ASN通联关系(源,目的)查询", httpMethod = "GET", notes = "对日志功能“ASN通联关系(源,目的)查询”提供数据基础查询服务")
-	public Map<String, ?> ntcAsnRecord(Page page, NtcAsnRecord ntcAsnRecord, Model model, HttpServletRequest request,
+	public Map<String, ?> ntcAsnRecord(Page page, TrafficAsnStatistic ntcAsnRecord, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,

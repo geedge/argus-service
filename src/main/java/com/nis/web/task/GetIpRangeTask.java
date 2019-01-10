@@ -3,7 +3,7 @@ package com.nis.web.task;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +65,7 @@ public class GetIpRangeTask {
 	 */
 	public Map<Long, String> getNumAndIpReal(List<String> allIp) throws InterruptedException, ExecutionException {
 		logger.info("开始将ip转换为数字");
-		Map<Long, String> map = new LinkedHashMap<>();
+		Map<Long, String> map = new  HashMap<>();
 		int ever = 10000;// 每个线程处理10000条ip转数字
 		int count = allIp.size() / ever;
 		if (allIp.size() % ever != 0) {
@@ -231,7 +231,6 @@ public class GetIpRangeTask {
 		} else {
 			logger.info("获取境外ip成功,共{}条", allIp.size());
 		}
-		logger.info("获取境外ip成功,共{}条", allIp.size());
 		Map<Long, String> map = getNumAndIpReal(allIp);
 		Set<Long> keySet = map.keySet();
 		long[] array = new long[keySet.size()];
