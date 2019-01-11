@@ -47,7 +47,7 @@
   </select>
   <!-- App 趋势详情 -->
   <select id="getAppTrend" parameterType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic" resultType="com.nis.domain.restful.dashboard.TrafficAppFocusStatistic">
-		select stat_time time, max(unique_sip_num) sipNum,max(unique_dip_num) dipNum from traffic_app_focus_statistic t where
+		select stat_time time, sum(unique_sip_num) sipNum,sum(unique_dip_num) dipNum from traffic_app_focus_statistic t where
 		<![CDATA[ stat_time>= toDateTime(#{searchStartTime}) and stat_time< toDateTime(#{searchEndTime})
 			and app_id=toInt64(#{searchAppId}) ]]>
 		<if test="searchEntranceId !=null and searchEntranceId != ''">
