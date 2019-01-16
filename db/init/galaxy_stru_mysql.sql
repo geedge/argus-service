@@ -1115,13 +1115,14 @@ CREATE TABLE `traffic_netflow_port_info` (
 
 /*Table structure for table `traffic_port_active_statistic` */
 
-
 CREATE TABLE `traffic_port_active_statistic` (
-  `stat_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `port` int(11) NOT NULL,
-  `sum` bigint(20) NOT NULL,
-  `stat_time` datetime NOT NULL,
-  PRIMARY KEY (`stat_id`)
+	`stat_id`  bigint(20) NOT NULL AUTO_INCREMENT ,
+	`port`  int(11) NOT NULL ,
+	`sum`  bigint(20) NOT NULL ,
+	`stat_time`  datetime NOT NULL ,
+	`trans_proto`  int(11) NOT NULL COMMENT '6-TCP 17-UDP' ,
+	PRIMARY KEY (`stat_id`, `stat_time`),
+	INDEX `IDX_TRAFFIC_PORT_STAT_TIME` (`stat_time`) USING BTREE 
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `traffic_protocol_statistic` */
