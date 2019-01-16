@@ -31,15 +31,15 @@
   	SELECT stat_time statTime FROM traffic_trans_statistic order by stat_time desc limit 1
   </select>
   <!-- 根据最近时间条获取带宽，进出口流量 -->
- <select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
-     SELECT SUM(total_traffic.inoctets) AS inoctets ,SUM(total_traffic.outoctets) AS 	outoctets FROM (
+	<select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
+		SELECT SUM(total_traffic.inoctets) AS inoctets ,SUM(total_traffic.outoctets) AS 	outoctets FROM (
 		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
-		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=1 ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=1
+		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=1 and stat_time > DATE_SUB(now(), INTERVAL 15 MINUTE)  ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=1
 		UNION ALL
 		SELECT IFNULL(SUM(c2s_byte_len),0) inoctets ,IFNULL(SUM(s2c_byte_len),0) outoctets FROM traffic_trans_statistic
-		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=2
-    ) total_traffic
-  </select>
+		where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 and stat_time > DATE_SUB(now(), INTERVAL 15 MINUTE) ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=2
+	) total_traffic
+   </select>
   <!-- 获取近五分钟的带宽根据ip46，协议 tcp,udp变化 -->
 <!--  <select id="getBandwidthTrans" resultMap="BandwidthResultMap">
 	select IFNULL(p.gbps,0) gbps,IFNULL(p.pps,0) pps,IFNULL(p.sumNum,0) linkNum, date_format(a.min5,'%Y-%m-%d %H:%i') time from 
