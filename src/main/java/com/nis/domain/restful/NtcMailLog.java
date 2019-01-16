@@ -27,8 +27,19 @@ public class NtcMailLog extends LogEntity{
     protected String searchMailFrom;	//发件人
     protected String searchMailTo; 	//收件人
     protected String searchSubject;		//主题
+    
+    protected String flag;//泛收的标志
 
-    public String getMailProto() {
+	@JsonIgnore
+    public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
+	}
+
+	public String getMailProto() {
         return mailProto;
     }
 
