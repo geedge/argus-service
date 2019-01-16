@@ -29,7 +29,7 @@
   <!-- 获取指定时间段内的活跃端口详情数据 -->
   <select id="findTrafficPortActive" resultMap="BaseResultMap">
   	SELECT stat_time,port,sum(sum) as sum from traffic_port_active_statistic
-	WHERE <![CDATA[ port in (${port}) and stat_time >= #{statStartTime} and stat_time < #{statEndTime} ]]>
+	WHERE <![CDATA[ port in (${port}) and stat_time >= #{statStartTime} and stat_time < #{statEndTime} and  trans_proto=6  ]]>
 	<!-- <if test="port!=null">
 		 and port in 
         	 <foreach collection="port" index="index" item="item" open="(" separator="," close=")">  
@@ -43,7 +43,7 @@
   	SELECT port,sum(sum) as sum from traffic_port_active_statistic
 	WHERE 
 	<!--  -->
-	<![CDATA[stat_time >= #{statStartTime} and stat_time < #{statEndTime}]]>
+	<![CDATA[stat_time >= #{statStartTime} and stat_time < #{statEndTime} and  trans_proto=6 ]]>
 	<!-- 
 			stat_id BETWEEN
 			(select stat_id from traffic_port_active_statistic where<![CDATA[	stat_time >= #{statStartTime} order by stat_id limit 1)]]>
