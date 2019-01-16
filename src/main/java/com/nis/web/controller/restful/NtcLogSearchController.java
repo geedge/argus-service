@@ -34,6 +34,7 @@ import com.nis.domain.restful.NtcP2pLog;
 import com.nis.domain.restful.NtcPptpLog;
 import com.nis.domain.restful.NtcSshLog;
 import com.nis.domain.restful.NtcSslLog;
+import com.nis.domain.restful.NtcSslRecordLog;
 import com.nis.domain.restful.NtcStreamingMediaLog;
 import com.nis.domain.restful.NtcVoipLog;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
@@ -159,7 +160,8 @@ public class NtcLogSearchController extends BaseRestController {
 
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Dns日志检索成功", page, 0);
 	}
-
+	
+	//日志  Mail  和  Mail泛收 用同一个接口
 	@RequestMapping(value = "/ntcMailLogs", method = RequestMethod.GET)
 	@ApiOperation(value = "EMAIL日志查询", httpMethod = "GET", notes = "对应配置为“邮件管理”，存储动作为阻断与监测的命中日志。对日志功能“邮件管理”提供数据基础查询服务。")
 	public Map<String, ?> ntcMailLogs(Page page, NtcMailLog ntcMailLog, Model model, HttpServletRequest request,
@@ -167,6 +169,10 @@ public class NtcLogSearchController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
+		//判断searchCfgId是否为null
+		if(ntcMailLog.getSearchCfgId() ==null){
+			ntcMailLog.setSearchCfgId("-1");
+		}
 		try {
 			resetTime(ntcMailLog);
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);
@@ -863,5 +869,35 @@ public class NtcLogSearchController extends BaseRestController {
 		}
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "ASN通联关系(源,目的)检索成功",
 				page, 0);
+	}
+	
+	@RequestMapping(value = "/ntcSslRecordLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "SSL泛收日志查询", httpMethod = "GET", notes = "对应配置为“网站管理-SSL”，存储动作为阻断与监测的命中日志。对日志功能“网站管理-SSL”提供数据基础查询服务。")
+	public Map<String, ?> ntcSslRecordLogs(Page page, NtcSslRecordLog ntcSslRecordLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+
+		try {
+			resetTime(ntcSslRecordLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSslRecordLog, NtcSslRecordLog.class, page);
+			logDataService.getData(page, ntcSslRecordLog);
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("SSL泛收日志检索失败:" + e.getMessage());
+			logger.error("SSL泛收日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"SSL泛收日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"SSL泛收日志检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"SSL泛收日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSL泛收日志检索成功", page, 0);
 	}
 }

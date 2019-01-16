@@ -179,7 +179,12 @@ public class LogDataService {
 			orderBy = orderBy + "found_Time desc ";
 		}
 		if (Constants.ISUSECLICKHOUSE) {
-			getDataFromClickHouse(page, obj, tableName, className, orderBy.toLowerCase());
+			//判断实体类中是否存在某个字段
+			if(ifExistFiledName(obj,"flag")){//邮件泛收日志
+				getDataFromClickHouseFS(page, obj, tableName, className, orderBy.toLowerCase());
+			}else{
+				getDataFromClickHouse(page, obj, tableName, className, orderBy.toLowerCase());
+			}
 		} else {
 			getDataFromHive(page, obj, tableName, className, orderBy.toLowerCase());
 		}
@@ -316,7 +321,7 @@ public class LogDataService {
 		}
 		sql.append(orderBy.toLowerCase() + "  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
 
-		if (tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG")) {
+		if (tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG")|| tableName.toUpperCase().equals("TBS_ODS_NTC_COLLECT_SSL_LOG")) {
 			searchFromLocalCK(page, bean, sql, countSql);
 		} else {
 			searchFromDataCenter(page, bean, sql, countSql);
@@ -635,5 +640,181 @@ public class LogDataService {
 		Method method = bean.getClass().getMethod(methodName, classArr);
 		method.invoke(bean, value);
 	}
+	
+	/**
+	 * 利用反射查询一个对象中是否存在某个属性
+	 * 
+	 * @param obj
+	 * @param fieldName
+	 * @throws Exception
+	 */
+	private static boolean  ifExistFiledName(Object obj,String filedName) throws Exception{
+		Class class1=obj.getClass();//需要检测的类	 
+		/**
+		 * 循环遍历所有的元素，检测有没有这个名字
+		 */
+		Field[] fields=class1.getDeclaredFields();
+		 
+		boolean b=false;
+		for (int i = 0; i < fields.length; i++) {
+		    if(fields[i].getName().equals(filedName))
+		    {
+		        b=true;
+		        break;
+		    }
+		}
+		return b;
+	}
+	
+	/**
+	 * 有泛收的页面调用的方法，(邮箱泛收)
+	 * 从clickhouse中查询数据,注意clickhouse区分大小写,目前和百分点商定都是用小写
+	 * 
+	 * @param page      里面含有pagesize和pageno,order by
+	 * @param bean      日志类对象(从DfLogSearchDao.xml中获取对应的map,类名+Map),用来获取各个属性对应的数据库字段名
+	 * @param tableName 表名
+	 * @param className 类名
+	 * @param orderBy   orderby条件
+	 * @throws Exception
+	 */
+	private <T> void getDataFromClickHouseFS(Page<T> page, Object bean, String tableName, String className,
+			String orderBy) throws Exception {
+		tableName = tableName.toLowerCase();
+		String showColmun = getFiledsSql(className, page.getFields());
+		StringBuffer sql = new StringBuffer();
+		Map<String, String> filedAndColumnMap = getFiledAndColumnMap(bean.getClass());
+		if (null == showColmun || showColmun.equals("")) {
+			for (String key : filedAndColumnMap.keySet()) {
+				if (!filedAndColumnMap.get(key).toLowerCase().equals("id")) {
+					sql.append(filedAndColumnMap.get(key) + ",");
+				}
+			}
+		} else {
+			sql.append(showColmun);
+		}
+		String sqlTrim = sql.toString().trim();
+		if (sqlTrim.endsWith(",")) {
+			sqlTrim = sqlTrim.substring(0, sqlTrim.length() - 1);
+		}
+		sql.setLength(0);
+		sql.append(" select " + sqlTrim.toLowerCase() + "  from " + tableName.toLowerCase() + " t where ");
+		StringBuffer whereFoundTime = new StringBuffer();
+		StringBuffer countSql = new StringBuffer();
+		countSql.append("select count(1) from " + tableName + " where ");
 
+		StringBuffer whereSB = new StringBuffer();
+		if (!StringUtil.isEmpty(bean)) {
+			Class<?> clazz = bean.getClass();
+			Map<String, String> filedsType = null;
+			filedsType = getFiledsType(bean);
+			for (; clazz != Object.class; clazz = clazz.getSuperclass()) {
+				Field[] fields = clazz.getDeclaredFields();
+				for (int i = 0; i < fields.length; i++) {
+					// 现在gwall日志表结构中只有数值和字符串两种类型,数值都是int类型没有bigint所以不需要加L,
+					Field f = fields[i];
+					String key = f.getName();// 获取字段名
+					if (f.getType().getName().equals("java.lang.String") && key.startsWith("search")) {
+						Object value = getFieldValue(bean, key);
+						if (!StringUtil.isEmpty(value)) {
+							setFieldValue(bean, key, value.toString().trim());
+							if (key.endsWith("Time")) {// 日期开始或结束的字段
+								if (col2col.containsKey(key)) {
+									value = sdf.parse(value.toString().trim()).getTime() / 1000;
+									if (col2col.get(key).get("start") != null) {
+										whereFoundTime.append(" and "
+												+ filedAndColumnMap.get(col2col.get(key).get("start")).toLowerCase()
+												+ ">=" + value);
+									} else {
+										whereFoundTime.append(" and "
+												+ filedAndColumnMap.get(col2col.get(key).get("end")).toLowerCase() + "<"
+												+ value);
+									}
+								}
+							} else {
+								if (key.toLowerCase().startsWith("search")) {
+									key = key.replace("search", "");
+									key = key.substring(0, 1).toLowerCase() + key.substring(1);
+								}
+								// clickhouse写法
+								String type = filedsType.get(key).trim();
+								String field = filedAndColumnMap.get(key).toLowerCase();
+								if (type.equals("java.lang.String")) {
+
+									if (field.contains("url") || field.equals("website")) {
+										whereSB.append(" and " + field + " like '"
+												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
+									} else if (field.equals("client_locate") || field.equals("server_locate")) {
+										whereSB.append(" and " + field + " like '%"
+												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "%'");
+									} else {
+										whereSB.append(" and " + field + "='"
+												+ StringEscapeUtils.unescapeHtml4(value.toString().trim()) + "'");
+									}
+
+								} else if (type.equals("java.lang.Integer") || type.equals("int")
+										|| type.equals("java.lang.Long") || type.equals("long")) {
+										if (field.equals("cfg_id")|| field.equals("web_id") || field.equals("app_id")
+												|| field.equals("proto_id")){
+											if(field.equals("cfg_id")){
+												if(value.toString().trim().equals("0")){
+													whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " ="
+															+ value.toString().trim());
+												}else if(value.toString().trim().equals("-1")){
+													whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " >0" );
+												}else{
+													whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " in("
+															+ value.toString().trim() + ")");
+												}
+											}else{
+													whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + " in("
+															+ value.toString().trim() + ")");
+											}
+										}else {
+											whereSB.append(" and " + filedAndColumnMap.get(key).toLowerCase() + "="
+													+ value.toString().trim());
+										}
+									
+								}
+
+							}
+						}
+
+					}
+				}
+
+			}
+		}
+		Integer startNum = (page.getPageNo() - 1) * page.getPageSize();
+		StringBuffer foundTimeSql = new StringBuffer();
+		foundTimeSql.append("select  found_time  from " + tableName + " where ");
+		Integer limitCount = startNum + page.getPageSize();
+		if (whereSB.length() == 0) {// 没有其他查询条件只有默认的found_time条件
+			if (whereFoundTime.length() > 0) {
+				int indexOf = whereFoundTime.indexOf("and") + "and".length();
+				countSql.append(whereFoundTime.substring(indexOf));
+
+				foundTimeSql
+						.append(whereFoundTime.substring(indexOf) + orderBy.toLowerCase() + "  limit " + limitCount);
+				sql.append(" found_time in(" + foundTimeSql + ") ");
+			} else {
+				throw new RuntimeException("从clickhouse的" + tableName + "表查询时,必须要有一个where条件");
+			}
+		} else {
+			int foundIndexOf = whereFoundTime.append(whereSB).indexOf("and") + "and".length();
+			countSql.append(whereFoundTime.substring(foundIndexOf));
+			foundTimeSql
+					.append(whereFoundTime.substring(foundIndexOf) + orderBy.toLowerCase() + "  limit " + limitCount);
+
+			int indexOf = whereSB.indexOf("and") + "and".length();
+			sql.append(whereSB.substring(indexOf) + " and found_time in(" + foundTimeSql + ") ");
+		}
+		sql.append(orderBy.toLowerCase() + "  limit " + startNum + "," + page.getPageSize());// clickhouse的分页与mysql相同
+
+		if (tableName.toUpperCase().equals("TBS_ODS_NTC_CONN_RECORD_LOG") ) {
+			searchFromLocalCK(page, bean, sql, countSql);
+		} else {
+			searchFromDataCenter(page, bean, sql, countSql);
+		}
+
+	}
 }
