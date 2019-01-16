@@ -23,11 +23,12 @@ public class NtcMailLog extends LogEntity{
     protected String emlKey;
     @ApiModelProperty(value="EML文件转储路径", required=true)
     protected String emlFile;
-    
+	@ApiModelProperty(value = "运营商标识,entrance_id,device_id", required = true)
+	protected String ispNum;
     protected String searchMailFrom;	//发件人
     protected String searchMailTo; 	//收件人
     protected String searchSubject;		//主题
-    
+    protected String searchIspCode;// 运营商
     protected String flag;//泛收的标志
 
 	@JsonIgnore
@@ -114,4 +115,24 @@ public class NtcMailLog extends LogEntity{
 	public String getSearchSubject() {
 		return searchSubject;
 	}
+
+	public String getIspNum() {
+		return ispNum;
+	}
+
+	public void setIspNum(String ispNum) {
+		this.ispNum = ispNum;
+	}
+	@JsonIgnore
+	public String getSearchIspCode() {
+		return searchIspCode;
+	}
+
+	public void setSearchIspCode(String searchIspCode) {
+		this.searchIspCode = searchIspCode;
+	}
+	
+	
+	
+	
 }

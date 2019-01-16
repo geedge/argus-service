@@ -13,7 +13,6 @@ import com.wordnik.swagger.annotations.ApiModelProperty;
  * @version V1.0
  */
 public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
-	
 
 	/**
 	 * 
@@ -29,7 +28,7 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	protected String c2sByteNum;
 	@ApiModelProperty(value = "", required = true)
 	protected String s2cByteNum;
-	
+
 	@ApiModelProperty(value = "", required = true)
 	protected Long protoId;
 	@ApiModelProperty(value = "", required = true)
@@ -37,13 +36,17 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	@ApiModelProperty(value = "", required = true)
 	protected Long webId;
 
-	
-	protected String searchAppId;//app
-	protected String searchWebId;//web
-	protected String searchProtoId;//proto
-	//protected String searchServerLocate;//serverLocate
-	//protected String searchClientLocate;//clientLocate
-	
+	@ApiModelProperty(value = "运营商标识,entrance_id,device_id", required = true)
+	protected String ispNum;
+
+	protected String searchAppId;// app
+	protected String searchWebId;// web
+	protected String searchProtoId;// proto
+	protected String searchIspCode;// 运营商
+
+	// protected String searchServerLocate;//serverLocate
+	// protected String searchClientLocate;//clientLocate
+
 	@JsonIgnore
 	public String getAppLabel() {
 		return appLabel;
@@ -135,7 +138,23 @@ public class NtcConnRecordLog extends LogEntity<NtcConnRecordLog> {
 	public void setSearchProtoId(String searchProtoId) {
 		this.searchProtoId = searchProtoId;
 	}
-	
-	
+
+	@JsonIgnore
+	public String getSearchIspCode() {
+		return searchIspCode;
+	}
+
+	public void setSearchIspCode(String searchIspCode) {
+		this.searchIspCode = searchIspCode;
+	}
+
+	public String getIspNum() {
+		return ispNum;
+	}
+
+	public void setIspNum(String ispNum) {
+		this.ispNum = ispNum;
+	}
+
 
 }

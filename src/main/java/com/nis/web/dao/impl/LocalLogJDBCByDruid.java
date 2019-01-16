@@ -90,17 +90,19 @@ public class LocalLogJDBCByDruid {
 				for (int i = 1; i <= metaData.getColumnCount(); i++) {
 					Object value = rs.getObject(i);
 					String filedName = filedAndColumnMap.get(metaData.getColumnName(i).toString().toLowerCase());
-					if (!StringUtil.isEmpty(value)) {
-						// 如果是日期类型的属性需要把时间戳转换成日期，如果时间戳为0直接把值设置为null
-						if (null != columnList && columnList.contains(filedName.toLowerCase())) {
-							long time = 0L;
-							time = Long.parseLong(value.toString());
-							map.put(filedName, time == 0L ? null : new Date(time * 1000));
+					if (filedName != null) {
+						if (!StringUtil.isEmpty(value)) {
+							// 如果是日期类型的属性需要把时间戳转换成日期，如果时间戳为0直接把值设置为null
+							if (null != columnList && columnList.contains(filedName.toLowerCase())) {
+								long time = 0L;
+								time = Long.parseLong(value.toString());
+								map.put(filedName, time == 0L ? null : new Date(time * 1000));
+							} else {
+								map.put(filedName, value);
+							}
 						} else {
-							map.put(filedName, value);
+							map.put(filedName, null);
 						}
-					} else {
-						map.put(filedName, null);
 					}
 				}
 				listObject.add((T) map2Obj(map, entityClass));
@@ -148,10 +150,10 @@ public class LocalLogJDBCByDruid {
 					if (!allPps.equals("0")) {
 						ntcConnRecordPercent.setPpsPercent(
 								num.format(Double.valueOf(ntcConnRecordPercent.getPps()) / Double.valueOf(allPps)));
-						String ppsNum =ntcConnRecordPercent.getPps();
-						if(ntcConnRecordPercent.getPps().contains(".")) {
-							int idx =ntcConnRecordPercent.getPps().lastIndexOf(".");//查找小数点的位置
-							ppsNum= ntcConnRecordPercent.getPps().substring(0,idx);//截取从字符串开始到小数点位置的字符串，就是整数部分
+						String ppsNum = ntcConnRecordPercent.getPps();
+						if (ntcConnRecordPercent.getPps().contains(".")) {
+							int idx = ntcConnRecordPercent.getPps().lastIndexOf(".");// 查找小数点的位置
+							ppsNum = ntcConnRecordPercent.getPps().substring(0, idx);// 截取从字符串开始到小数点位置的字符串，就是整数部分
 						}
 						ntcConnRecordPercent.setPps(ppsNum);
 					} else {
@@ -193,10 +195,10 @@ public class LocalLogJDBCByDruid {
 				TrafficAsnStatistic ntcAsnRecord = new TrafficAsnStatistic();
 				String bps = rs.getString("bps");
 				String pps = rs.getString("pps");
-				String ppsNum =pps;
-				if(pps.contains(".")) {
-					int idx =pps.lastIndexOf(".");//查找小数点的位置
-					ppsNum= pps.substring(0,idx);//截取从字符串开始到小数点位置的字符串，就是整数部分
+				String ppsNum = pps;
+				if (pps.contains(".")) {
+					int idx = pps.lastIndexOf(".");// 查找小数点的位置
+					ppsNum = pps.substring(0, idx);// 截取从字符串开始到小数点位置的字符串，就是整数部分
 				}
 				ntcAsnRecord.setBps(subStr(bps));
 				ntcAsnRecord.setPps(ppsNum);
@@ -214,7 +216,8 @@ public class LocalLogJDBCByDruid {
 		List<String> list = new ArrayList<>();
 		try {
 //			String sql = "select distinct ip from  ip_location_database_local where  ip like '145%'	and frontier='"+frontier+"'";
-			String sql = "select distinct ip from  (select ip,frontier from	ip_location_database )  where   frontier='"+frontier+"'";
+			String sql = "select distinct ip from  (select ip,frontier from	ip_location_database )  where   frontier='"
+					+ frontier + "'";
 			conn = getConnection();
 			logger.info("连接数据中心日志库成功--------------------------");
 			st = conn.createStatement();
@@ -223,7 +226,7 @@ public class LocalLogJDBCByDruid {
 			num.setMinimumFractionDigits(2);// 保留两位小数
 			while (rs.next()) {
 				String bps = rs.getString("ip");
-				if(bps!=null&&!bps.trim().equals("")) {
+				if (bps != null && !bps.trim().equals("")) {
 					list.add(bps);
 				}
 			}
