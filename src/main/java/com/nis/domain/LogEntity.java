@@ -117,6 +117,19 @@ public abstract class LogEntity<T> implements Serializable {
 	protected String searchClientLocate;//clientLocate
 	protected String searchSSubscribeId;//sSubscribeId
 	protected String searchDSubscribeId;//dSubscribeId
+	protected String searchIspCode;// 运营商
+	
+	
+
+
+	@JsonIgnore
+	public String getSearchIspCode() {
+		return searchIspCode;
+	}
+
+	public void setSearchIspCode(String searchIspCode) {
+		this.searchIspCode = searchIspCode;
+	}
 
 	@JsonIgnore
 	public String getSearchSAsn() {
