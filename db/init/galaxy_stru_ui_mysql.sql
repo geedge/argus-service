@@ -341,8 +341,36 @@ CREATE TABLE `di_rule`  (
 ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.223:3306/nms/di_rule';
 
 
+DROP TABLE IF EXISTS `ui_sys_device_info`;
+CREATE TABLE `ui_sys_device_info`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `device_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '设备类型',
+  `ip_addr` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `device_id` int(11) NOT NULL COMMENT '设备ID，相同设备可对应多个运营商',
+  `link_id` int(11) NOT NULL COMMENT '链路号索引',
+  `isp` int(11) NOT NULL COMMENT '运营商编码，例如ktel-mxpe:1001',
+  `entrance_id` int(11) NOT NULL COMMENT '地域 1-astana 2-alamty',
+  `status` int(11) NOT NULL COMMENT '0-未接入 1-接入 2-部分接入',
+  `create_time` datetime(0) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/sys_device_info';
+;
 
 
+
+DROP TABLE IF EXISTS `ui_sys_isp_info`;
+CREATE TABLE `ui_sys_isp_info`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `isp_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '通信运营商名称',
+  `isp_code` int(11) NOT NULL COMMENT '通信运营商编码',
+  `business_type_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '业务类型名称',
+  `business_type_code` int(11) NOT NULL COMMENT '业务类型编码',
+  `isp_key_name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '运营商唯一标识名称，例如ktel-mxpe:1001',
+  `isp_key_code` int(11) NOT NULL COMMENT '运营商唯一标识编码',
+  `create_time` datetime(0) NOT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/sys_isp_info';
+;
 
 
 
