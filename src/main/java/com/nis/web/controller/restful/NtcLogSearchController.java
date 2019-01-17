@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nis.datasource.CustomerContextHolder;
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcAppLog;
 import com.nis.domain.restful.NtcBgpLog;
@@ -24,6 +25,7 @@ import com.nis.domain.restful.NtcDdosLog;
 import com.nis.domain.restful.NtcDnsLog;
 import com.nis.domain.restful.NtcFtpLog;
 import com.nis.domain.restful.NtcHttpLog;
+import com.nis.domain.restful.NtcHttpRecordLog;
 import com.nis.domain.restful.NtcIpLog;
 import com.nis.domain.restful.NtcIpsecLog;
 import com.nis.domain.restful.NtcKeywordsUrlLog;
@@ -47,6 +49,8 @@ import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.LogDataService;
+import com.nis.web.service.NtcHttpRecordLogsService;
+import com.nis.web.service.NtcSslRecordLogsService;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.NtcLogService;
 import com.wordnik.swagger.annotations.Api;
@@ -66,7 +70,13 @@ import com.zdjizhi.utils.StringUtil;
 public class NtcLogSearchController extends BaseRestController {
 	@Autowired
 	protected ServicesRequestLogService servicesRequestLogService;
+	
+	@Autowired
+	protected NtcSslRecordLogsService  ntcSslRecordLogsService;//ssl泛收
 
+	@Autowired
+	protected NtcHttpRecordLogsService ntcHttpRecordLogsService;//http泛收
+	
 	@Autowired
 	protected NtcLogService ntcLogService;
 	@Autowired
@@ -878,11 +888,15 @@ public class NtcLogSearchController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-
+		Page<?> pages= new Page<>();
 		try {
 			resetTime(ntcSslRecordLog);
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSslRecordLog, NtcSslRecordLog.class, page);
-			logDataService.getData(page, ntcSslRecordLog);
+//			logDataService.getData(page, ntcSslRecordLog);
+			//将数据源切换到本地clickhouse
+			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
+			pages=ntcSslRecordLogsService.getNtcSslRecordLogsList(page, ntcSslRecordLog);
+			CustomerContextHolder.clearCustomerType();
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("SSL泛收日志检索失败:" + e.getMessage());
 			logger.error("SSL泛收日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
@@ -898,6 +912,40 @@ public class NtcLogSearchController extends BaseRestController {
 			}
 		}
 
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSL泛收日志检索成功", page, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSL泛收日志检索成功", pages, 0);
+	}
+	
+	@RequestMapping(value = "/ntcHttpRecordLogs", method = RequestMethod.GET)
+	@ApiOperation(value = "HTTP泛收日志查询", httpMethod = "GET", notes = "对应配置为“网站管理-HTTP”，存储动作为阻断与监测的命中日志。对日志功能“网站管理-HTTP”提供数据基础查询服务")
+	public Map<String, ?> ntcHttpRecordLogs(Page page, NtcHttpRecordLog ntcHttpRecordLog, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		Page<?> pages= new Page<>();
+		try {
+			resetTime(ntcHttpRecordLog);
+			ntcLogService.queryConditionCheck(auditLogThread, start, ntcHttpRecordLog, NtcHttpRecordLog.class, page);
+//			logDataService.getData(page, ntcHttpRecordLog);
+			//将数据源切换到本地clickhouse
+			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
+			pages=ntcHttpRecordLogsService.getNtcHttpRecordLogsList(page, ntcHttpRecordLog);
+			CustomerContextHolder.clearCustomerType();
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("Http泛收日志检索失败:" + e.getMessage());
+			logger.error("Http泛收日志检索失败：" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"Http泛收日志检索失败：" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"Http泛收日志检索失败：" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"Http泛收日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Http泛收日志检索成功", pages, 0);
 	}
 }

@@ -27,6 +27,8 @@ public class NtcSslRecordLog extends LogEntity {
     @ApiModelProperty(value="SNI", required=true)
     protected String searchSni ;
     
+	protected Long foundStartTime;//开始发现时间(时间戳类型)
+	protected Long foundEndTime;//结束发现时间(时间戳类型)
 	
     public String getVersion() {
         return version;
@@ -74,4 +76,22 @@ public class NtcSslRecordLog extends LogEntity {
 	public String getSearchSni() {
 		return searchSni;
 	}
+	@JsonIgnore
+	public Long getFoundStartTime() {
+		return foundStartTime;
+	}
+
+	public void setFoundStartTime(Long foundStartTime) {
+		this.foundStartTime = foundStartTime;
+	}
+	@JsonIgnore
+	public Long getFoundEndTime() {
+		return foundEndTime;
+	}
+
+	public void setFoundEndTime(Long foundEndTime) {
+		this.foundEndTime = foundEndTime;
+	}
+	
+	
 }
