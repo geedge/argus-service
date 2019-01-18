@@ -53,19 +53,25 @@
 		<if test="searchEntranceId !=null and searchEntranceId != ''">
 			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		</if>
+		<if test="ispNum !=null and ispNum != ''">
+			<![CDATA[and concat(toString(entrance_id),toString(device_id)) in (${ispNum})]]>
+		</if>
 		group by stat_time
 		 order by stat_time
 	</select>
 	<!-- App 活跃IP Top100 -->
 	<select id="appConnRecordTop100" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
-		select s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
+		select s_ip ipAddr,concat(toString(entrance_id),toString(device_id)) ispNum, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum
 		from tbs_ods_ntc_conn_record_log t where
 		<![CDATA[ found_time>= toDateTime(#{searchStartTime}) and found_time< toDateTime(#{searchEndTime})
 			and app_id=toInt64(#{searchAppId}) ]]>
 		<if test="searchEntranceId !=null and searchEntranceId != ''">
 			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
 		</if>
-		group by s_ip
+		<if test="ispNum !=null and ispNum != ''">
+			<![CDATA[and concat(toString(entrance_id),toString(device_id)) in (${ispNum})]]>
+		</if>
+		group by s_ip,entrance_id,device_id
 		order by
 		<choose>
 			<when test="searchQuota !=null and searchQuota != '' and searchQuota == 2 ">

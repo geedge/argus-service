@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.nis.domain.restful.dashboard.SysDeviceInfo;
+
 /**
  * 
  * @ClassName:IspInfoDao
@@ -16,4 +18,6 @@ import org.apache.ibatis.annotations.Param;
 public interface IspInfoDao {
 
 	List<String> getIspNum(@Param("ispCode") String ispCode);
+
+	List<SysDeviceInfo> getIspListByIspNum(@Param("ispNum")String ispNum);
 }

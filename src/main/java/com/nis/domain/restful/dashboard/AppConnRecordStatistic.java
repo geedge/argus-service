@@ -13,6 +13,10 @@ public class AppConnRecordStatistic extends AppTrendEntity{
 	protected String logPercent;
 	protected String searchQuota="1"; //统计指标 1:连接数 2：包数 3：字节数
 	
+	private String searchIspCode;// 运营商
+	private String ispName;// 运营商
+	private String ispNum;// device_id ,entrance_id 拼接
+	
 	public AppConnRecordStatistic() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -20,7 +24,7 @@ public class AppConnRecordStatistic extends AppTrendEntity{
 	
 	public AppConnRecordStatistic(String ipAddr, Double pktNum,
 			String pktPercent, Double byteNum, String bytePercent,
-			Double logNum, String logPercent) {
+			Double logNum, String logPercent,String ispName) {
 		super();
 		this.ipAddr = ipAddr;
 		this.pktNum = pktNum;
@@ -29,6 +33,7 @@ public class AppConnRecordStatistic extends AppTrendEntity{
 		this.bytePercent = bytePercent;
 		this.logNum = logNum;
 		this.logPercent = logPercent;
+		this.ispName = ispName;
 	}
 
 	public String getIpAddr() {
@@ -94,5 +99,29 @@ public class AppConnRecordStatistic extends AppTrendEntity{
 	public void setSearchQuota(String searchQuota) {
 		this.searchQuota = searchQuota;
 	}
-	
+
+	public String getSearchIspCode() {
+		return searchIspCode;
+	}
+	@JsonIgnore
+	public void setSearchIspCode(String searchIspCode) {
+		this.searchIspCode = searchIspCode;
+	}
+	@JsonIgnore
+	public String getIspNum() {
+		return ispNum;
+	}
+
+	public void setIspNum(String ispNum) {
+		this.ispNum = ispNum;
+	}
+
+	public String getIspName() {
+		return ispName;
+	}
+
+	public void setIspName(String ispName) {
+		this.ispName = ispName;
+	}
+
 }

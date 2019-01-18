@@ -3,6 +3,15 @@
 <mapper namespace="com.nis.web.dao.IspInfoDao">
 	<select id="getIspNum" resultType="java.lang.String">
 		select distinct concat(entrance_id,device_id) as ispNum from ui_sys_device_info where
-		isp=#{ispCode}
+		isp in (${ispCode})
+	</select>
+	<select id="getIspListByIspNum" resultType="com.nis.domain.restful.dashboard.SysDeviceInfo">
+		select distinct d.isp isp ,concat(d.entrance_id,d.device_id) ispNum,isp_key_name ispName from ui_sys_device_info d
+		left join ui_sys_isp_info s on d.isp=s.isp_key_code
+		<where>
+			<if test="ispNum!=null and ispNum!=''">
+				concat(entrance_id,device_id) in (${ispNum})
+			</if>
+		</where>
 	</select>
 </mapper>

@@ -26,6 +26,7 @@ import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.AppTrendEntity;
+import com.nis.domain.restful.dashboard.SysDeviceInfo;
 import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.restful.RestBusinessCode;
@@ -1018,6 +1019,10 @@ public class DashboardServiceController extends BaseRestController {
 				entity.setSearchStartTime(map.get("startTime"));
 				entity.setSearchEndTime(map.get("endTime"));
 			}
+			if(StringUtils.isNotBlank(entity.getSearchIspCode())){
+				String ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
+				entity.setIspNum(ispNum);
+			}
 			//将数据源切换到本地clickhouse
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
 			resultMap = dashboardService.getAppTrend(entity);
@@ -1070,9 +1075,28 @@ public class DashboardServiceController extends BaseRestController {
 				entity.setSearchStartTime(map.get("startTime"));
 				entity.setSearchEndTime(map.get("endTime"));
 			}
+			// 查询运营商编码所对应的设备号跟出入口编号
+			String ispNum="";
+			if(StringUtils.isNotBlank(entity.getSearchIspCode())){
+				ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
+				entity.setIspNum(ispNum);
+			}
+			List<SysDeviceInfo> sysDeviceInfo =dashboardService.getIspListByIspNum(ispNum);
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
 			list = dashboardService.appConnRecordTop100(entity);
+			// 设置运营商编码
+			if(list!=null&&list.size()>0&&sysDeviceInfo!=null&&sysDeviceInfo.size()>0){
+				for (AppConnRecordStatistic app : list) {
+					for (SysDeviceInfo device : sysDeviceInfo) {
+						if((app.getIspNum().trim()).equals(device.getIspNum().trim())){
+							app.setIspName(device.getIspName());
+							break;
+						}
+					}
+				}
+			}
 			CustomerContextHolder.clearCustomerType();
+			
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("App通联关系Top100数据检索失败:" + e.getMessage());
 			logger.error("App通联关系Top100检索失败:" + ExceptionUtil.getExceptionMsg(e));

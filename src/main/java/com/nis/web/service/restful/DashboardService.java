@@ -27,6 +27,7 @@ import com.nis.domain.restful.NtcConnNumReport;
 import com.nis.domain.restful.NtcEntranceReport;
 import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.NtcTotalReport;
+import com.nis.domain.restful.dashboard.SysDeviceInfo;
 import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
 import com.nis.domain.restful.dashboard.TrafficAppStatistic;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
@@ -41,6 +42,7 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.DateUtils;
 import com.nis.util.StringUtils;
+import com.nis.web.dao.IspInfoDao;
 import com.nis.web.dao.dashboard.NtcTotalReportDao;
 import com.nis.web.dao.dashboard.TrafficAppStatisticDao;
 import com.nis.web.dao.dashboard.TrafficAsnStatisticDao;
@@ -71,6 +73,8 @@ public class DashboardService extends BaseService {
 	public TrafficAsnStatisticDao trafficAsnStatisticDao;
 	@Autowired
 	public TrafficPortActiveStatisticDao trafficPortActiveStatisticDao;
+	@Autowired
+	private IspInfoDao ispInfoDao;
 	//ip地址类型
 	private final String[] addrTypes = {"4","6"} ;
 	//tcp udp
@@ -1772,5 +1776,30 @@ public class DashboardService extends BaseService {
 	public void getTrafficAsnStatisticList(Page page, TrafficAsnStatistic ntcAsnRecord){
 		ntcAsnRecord.setPage(page);
 		page.setList(trafficAsnStatisticDao.getTrafficAsnStatisticList(ntcAsnRecord));
+	}
+	/**
+	 * 根据ispcode获取当前运营商下所有的entrance_id,device_id,link_id组合
+	 * 
+	 * @param ispCode
+	 * @return
+	 */
+	public String getIspNum(String ispCode) {
+		List<String> ispNum = ispInfoDao.getIspNum(ispCode);
+		if (ispNum != null && ispNum.size() > 0) {
+			StringBuffer sb = new StringBuffer();
+			for (String ispNumStr : ispNum) {
+				sb.append("'");
+				sb.append(ispNumStr);
+				sb.append("'");
+				sb.append(",");
+			}
+			return sb.substring(0, sb.length() - 1);
+		}
+		return null;
+	}
+
+	public List<SysDeviceInfo> getIspListByIspNum(String ispNum) {
+		
+		return ispInfoDao.getIspListByIspNum(ispNum);
 	}
 }
