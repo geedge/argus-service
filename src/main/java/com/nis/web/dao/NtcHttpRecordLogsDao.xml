@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nis.web.dao.NtcHttpRecordLogsDao">
-		<resultMap id="NtcHttpRecordLogMaps" type="com.nis.domain.restful.NtcHttpRecordLog">
+		<resultMap id="NtcHttpRecordLogMap" type="com.nis.domain.restful.NtcHttpRecordLog">
 			<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
-			<result column="found_Time" jdbcType="TIMESTAMP" property="foundTime" />
-			<result column="recv_Time" jdbcType="TIMESTAMP" property="recvTime" />
+			<result column="found_time" jdbcType="TIMESTAMP" property="foundTime" />
+			<result column="recv_time" jdbcType="TIMESTAMP" property="recvTime" />
 			<result column="trans_proto" jdbcType="VARCHAR" property="transProto" />
 			<result column="addr_type" jdbcType="INTEGER" property="addrType" />
 			<result column="d_ip" jdbcType="VARCHAR" property="dIp" />
@@ -36,16 +36,16 @@
 		</resultMap>
 
 
-	<select id="findNtcHttpRecordLogList" parameterType="com.nis.domain.restful.NtcHttpRecordLog" resultMap="NtcHttpRecordLogMaps">
-		select  found_time,d_ip,s_ip,d_port,s_port,entrance_id,device_id,url,referer
+	<select id="findNtcHttpRecordLogList" parameterType="com.nis.domain.restful.NtcHttpRecordLog" resultMap="NtcHttpRecordLogMap">
+		select  toDateTime(found_time) found_time,d_ip,s_ip,d_port,s_port,entrance_id,device_id,url,referer
 		
 		from   tbs_ods_ntc_collect_http_log
 		<where>
-			<if test="foundStartTime !=null and foundStartTime !=''">
-				and  found_time &gt;= #{foundStartTime}
+			<if test="searchFoundStartTime !=null and searchFoundStartTime !=''">
+				and  found_time &gt;= toDateTime(#{searchFoundStartTime})
 			</if>
-			<if test="foundEndTime !=null and foundEndTime !=''">
-				and  found_time &lt; #{foundEndTime}
+			<if test="searchFoundEndTime !=null and searchFoundEndTime !=''">
+				and  found_time &lt; toDateTime(#{searchFoundEndTime})
 			</if>
 			<if test="searchDIp !=null and searchDIp !=''">
 			 	and  d_ip = #{searchDIp}

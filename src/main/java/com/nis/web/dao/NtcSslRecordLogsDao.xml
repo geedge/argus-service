@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.nis.web.dao.NtcSslRecordLogsDao">
-	<resultMap id="NtcSslRecordLogMaps" type="com.nis.domain.restful.NtcSslRecordLog">
+	<resultMap id="NtcSslRecordLogMap" type="com.nis.domain.restful.NtcSslRecordLog">
 		<result column="cfg_id" jdbcType="BIGINT" property="cfgId" />
 		<result column="found_time" jdbcType="TIMESTAMP" property="foundTime" />
 		<result column="recv_time" jdbcType="TIMESTAMP" property="recvTime" />
@@ -38,18 +38,18 @@
 	</resultMap>
 
 
-	<select id="findNtcSslRecordLogList" parameterType="com.nis.domain.restful.NtcSslRecordLog" resultMap="NtcSslRecordLogMaps">
-		select cfg_id,found_time,recv_time,trans_proto,addr_type,d_ip,s_ip,d_port,s_port,service,entrance_id,
+	<select id="findNtcSslRecordLogList" parameterType="com.nis.domain.restful.NtcSslRecordLog" resultMap="NtcSslRecordLogMap">
+		select cfg_id,toDateTime(found_time) found_time,toDateTime(recv_time) recv_time,trans_proto,addr_type,d_ip,s_ip,d_port,s_port,service,entrance_id,
 				device_id,direction,stream_dir,cap_ip,addr_list,user_region,server_locate,client_locate,s_asn,
-				d_asn,s_subscribe_id,d_subscribe_id,scene_file,link_id,encap_type,encap_type,inner_smac,inner_dmac,
+				d_asn,s_subscribe_id,d_subscribe_id,scene_file,link_id,encap_type,inner_smac,inner_dmac,
 				version,sni,san,cn
 		from   tbs_ods_ntc_collect_ssl_log
 		<where>
-			<if test="foundStartTime !=null and foundStartTime !=''">
-				and  found_time &gt;= #{foundStartTime}
+			<if test="searchFoundStartTime !=null and searchFoundStartTime !=''">
+				and  found_time &gt;= toDateTime(#{searchFoundStartTime})
 			</if>
-			<if test="foundEndTime !=null and foundEndTime !=''">
-				and  found_time &lt; #{foundEndTime}
+			<if test="searchFoundEndTime !=null and searchFoundEndTime !=''">
+				and  found_time &lt; toDateTime(#{searchFoundEndTime})
 			</if>
 			<if test="searchCfgId !=null and searchCfgId !=''">
 				and  cfg_id = #{cfgId}
@@ -94,7 +94,7 @@
 				and  d_subscribe_id = #{searchDSubscribeId} 
 			</if>
 			<if test="searchSni !=null and searchSni !=''">
-				and  sni =  #{searchSni}
+				and  sni LIKE concat(concat('%',#{searchSni}),'%')
 			</if>
 		</where>
 		<choose>

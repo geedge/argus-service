@@ -29,8 +29,6 @@ public class NtcHttpRecordLog extends LogEntity {
     protected String searchSPort; //源端口查询条件
     protected String searchReferer; //入口页面查询条件
     
-	protected Long foundStartTime;//开始发现时间(时间戳类型)
-	protected Long foundEndTime;//结束发现时间(时间戳类型)
     public String getUrl() {
         return url;
     }
@@ -118,22 +116,6 @@ public class NtcHttpRecordLog extends LogEntity {
 
 	public void setSearchReferer(String searchReferer) {
 		this.searchReferer = searchReferer;
-	}
-	@JsonIgnore
-	public Long getFoundStartTime() {
-		return foundStartTime;
-	}
-
-	public void setFoundStartTime(Long foundStartTime) {
-		this.foundStartTime = foundStartTime;
-	}
-	@JsonIgnore
-	public Long getFoundEndTime() {
-		return foundEndTime;
-	}
-
-	public void setFoundEndTime(Long foundEndTime) {
-		this.foundEndTime = foundEndTime;
 	}
 
 	
