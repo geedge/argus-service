@@ -714,8 +714,8 @@ public class LogDataService {
 	 * 将fileds中的字段根据DfLogSearchDao.xml中对应的resultMap转换为数据库中的字段
 	 * 
 	 * @param mapName
-	 * @param fileds与界面商定好的是传日志类中的对象名
-	 *            (界面没有表结构不知道对象属性对应的数据库字段名称是什么),不是数据库中的字段名
+	 * @param fileds 与界面商定好的是传日志类中的对象名
+	 *   (界面没有表结构不知道对象属性对应的数据库字段名称是什么),不是数据库中的字段名
 	 * @return
 	 * @throws Exception
 	 */
