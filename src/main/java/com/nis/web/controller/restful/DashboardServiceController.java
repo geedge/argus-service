@@ -1082,11 +1082,11 @@ public class DashboardServiceController extends BaseRestController {
 				ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
 				entity.setIspNum(ispNum);
 			}
-			List<SysDeviceInfo> sysDeviceInfo =dashboardService.getIspListByIspNum(ispNum);
+//			List<SysDeviceInfo> sysDeviceInfo =dashboardService.getIspListByIspNum(ispNum);
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
 			list = dashboardService.appConnRecordTop100(entity);
 			// 设置运营商编码
-			if(list!=null&&list.size()>0&&sysDeviceInfo!=null&&sysDeviceInfo.size()>0){
+			/*if(list!=null&&list.size()>0&&sysDeviceInfo!=null&&sysDeviceInfo.size()>0){
 				for (AppConnRecordStatistic app : list) {
 					for (SysDeviceInfo device : sysDeviceInfo) {
 						if((app.getIspNum().trim()).equals(device.getIspNum().trim())){
@@ -1095,7 +1095,7 @@ public class DashboardServiceController extends BaseRestController {
 						}
 					}
 				}
-			}
+			}*/
 			CustomerContextHolder.clearCustomerType();
 			
 		} catch (Exception e) {
