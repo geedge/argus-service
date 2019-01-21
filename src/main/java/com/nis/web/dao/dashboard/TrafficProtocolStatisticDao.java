@@ -13,6 +13,6 @@ public interface TrafficProtocolStatisticDao {
 
 	TrafficProtocolStatistic getMaxStatTime();
 	List<Map> protocolChart(@Param("statTime")Date statTime);
-	List<Map> getProtocolList(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("protoType")Integer[] protoType,@Param("entranceId")Integer entranceId);
+	List<Map> getProtocolList(@Param("beginTime")String beginTime,@Param("endTime")String endTime,@Param("protoType")Integer[] protoType,@Param("entranceId")Integer entranceId,@Param("searchDirection")Integer searchDirection);
 
 }

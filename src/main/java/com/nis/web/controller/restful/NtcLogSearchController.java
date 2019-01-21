@@ -180,9 +180,9 @@ public class NtcLogSearchController extends BaseRestController {
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		//判断searchCfgId是否为null
-		if(ntcMailLog.getSearchCfgId() ==null){
-			ntcMailLog.setSearchCfgId("-1");
-		}
+//		if(ntcMailLog.getSearchCfgId() ==null){
+//			ntcMailLog.setSearchCfgId("-1");
+//		}
 		try {
 			resetTime(ntcMailLog);
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcMailLog, NtcMailLog.class, page);

@@ -733,12 +733,12 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType,Integer entranceId) {
+	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType,Integer entranceId,Integer searchDirection) {
 //		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
 //		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
 //			Date statTime = maxStatTime.getStatTime();
-		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType,entranceId);
+		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType,entranceId,searchDirection);
 //		}
 		return list;
 	}
@@ -1290,13 +1290,13 @@ public class DashboardService extends BaseService {
 		return fieldType == null ? null : fieldType.split(",");
 	}
 
-	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate,String searchQuotaType) throws ParseException {
+	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate,String searchQuotaType,Integer searchDirection) throws ParseException {
 		Map<String, Map> resultMap = new HashMap<String, Map>();
 		Map<String, ArrayList<TrafficTransStatistic>> listMap = new HashMap<String, ArrayList<TrafficTransStatistic>>();
 		List<TrafficTransStatistic> bandwidthListIPvx = new ArrayList<TrafficTransStatistic>();
 		List<TrafficTransStatistic> bandwidthListProtocol = new ArrayList<TrafficTransStatistic>();
-		bandwidthListIPvx = ntcTotalReportDao.getBandwidthTransIPVx(beginDate, endDate);
-		bandwidthListProtocol = ntcTotalReportDao.getBandwidthTransProtocol(beginDate, endDate);
+		bandwidthListIPvx = ntcTotalReportDao.getBandwidthTransIPVx(beginDate, endDate,searchDirection);
+		bandwidthListProtocol = ntcTotalReportDao.getBandwidthTransProtocol(beginDate, endDate,searchDirection);
 		Map<String, Map> trafficMap = new HashMap<String, Map>();
 		if ((!StringUtil.isEmpty(bandwidthListIPvx) && bandwidthListIPvx.size() > 0)
 				|| (!StringUtil.isEmpty(bandwidthListProtocol) && bandwidthListProtocol.size() > 0)) {

@@ -1004,7 +1004,8 @@ public class LogDataService {
 										if (field.equals("cfg_id")
 												|| field.equals("web_id")
 												|| field.equals("app_id")
-												|| field.equals("proto_id")) {
+												|| field.equals("proto_id")
+												|| field.equals("service")) {
 											if (field.equals("cfg_id")) {
 												if (value.toString().trim()
 														.equals("0")) {
@@ -1015,13 +1016,6 @@ public class LogDataService {
 															+ " ="
 															+ value.toString()
 																	.trim());
-												} else if (value.toString()
-														.trim().equals("-1")) {
-													whereSB.append(" and "
-															+ filedAndColumnMap
-																	.get(key)
-																	.toLowerCase()
-															+ " >0");
 												} else {
 													whereSB.append(" and "
 															+ filedAndColumnMap

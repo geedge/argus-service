@@ -19,8 +19,8 @@ public interface NtcTotalReportDao {
 	List<Map> getTotalReportList(@Param("reportTime") Date reportTime);
 	List<Map> getNetFlowPortInfoNew(@Param("statTime") Date statTime);
 	List<TrafficTransStatistic> getBandwidthTrans(@Param("entranceId") Integer entranceId,@Param("beginDate") String beginDate,@Param("endDate") String endDate,@Param("addrType") String addrType,@Param("transType") Integer transType);
-	List<TrafficTransStatistic> getBandwidthTransIPVx(@Param("beginDate") String beginDate,@Param("endDate") String endDate);
-	List<TrafficTransStatistic> getBandwidthTransProtocol(@Param("beginDate") String beginDate,@Param("endDate") String endDate);
+	List<TrafficTransStatistic> getBandwidthTransIPVx(@Param("beginDate") String beginDate,@Param("endDate") String endDate,@Param("searchDirection") Integer searchDirection);
+	List<TrafficTransStatistic> getBandwidthTransProtocol(@Param("beginDate") String beginDate,@Param("endDate") String endDate,@Param("searchDirection") Integer searchDirection);
 	String getAddrType();
 	String getTransType();
 	String getEntranceId();

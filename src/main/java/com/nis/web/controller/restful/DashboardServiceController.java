@@ -218,19 +218,20 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficBandwidthTransThree", method = RequestMethod.GET)
 	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
-	public Map<String,?> trafficBandwidthTransThree(String beginDate,String endDate,String searchQuotaType,Model model, HttpServletRequest request, HttpServletResponse response) {
+	public Map<String,?> trafficBandwidthTransThree(String beginDate,String endDate,String searchQuotaType,Model model,Integer searchDirection, 
+			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
 		Map resultMap=new HashMap();
 		try {
 			if(StringUtils.isEmpty(beginDate)&&StringUtils.isEmpty(endDate)) {
-				Calendar cal = Calendar. getInstance ();
+				Calendar cal = Calendar.getInstance();
 		        cal.setTime(new Date());
 		        endDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());//获取到完整的时间
 		        cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
 		        beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
 			}
-			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate,searchQuotaType);
+			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate,searchQuotaType,searchDirection);
 			
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());
@@ -321,14 +322,14 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficProtocolList", method = RequestMethod.GET)
 	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
-	public Map<String, ?> trafficProtocolList(Integer[] protoType,String beginDate, String endDate,Integer entranceId, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Map<String, ?> trafficProtocolList(Integer[] protoType,String beginDate, String endDate,Integer entranceId, Model model, 
+			Integer searchDirection,HttpServletRequest request,HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate,protoType,entranceId);
+			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate,protoType,entranceId,searchDirection);
 			if (ipActiveList != null && ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString, HashMap.class);

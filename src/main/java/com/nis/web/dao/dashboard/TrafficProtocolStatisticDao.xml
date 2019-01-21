@@ -37,7 +37,10 @@
        	</foreach>
 	</if>
 	<if test="entranceId !=null">
-		and entrance_id=#{entranceId}
+		and entrance_id = #{entranceId}
+	</if>
+	<if test="searchDirection !=null">
+		and direction = #{searchDirection}
 	</if>
 	GROUP BY proto_type ) p
 	LEFT JOIN ui_code_protocol_type_dic c ON p.proto_type=c.view_code ORDER BY p.GByte DESC

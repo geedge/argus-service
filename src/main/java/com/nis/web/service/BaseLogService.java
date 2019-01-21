@@ -195,16 +195,27 @@ public abstract class BaseLogService {
 		} catch (Exception e) {
 			throw new RestServiceException("searchFoundStartTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
+		//service参数改为可以传多个
+		if (!StringUtil.isBlank(entity.getSearchService())) {
+			String[] splits = org.apache.commons.lang.StringUtils.split(entity.getSearchService(), ",");
+			for (String service : splits) {
+				try {
+					Integer.parseInt(service);
+				} catch (Exception e) {
+					throw new RestServiceException("searchService参数错误", RestBusinessCode.param_formate_error.getValue());
+				}
 
-		try {
-			if (!StringUtil.isBlank(entity.getSearchService())) {
-				Integer.parseInt(entity.getSearchService());
 			}
-		} catch (NumberFormatException e) {
-			throw new RestServiceException("searchService参数格式错误", RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
-			throw new RestServiceException("searchService参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
+//		try {
+//			if (!StringUtil.isBlank(entity.getSearchService())) {
+//				Integer.parseInt(entity.getSearchService());
+//			}
+//		} catch (NumberFormatException e) {
+//			throw new RestServiceException("searchService参数格式错误", RestBusinessCode.param_formate_error.getValue());
+//		} catch (Exception e) {
+//			throw new RestServiceException("searchService参数错误", RestBusinessCode.param_formate_error.getValue());
+//		}
 		try {
 			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
