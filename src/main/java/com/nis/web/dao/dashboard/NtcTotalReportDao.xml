@@ -73,13 +73,17 @@
 	WHERE
 	<![CDATA[ stat_time >= #{beginDate}  and  stat_time < #{endDate} ]]>
 	and addr_type in (4,6)
-	and direction =#{searchDirection}
+	<if test="searchDirection !=null">
+		and direction = #{searchDirection}
+	</if>
 	group by addr_type,stat_time ,entrance_id order by stat_time
 </select>
 <select id="getBandwidthTransProtocol" resultMap="BandwidthResultMap">
 	select addr_type,trans_type,entrance_id,IFNULL((SUM(c2s_byte_len+s2c_byte_len)*8)/300/1024/1024/1024,0) gbps,IFNULL(SUM(c2s_pkt_num+s2c_pkt_num)/300,0) pps,IFNULL(SUM(link_num),0) linkNum, stat_time from traffic_trans_statistic
 	WHERE <![CDATA[stat_time >= #{beginDate} and stat_time < #{endDate} ]]>
-	and direction =#{searchDirection}
+	<if test="searchDirection !=null">
+		and direction = #{searchDirection}
+	</if>
 	and trans_type in (6,17) group by trans_type,stat_time ,entrance_id  order by stat_time 
 </select>
   
