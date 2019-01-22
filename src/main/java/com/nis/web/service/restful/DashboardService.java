@@ -309,8 +309,7 @@ public class DashboardService extends BaseService {
 	/**
 	 * 日期格式字符串转换成时间戳
 	 * 
-	 * @param date   字符串日期
-	 * @param format 如：yyyy-MM-dd HH:mm:ss
+	 * @param date_str   字符串日期
 	 * @return
 	 */
 	@Deprecated
@@ -327,8 +326,7 @@ public class DashboardService extends BaseService {
 	/**
 	 * 时间戳 换成日期格式字符串转
 	 * 
-	 * @param 时间     1544602212000
-	 * @param format 如：yyyy-MM-dd HH:mm:ss
+	 * @param timeStamp     1544602212000
 	 * @return
 	 */
 	@Deprecated
@@ -1784,6 +1782,7 @@ public class DashboardService extends BaseService {
 	 * @return
 	 */
 	public String getIspNum(String ispCode) {
+		String  result = "'NA'";
 		List<String> ispNum = ispInfoDao.getIspNum(ispCode);
 		if (ispNum != null && ispNum.size() > 0) {
 			StringBuffer sb = new StringBuffer();
@@ -1793,9 +1792,11 @@ public class DashboardService extends BaseService {
 				sb.append("'");
 				sb.append(",");
 			}
-			return sb.substring(0, sb.length() - 1);
+			result= sb.substring(0, sb.length() - 1);
+
 		}
-		return null;
+		return result;
+
 	}
 
 	public List<SysDeviceInfo> getIspListByIspNum(String ispNum) {

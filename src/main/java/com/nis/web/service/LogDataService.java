@@ -1,22 +1,5 @@
 package com.nis.web.service;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.ibatis.mapping.ResultMap;
-import org.apache.ibatis.mapping.ResultMapping;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcConnRecordPercent;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
@@ -28,6 +11,22 @@ import com.nis.web.dao.IspInfoDao;
 import com.nis.web.dao.impl.LocalLogJDBCByDruid;
 import com.nis.web.dao.impl.LogJDBCByDruid;
 import com.zdjizhi.utils.StringUtil;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 从clickhouse或者hive中查询数据并set到page.list返回给界面
@@ -840,7 +839,7 @@ public class LogDataService {
 	 * 利用反射查询一个对象中是否存在某个属性
 	 * 
 	 * @param obj
-	 * @param fieldName
+	 * @param filedName
 	 * @throws Exception
 	 */
 	private static boolean ifExistFiledName(Object obj, String filedName)
@@ -1130,7 +1129,9 @@ public class LogDataService {
 	 */
 	private String getIspNum(String ispCode) {
 		List<String> ispNum = ispInfoDao.getIspNum(ispCode);
-		if (ispNum != null && ispNum.size() > 0) {
+		String  result = "'NA'";
+
+		if (StringUtil.isNotEmpty(ispNum)) {
 			StringBuffer sb = new StringBuffer();
 			for (String ispNumStr : ispNum) {
 				sb.append("'");
@@ -1138,9 +1139,9 @@ public class LogDataService {
 				sb.append("'");
 				sb.append(",");
 			}
-			return sb.substring(0, sb.length() - 1);
+			result= sb.substring(0, sb.length() - 1);
 		}
-		return null;
+		return result;
 	}
 
 }
