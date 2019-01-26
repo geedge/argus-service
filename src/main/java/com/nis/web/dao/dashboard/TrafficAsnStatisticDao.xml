@@ -24,6 +24,9 @@
 		<if test="searchAsnType !=null and searchAsnType != ''">
 			<![CDATA[and asn_type=#{searchAsnType}]]>
 		</if>
+		<if test="searchAsn != null and searchAsn !=''">
+				AND asn like concat(concat('%',#{searchAsn}),'%')
+		</if>
 		ORDER BY
 		bps DESC,
 		pps DESC

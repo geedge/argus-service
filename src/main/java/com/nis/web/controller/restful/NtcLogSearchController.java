@@ -888,14 +888,13 @@ public class NtcLogSearchController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-		Page<?> pages= new Page<>();
 		try {
 			resetTime(ntcSslRecordLog);
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcSslRecordLog, NtcSslRecordLog.class, page);
 //			logDataService.getData(page, ntcSslRecordLog);
 			//将数据源切换到本地clickhouse
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
-			pages=ntcSslRecordLogsService.getNtcSslRecordLogsList(page, ntcSslRecordLog);
+			ntcSslRecordLogsService.getNtcSslRecordLogsList(page, ntcSslRecordLog);
 			CustomerContextHolder.clearCustomerType();
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("SSL泛收日志检索失败:" + e.getMessage());
@@ -911,8 +910,8 @@ public class NtcLogSearchController extends BaseRestController {
 						"SSL泛收日志检索失败：" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSL泛收日志检索成功", pages, 0);
+		
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "SSL泛收日志检索成功", page, 0);
 	}
 	
 	@RequestMapping(value = "/ntcHttpRecordLogs", method = RequestMethod.GET)
@@ -922,14 +921,13 @@ public class NtcLogSearchController extends BaseRestController {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-		Page<?> pages= new Page<>();
 		try {
 			resetTime(ntcHttpRecordLog);
 			ntcLogService.queryConditionCheck(auditLogThread, start, ntcHttpRecordLog, NtcHttpRecordLog.class, page);
 //			logDataService.getData(page, ntcHttpRecordLog);
 			//将数据源切换到本地clickhouse
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
-			pages=ntcHttpRecordLogsService.getNtcHttpRecordLogsList(page, ntcHttpRecordLog);
+			ntcHttpRecordLogsService.getNtcHttpRecordLogsList(page, ntcHttpRecordLog);
 			CustomerContextHolder.clearCustomerType();
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("Http泛收日志检索失败:" + e.getMessage());
@@ -946,6 +944,6 @@ public class NtcLogSearchController extends BaseRestController {
 			}
 		}
 
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Http泛收日志检索成功", pages, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "Http泛收日志检索成功", page, 0);
 	}
 }

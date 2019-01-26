@@ -51,6 +51,9 @@ public class NtcHttpRecordLogsService extends BaseService{
 		entity.setPage(page);
 		List<NtcHttpRecordLog> findNtcHttpRecordLogList = ntcHttpRecordLogsDao.findNtcHttpRecordLogList(entity);
 		page.setList(findNtcHttpRecordLogList);
+		if (page.getLast() > 100) {
+			page.setLast(100);
+		}
 		return page;
 	}
 }

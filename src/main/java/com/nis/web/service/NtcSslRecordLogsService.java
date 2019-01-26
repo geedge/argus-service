@@ -38,6 +38,9 @@ public class NtcSslRecordLogsService extends BaseService{
 		entity.setPage(page);
 		List<NtcSslRecordLog> findNtcSslRecordLogList = ntcSslRecordLogsDao.findNtcSslRecordLogList(entity);
 		page.setList(findNtcSslRecordLogList);
+		if (page.getLast() > 100) {
+			page.setLast(100);
+		}
 		return page;
 	}
 	
