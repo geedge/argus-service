@@ -30,11 +30,13 @@ public class NtcLogService extends BaseLogService {
 	 * @param clazz
 	 * @param page
 	 */
-	public void ntcConnRecordLogsQueryConditionCheck(AuditLogThread thread, long start, NtcConnRecordLog entity, Class clazz, Page page) {
+	public void ntcConnRecordLogsConditionCheck(AuditLogThread thread, long start, NtcConnRecordLog entity, Class clazz, Page page) {
 		logger.info("ntcConnRecordLogsQueryConditionCheck start----" + System.currentTimeMillis());
 
+		queryConditionCheck(thread, start, entity, clazz, page);
+
 		//app protocol website
-		if (!StringUtil.isBlank(entity.getSearchAppId())) {
+		if (StringUtil.isNotBlank(entity.getSearchAppId())) {
 			String[] split = org.apache.commons.lang.StringUtils.split(entity.getSearchAppId(), ",");
 			if (split.length > 10) {
 				throw new RestServiceException("searchAppId  max(10)",
@@ -49,7 +51,7 @@ public class NtcLogService extends BaseLogService {
 
 			}
 		}
-		if (!StringUtil.isBlank(entity.getSearchProtoId())) {
+		if (StringUtil.isNotBlank(entity.getSearchProtoId())) {
 			String[] split = org.apache.commons.lang.StringUtils.split(entity.getSearchProtoId(), ",");
 			if (split.length > 10) {
 				throw new RestServiceException("searchProtoId max(10)",
@@ -64,7 +66,7 @@ public class NtcLogService extends BaseLogService {
 
 			}
 		}
-		if (!StringUtil.isBlank(entity.getSearchWebId())) {
+		if (StringUtil.isNotBlank(entity.getSearchWebId())) {
 			String[] split = org.apache.commons.lang.StringUtils.split(entity.getSearchWebId(), ",");
 			if (split.length > 10) {
 				throw new RestServiceException("searchWebId  max(10)",
@@ -80,25 +82,24 @@ public class NtcLogService extends BaseLogService {
 			}
 		}
 
-		try {
-			if (!StringUtil.isBlank(entity.getSearchDirection())) {
-				Integer.parseInt(entity.getSearchDirection());
+
+		if (StringUtil.isNotBlank(entity.getSearchIspCode())) {
+			String[] split = org.apache.commons.lang.StringUtils.split(entity.getSearchIspCode(), ",");
+			if (split.length > 10) {
+				throw new RestServiceException("searchIspCode  max(10)",
+						RestBusinessCode.param_formate_error.getValue());
 			}
-		} catch (NumberFormatException e) {
-			throw new RestServiceException("getSearchDirection参数格式错误", RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
-			throw new RestServiceException("getSearchDirection参数错误", RestBusinessCode.param_formate_error.getValue());
+			for (String ispCode : split) {
+				try {
+					Long.parseLong(ispCode);
+				} catch (Exception e) {
+					throw new RestServiceException("searchIspCode 参数错误", RestBusinessCode.param_formate_error.getValue());
+				}
+
+			}
 		}
 
-		try {
-			if (!StringUtil.isBlank(entity.getSearchEntranceId())) {
-				Long.parseLong(entity.getSearchEntranceId());
-			}
-		} catch (NumberFormatException e) {
-			throw new RestServiceException("searchEntranceId参数格式错误", RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
-			throw new RestServiceException("searchEntranceId参数错误", RestBusinessCode.param_formate_error.getValue());
-		}
+
 		logger.info("ntcConnRecordLogsQueryConditionCheck end----" + System.currentTimeMillis());
 
 	}

@@ -10,7 +10,9 @@ import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.ExceptionUtil;
 import com.nis.util.elasticsearch.ElasticsearchSqlDao;
+import com.zdjizhi.utils.DateUtils;
 import com.zdjizhi.utils.StringUtil;
+import com.zdjizhi.utils.TimeConstants;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -20,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +36,6 @@ import java.util.Map;
 @SuppressWarnings({ "rawtypes" })
 public abstract class BaseLogService {
 
-	private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	protected final Logger logger = Logger.getLogger(this.getClass());
 	@Autowired
 	protected ElasticsearchSqlDao elasticsearchSqlDao;
@@ -163,6 +162,7 @@ public abstract class BaseLogService {
 			throw new RestServiceException("getSearchDirection参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchEntranceId())) {
 				Long.parseLong(entity.getSearchEntranceId());
@@ -175,24 +175,17 @@ public abstract class BaseLogService {
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundEndTime())) {
-				sdf.setLenient(false);
-				sdf.parse(entity.getSearchFoundEndTime());
+				DateUtils.convertStringToDate(entity.getSearchFoundEndTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchFoundEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
 			throw new RestServiceException("searchFoundEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundStartTime())) {
-				sdf.setLenient(false);
-				sdf.parse(entity.getSearchFoundStartTime());
+				DateUtils.convertStringToDate(entity.getSearchFoundStartTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchFoundStartTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			throw new RestServiceException("searchFoundStartTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 		//service参数改为可以传多个
@@ -207,15 +200,7 @@ public abstract class BaseLogService {
 
 			}
 		}
-//		try {
-//			if (!StringUtil.isBlank(entity.getSearchService())) {
-//				Integer.parseInt(entity.getSearchService());
-//			}
-//		} catch (NumberFormatException e) {
-//			throw new RestServiceException("searchService参数格式错误", RestBusinessCode.param_formate_error.getValue());
-//		} catch (Exception e) {
-//			throw new RestServiceException("searchService参数错误", RestBusinessCode.param_formate_error.getValue());
-//		}
+
 		try {
 			checkCloumnIsExist(thread, start, clazz, page);
 		} catch (RestServiceException e) {
@@ -242,24 +227,17 @@ public abstract class BaseLogService {
 		logger.info("请求参数校验开始----" + System.currentTimeMillis());
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundEndTime())) {
-				sdf.setLenient(false);
-				sdf.parse(entity.getSearchFoundEndTime());
+				DateUtils.convertStringToDate(entity.getSearchFoundEndTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchFoundEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchFoundEndTime参数格式格式", RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchFoundEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchFoundStartTime())) {
-				sdf.setLenient(false);
-				sdf.parse(entity.getSearchFoundStartTime());
+				DateUtils.convertStringToDate(entity.getSearchFoundStartTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchFoundStartTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			throw new RestServiceException("searchFoundStartTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
@@ -296,28 +274,24 @@ public abstract class BaseLogService {
 		// searchService
 		checkNumericCondition(thread, start, entity.getSearchService(), "searchService");
 
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportStartTime())) {
-				sdf.parse(entity.getSearchReportStartTime());
+				DateUtils.convertStringToDate(entity.getSearchReportStartTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchReportStartTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchReportStartTime参数错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchReportStartTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
-				sdf.parse(entity.getSearchReportEndTime());
+				DateUtils.convertStringToDate(entity.getSearchReportEndTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchReportEndTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			throw new RestServiceException("searchReportEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
+
+
 		if (!StringUtil.isBlank(entity.getSearchBusinessType())
 				&& !StringUtil.isNumeric(entity.getSearchBusinessType())) {
 			throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
@@ -370,35 +344,29 @@ public abstract class BaseLogService {
 			throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
-		int timeCount = 0;
+		if (StringUtil.isBlank(entity.getSearchReportStartTime())
+				|| StringUtil.isBlank(entity.getSearchReportEndTime())) {
+			throw new RestServiceException("searchReportStartTime和searchReportEndTime参数必须同时填写",
+					RestBusinessCode.config_integrity_error.getValue());
+		}
+
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportStartTime())) {
-				sdf.parse(entity.getSearchReportStartTime());
-				timeCount++;
+				DateUtils.convertStringToDate(entity.getSearchReportStartTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchReportStartTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
-		} catch (Exception e) {
+		}  catch (Exception e) {
 			throw new RestServiceException("searchReportStartTime参数错误",
 					RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
 			if (!StringUtil.isBlank(entity.getSearchReportEndTime())) {
-				sdf.parse(entity.getSearchReportEndTime());
-				timeCount++;
+				DateUtils.convertStringToDate(entity.getSearchReportEndTime(), TimeConstants.YYYY_MM_DD_HH24_MM_SS);
 			}
-		} catch (ParseException e) {
-			throw new RestServiceException("searchReportEndTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
 			throw new RestServiceException("searchReportEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
-		if (timeCount == 1) {
-			throw new RestServiceException("searchReportStartTime和searchReportEndTime参数必须同时填写",
-					RestBusinessCode.config_integrity_error.getValue());
-		}
+
 
 		// 根据用户查看IP趋势时(searchBusinessType=2)，用户名必需填写
 		if ("2".equals(entity.getSearchBusinessType()) && StringUtil.isEmpty(entity.getSearchAccount())) {

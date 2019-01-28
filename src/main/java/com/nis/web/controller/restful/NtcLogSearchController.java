@@ -1,44 +1,8 @@
 package com.nis.web.controller.restful;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.nis.datasource.CustomerContextHolder;
 import com.nis.domain.Page;
-import com.nis.domain.restful.NtcAppLog;
-import com.nis.domain.restful.NtcBgpLog;
-import com.nis.domain.restful.NtcCollectRadiusLog;
-import com.nis.domain.restful.NtcCollectVoipLog;
-import com.nis.domain.restful.NtcConnRecordLog;
-import com.nis.domain.restful.NtcConnRecordPercent;
-import com.nis.domain.restful.NtcDdosLog;
-import com.nis.domain.restful.NtcDnsLog;
-import com.nis.domain.restful.NtcFtpLog;
-import com.nis.domain.restful.NtcHttpLog;
-import com.nis.domain.restful.NtcHttpRecordLog;
-import com.nis.domain.restful.NtcIpLog;
-import com.nis.domain.restful.NtcIpsecLog;
-import com.nis.domain.restful.NtcKeywordsUrlLog;
-import com.nis.domain.restful.NtcL2tpLog;
-import com.nis.domain.restful.NtcMailLog;
-import com.nis.domain.restful.NtcOpenvpnLog;
-import com.nis.domain.restful.NtcP2pLog;
-import com.nis.domain.restful.NtcPptpLog;
-import com.nis.domain.restful.NtcSshLog;
-import com.nis.domain.restful.NtcSslLog;
-import com.nis.domain.restful.NtcSslRecordLog;
-import com.nis.domain.restful.NtcStreamingMediaLog;
-import com.nis.domain.restful.NtcVoipLog;
+import com.nis.domain.restful.*;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -47,15 +11,22 @@ import com.nis.util.Constants;
 import com.nis.util.DateUtils;
 import com.nis.util.ExceptionUtil;
 import com.nis.web.controller.BaseRestController;
-import com.nis.web.service.AuditLogThread;
-import com.nis.web.service.LogDataService;
-import com.nis.web.service.NtcHttpRecordLogsService;
-import com.nis.web.service.NtcSslRecordLogsService;
-import com.nis.web.service.ServicesRequestLogService;
+import com.nis.web.service.*;
 import com.nis.web.service.restful.NtcLogService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.zdjizhi.utils.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Map;
 
 /**
  * @ClassName:NtcLogSearchController
@@ -702,18 +673,18 @@ public class NtcLogSearchController extends BaseRestController {
 	public Map<String, ?> ntcConnRecordLogs(Page page, NtcConnRecordLog ntcConnRecordLog, Model model,
 			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
-				null);
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+
 		try {
-			if (StringUtil.isEmpty(ntcConnRecordLog.getSearchFoundStartTime())
-					&& StringUtil.isEmpty(ntcConnRecordLog.getSearchFoundEndTime())) {
+			if (StringUtil.isBlank(ntcConnRecordLog.getSearchFoundStartTime())
+					&& StringUtil.isBlank(ntcConnRecordLog.getSearchFoundEndTime())) {
 				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
 				ntcConnRecordLog.setSearchFoundStartTime(map.get("startTime"));
 				ntcConnRecordLog.setSearchFoundEndTime(map.get("endTime"));
 			}
-			ntcLogService.queryConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
-			ntcLogService.ntcConnRecordLogsQueryConditionCheck(auditLogThread, start, ntcConnRecordLog,
-					NtcConnRecordLog.class, page);
+
+			ntcLogService.ntcConnRecordLogsConditionCheck(auditLogThread, start, ntcConnRecordLog, NtcConnRecordLog.class, page);
+
 			logDataService.getData(page, ntcConnRecordLog);
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("通联关系日志检索失败:" + e.getMessage());
