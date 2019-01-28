@@ -1,8 +1,8 @@
 package com.nis.domain.restful;
 
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -25,6 +25,7 @@ public class NtcConnRecordPercent implements Serializable {
 	private String searchFoundStartTime;// 开始发现时间
 	private String searchFoundEndTime;// 结束发现时间
 	private String searchEntranceId;
+	protected String searchIspCode;// 运营商
 
 	public String getBps() {
 		return bps;
@@ -83,8 +84,12 @@ public class NtcConnRecordPercent implements Serializable {
 	public void setSearchEntranceId(String searchEntranceId) {
 		this.searchEntranceId = searchEntranceId;
 	}
-	
-	
-	
-	
+	@JsonIgnore
+	public String getSearchIspCode() {
+		return searchIspCode;
+	}
+
+	public void setSearchIspCode(String searchIspCode) {
+		this.searchIspCode = searchIspCode;
+	}
 }

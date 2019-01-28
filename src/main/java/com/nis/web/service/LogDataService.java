@@ -82,21 +82,39 @@ public class LogDataService {
 		sql.append(endTime);
 		StringBuffer totalSql = new StringBuffer();
 		totalSql.append(sql);
-		if (ntcConnRecordPercent.getSearchEntranceId() != null
-				&& !ntcConnRecordPercent.getSearchEntranceId().trim().equals("")) {
-			totalSql.append(" and stream_dir in(1,2,3)   and entrance_id ="
+
+
+		if (StringUtil.isNotBlank(ntcConnRecordPercent.getSearchEntranceId())) {
+
+			totalSql.append("  and entrance_id ="
 					+ ntcConnRecordPercent.getSearchEntranceId());
-			sql.append(" and stream_dir in(1,2)  and entrance_id ="
+
+			sql.append(" and entrance_id ="
 					+ ntcConnRecordPercent.getSearchEntranceId());
-		} else {
-			totalSql.append(" and stream_dir in(1,2,3) ");
-			sql.append(" and stream_dir in(1,2)  ");
 		}
+
+		if (StringUtil.isNotBlank(ntcConnRecordPercent.getSearchIspCode())) {
+			String ispNum = getIspNum(ntcConnRecordPercent.getSearchIspCode());
+
+			totalSql.append("  and concat(toString(entrance_id),toString(device_id)) in ("
+					+ ispNum + ") ");
+
+			sql.append("  and concat(toString(entrance_id),toString(device_id)) in ("
+					+ ispNum + ") ");
+
+		}
+
+		totalSql.append(" and stream_dir in(1,2,3) ");
+		sql.append(" and stream_dir in(1,2)  ");
+
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent,
 				sql.toString(), false);
 		localLogJDBCByDruid.getNtcConnRecordPercentData(ntcConnRecordPercent,
 				totalSql.toString(), true);
 		return ntcConnRecordPercent;
+
+
+
 	}
 
 	public void getNtcAsnRecord(Page page, TrafficAsnStatistic ntcAsnRecord)
@@ -213,7 +231,7 @@ public class LogDataService {
 
 	/**
 	 * 判断日志查询条件中是否有运营商的查询条件,如果有则去数据库中查询运营商的组合信息
-	 * 
+	 *
 	 * @param obj
 	 * @return
 	 * @throws Exception
