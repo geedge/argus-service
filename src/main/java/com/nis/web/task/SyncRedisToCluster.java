@@ -71,9 +71,9 @@ public class SyncRedisToCluster {
 			}
 		}
 	}
-
+	
 //	@Scheduled(cron = "${syncRedisToClusterCron}")
-	public void syncRedisToCluster() {
+	public void syncRedisToCluster1() {
 		JedisCluster jedisCluster = getResource();
 		String requestId = UUID.randomUUID().toString();
 		try {
@@ -207,35 +207,45 @@ public class SyncRedisToCluster {
 	}
 
 	public void syncData(JedisCluster jedisCluster, Double min, Double max, String verionStr) {
-		Jedis resource = JedisUtils.getResource(redisStatisticsRealDBIndex);
-		Set<Tuple> zrangeByScoreWithScores = null;
-		if (min == null && max == null) {
-			int version = Integer.parseInt(verionStr);
-			int maxVersion = 1000;
-			int count = version / maxVersion;
-			if ((version % maxVersion) != 0) {
-				count++;
-			}
-			min = 0D;
-			for (int i = 0; i < count; i++) {
-				int start = i * maxVersion + 1;
-				int end = (i + 1) * maxVersion;
-				if (end > version) {
-					end = version;
+		Jedis resource = null;
+		try {
+			resource = JedisUtils.getResource(redisStatisticsRealDBIndex);
+			Set<Tuple> zrangeByScoreWithScores = null;
+			if (min == null && max == null) {
+				int version = Integer.parseInt(verionStr);
+				int maxVersion = 1000;
+				int count = version / maxVersion;
+				if ((version % maxVersion) != 0) {
+					count++;
 				}
-				min = Double.parseDouble(start + "");
-				max = Double.parseDouble(end + "");
-				// 分批获取,避免一次性获取太多,造成redis阻塞
-				zrangeByScoreWithScores = resource.zrangeByScoreWithScores("MAAT_UPDATE_STATUS", min, max);// 获取所有的maat_update_status
+				min = 0D;
+				for (int i = 0; i < count; i++) {
+					int start = i * maxVersion + 1;
+					int end = (i + 1) * maxVersion;
+					if (end > version) {
+						end = version;
+					}
+					min = Double.parseDouble(start + "");
+					max = Double.parseDouble(end + "");
+					// 分批获取,避免一次性获取太多,造成redis阻塞
+					zrangeByScoreWithScores = resource.zrangeByScoreWithScores("MAAT_UPDATE_STATUS", min, max);// 获取所有的maat_update_status
+					syncData(jedisCluster, zrangeByScoreWithScores);
+				}
+			} else {
+				zrangeByScoreWithScores = resource.zrangeByScoreWithScores("MAAT_UPDATE_STATUS", min, max);// 获取增量的数据
 				syncData(jedisCluster, zrangeByScoreWithScores);
 			}
-		} else {
-			zrangeByScoreWithScores = resource.zrangeByScoreWithScores("MAAT_UPDATE_STATUS", min, max);// 获取增量的数据
-			syncData(jedisCluster, zrangeByScoreWithScores);
+			jedisCluster.set("MAAT_VERSION", verionStr);
+			logger.info("更新了redis集群中的MAAT_VERSION,更新后值是{}", verionStr);
+			logger.info("向redis集群同步数据成功");
+		} catch (Exception e) {
+			throw new ServiceRuntimeException("从" + redisStatisticsRealDBIndex + "号redisDB中获取实时统计数据失败",
+					RestBusinessCode.ExistsKeyFailed.getValue());
+		} finally {
+			if (resource != null) {
+				resource.close();
+			}
 		}
-		jedisCluster.set("MAAT_VERSION", verionStr);
-		logger.info("更新了redis集群中的MAAT_VERSION,更新后值是{}", verionStr);
-		logger.info("向redis集群同步数据成功");
 	}
 
 	private void syncData(JedisCluster jedisCluster, Set<Tuple> zrangeByScoreWithScores) {

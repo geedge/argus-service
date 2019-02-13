@@ -76,9 +76,17 @@ public class JedisUtils {
 	 * @return long 相加后的值
 	 */
 	public static long incrBy(String key, long number, int redisDb) {
-		Jedis jedis = getResource(redisDb);
-		long len = jedis.incrBy(key, number);
-		returnResource(jedis);
+		Jedis jedis = null;
+		long len = 0l;
+		try {
+			jedis = getResource(redisDb);
+			len = jedis.incrBy(key, number);
+		} catch (Exception e) {
+			throw new ServiceRuntimeException("从" + redisDb + "号redisDB中获取自增值" + key + "失败",
+					RestBusinessCode.KeyNotExistsInRedis.getValue());
+		} finally {
+			returnResource(jedis);
+		}
 		return len;
 	}
 
