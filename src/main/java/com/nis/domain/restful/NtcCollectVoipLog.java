@@ -87,6 +87,8 @@ public class NtcCollectVoipLog implements Serializable{
 	protected String searchFoundStartTime;//开始发现时间
 	protected String searchFoundEndTime;//结束发现时间
 	
+	protected String searchIspCode;// 运营商 20190127 功能未实现，调用公共方法出错，先加了查询条件
+	
 	public NtcCollectVoipLog(String pid, Date foundTime, Date recvTime,
 			String capIp, String voipProtocol, String rtpDIp, String rtpSIp,
 			Integer rtpDPort, Integer rtpSPort, String fromToStoreIp,
@@ -429,4 +431,15 @@ public class NtcCollectVoipLog implements Serializable{
 	public void setSearchFoundEndTime(String searchFoundEndTime) {
 		this.searchFoundEndTime = searchFoundEndTime;
 	}
+	
+	@JsonIgnore
+	public String getSearchIspCode() {
+		return searchIspCode;
+	}
+
+	public void setSearchIspCode(String searchIspCode) {
+		this.searchIspCode = searchIspCode;
+	}
+	
+	
 }
