@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nis.domain.restful.NmsDiRuleList;
 import com.nis.domain.restful.TrafficNetflowPortInfoList;
 import com.nis.domain.restful.TrafficNmsServerStatisticList;
+import com.nis.domain.restful.TrafficSeriesDevicePortInfoList;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
@@ -25,6 +26,7 @@ import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.NmsDiRuleService;
 import com.nis.web.service.restful.TrafficNetflowPortInfoService;
 import com.nis.web.service.restful.TrafficNmsServerStatisticService;
+import com.nis.web.service.restful.TrafficSeriesDevicePortInfoService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -41,6 +43,8 @@ public class NmsInfoController extends BaseRestController {
 	NmsDiRuleService nmsDiRuleService;
 	@Autowired
 	TrafficNetflowPortInfoService trafficNetflowPortInfoService;
+	@Autowired
+	TrafficSeriesDevicePortInfoService trafficSeriesDevicePortInfoService;
 
 	@RequestMapping(value = "/nms/v1/saveServerStatus", method = RequestMethod.POST)
 	@ApiOperation(value = "存储NMS系统上报的服务器状态接口", httpMethod = "POST", response = Map.class, notes = "接收NMS系统上报的服务器状态信息")
@@ -119,7 +123,7 @@ public class NmsInfoController extends BaseRestController {
 		try {
 			if (trafficNetflowPortInfoList != null && trafficNetflowPortInfoList.getTrafficNetflowPortInfoList() != null
 					&& trafficNetflowPortInfoList.getTrafficNetflowPortInfoList().size() > 0) {
-				thread.setContent("NMS系统上报上报trafficNetflowPort信息数量为"+trafficNetflowPortInfoList.getTrafficNetflowPortInfoList().size());
+				thread.setContent("NMS系统上报trafficNetflowPort信息数量为"+trafficNetflowPortInfoList.getTrafficNetflowPortInfoList().size());
 				trafficNetflowPortInfoService
 						.saveTrafficNetflowPortInfo(trafficNetflowPortInfoList.getTrafficNetflowPortInfoList());
 			} else {
@@ -136,6 +140,37 @@ public class NmsInfoController extends BaseRestController {
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"上报trafficNetflowPort信息成功", Constants.IS_DEBUG ? trafficNetflowPortInfoList : null);
+	}
+	
+	@RequestMapping(value = "/nms/v1/trafficSeriesDevicePortInfo", method = RequestMethod.POST)
+	@ApiOperation(value = "存储串联设备端口告警信息接口", httpMethod = "POST", response = Map.class, notes = "接收NMS系统上报的串联设备端口告警信息")
+	@ApiParam(value = "存储串联设备端口告警信息接口", name = "saveTrafficSeriesDevicePortInfo", required = true)
+	public Map<String, Object> saveTrafficSeriesDevicePortInfo(
+			@RequestBody TrafficSeriesDevicePortInfoList trafficSeriesDevicePortInfoList, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request,
+				trafficSeriesDevicePortInfoList);
+		try {
+			if (trafficSeriesDevicePortInfoList != null && trafficSeriesDevicePortInfoList.getTrafficSeriesDevicePortInfoList() != null
+					&& trafficSeriesDevicePortInfoList.getTrafficSeriesDevicePortInfoList().size() > 0) {
+				thread.setContent("NMS系统上报串联设备端口告警信息数量为"+trafficSeriesDevicePortInfoList.getTrafficSeriesDevicePortInfoList().size());
+				trafficSeriesDevicePortInfoService
+				.saveTrafficSeriesDevicePortInfo(trafficSeriesDevicePortInfoList.getTrafficSeriesDevicePortInfoList());
+			} else {
+				throw new RestServiceException("参数trafficSeriesDevicePortInfoList不能为空", RestBusinessCode.missing_args.getValue());
+			}
+			
+		} catch (Exception e) {
+			if (e instanceof RestServiceException) {
+				throw (RestServiceException) e;
+			} else {
+				throw new ServiceRuntimeException(thread, System.currentTimeMillis() - start,
+						"上报串联设备端口告警信息异常:" + e.getMessage(), RestBusinessCode.unknow_error.getValue());
+			}
+		}
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
+				"上报串联设备端口告警信息成功", Constants.IS_DEBUG ? trafficSeriesDevicePortInfoList : null);
 	}
 
 }
