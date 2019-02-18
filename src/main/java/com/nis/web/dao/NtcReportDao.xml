@@ -144,6 +144,10 @@
 		</choose>
 
 		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 1 ">
+				NTC_PZ_STAT_HOUR
+			</when>
+
 			<when
 				test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_PZ_STAT_HOUR
@@ -190,6 +194,9 @@
 		</choose>
 
 		<choose>
+			<when test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 1 ">
+				NTC_PZ_STAT_HOUR
+			</when>
 			<when
 				test="searchBusinessType !=null and searchBusinessType != '' and searchBusinessType == 3 ">
 				NTC_PZ_STAT_HOUR
