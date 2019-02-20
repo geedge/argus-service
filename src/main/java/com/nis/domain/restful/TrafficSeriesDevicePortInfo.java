@@ -15,7 +15,7 @@ public class TrafficSeriesDevicePortInfo implements Serializable {
 	@JsonIgnore
 	private long id;
 	private String area;
-	private Integer port;
+	private String port;
 	private String status;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	@ApiModelProperty(value = "commitTime", notes = "时间")
@@ -37,11 +37,11 @@ public class TrafficSeriesDevicePortInfo implements Serializable {
 		this.area = area;
 	}
 
-	public Integer getPort() {
+	public String getPort() {
 		return port;
 	}
 
-	public void setPort(Integer port) {
+	public void setPort(String port) {
 		this.port = port;
 	}
 
