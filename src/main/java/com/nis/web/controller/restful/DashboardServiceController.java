@@ -23,11 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nis.datasource.CustomerContextHolder;
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcConnNumReport;
-import com.nis.domain.restful.NtcRadiusReport;
 import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.AppTrendEntity;
-import com.nis.domain.restful.dashboard.SysDeviceInfo;
 import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
+import com.nis.domain.restful.dashboard.TrafficAppBpsStatistic;
+import com.nis.domain.restful.dashboard.TrafficAppPpsStatistic;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
@@ -214,28 +214,30 @@ public class DashboardServiceController extends BaseRestController {
 	}
 
 	/**
-	 *  根据ip46,协议tcp，udp查询带宽
+	 * 根据ip46,协议tcp，udp查询带宽
 	 */
 	@RequestMapping(value = "trafficBandwidthTransThree", method = RequestMethod.GET)
 	@ApiOperation(value = "带宽根据ip46,协议tcp,udp查询详情", httpMethod = "GET", notes = "对应带宽根据IPv4,6,协议tcp,udp统计数据显示")
-	public Map<String,?> trafficBandwidthTransThree(String beginDate,String endDate,String searchQuotaType,Model model,Integer searchDirection, 
-			HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficBandwidthTransThree(String beginDate, String endDate, String searchQuotaType,
+			Model model, Integer searchDirection, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
-		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
-		Map resultMap=new HashMap();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		Map resultMap = new HashMap();
 		try {
-			if(StringUtils.isEmpty(beginDate)&&StringUtils.isEmpty(endDate)) {
+			if (StringUtils.isEmpty(beginDate) && StringUtils.isEmpty(endDate)) {
 				Calendar cal = Calendar.getInstance();
-		        cal.setTime(new Date());
-		        endDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());//获取到完整的时间
-		        cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
-		        beginDate =  new  SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format(cal.getTime());
+				cal.setTime(new Date());
+				endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cal.getTime());// 获取到完整的时间
+				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
+				beginDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(cal.getTime());
 			}
-			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate,searchQuotaType,searchDirection);
-			
+			resultMap = dashboardService.getBandwidthTransEntrance(beginDate, endDate, searchQuotaType,
+					searchDirection);
+
 		} catch (Exception e) {
-			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:"+e.getMessage());
-			logger.error("带宽实时统计数据检索失败:"+ExceptionUtil.getExceptionMsg(e));
+			auditLogThread.setExceptionInfo("带宽实时统计数据检索失败:" + e.getMessage());
+			logger.error("带宽实时统计数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
 			if (e instanceof RestServiceException) {
 				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
 						"带宽实时统计数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
@@ -247,8 +249,10 @@ public class DashboardServiceController extends BaseRestController {
 						"带宽实时统计数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",resultMap, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "带宽实时统计数据检索成功",
+				resultMap, 0);
 	}
+
 	/**
 	 * 流量统计活跃端口统计
 	 */
@@ -322,14 +326,15 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficProtocolList", method = RequestMethod.GET)
 	@ApiOperation(value = "协议统计占比与报表", httpMethod = "GET", notes = "对应协议统计详情占比与报表")
-	public Map<String, ?> trafficProtocolList(Integer[] protoType,String beginDate, String endDate,Integer entranceId, Model model, 
-			Integer searchDirection,HttpServletRequest request,HttpServletResponse response) {
+	public Map<String, ?> trafficProtocolList(Integer[] protoType, String beginDate, String endDate, Integer entranceId,
+			Model model, Integer searchDirection, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate,protoType,entranceId,searchDirection);
+			List<Map> ipActiveList = dashboardService.getProtocolList(beginDate, endDate, protoType, entranceId,
+					searchDirection);
 			if (ipActiveList != null && ipActiveList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(ipActiveList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString, HashMap.class);
@@ -405,7 +410,7 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActiveOneHour", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP统计一个小时的活跃IP", httpMethod = "GET", notes = "对应活跃IP实时统计查询服务。")
-	public Map<String, ?> trafficIpActiveOneHour(String beginDate, String endDate, Model model,Integer entranceId,
+	public Map<String, ?> trafficIpActiveOneHour(String beginDate, String endDate, Model model, Integer entranceId,
 			HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -415,7 +420,7 @@ public class DashboardServiceController extends BaseRestController {
 		try {
 			Date begin = DateUtils.parseDate(beginDate);
 			Date end = DateUtils.parseDate(endDate);
-			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour(begin, end,entranceId);
+			List<HashMap> ipActiveChart = dashboardService.ipActiveOneHour(begin, end, entranceId);
 			if (ipActiveChart != null && ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
@@ -442,7 +447,7 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficIpActiveFiveMinute", method = RequestMethod.GET)
 	@ApiOperation(value = "活跃IP最近一个小时的变化趋势统计", httpMethod = "GET", notes = "对最新TOP10的活跃IP，在近一个小时的变化情况进行统计")
-	public Map<String, ?> trafficIpActiveFiveMinute(String beginDate, String endDate, Model model,Integer entranceId,
+	public Map<String, ?> trafficIpActiveFiveMinute(String beginDate, String endDate, Model model, Integer entranceId,
 			HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -456,7 +461,7 @@ public class DashboardServiceController extends BaseRestController {
 				begin = DateUtils.parseDate(beginDate);
 				end = DateUtils.parseDate(endDate);
 			}
-			List<Map> ipActiveChart = dashboardService.ipActiveFiveMinute(begin, end,entranceId);
+			List<Map> ipActiveChart = dashboardService.ipActiveFiveMinute(begin, end, entranceId);
 			if (ipActiveChart != null && ipActiveChart.size() > 0) {
 				list = ipActiveChart;
 			}
@@ -517,14 +522,14 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficAppList", method = RequestMethod.GET)
 	@ApiOperation(value = "App统计占比与报表", httpMethod = "GET", notes = "对应App统计详情占比与报表")
-	public Map<String, ?> trafficAppList(Integer[] appType, String beginDate, String endDate, Model model,Integer entranceId,
-			HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficAppList(Integer[] appType, String beginDate, String endDate, Model model,
+			Integer entranceId, HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<HashMap> list = new ArrayList<HashMap>();
 		try {
-			List<Map> appList = dashboardService.getAppList(beginDate, endDate, appType,entranceId);
+			List<Map> appList = dashboardService.getAppList(beginDate, endDate, appType, entranceId);
 			if (appList != null && appList.size() > 0) {
 				String jsonString = JsonMapper.toJsonString(appList);
 				list = (java.util.List<HashMap>) JsonMapper.fromJsonList(jsonString, HashMap.class);
@@ -673,8 +678,7 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficWebsiteList", method = RequestMethod.GET)
 	@ApiOperation(value = "网站流量分析统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String, ?> trafficWebsiteList( Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Map<String, ?> trafficWebsiteList(Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
@@ -707,8 +711,8 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficWebsiteListNoTime", method = RequestMethod.GET)
 	@ApiOperation(value = "网站流量分析详情统计", httpMethod = "GET", notes = "对应网站http分类显示")
-	public Map<String, ?> trafficWebsiteListNoTime(Integer domain[],Integer entranceId , @RequestParam String beginDate, @RequestParam String endDate,Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Map<String, ?> trafficWebsiteListNoTime(Integer domain[], Integer entranceId, @RequestParam String beginDate,
+			@RequestParam String endDate, Model model, HttpServletRequest request, HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
@@ -719,18 +723,18 @@ public class DashboardServiceController extends BaseRestController {
 				Date begin = DateUtils.parseDate(beginDate);
 				Date end = DateUtils.parseDate(endDate);
 				// 带查询时间查询所有
-				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin, end,domain,entranceId);
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin, end, domain, entranceId);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
-			}else {
+			} else {
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(new Date());
 				Date begin1 = cal.getTime();// 获取到完整的时间
 				cal.set(Calendar.HOUR_OF_DAY, cal.get(Calendar.HOUR_OF_DAY) - 1);
 				Date end1 = cal.getTime();
 				// 带查询时间查询所有
-				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin1, end1,domain,entranceId);
+				List<Map> websiteChart = dashboardService.getWebsiteDetails(begin1, end1, domain, entranceId);
 				if (websiteChart != null && websiteChart.size() > 0) {
 					list = websiteChart;
 				}
@@ -800,18 +804,18 @@ public class DashboardServiceController extends BaseRestController {
 
 	@RequestMapping(value = "trafficTopicAndDomainChart", method = RequestMethod.GET)
 	@ApiOperation(value = "HTTP网站主题分类分析统计", httpMethod = "GET", notes = "对应某个网站主题类型分类统计图")
-	public Map<String, ?> trafficTopicAndDomainChart( Model model,
-			HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficTopicAndDomainChart(Model model, HttpServletRequest request,
+			HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-				// 不带时间默认top10
-				List<Map> websiteChart = dashboardService.getTopicTop10();
-				if (websiteChart != null && websiteChart.size() > 0) {
-					list = websiteChart;
+			// 不带时间默认top10
+			List<Map> websiteChart = dashboardService.getTopicTop10();
+			if (websiteChart != null && websiteChart.size() > 0) {
+				list = websiteChart;
 			}
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("HTTP网站主题分类分析数据检索失败:" + e.getMessage());
@@ -830,12 +834,12 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站主题分类分析数据检索成功",
 				list, 0);
 	}
-	
+
 	@RequestMapping(value = "trafficTopicList", method = RequestMethod.GET)
 	@ApiOperation(value = "HTTP网站主题详情", httpMethod = "GET", notes = "对应某个网站主题类型分类统计")
-	public Map<String, ?> trafficTopicList(String beginDate, String endDate, Model model,
-			HttpServletRequest request, HttpServletResponse response) {
-		
+	public Map<String, ?> trafficTopicList(String beginDate, String endDate, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
@@ -878,23 +882,24 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站主题分类分析数据检索成功",
 				list, 0);
 	}
+
 	@RequestMapping(value = "trafficDomainTrans", method = RequestMethod.GET)
 	@ApiOperation(value = "域名详情趋势", httpMethod = "GET", notes = "域名UV")
-	public Map<String, ?> trafficDomainTrans(String beginDate, String endDate, Model model, Integer domain,Integer entranceId,
-			HttpServletRequest request, HttpServletResponse response) {
-		
+	public Map<String, ?> trafficDomainTrans(String beginDate, String endDate, Model model, Integer domain,
+			Integer entranceId, HttpServletRequest request, HttpServletResponse response) {
+
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List list = new ArrayList();
 		try {
-			
-				// 带查询时间查询所有
-				List websiteChart = dashboardService.getDomainTrans2(beginDate, endDate,domain,entranceId);
-				if (websiteChart != null && websiteChart.size() > 0) {
-					list = websiteChart;
-				}
-			
+
+			// 带查询时间查询所有
+			List websiteChart = dashboardService.getDomainTrans2(beginDate, endDate, domain, entranceId);
+			if (websiteChart != null && websiteChart.size() > 0) {
+				list = websiteChart;
+			}
+
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("HTTP网站主题分类分析数据检索失败:" + e.getMessage());
 			logger.error("HTTP网站域名分类分析数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
@@ -912,36 +917,35 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "HTTP网站域名分类分析数据检索成功",
 				list, 0);
 	}
-	
 
 	@RequestMapping(value = "trafficPortActiveFiveMinute", method = RequestMethod.GET)
 	@ApiOperation(value = "流量端口详情趋势", httpMethod = "GET", notes = "域名UV")
 	public Map<String, ?> trafficPortAcitve(String beginDate, String endDate, Model model, Integer[] port,
 			HttpServletRequest request, HttpServletResponse response) {
-		
+
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		List<Map> list = new ArrayList<Map>();
 		try {
-			Calendar cal=Calendar.getInstance();
-			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			if((beginDate == null || "".equals(beginDate)) && (endDate == null || "".equals(endDate))){
-				//如果时间全部为空查询最近一小时				
+			Calendar cal = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if ((beginDate == null || "".equals(beginDate)) && (endDate == null || "".equals(endDate))) {
+				// 如果时间全部为空查询最近一小时
 				endDate = sdf.format(cal.getTime());
 				cal.add(Calendar.HOUR_OF_DAY, -1);
 				beginDate = sdf.format(cal.getTime());
-			}else if((beginDate == null || "".equals(beginDate)) && (endDate != null && !"".equals(endDate))){
+			} else if ((beginDate == null || "".equals(beginDate)) && (endDate != null && !"".equals(endDate))) {
 				beginDate = DateUtils.getSpecifiedHourBefore(endDate);
-			}else if((endDate == null || "".equals(endDate)) && (beginDate != null && !"".equals(beginDate))){
+			} else if ((endDate == null || "".equals(endDate)) && (beginDate != null && !"".equals(beginDate))) {
 				endDate = DateUtils.getSpecifiedHourAfter(beginDate);
 			}
 			// 带查询时间查询所有
-			List<Map> portActiveChart = dashboardService.findTrafficPortActive(beginDate, endDate,port);
+			List<Map> portActiveChart = dashboardService.findTrafficPortActive(beginDate, endDate, port);
 			if (portActiveChart != null && portActiveChart.size() > 0) {
 				list = portActiveChart;
 			}
-			
+
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("流量端口详情趋势数据检索失败:" + e.getMessage());
 			logger.error("流量端口详情趋势数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
@@ -956,9 +960,10 @@ public class DashboardServiceController extends BaseRestController {
 						"流量端口详情趋势数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流量端口详情趋势数据检索成功",
-				list, 0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "流量端口详情趋势数据检索成功", list,
+				0);
 	}
+
 	@RequestMapping(value = "/trendTotalReport", method = RequestMethod.GET)
 	@ApiOperation(value = "流量各指标趋势统计", httpMethod = "GET", notes = "根据指标(drop,loop,New Link,Close Link,Pass,Live Link)统计各业务的趋势")
 	public Map<String, ?> trendTotalReport(NtcConnNumReport ntcConnNumReport, Model model, HttpServletRequest request,
@@ -972,7 +977,8 @@ public class DashboardServiceController extends BaseRestController {
 			// 验证serachBusinessType
 			if (!StringUtil.isBlank(ntcConnNumReport.getSearchBusinessType())
 					&& !StringUtil.isNumeric(ntcConnNumReport.getSearchBusinessType())) {
-				throw new RestServiceException("searchBusinessType参数格式错误", RestBusinessCode.param_formate_error.getValue());
+				throw new RestServiceException("searchBusinessType参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
 			}
 			restMap = dashboardService.trendTotalReport(ntcConnNumReport);
 		} catch (Exception e) {
@@ -990,13 +996,13 @@ public class DashboardServiceController extends BaseRestController {
 			}
 		}
 
-		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "流量各指标趋势统计成功",
-				restMap, 0);
+		return serviceLogResponse(saveLogThread, System.currentTimeMillis() - start, request, "流量各指标趋势统计成功", restMap,
+				0);
 	}
+
 	/**
 	 * @Description:
-	 * @author(zdx)
-	 * @date 2019年1月4日 下午8:57:32
+	 * @author(zdx) @date 2019年1月4日 下午8:57:32
 	 * @param model
 	 * @param entity
 	 * @param request
@@ -1005,26 +1011,25 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "trafficAppTrend", method = RequestMethod.GET)
 	@ApiOperation(value = "App趋势详情查询", httpMethod = "GET", notes = "对App趋势详情提供数据查询服务")
-	public Map<String, ?> trafficAppTrend(TrafficAppFocusStatistic entity, Model model,
-			HttpServletRequest request, HttpServletResponse response) {
+	public Map<String, ?> trafficAppTrend(TrafficAppFocusStatistic entity, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
-		Map resultMap = new  HashMap();
+		Map resultMap = new HashMap();
 		try {
-			//验证
+			// 验证
 			checkAppTrendCondition(entity);
-			if (StringUtil.isEmpty(entity.getSearchStartTime())
-					&& StringUtil.isEmpty(entity.getSearchEndTime())) {
+			if (StringUtil.isEmpty(entity.getSearchStartTime()) && StringUtil.isEmpty(entity.getSearchEndTime())) {
 				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
 				entity.setSearchStartTime(map.get("startTime"));
 				entity.setSearchEndTime(map.get("endTime"));
 			}
-			if(StringUtils.isNotBlank(entity.getSearchIspCode())){
+			if (StringUtils.isNotBlank(entity.getSearchIspCode())) {
 				String ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
 				entity.setIspNum(ispNum);
 			}
-			//将数据源切换到本地clickhouse
+			// 将数据源切换到本地clickhouse
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
 			resultMap = dashboardService.getAppTrend(entity);
 			CustomerContextHolder.clearCustomerType();
@@ -1042,15 +1047,14 @@ public class DashboardServiceController extends BaseRestController {
 						"App趋势详情数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-		
+
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App趋势详情数据检索成功",
 				resultMap, 0);
 	}
-	
+
 	/**
 	 * @Description:
-	 * @author(zdx)
-	 * @date 2019年1月4日 下午8:57:12
+	 * @author(zdx) @date 2019年1月4日 下午8:57:12
 	 * @param beginDate
 	 * @param endDate
 	 * @param model
@@ -1060,7 +1064,7 @@ public class DashboardServiceController extends BaseRestController {
 	 */
 	@RequestMapping(value = "appConnRecordTop100", method = RequestMethod.GET)
 	@ApiOperation(value = "App通联关系Top100", httpMethod = "GET", notes = "对App通联关系Top100提供查询服务。")
-	public Map<String, ?> appConnRecordTop100(AppConnRecordStatistic entity,Model model, HttpServletRequest request,
+	public Map<String, ?> appConnRecordTop100(AppConnRecordStatistic entity, Model model, HttpServletRequest request,
 			HttpServletResponse response) {
 
 		long start = System.currentTimeMillis();
@@ -1068,36 +1072,33 @@ public class DashboardServiceController extends BaseRestController {
 				null);
 		List<AppConnRecordStatistic> list = new ArrayList<AppConnRecordStatistic>();
 		try {
-			//验证
+			// 验证
 			checkAppTrendCondition(entity);
-			if (StringUtil.isEmpty(entity.getSearchStartTime())
-					&& StringUtil.isEmpty(entity.getSearchEndTime())) {
+			if (StringUtil.isEmpty(entity.getSearchStartTime()) && StringUtil.isEmpty(entity.getSearchEndTime())) {
 				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
 				entity.setSearchStartTime(map.get("startTime"));
 				entity.setSearchEndTime(map.get("endTime"));
 			}
 			// 查询运营商编码所对应的设备号跟出入口编号
-			String ispNum="";
-			if(StringUtils.isNotBlank(entity.getSearchIspCode())){
+			String ispNum = "";
+			if (StringUtils.isNotBlank(entity.getSearchIspCode())) {
 				ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
 				entity.setIspNum(ispNum);
 			}
-//			List<SysDeviceInfo> sysDeviceInfo =dashboardService.getIspListByIspNum(ispNum);
+			// List<SysDeviceInfo> sysDeviceInfo
+			// =dashboardService.getIspListByIspNum(ispNum);
 			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
 			list = dashboardService.appConnRecordTop100(entity);
 			// 设置运营商编码
-			/*if(list!=null&&list.size()>0&&sysDeviceInfo!=null&&sysDeviceInfo.size()>0){
-				for (AppConnRecordStatistic app : list) {
-					for (SysDeviceInfo device : sysDeviceInfo) {
-						if((app.getIspNum().trim()).equals(device.getIspNum().trim())){
-							app.setIspName(device.getIspName());
-							break;
-						}
-					}
-				}
-			}*/
+			/*
+			 * if(list!=null&&list.size()>0&&sysDeviceInfo!=null&&sysDeviceInfo.size()>0){
+			 * for (AppConnRecordStatistic app : list) { for (SysDeviceInfo device :
+			 * sysDeviceInfo) {
+			 * if((app.getIspNum().trim()).equals(device.getIspNum().trim())){
+			 * app.setIspName(device.getIspName()); break; } } } }
+			 */
 			CustomerContextHolder.clearCustomerType();
-			
+
 		} catch (Exception e) {
 			auditLogThread.setExceptionInfo("App通联关系Top100数据检索失败:" + e.getMessage());
 			logger.error("App通联关系Top100检索失败:" + ExceptionUtil.getExceptionMsg(e));
@@ -1112,22 +1113,14 @@ public class DashboardServiceController extends BaseRestController {
 						"App通联关系Top100数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
 			}
 		}
-		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App通联关系Top100数据检索成功", list,
-				0);
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App通联关系Top100数据检索成功",
+				list, 0);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
 
 	@RequestMapping(value = "/ntcAsnRecord", method = RequestMethod.GET)
 	@ApiOperation(value = "ASN通联关系(源,目的)查询", httpMethod = "GET", notes = "对日志功能“ASN通联关系(源,目的)查询”提供数据基础查询服务")
-	public Map<String, ?> ntcAsnRecord(Page page, TrafficAsnStatistic ntcAsnRecord, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Map<String, ?> ntcAsnRecord(Page page, TrafficAsnStatistic ntcAsnRecord, Model model,
+			HttpServletRequest request, HttpServletResponse response) {
 		long start = System.currentTimeMillis();
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
@@ -1200,19 +1193,7 @@ public class DashboardServiceController extends BaseRestController {
 		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "ASN通联关系(源,目的)检索成功",
 				page, 0);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	/**
 	 */
 	public void checkAppTrendCondition(AppTrendEntity entity) {
@@ -1224,11 +1205,9 @@ public class DashboardServiceController extends BaseRestController {
 				timeCount++;
 			}
 		} catch (ParseException e) {
-			throw new RestServiceException("searchStartTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchStartTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
-			throw new RestServiceException("searchStartTime参数错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchStartTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
 
 		try {
@@ -1237,8 +1216,7 @@ public class DashboardServiceController extends BaseRestController {
 				timeCount++;
 			}
 		} catch (ParseException e) {
-			throw new RestServiceException("searchEndTime参数格式错误",
-					RestBusinessCode.param_formate_error.getValue());
+			throw new RestServiceException("searchEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
 		} catch (Exception e) {
 			throw new RestServiceException("searchEndTime参数错误", RestBusinessCode.param_formate_error.getValue());
 		}
@@ -1249,12 +1227,13 @@ public class DashboardServiceController extends BaseRestController {
 		if (StringUtil.isEmpty(entity.getSearchAppId())) {
 			throw new RestServiceException("searchAppId参数不能为空", RestBusinessCode.missing_args.getValue());
 		}
-		//验证AppId和EntranceId必须是数值
-		checkNumericCondition(entity.getSearchAppId(),"searchAppId");
-		checkNumericCondition(entity.getSearchEntranceId(),"searchEntranceId");
+		// 验证AppId和EntranceId必须是数值
+		checkNumericCondition(entity.getSearchAppId(), "searchAppId");
+		checkNumericCondition(entity.getSearchEntranceId(), "searchEntranceId");
 		logger.info("用户行为日志统计参数校验结束----" + System.currentTimeMillis());
 
 	}
+
 	public void checkNumericCondition(String condition, String condName) {
 		if (!StringUtil.isEmpty(condition)) {
 			Boolean flag = false;
@@ -1274,4 +1253,107 @@ public class DashboardServiceController extends BaseRestController {
 			}
 		}
 	}
+
+	/**
+	 * @Description:获取指定app流量bps值
+	 * @param model
+	 * @param entity
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "trafficAppBpsTrend", method = RequestMethod.GET)
+	@ApiOperation(value = "App-bps趋势详情查询", httpMethod = "GET", notes = "对App-bps趋势详情提供数据查询服务")
+	public Map<String, ?> trafficAppBpsTrend(TrafficAppBpsStatistic entity, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		Map resultMap = new HashMap();
+		try {
+			// 验证
+			checkAppTrendCondition(entity);
+			if (StringUtil.isEmpty(entity.getSearchStartTime()) && StringUtil.isEmpty(entity.getSearchEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
+				entity.setSearchStartTime(map.get("startTime"));
+				entity.setSearchEndTime(map.get("endTime"));
+			}
+			if (StringUtils.isNotBlank(entity.getSearchIspCode())) {
+				String ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
+				entity.setIspNum(ispNum);
+			}
+			// 将数据源切换到本地clickhouse
+			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
+			resultMap = dashboardService.getAppBpsTrend(entity);
+			CustomerContextHolder.clearCustomerType();
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("App-bps趋势详情数据检索失败:" + e.getMessage());
+			logger.error("App-bps趋势详情数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"App-bps趋势详情数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App-bps趋势详情数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App-bps趋势详情数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App-bps趋势详情数据检索成功",
+				resultMap, 0);
+	}
+
+	/**
+	 * 获取指定app流量pps值
+	 * @param entity
+	 * @param model
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping(value = "trafficAppPpsTrend", method = RequestMethod.GET)
+	@ApiOperation(value = "App-pps趋势详情查询", httpMethod = "GET", notes = "对App-pps趋势详情提供数据查询服务")
+	public Map<String, ?> trafficAppPpsTrend(TrafficAppPpsStatistic entity, Model model, HttpServletRequest request,
+			HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
+				null);
+		Map resultMap = new HashMap();
+		try {
+			// 验证
+			checkAppTrendCondition(entity);
+			if (StringUtil.isEmpty(entity.getSearchStartTime()) && StringUtil.isEmpty(entity.getSearchEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
+				entity.setSearchStartTime(map.get("startTime"));
+				entity.setSearchEndTime(map.get("endTime"));
+			}
+			if (StringUtils.isNotBlank(entity.getSearchIspCode())) {
+				String ispNum = dashboardService.getIspNum(entity.getSearchIspCode());
+				entity.setIspNum(ispNum);
+			}
+			// 将数据源切换到本地clickhouse
+			CustomerContextHolder.setCustomerType(CustomerContextHolder.DATA_SOURCE_B);
+			resultMap = dashboardService.getAppPpsTrend(entity);
+			CustomerContextHolder.clearCustomerType();
+		} catch (Exception e) {
+			auditLogThread.setExceptionInfo("App-Gbps趋势详情数据检索失败:" + e.getMessage());
+			logger.error("App-pps趋势详情数据检索失败:" + ExceptionUtil.getExceptionMsg(e));
+			if (e instanceof RestServiceException) {
+				throw new RestServiceException(auditLogThread, System.currentTimeMillis() - start,
+						"App-pps趋势详情数据检索失败:" + e.getMessage(), ((RestServiceException) e).getErrorCode());
+			} else if (e instanceof ServiceRuntimeException) {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App-pps趋势详情数据检索失败:" + e.getMessage(), ((ServiceRuntimeException) e).getErrorCode());
+			} else {
+				throw new ServiceRuntimeException(auditLogThread, System.currentTimeMillis() - start,
+						"App-pps趋势详情数据检索失败:" + e.getMessage(), RestBusinessCode.service_runtime_error.getValue());
+			}
+		}
+
+		return serviceLogResponse(auditLogThread, System.currentTimeMillis() - start, request, "App-pps趋势详情数据检索成功",
+				resultMap, 0);
+	}
+
 }

@@ -59,6 +59,32 @@
 		group by stat_time
 		 order by stat_time
 	</select>
+  <select id="getAppBpsTrend" parameterType="com.nis.domain.restful.dashboard.TrafficAppBpsStatistic" resultType="com.nis.domain.restful.dashboard.TrafficAppBpsStatistic">
+		select stat_time time, sum(c2s_byte_len) c2sNum,sum(s2c_byte_len) s2cNum,sum(s2c_byte_len+c2s_byte_len) totalNum from traffic_app_focus_statistic t where
+		<![CDATA[ stat_time>= toDateTime(#{searchStartTime}) and stat_time< toDateTime(#{searchEndTime})
+			and app_id=toInt64(#{searchAppId}) ]]>
+		<if test="searchEntranceId !=null and searchEntranceId != ''">
+			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
+		</if>
+		<if test="ispNum !=null and ispNum != ''">
+			<![CDATA[and concat(toString(entrance_id),toString(device_id)) in (${ispNum})]]>
+		</if>
+		group by stat_time
+		 order by stat_time
+	</select>
+  <select id="getAppPpsTrend" parameterType="com.nis.domain.restful.dashboard.TrafficAppPpsStatistic" resultType="com.nis.domain.restful.dashboard.TrafficAppPpsStatistic">
+		select stat_time time, sum(c2s_pkt_num) c2sNum,sum(s2c_pkt_num) s2cNum,sum(s2c_pkt_num+c2s_pkt_num) totalNum from traffic_app_focus_statistic t where
+		<![CDATA[ stat_time>= toDateTime(#{searchStartTime}) and stat_time< toDateTime(#{searchEndTime})
+			and app_id=toInt64(#{searchAppId}) ]]>
+		<if test="searchEntranceId !=null and searchEntranceId != ''">
+			<![CDATA[and entrance_id=toInt64(#{searchEntranceId}) ]]>
+		</if>
+		<if test="ispNum !=null and ispNum != ''">
+			<![CDATA[and concat(toString(entrance_id),toString(device_id)) in (${ispNum})]]>
+		</if>
+		group by stat_time
+		 order by stat_time
+	</select>
 	<!-- App 活跃IP Top100 -->
 	<select id="appConnRecordTop100" parameterType="com.nis.domain.restful.dashboard.AppConnRecordStatistic" resultType="com.nis.domain.restful.dashboard.AppConnRecordStatistic">
 		select s_ip ipAddr, sum(c2s_byte_num + s2c_byte_num) byteNum, sum(c2s_pkt_num + s2c_pkt_num) pktNum, count(s_ip) logNum

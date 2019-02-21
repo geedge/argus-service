@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,8 @@ import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
 import com.nis.domain.restful.dashboard.NtcTotalReport;
 import com.nis.domain.restful.dashboard.SysDeviceInfo;
 import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
+import com.nis.domain.restful.dashboard.TrafficAppBpsStatistic;
+import com.nis.domain.restful.dashboard.TrafficAppPpsStatistic;
 import com.nis.domain.restful.dashboard.TrafficAppStatistic;
 import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
 import com.nis.domain.restful.dashboard.TrafficHttpFocusStatistic;
@@ -1754,6 +1755,162 @@ public class DashboardService extends BaseService {
 			resultMap.put("dipSum", dipTotal);
 		}
 		return resultMap;
+	}
+	public Map getAppBpsTrend(TrafficAppBpsStatistic entity) {
+		List<TrafficAppBpsStatistic> list = new ArrayList<TrafficAppBpsStatistic>();
+		list = trafficAppStatisticDao.getAppBpsTrend(entity);
+		Map resultMap = new  HashMap();
+		if(!StringUtil.isEmpty(list)){
+			Date beginDate = DateUtils.parseDate(entity.getSearchStartTime());
+			Date endDate = DateUtils.parseDate(entity.getSearchEndTime());
+			List<Date> dateRangeList = new ArrayList<Date>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			while (calendar.getTime().compareTo(endDate) < 0) {
+				dateRangeList.add(calendar.getTime());
+				calendar.add(Calendar.MINUTE, 1);
+			}
+			int index = 0;
+			List resultC2sList = new ArrayList();
+			List resultS2cList = new ArrayList();
+			List resultTotalList = new ArrayList();
+//			Long c2sTotal = 0L;
+//			Long s2cTotal = 0L;
+//			Long c2sS2cTotal = 0L;
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				// 存放一个时间点中总数
+				List c2sList = new ArrayList();
+				List s2cList = new ArrayList();
+				List totalList = new ArrayList();
+				Date date = dateRangeList.get(i);
+				Long c2sNum = 0L;
+				Long s2cNum = 0L;
+				Long totalNum=0L;
+				for (int j = index; j < list.size(); j++) {
+					TrafficAppBpsStatistic info = list.get(j);
+					if (info.getTime() != null) {
+						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+							c2sNum = c2sNum + info.getC2sNum();
+							s2cNum = s2cNum + info.getS2cNum();
+							totalNum=totalNum+info.getTotalNum();
+						} else {
+							index = j;
+							break;
+						}
+					}
+				}
+				
+				//最后一个时间点
+				if(i+1==dateRangeList.size()&&s2cNum.compareTo(0L)==0&&c2sNum.compareTo(0L)==0){
+					break;
+				}
+				c2sList.add(date.getTime());
+				c2sList.add(c2sNum*8/1024/1024/1024/60);
+				resultC2sList.add(c2sList);
+				s2cList.add(date.getTime());
+				s2cList.add(s2cNum*8/1024/1024/1024/60);
+				resultS2cList.add(s2cList);
+				
+				totalList.add(date.getTime());
+				totalList.add(totalNum*8/1024/1024/1024/60);
+				resultTotalList.add(totalList);
+				
+//				c2sTotal+=c2sNum;
+//				s2cTotal+=s2cNum;
+//				c2sS2cTotal+=totalNum;
+			}
+			resultMap.put("c2sResult", resultC2sList);
+			resultMap.put("s2cResult", resultS2cList);
+			resultMap.put("totalResult", resultTotalList);
+//			resultMap.put("c2sSum", c2sTotal*8/1024/1024/1024/60);
+//			resultMap.put("s2cSum", s2cTotal*8/1024/1024/1024/60);
+//			resultMap.put("totalSum", c2sS2cTotal*8/1024/1024/1024/60);
+		}
+		return resultMap;
+	
+		
+	}
+	public Map getAppPpsTrend(TrafficAppPpsStatistic entity) {
+		List<TrafficAppPpsStatistic> list = new ArrayList<TrafficAppPpsStatistic>();
+		list = trafficAppStatisticDao.getAppPpsTrend(entity);
+		Map resultMap = new  HashMap();
+		if(!StringUtil.isEmpty(list)){
+			Date beginDate = DateUtils.parseDate(entity.getSearchStartTime());
+			Date endDate = DateUtils.parseDate(entity.getSearchEndTime());
+			List<Date> dateRangeList = new ArrayList<Date>();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(beginDate);
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			while (calendar.getTime().compareTo(endDate) < 0) {
+				dateRangeList.add(calendar.getTime());
+				calendar.add(Calendar.MINUTE, 1);
+			}
+			int index = 0;
+			List resultC2sList = new ArrayList();
+			List resultS2cList = new ArrayList();
+			List resultTotalList = new ArrayList();
+//			Long c2sTotal = 0L;
+//			Long s2cTotal = 0L;
+//			Long c2sS2cTotal = 0L;
+			for (int i = 0; i < dateRangeList.size(); i++) {
+				// 存放一个时间点中总数
+				List c2sList = new ArrayList();
+				List s2cList = new ArrayList();
+				List totalList = new ArrayList();
+				Date date = dateRangeList.get(i);
+				Long c2sNum = 0L;
+				Long s2cNum = 0L;
+				Long totalNum=0L;
+				if(i==33) {
+					System.out.println();
+				}
+				for (int j = index; j < list.size(); j++) {
+					TrafficAppPpsStatistic info = list.get(j);
+					if (info.getTime() != null) {
+						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+							c2sNum = c2sNum + info.getC2sNum();
+							s2cNum = s2cNum + info.getS2cNum();
+							totalNum=totalNum+info.getTotalNum();
+						} else {
+							index = j;
+							break;
+						}
+					}
+				}
+				
+				//最后一个时间点
+				if(i+1==dateRangeList.size()&&s2cNum.compareTo(0L)==0&&c2sNum.compareTo(0L)==0){
+					break;
+				}
+				c2sList.add(date.getTime());
+				c2sList.add(c2sNum/60);
+				resultC2sList.add(c2sList);
+				s2cList.add(date.getTime());
+				s2cList.add(s2cNum/60);
+				resultS2cList.add(s2cList);
+				
+				
+				totalList.add(date.getTime());
+				totalList.add(totalNum/60);
+				resultTotalList.add(totalList);
+				
+//				c2sTotal+=c2sNum;
+//				s2cTotal+=s2cNum;
+//				c2sS2cTotal+=totalNum;
+			}
+			resultMap.put("c2sResult", resultC2sList);
+			resultMap.put("s2cResult", resultS2cList);
+			resultMap.put("totalResult", resultTotalList);
+//			resultMap.put("c2sSum", c2sTotal);
+//			resultMap.put("s2cSum", s2cTotal);
+//			resultMap.put("totalSum", c2sS2cTotal);
+		}
+		return resultMap;
+		
+		
+	
+		
 	}
 	
 	public List<AppConnRecordStatistic> appConnRecordTop100(AppConnRecordStatistic entity) {
