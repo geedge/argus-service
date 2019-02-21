@@ -1,20 +1,5 @@
 package com.nis.web.task;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Configurations;
@@ -23,15 +8,15 @@ import com.nis.util.ExceptionUtil;
 import com.nis.util.JedisUtils;
 import com.nis.web.service.SpringContextHolder;
 import com.nis.web.service.restful.ConfigJedisServiceimpl;
-
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
-import redis.clients.jedis.Tuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.util.JedisClusterCRC16;
+
+import java.util.*;
 
 @Component
 @PropertySource(value = { "classpath:nis.properties", "classpath:jdbc.properties" })
@@ -72,8 +57,8 @@ public class SyncRedisToCluster {
 		}
 	}
 	
-//	@Scheduled(cron = "${syncRedisToClusterCron}")
-	public void syncRedisToCluster1() {
+	//@Scheduled(cron = "${syncRedisToClusterCron}")
+	public void syncRedisToCluster() {
 		JedisCluster jedisCluster = getResource();
 		String requestId = UUID.randomUUID().toString();
 		try {

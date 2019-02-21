@@ -2,7 +2,7 @@
 drop table if exists ui_asn_ip_cfg;
 drop table if exists ui_sys_dict_info;
 drop table if exists ui_code_app_dic;
-drop table if exists ui_cfg_num_statistics;
+
 drop table if exists ui_request_num_statistics;
 drop table if exists ui_sys_data_dictionary_item;
 drop table if exists ui_code_behavior_type_dic;
@@ -95,7 +95,7 @@ CREATE TABLE `ui_sys_dict_info` (
   ) ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/code_app_dic';
 
 
-
+drop table if exists ui_cfg_num_statistics;
 CREATE TABLE `ui_cfg_num_statistics` (
    `id` int(11) NOT NULL AUTO_INCREMENT,
    `function_id` int(11) NOT NULL,
@@ -104,6 +104,7 @@ CREATE TABLE `ui_cfg_num_statistics` (
    `cfg_state` int(11) NOT NULL COMMENT '0未审核，1已审核，2审核未通过，3审核取消，-1删除',
    `compile_id` int(11) DEFAULT 0,
    `statistic_time` datetime DEFAULT NULL COMMENT '统计时间',
+   `audit_time` datetime DEFAULT null COMMENT '审核时间',
    PRIMARY KEY (`id`)
  )  ENGINE=FEDERATED AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 CONNECTION='mysql://root:111111@10.0.4.6:3306/ntc_db/cfg_num_statistics';
 
