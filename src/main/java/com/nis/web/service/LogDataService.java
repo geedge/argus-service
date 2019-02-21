@@ -353,7 +353,7 @@ public class LogDataService {
 												|| field.equals("website")) {
 											whereSB.append(" and "
 													+ field
-													+ " like '"
+													+ " like '%"
 													+ StringEscapeUtils
 															.unescapeHtml4(value
 																	.toString()
@@ -603,7 +603,7 @@ public class LogDataService {
 											|| field.equals("website")) {
 										whereSB.append(" and "
 												+ field
-												+ " like '"
+												+ " like '%"
 												+ StringEscapeUtils
 														.unescapeHtml4(value
 																.toString()
@@ -986,7 +986,7 @@ public class LogDataService {
 												|| field.equals("website")) {
 											whereSB.append(" and "
 													+ field
-													+ " like '"
+													+ " like '%"
 													+ StringEscapeUtils
 															.unescapeHtml4(value
 																	.toString()

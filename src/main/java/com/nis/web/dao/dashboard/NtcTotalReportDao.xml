@@ -30,15 +30,15 @@
   <select id="getMaxStatTime" resultType="java.util.HashMap">
   	SELECT stat_time statTime FROM traffic_trans_statistic order by stat_time desc limit 1
   </select>
-  <!-- 根据最近时间条获取带宽，进出口流量 -->
+  <!-- 根据最近30分钟内，次新批数据(最新存在正在写入情况，导致首页显示不正常),IN/OUT带宽流量 -->
 	<select id="getNetFlowPortInfoNew" resultType="java.util.HashMap">
 		SELECT  COALESCE(SUM(total_traffic.inoctets),0) AS inoctets ,  COALESCE(SUM(total_traffic.outoctets),0) AS outoctets FROM (
 			SELECT sum(case direction when 1 then c2s_byte_len+s2c_byte_len else 0 end)  inoctets ,
 			sum(case direction when 0 then c2s_byte_len+s2c_byte_len else 0 end) outoctets FROM traffic_trans_statistic
-			where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=1 and stat_time > DATE_SUB(now(), INTERVAL 15 MINUTE)  ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=1
+			where stat_time =  (SELECT distinct(stat_time) FROM traffic_trans_statistic WHERE entrance_id=1 and stat_time > DATE_SUB(now(), INTERVAL 30 MINUTE)  ORDER BY stat_time DESC LIMIT 1,1) and entrance_id=1
 			UNION ALL
 			SELECT  sum(case direction when 1 then c2s_byte_len+s2c_byte_len else 0 end)  inoctets ,sum(case direction when 0 then c2s_byte_len+s2c_byte_len else 0 end) outoctets FROM traffic_trans_statistic
-			where stat_time =  (SELECT stat_time FROM traffic_trans_statistic WHERE entrance_id=2 and stat_time > DATE_SUB(now(), INTERVAL 15 MINUTE) ORDER BY stat_time DESC LIMIT 0,1) and entrance_id=2
+			where stat_time =  (SELECT distinct(stat_time) FROM traffic_trans_statistic WHERE entrance_id=2 and stat_time > DATE_SUB(now(), INTERVAL 30 MINUTE) ORDER BY stat_time DESC LIMIT 1,1) and entrance_id=2
 		) total_traffic
 
    </select>
