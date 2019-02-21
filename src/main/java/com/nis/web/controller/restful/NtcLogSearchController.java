@@ -711,8 +711,8 @@ public class NtcLogSearchController extends BaseRestController {
 		AuditLogThread auditLogThread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request,
 				null);
 		try {
-			if (StringUtil.isEmpty(ntcConnRecordPercent.getSearchFoundStartTime())
-					&& StringUtil.isEmpty(ntcConnRecordPercent.getSearchFoundEndTime())) {
+			if (StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundStartTime())
+					&& StringUtil.isBlank(ntcConnRecordPercent.getSearchFoundEndTime())) {
 				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "minute");
 				ntcConnRecordPercent.setSearchFoundStartTime(map.get("startTime"));
 				ntcConnRecordPercent.setSearchFoundEndTime(map.get("endTime"));
