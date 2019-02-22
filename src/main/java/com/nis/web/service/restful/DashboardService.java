@@ -76,14 +76,13 @@ public class DashboardService extends BaseService {
 	public TrafficPortActiveStatisticDao trafficPortActiveStatisticDao;
 	@Autowired
 	private IspInfoDao ispInfoDao;
-	//ip地址类型
-	private final String[] addrTypes = {"4","6"} ;
-	//tcp udp
-	private final String[] transTypes ={"17","6"} ;  
-	//区域
-	private final String[] entranceIds ={"1","2"} ;  
-	
-	
+	// ip地址类型
+	private final String[] addrTypes = { "4", "6" };
+	// tcp udp
+	private final String[] transTypes = { "17", "6" };
+	// 区域
+	private final String[] entranceIds = { "1", "2" };
+
 	/**
 	 * 流量统计 数据显示 info：先查询最近时间，根据时间条件查询数据 效率提高
 	 */
@@ -310,7 +309,8 @@ public class DashboardService extends BaseService {
 	/**
 	 * 日期格式字符串转换成时间戳
 	 * 
-	 * @param date_str   字符串日期
+	 * @param date_str
+	 *            字符串日期
 	 * @return
 	 */
 	@Deprecated
@@ -327,7 +327,8 @@ public class DashboardService extends BaseService {
 	/**
 	 * 时间戳 换成日期格式字符串转
 	 * 
-	 * @param timeStamp     1544602212000
+	 * @param timeStamp
+	 *            1544602212000
 	 * @return
 	 */
 	@Deprecated
@@ -415,11 +416,11 @@ public class DashboardService extends BaseService {
 		entrance1 = ntcTotalReportDao.getActionTrans(begin, end, 1, sql);
 		entrance2 = ntcTotalReportDao.getActionTrans(begin, end, 2, sql);
 
-		if(!StringUtil.isEmpty(entrance1)||!StringUtil.isEmpty(entrance2)){
+		if (!StringUtil.isEmpty(entrance1) || !StringUtil.isEmpty(entrance2)) {
 			Map<String, Comparable> m = new HashMap<String, Comparable>();
 			Date beginDate = DateUtils.parseDate(begin);
 			Date endDate = DateUtils.parseDate(end);
-	
+
 			List<Date> dateRangeList = new ArrayList<Date>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
@@ -445,7 +446,9 @@ public class DashboardService extends BaseService {
 				for (int j = index1; j < entrance1.size(); j++) {
 					NtcEntranceReport ipInfo = entrance1.get(j);
 					if (ipInfo.getReportTime() != null) {
-						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							num1 = num1 + ipInfo.getSum();
 						} else {
 							index1 = j;
@@ -453,28 +456,30 @@ public class DashboardService extends BaseService {
 						}
 					}
 				}
-				
+
 				for (int j = index2; j < entrance2.size(); j++) {
 					NtcEntranceReport ipInfo = entrance2.get(j);
 					if (ipInfo.getReportTime() != null) {
-						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (ipInfo.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? ipInfo.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							num2 = num2 + ipInfo.getSum();
 						} else {
 							index2 = j;
 							break;
 						}
 					}
-				}				
-				//最后一个时间点,全为0 直接跳过不存入列表
-				if(i+1==dateRangeList.size()&&num1.compareTo(0L)==0&&num2.compareTo(0L)==0){
+				}
+				// 最后一个时间点,全为0 直接跳过不存入列表
+				if (i + 1 == dateRangeList.size() && num1.compareTo(0L) == 0 && num2.compareTo(0L) == 0) {
 					break;
 				}
-				sumEnt1+=num1;
+				sumEnt1 += num1;
 				listEnt1.add(date.getTime());
 				listEnt1.add(num1);
 				sumList1.add(listEnt1);
-				
-				sumEnt2+=num2;
+
+				sumEnt2 += num2;
 				listEnt2.add(date.getTime());
 				listEnt2.add(num2);
 				sumList2.add(listEnt2);
@@ -557,9 +562,9 @@ public class DashboardService extends BaseService {
 	/**
 	 * 获取活跃IPtop10 的趋势图
 	 */
-	public List<Map> ipActiveFiveMinute(Date beginDate, Date endDate,Integer entranceId) {
+	public List<Map> ipActiveFiveMinute(Date beginDate, Date endDate, Integer entranceId) {
 		List<Map> listMap = new ArrayList<Map>();
-		List<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate,entranceId);
+		List<LinkedHashMap> ipListTop10 = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate, entranceId);
 		if (ipListTop10 != null && ipListTop10.size() > 0) {
 			StringBuilder ipStr = new StringBuilder();
 			for (LinkedHashMap map : ipListTop10) {
@@ -580,10 +585,10 @@ public class DashboardService extends BaseService {
 			}
 
 			ArrayList<TrafficIpActiveStatistic> ipInfoList = trafficIpActiveStatisticDao
-					.ipActiveFiveMinute(ipStr.toString(), beginDate, endDate,entranceId);
+					.ipActiveFiveMinute(ipStr.toString(), beginDate, endDate, entranceId);
 			// 存放每个IP，每个时间点的总数
 			Map<String, List> ipCountListMap = new LinkedHashMap<String, List>();
-			//如果所有IP的最后一个点都为0，删除
+			// 如果所有IP的最后一个点都为0，删除
 			Boolean delLastFlag = true;
 			int index = 0;
 			for (int i = 0; i < dateRangeList.size(); i++) {
@@ -593,7 +598,9 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < ipInfoList.size(); j++) {
 					TrafficIpActiveStatistic ipInfo = ipInfoList.get(j);
 					if (ipInfo.getStatTime() != null) {
-						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							Long num = ipInfo.getCount();
 							if (ipCountMap.containsKey(ipInfo.getIpAddr())) {
 								num = num + ipCountMap.get(ipInfo.getIpAddr());
@@ -607,11 +614,11 @@ public class DashboardService extends BaseService {
 				}
 				for (LinkedHashMap map : ipListTop10) {
 					String ip = (String) map.get("ipAddr");
-					List sumList= new ArrayList();
+					List sumList = new ArrayList();
 					sumList.add(date.getTime());
-					//最后一个时间点
-					if(i+1==dateRangeList.size()&&!StringUtil.isEmpty(ipCountMap.get(ip))){
-						delLastFlag = false ;
+					// 最后一个时间点
+					if (i + 1 == dateRangeList.size() && !StringUtil.isEmpty(ipCountMap.get(ip))) {
+						delLastFlag = false;
 					}
 					Long sum = 0l;
 					if (ipCountMap.containsKey(ip)) {
@@ -637,10 +644,10 @@ public class DashboardService extends BaseService {
 				Long total = 0L;
 				for (Object obj : ipCountListMap.get(ip)) {
 					List<Long> list = (List) obj;
-					total+=list.get(1);
+					total += list.get(1);
 				}
 				if (delLastFlag) {
-					ipCountListMap.get(ip).remove(ipCountListMap.get(ip).size()-1);
+					ipCountListMap.get(ip).remove(ipCountListMap.get(ip).size() - 1);
 				}
 				ipTrafficMap.put("result", ipCountListMap.get(ip));
 				ipTrafficMap.put("sum", total);
@@ -655,28 +662,30 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate,Integer entranceId) {
+	public List<HashMap> ipActiveOneHour(Date beginDate, Date endDate, Integer entranceId) {
 
-//		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
+		// TrafficIpActiveStatistic maxStatTime =
+		// trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<HashMap> listMap = new ArrayList<HashMap>();
-//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-//			Date statTime = maxStatTime.getStatTime();
-		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate,entranceId);
+		// if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+		// Date statTime = maxStatTime.getStatTime();
+		ArrayList<LinkedHashMap> list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate, entranceId);
 		if (list != null && list.size() > 0) {
 			for (LinkedHashMap map : list) {
 				if (map.get("ipAddr") != null) {
 					String ipAddr = (String) map.get("ipAddr");
-					HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate, endDate,entranceId);
+					HashMap resMap = trafficIpActiveStatisticDao.ipActiveOneHour(ipAddr, beginDate, endDate,
+							entranceId);
 					if (resMap != null) {
 						listMap.add(resMap);
 					}
 				}
 			}
 		}
-//		}
+		// }
 
 		return listMap;
-	
+
 	}
 
 	/**
@@ -688,11 +697,12 @@ public class DashboardService extends BaseService {
 	 */
 	@SuppressWarnings("rawtypes")
 	public List<LinkedHashMap> ipActiveChart(Date beginDate, Date endDate) {
-//		TrafficIpActiveStatistic maxStatTime = trafficIpActiveStatisticDao.getMaxStatTime();
+		// TrafficIpActiveStatistic maxStatTime =
+		// trafficIpActiveStatisticDao.getMaxStatTime();
 		ArrayList<LinkedHashMap> list = new ArrayList<>();
-//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-//			Date statTime = maxStatTime.getStatTime();
-		list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate,null);
+		// if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+		// Date statTime = maxStatTime.getStatTime();
+		list = trafficIpActiveStatisticDao.ipActiveChart(beginDate, endDate, null);
 		if (list != null && list.size() > 0) {
 			for (LinkedHashMap map : list) {
 				if (map.get("ipAddr") != null) {
@@ -702,7 +712,7 @@ public class DashboardService extends BaseService {
 				}
 			}
 		}
-//		}
+		// }
 		return list;
 	}
 
@@ -732,13 +742,15 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType,Integer entranceId,Integer searchDirection) {
-//		TrafficProtocolStatistic maxStatTime = trafficProtocolStatisticDao.getMaxStatTime();
+	public List<Map> getProtocolList(String startTime, String endTime, Integer[] protoType, Integer entranceId,
+			Integer searchDirection) {
+		// TrafficProtocolStatistic maxStatTime =
+		// trafficProtocolStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
-//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-//			Date statTime = maxStatTime.getStatTime();
-		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType,entranceId,searchDirection);
-//		}
+		// if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+		// Date statTime = maxStatTime.getStatTime();
+		list = trafficProtocolStatisticDao.getProtocolList(startTime, endTime, protoType, entranceId, searchDirection);
+		// }
 		return list;
 	}
 
@@ -768,17 +780,17 @@ public class DashboardService extends BaseService {
 	 * 
 	 * @return
 	 */
-	public List<Map> getAppList(String startTime, String endTime, Integer[] appType,Integer entranceId) {
-//		TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
+	public List<Map> getAppList(String startTime, String endTime, Integer[] appType, Integer entranceId) {
+		// TrafficAppStatistic maxStatTime = trafficAppStatisticDao.getMaxStatTime();
 		List<Map> list = new ArrayList<Map>();
-//		if (maxStatTime != null && maxStatTime.getStatTime() != null) {
-//			Date statTime = maxStatTime.getStatTime();
-		list = trafficAppStatisticDao.getAppList(startTime, endTime, appType,entranceId);
-//		}
+		// if (maxStatTime != null && maxStatTime.getStatTime() != null) {
+		// Date statTime = maxStatTime.getStatTime();
+		list = trafficAppStatisticDao.getAppList(startTime, endTime, appType, entranceId);
+		// }
 		return list;
 	}
 
-//	操作系统列表 排名TOP10
+	// 操作系统列表 排名TOP10
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Map> systemList() {
 		List<Map> result = new ArrayList<Map>();
@@ -909,12 +921,12 @@ public class DashboardService extends BaseService {
 	 */
 	public List<Map> getDomainByWebsiteServiceId(Integer websiteServiceId, Date beginDate, Date endDate, String top) {
 
-//		Date statTime = getBeforeByHourTime(1);// 获取上一个小时
+		// Date statTime = getBeforeByHourTime(1);// 获取上一个小时
 
 		List idList = trafficHttpStatisticDao.getIdByWebSiteId(websiteServiceId);
 
 		List<Map> matchList = trafficHttpStatisticDao.getDomainByWebsiteServiceId(idList, beginDate, endDate);// 获取webid和count的对应关系,key是webid,val是count
-// 获取webid和count的对应关系,key是webid,val是count
+		// 获取webid和count的对应关系,key是webid,val是count
 		Set<Long> set = new HashSet<>();
 		Map<Long, List<Map>> countMap = new HashMap();// 存储count和map的对应关系,后面根据count过滤,获取top10的count
 		for (Map map : matchList) {
@@ -1126,27 +1138,27 @@ public class DashboardService extends BaseService {
 
 			List<Map> list = new ArrayList<>();
 			long count = 0l;// 记录当前topicid所有的count
-//			long linkNum = 0l;
-//			long packets = 0l;
+			// long linkNum = 0l;
+			// long packets = 0l;
 			List<String> idList = topicIdAndIdMap.get(topicId);// 根据topicid获取对应的id
 			for (String id : idList) {
 				for (Map webIdAndCountMap : webIdAndCountList) {// 遍历webid和count
 					String webId = String.valueOf(webIdAndCountMap.get("webId"));
 					if (webId != null && webId.equals(id)) {// 如果webid和id相等则获取count数据并统计
 						String countStr = String.valueOf(webIdAndCountMap.get("byteCount"));
-//						String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
-//						String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
+						// String linkNumStr = String.valueOf(webIdAndCountMap.get("linkNum"));
+						// String packetsStr = String.valueOf(webIdAndCountMap.get("pktCount"));
 						if (countStr != null) {
 							count += Long.parseLong(countStr);// 将count累加 转换单位小于0的不加
 						}
-//						if (linkNumStr != null) {
-//							linkNum += Long.parseLong(linkNumStr);// 将count累加
-//						}
-//						if (packetsStr != null) {
-//							packets += Long.parseLong(packetsStr);// 将count累加
-//						}
-//						webIdAndCountMap.remove("linkNum");
-//						webIdAndCountMap.remove("pktCount");
+						// if (linkNumStr != null) {
+						// linkNum += Long.parseLong(linkNumStr);// 将count累加
+						// }
+						// if (packetsStr != null) {
+						// packets += Long.parseLong(packetsStr);// 将count累加
+						// }
+						// webIdAndCountMap.remove("linkNum");
+						// webIdAndCountMap.remove("pktCount");
 						list.add(webIdAndCountMap);
 					}
 				}
@@ -1174,8 +1186,8 @@ public class DashboardService extends BaseService {
 			});
 			if (list.size() > 0) {
 				viewMap.put("count", count);
-//				viewMap.put("linkNum", linkNum);
-//				viewMap.put("packets", packets);
+				// viewMap.put("linkNum", linkNum);
+				// viewMap.put("packets", packets);
 				viewMap.put("domainData", list);
 				viewMap.put("topicId", topicId);
 				if (countAndViewMap.containsKey(count)) {// 将每个count和对应的viewmap放到map中,count可能相同所以value是list
@@ -1289,13 +1301,14 @@ public class DashboardService extends BaseService {
 		return fieldType == null ? null : fieldType.split(",");
 	}
 
-	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate,String searchQuotaType,Integer searchDirection) throws ParseException {
+	public Map<String, Map> getBandwidthTransEntrance(String beginDate, String endDate, String searchQuotaType,
+			Integer searchDirection) throws ParseException {
 		Map<String, Map> resultMap = new HashMap<String, Map>();
 		Map<String, ArrayList<TrafficTransStatistic>> listMap = new HashMap<String, ArrayList<TrafficTransStatistic>>();
 		List<TrafficTransStatistic> bandwidthListIPvx = new ArrayList<TrafficTransStatistic>();
 		List<TrafficTransStatistic> bandwidthListProtocol = new ArrayList<TrafficTransStatistic>();
-		bandwidthListIPvx = ntcTotalReportDao.getBandwidthTransIPVx(beginDate, endDate,searchDirection);
-		bandwidthListProtocol = ntcTotalReportDao.getBandwidthTransProtocol(beginDate, endDate,searchDirection);
+		bandwidthListIPvx = ntcTotalReportDao.getBandwidthTransIPVx(beginDate, endDate, searchDirection);
+		bandwidthListProtocol = ntcTotalReportDao.getBandwidthTransProtocol(beginDate, endDate, searchDirection);
 		Map<String, Map> trafficMap = new HashMap<String, Map>();
 		if ((!StringUtil.isEmpty(bandwidthListIPvx) && bandwidthListIPvx.size() > 0)
 				|| (!StringUtil.isEmpty(bandwidthListProtocol) && bandwidthListProtocol.size() > 0)) {
@@ -1341,22 +1354,22 @@ public class DashboardService extends BaseService {
 					String key = "trans" + transType + "Type" + entranceId;
 					listMap.get(key).add(tts);
 				}
-				//所有的数据最后一个点都为0，删除
+				// 所有的数据最后一个点都为0，删除
 				Boolean delLastFlag = true;
 				Set<Entry<String, ArrayList<TrafficTransStatistic>>> entrySet = listMap.entrySet();
 				for (Entry<String, ArrayList<TrafficTransStatistic>> entry : entrySet) {
 					String key = entry.getKey();
 					String entranceId = key.substring(key.length() - 1);
 					ArrayList<TrafficTransStatistic> value = entry.getValue();
-					resultMap.put(key, getNewData(dateRangeList,value,searchQuotaType,delLastFlag));
+					resultMap.put(key, getNewData(dateRangeList, value, searchQuotaType, delLastFlag));
 				}
-				//删除最后一个点
+				// 删除最后一个点
 				if (delLastFlag) {
 					Iterator iterator = resultMap.keySet().iterator();
 					while (iterator.hasNext()) {
-						String key = iterator.next()+"";
+						String key = iterator.next() + "";
 						List list = (List) resultMap.get(key).get("result");
-						list.remove(list.size()-1);
+						list.remove(list.size() - 1);
 					}
 				}
 			}
@@ -1364,7 +1377,8 @@ public class DashboardService extends BaseService {
 		return resultMap;
 	}
 
-	private Map getNewData(List<Date> dateRangeList,List<TrafficTransStatistic> bandwidthList,String searchQuotaType,Boolean delLastFlag) {
+	private Map getNewData(List<Date> dateRangeList, List<TrafficTransStatistic> bandwidthList, String searchQuotaType,
+			Boolean delLastFlag) {
 		Map restMap = new HashMap();
 		List<List> restList = new ArrayList<List>();
 		int index = 0;
@@ -1378,13 +1392,15 @@ public class DashboardService extends BaseService {
 			for (int j = index; j < bandwidthList.size(); j++) {
 				TrafficTransStatistic info = bandwidthList.get(j);
 				if (info.getStatTime() != null) {
-					if (info.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+					if (info.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+							? info.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0
+							: true)) {
 						if ("pps".equalsIgnoreCase(searchQuotaType)) {
 							num = Long.parseLong(info.getPps().substring(0, info.getPps().lastIndexOf("."))) + num;
-						}else if ("linkNumber".equalsIgnoreCase(searchQuotaType)) {
+						} else if ("linkNumber".equalsIgnoreCase(searchQuotaType)) {
 							num = Long.parseLong(info.getPps().substring(0, info.getPps().lastIndexOf("."))) + num;
-						}else {
-							num = Long.parseLong(info.getGbps().substring(0, info.getGbps().lastIndexOf(".")))+ num;
+						} else {
+							num = Long.parseLong(info.getGbps().substring(0, info.getGbps().lastIndexOf("."))) + num;
 						}
 					} else {
 						index = j;
@@ -1393,11 +1409,11 @@ public class DashboardService extends BaseService {
 				}
 			}
 			countList.add(num);
-			sum+=num;
+			sum += num;
 			restList.add(countList);
-			//最后一个时间点
-			if(i+1==dateRangeList.size()&&num!=0l){
-				delLastFlag = false ;
+			// 最后一个时间点
+			if (i + 1 == dateRangeList.size() && num != 0l) {
+				delLastFlag = false;
 			}
 		}
 		restMap.put("sum", sum);
@@ -1449,10 +1465,10 @@ public class DashboardService extends BaseService {
 		List<TrafficHttpFocusStatistic> domainList = new ArrayList<TrafficHttpFocusStatistic>();
 		domainList = trafficHttpStatisticDao.getDomainTrans(entranceId, begin, end, domain);
 		List<HashMap> listMap = new ArrayList<HashMap>();
-		if(!StringUtil.isEmpty(domainList)){
+		if (!StringUtil.isEmpty(domainList)) {
 			Date beginDate = DateUtils.parseDate(begin);
 			Date endDate = DateUtils.parseDate(end);
-			
+
 			List<Date> dateRangeList = new ArrayList<Date>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
@@ -1472,7 +1488,9 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < domainList.size(); j++) {
 					TrafficHttpFocusStatistic ipInfo = domainList.get(j);
 					if (ipInfo.getStatTime() != null) {
-						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (ipInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? ipInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							num = num + ipInfo.getCount();
 						} else {
 							index = j;
@@ -1480,15 +1498,15 @@ public class DashboardService extends BaseService {
 						}
 					}
 				}
-				
-				//最后一个时间点，值为0不记录
-				if(i+1==dateRangeList.size()&&num.compareTo(0L)==0){
+
+				// 最后一个时间点，值为0不记录
+				if (i + 1 == dateRangeList.size() && num.compareTo(0L) == 0) {
 					break;
 				}
 				sumList.add(date.getTime());
 				sumList.add(num);
 				resultList.add(sumList);
-				total+=num;
+				total += num;
 			}
 			// 整合 count time
 			HashMap ipTrafficMap = new HashMap();
@@ -1550,7 +1568,9 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < portInfoList.size(); j++) {
 					TrafficPortActiveStatistic portInfo = portInfoList.get(j);
 					if (portInfo.getStatTime() != null) {
-						if (portInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?portInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (portInfo.getStatTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? portInfo.getStatTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							Long num = portInfo.getSum();
 							if (portCountMap.containsKey(portInfo.getPort())) {
 								num = num + portCountMap.get(portInfo.getPort());
@@ -1572,9 +1592,9 @@ public class DashboardService extends BaseService {
 							sum = portCountMap.get(port);
 						}
 						sumList.add(sum);
-						//最后一个时间点
-						if(i+1==dateRangeList.size()&&sum.compareTo(0L)>0){
-							delLastFlag = false ;
+						// 最后一个时间点
+						if (i + 1 == dateRangeList.size() && sum.compareTo(0L) > 0) {
+							delLastFlag = false;
 						}
 						if (portCountListMap.containsKey(port)) {
 							List list = portCountListMap.get(port);
@@ -1596,9 +1616,9 @@ public class DashboardService extends BaseService {
 							sum = portCountMap.get(port);
 						}
 						sumList.add(sum);
-						//最后一个时间点
-						if(i+1==dateRangeList.size()&&sum.compareTo(0L)>0){
-							delLastFlag = false ;
+						// 最后一个时间点
+						if (i + 1 == dateRangeList.size() && sum.compareTo(0L) > 0) {
+							delLastFlag = false;
 						}
 						if (portCountListMap.containsKey(port)) {
 							List list = portCountListMap.get(port);
@@ -1619,11 +1639,11 @@ public class DashboardService extends BaseService {
 				Long total = 0L;
 				for (Object obj : portCountListMap.get(port)) {
 					List<Long> list = (List) obj;
-					total+=list.get(1);
+					total += list.get(1);
 				}
 				if (delLastFlag) {
 					List list = portCountListMap.get(port);
-					list.remove(list.size()-1);
+					list.remove(list.size() - 1);
 				}
 				trafficPortActiveMap.put("port", port);
 				trafficPortActiveMap.put("result", portCountListMap.get(port));
@@ -1636,13 +1656,14 @@ public class DashboardService extends BaseService {
 
 	/**
 	 * 根据指标(drop,loop,New Link,Close Link,Pass,Live Link)统计各业务的趋势
-	 * @throws ParseException 
+	 * 
+	 * @throws ParseException
 	 */
-	public Map trendTotalReport(NtcConnNumReport ntcConnNumReport){
+	public Map trendTotalReport(NtcConnNumReport ntcConnNumReport) {
 		Map restMap = new HashMap();
 		List<NtcConnNumReport> list = ntcTotalReportDao.trendTotalReport(ntcConnNumReport);
-		if (list!=null && list.size()>0) {
-			//开始划分时间段,间隔5分钟
+		if (list != null && list.size() > 0) {
+			// 开始划分时间段,间隔5分钟
 			Date beginDate;
 			Date endDate;
 			try {
@@ -1650,14 +1671,15 @@ public class DashboardService extends BaseService {
 				endDate = DateUtils.strToDate(ntcConnNumReport.getSearchReportEndTime(), "yyyy-MM-dd HH:mm:ss");
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
-				throw new RestServiceException("searchReportStartTime或searchReportEndTime参数格式错误", RestBusinessCode.param_formate_error.getValue());
+				throw new RestServiceException("searchReportStartTime或searchReportEndTime参数格式错误",
+						RestBusinessCode.param_formate_error.getValue());
 			}
 			List<Date> dateRangeList = new ArrayList<Date>();
 			List<String> strDateRangeList = new ArrayList<String>();
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTime(beginDate);
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			while (calendar.getTime().compareTo(endDate)<0) {
+			while (calendar.getTime().compareTo(endDate) < 0) {
 				dateRangeList.add(calendar.getTime());
 				calendar.add(Calendar.MINUTE, Constants.TREND_TIME_INTERVAL);
 			}
@@ -1665,27 +1687,29 @@ public class DashboardService extends BaseService {
 			List sumList = new ArrayList();
 			Long totalNum = 0L;
 			for (int i = 0; i < dateRangeList.size(); i++) {
-				//存放一个时间点的总数
+				// 存放一个时间点的总数
 				List tempList = new ArrayList();
 				Date date = dateRangeList.get(i);
 				Long sum = 0l;
 				for (int j = index; j < list.size(); j++) {
 					NtcConnNumReport info = list.get(j);
-					if (info.getReportTime()!=null){
-						if(info.getReportTime().compareTo(date)>=0&&(i+1<dateRangeList.size()?info.getReportTime().compareTo(dateRangeList.get(i+1))<0:true)) {
-							sum = sum+info.getNum();
-						}else{
+					if (info.getReportTime() != null) {
+						if (info.getReportTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? info.getReportTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
+							sum = sum + info.getNum();
+						} else {
 							index = j;
 							break;
 						}
 					}
 				}
-				
-				//最后一个时间点，值为0不记录
-				if(i+1==dateRangeList.size()&&sum.compareTo(0L)==0){
+
+				// 最后一个时间点，值为0不记录
+				if (i + 1 == dateRangeList.size() && sum.compareTo(0L) == 0) {
 					break;
 				}
-				totalNum+=sum;
+				totalNum += sum;
 				tempList.add(date.getTime());
 				tempList.add(sum);
 				sumList.add(tempList);
@@ -1695,12 +1719,12 @@ public class DashboardService extends BaseService {
 		}
 		return restMap;
 	}
-	
+
 	public Map getAppTrend(TrafficAppFocusStatistic entity) {
 		List<TrafficAppFocusStatistic> appFocusList = new ArrayList<TrafficAppFocusStatistic>();
 		appFocusList = trafficAppStatisticDao.getAppTrend(entity);
-		Map resultMap = new  HashMap();
-		if(!StringUtil.isEmpty(appFocusList)){
+		Map resultMap = new HashMap();
+		if (!StringUtil.isEmpty(appFocusList)) {
 			Date beginDate = DateUtils.parseDate(entity.getSearchStartTime());
 			Date endDate = DateUtils.parseDate(entity.getSearchEndTime());
 			List<Date> dateRangeList = new ArrayList<Date>();
@@ -1726,7 +1750,9 @@ public class DashboardService extends BaseService {
 				for (int j = index; j < appFocusList.size(); j++) {
 					TrafficAppFocusStatistic info = appFocusList.get(j);
 					if (info.getTime() != null) {
-						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? info.getTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							sipNum = sipNum + info.getSipNum();
 							dipNum = dipNum + info.getDipNum();
 						} else {
@@ -1735,9 +1761,9 @@ public class DashboardService extends BaseService {
 						}
 					}
 				}
-				
-				//最后一个时间点
-				if(i+1==dateRangeList.size()&&sipNum.compareTo(0L)==0&&dipNum.compareTo(0L)==0){
+
+				// 最后一个时间点
+				if (i + 1 == dateRangeList.size() && sipNum.compareTo(0L) == 0 && dipNum.compareTo(0L) == 0) {
 					break;
 				}
 				sipList.add(date.getTime());
@@ -1746,8 +1772,8 @@ public class DashboardService extends BaseService {
 				dipList.add(date.getTime());
 				dipList.add(dipNum);
 				resultDipList.add(dipList);
-				sipTotal+=sipNum;
-				dipTotal+=dipNum;
+				sipTotal += sipNum;
+				dipTotal += dipNum;
 			}
 			resultMap.put("sipResult", resultSipList);
 			resultMap.put("dipResult", resultDipList);
@@ -1756,11 +1782,16 @@ public class DashboardService extends BaseService {
 		}
 		return resultMap;
 	}
+	
+	
+	
+
 	public Map getAppBpsTrend(TrafficAppBpsStatistic entity) {
 		List<TrafficAppBpsStatistic> list = new ArrayList<TrafficAppBpsStatistic>();
 		list = trafficAppStatisticDao.getAppBpsTrend(entity);
-		Map resultMap = new  HashMap();
-		if(!StringUtil.isEmpty(list)){
+		Map resultMap = new HashMap();
+		Long gbps = 1024l*1024l*1024l*60l;
+		if (!StringUtil.isEmpty(list)) {
 			Date beginDate = DateUtils.parseDate(entity.getSearchStartTime());
 			Date endDate = DateUtils.parseDate(entity.getSearchEndTime());
 			List<Date> dateRangeList = new ArrayList<Date>();
@@ -1775,9 +1806,9 @@ public class DashboardService extends BaseService {
 			List resultC2sList = new ArrayList();
 			List resultS2cList = new ArrayList();
 			List resultTotalList = new ArrayList();
-//			Long c2sTotal = 0L;
-//			Long s2cTotal = 0L;
-//			Long c2sS2cTotal = 0L;
+			// Long c2sTotal = 0L;
+			// Long s2cTotal = 0L;
+			// Long c2sS2cTotal = 0L;
 			for (int i = 0; i < dateRangeList.size(); i++) {
 				// 存放一个时间点中总数
 				List c2sList = new ArrayList();
@@ -1786,56 +1817,58 @@ public class DashboardService extends BaseService {
 				Date date = dateRangeList.get(i);
 				Long c2sNum = 0L;
 				Long s2cNum = 0L;
-				Long totalNum=0L;
+				Long totalNum = 0L;
 				for (int j = index; j < list.size(); j++) {
 					TrafficAppBpsStatistic info = list.get(j);
 					if (info.getTime() != null) {
-						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? info.getTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							c2sNum = c2sNum + info.getC2sNum();
 							s2cNum = s2cNum + info.getS2cNum();
-							totalNum=totalNum+info.getTotalNum();
+							totalNum = totalNum + info.getTotalNum();
 						} else {
 							index = j;
 							break;
 						}
 					}
 				}
-				
-				//最后一个时间点
-				if(i+1==dateRangeList.size()&&s2cNum.compareTo(0L)==0&&c2sNum.compareTo(0L)==0){
+
+				// 最后一个时间点
+				if (i + 1 == dateRangeList.size() && s2cNum.compareTo(0L) == 0 && c2sNum.compareTo(0L) == 0) {
 					break;
 				}
 				c2sList.add(date.getTime());
-				c2sList.add(c2sNum*8/1024/1024/1024/60);
+				c2sList.add(String.format("%.2f", c2sNum * 8 / gbps.doubleValue()));
 				resultC2sList.add(c2sList);
 				s2cList.add(date.getTime());
-				s2cList.add(s2cNum*8/1024/1024/1024/60);
+				s2cList.add(String.format("%.2f", s2cNum * 8 / gbps.doubleValue()));
 				resultS2cList.add(s2cList);
-				
+
 				totalList.add(date.getTime());
-				totalList.add(totalNum*8/1024/1024/1024/60);
+				totalList.add(String.format("%.2f", totalNum * 8 / gbps.doubleValue()));
 				resultTotalList.add(totalList);
-				
-//				c2sTotal+=c2sNum;
-//				s2cTotal+=s2cNum;
-//				c2sS2cTotal+=totalNum;
+
+				// c2sTotal+=c2sNum;
+				// s2cTotal+=s2cNum;
+				// c2sS2cTotal+=totalNum;
 			}
 			resultMap.put("c2sResult", resultC2sList);
 			resultMap.put("s2cResult", resultS2cList);
 			resultMap.put("totalResult", resultTotalList);
-//			resultMap.put("c2sSum", c2sTotal*8/1024/1024/1024/60);
-//			resultMap.put("s2cSum", s2cTotal*8/1024/1024/1024/60);
-//			resultMap.put("totalSum", c2sS2cTotal*8/1024/1024/1024/60);
+			// resultMap.put("c2sSum", c2sTotal*8/1024/1024/1024/60);
+			// resultMap.put("s2cSum", s2cTotal*8/1024/1024/1024/60);
+			// resultMap.put("totalSum", c2sS2cTotal*8/1024/1024/1024/60);
 		}
 		return resultMap;
-	
-		
+
 	}
+
 	public Map getAppPpsTrend(TrafficAppPpsStatistic entity) {
 		List<TrafficAppPpsStatistic> list = new ArrayList<TrafficAppPpsStatistic>();
 		list = trafficAppStatisticDao.getAppPpsTrend(entity);
-		Map resultMap = new  HashMap();
-		if(!StringUtil.isEmpty(list)){
+		Map resultMap = new HashMap();
+		if (!StringUtil.isEmpty(list)) {
 			Date beginDate = DateUtils.parseDate(entity.getSearchStartTime());
 			Date endDate = DateUtils.parseDate(entity.getSearchEndTime());
 			List<Date> dateRangeList = new ArrayList<Date>();
@@ -1850,9 +1883,9 @@ public class DashboardService extends BaseService {
 			List resultC2sList = new ArrayList();
 			List resultS2cList = new ArrayList();
 			List resultTotalList = new ArrayList();
-//			Long c2sTotal = 0L;
-//			Long s2cTotal = 0L;
-//			Long c2sS2cTotal = 0L;
+			// Long c2sTotal = 0L;
+			// Long s2cTotal = 0L;
+			// Long c2sS2cTotal = 0L;
 			for (int i = 0; i < dateRangeList.size(); i++) {
 				// 存放一个时间点中总数
 				List c2sList = new ArrayList();
@@ -1861,77 +1894,77 @@ public class DashboardService extends BaseService {
 				Date date = dateRangeList.get(i);
 				Long c2sNum = 0L;
 				Long s2cNum = 0L;
-				Long totalNum=0L;
-				if(i==33) {
+				Long totalNum = 0L;
+				if (i == 33) {
 					System.out.println();
 				}
 				for (int j = index; j < list.size(); j++) {
 					TrafficAppPpsStatistic info = list.get(j);
 					if (info.getTime() != null) {
-						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()?info.getTime().compareTo(dateRangeList.get(i + 1)) < 0:true)) {
+						if (info.getTime().compareTo(date) >= 0 && (i + 1 < dateRangeList.size()
+								? info.getTime().compareTo(dateRangeList.get(i + 1)) < 0
+								: true)) {
 							c2sNum = c2sNum + info.getC2sNum();
 							s2cNum = s2cNum + info.getS2cNum();
-							totalNum=totalNum+info.getTotalNum();
+							totalNum = totalNum + info.getTotalNum();
 						} else {
 							index = j;
 							break;
 						}
 					}
 				}
-				
-				//最后一个时间点
-				if(i+1==dateRangeList.size()&&s2cNum.compareTo(0L)==0&&c2sNum.compareTo(0L)==0){
+
+				// 最后一个时间点
+				if (i + 1 == dateRangeList.size() && s2cNum.compareTo(0L) == 0 && c2sNum.compareTo(0L) == 0) {
 					break;
 				}
 				c2sList.add(date.getTime());
-				c2sList.add(c2sNum/60);
+				c2sList.add(String.format("%.2f", c2sNum / 60d));
 				resultC2sList.add(c2sList);
 				s2cList.add(date.getTime());
-				s2cList.add(s2cNum/60);
+				s2cList.add(String.format("%.2f", s2cNum / 60d));
 				resultS2cList.add(s2cList);
-				
-				
+
 				totalList.add(date.getTime());
-				totalList.add(totalNum/60);
+				totalList.add(String.format("%.2f", totalNum / 60d));
 				resultTotalList.add(totalList);
-				
-//				c2sTotal+=c2sNum;
-//				s2cTotal+=s2cNum;
-//				c2sS2cTotal+=totalNum;
+
+				// c2sTotal+=c2sNum;
+				// s2cTotal+=s2cNum;
+				// c2sS2cTotal+=totalNum;
 			}
 			resultMap.put("c2sResult", resultC2sList);
 			resultMap.put("s2cResult", resultS2cList);
 			resultMap.put("totalResult", resultTotalList);
-//			resultMap.put("c2sSum", c2sTotal);
-//			resultMap.put("s2cSum", s2cTotal);
-//			resultMap.put("totalSum", c2sS2cTotal);
+			// resultMap.put("c2sSum", c2sTotal);
+			// resultMap.put("s2cSum", s2cTotal);
+			// resultMap.put("totalSum", c2sS2cTotal);
 		}
 		return resultMap;
-		
-		
-	
-		
+
 	}
-	
+
 	public List<AppConnRecordStatistic> appConnRecordTop100(AppConnRecordStatistic entity) {
 		DecimalFormat df = new DecimalFormat("##.##");
 		List<AppConnRecordStatistic> list = new ArrayList<AppConnRecordStatistic>();
 		list = trafficAppStatisticDao.appConnRecordTop100(entity);
 		if (!StringUtil.isEmpty(list)) {
-			//统计总量
+			// 统计总量
 			AppConnRecordStatistic sum = trafficAppStatisticDao.appConnRecordTotal(entity).get(0);
 			for (AppConnRecordStatistic obj : list) {
-				obj.setBytePercent(df.format(obj.getByteNum()/sum.getByteNum()*100));
-				obj.setPktPercent(df.format(obj.getPktNum()/sum.getPktNum()*100));
-				obj.setLogPercent(df.format(obj.getLogNum()/sum.getLogNum()*100));
+				obj.setBytePercent(df.format(obj.getByteNum() / sum.getByteNum() * 100));
+				obj.setPktPercent(df.format(obj.getPktNum() / sum.getPktNum() * 100));
+				obj.setLogPercent(df.format(obj.getLogNum() / sum.getLogNum() * 100));
 			}
 		}
 		return list;
 	}
-	public void getTrafficAsnStatisticList(Page page, TrafficAsnStatistic ntcAsnRecord){
+
+	public void getTrafficAsnStatisticList(Page page, TrafficAsnStatistic ntcAsnRecord) {
 		ntcAsnRecord.setPage(page);
 		page.setList(trafficAsnStatisticDao.getTrafficAsnStatisticList(ntcAsnRecord));
 	}
+
 	/**
 	 * 根据ispcode获取当前运营商下所有的entrance_id,device_id,link_id组合
 	 * 
@@ -1939,7 +1972,7 @@ public class DashboardService extends BaseService {
 	 * @return
 	 */
 	public String getIspNum(String ispCode) {
-		String  result = "'NA'";
+		String result = "'NA'";
 		List<String> ispNum = ispInfoDao.getIspNum(ispCode);
 		if (ispNum != null && ispNum.size() > 0) {
 			StringBuffer sb = new StringBuffer();
@@ -1949,7 +1982,7 @@ public class DashboardService extends BaseService {
 				sb.append("'");
 				sb.append(",");
 			}
-			result= sb.substring(0, sb.length() - 1);
+			result = sb.substring(0, sb.length() - 1);
 
 		}
 		return result;
@@ -1957,7 +1990,7 @@ public class DashboardService extends BaseService {
 	}
 
 	public List<SysDeviceInfo> getIspListByIspNum(String ispNum) {
-		
+
 		return ispInfoDao.getIspListByIspNum(ispNum);
 	}
 }
