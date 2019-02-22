@@ -1839,14 +1839,14 @@ public class DashboardService extends BaseService {
 					break;
 				}
 				c2sList.add(date.getTime());
-				c2sList.add(String.format("%.2f", c2sNum * 8 / gbps.doubleValue()));
+				c2sList.add(Double.valueOf(String.format("%.2f", c2sNum * 8 / gbps.doubleValue())));
 				resultC2sList.add(c2sList);
 				s2cList.add(date.getTime());
-				s2cList.add(String.format("%.2f", s2cNum * 8 / gbps.doubleValue()));
+				s2cList.add(Double.valueOf(String.format("%.2f", s2cNum * 8 / gbps.doubleValue())));
 				resultS2cList.add(s2cList);
 
 				totalList.add(date.getTime());
-				totalList.add(String.format("%.2f", totalNum * 8 / gbps.doubleValue()));
+				totalList.add(Double.valueOf(String.format("%.2f", totalNum * 8 / gbps.doubleValue())));
 				resultTotalList.add(totalList);
 
 				// c2sTotal+=c2sNum;
@@ -1919,14 +1919,14 @@ public class DashboardService extends BaseService {
 					break;
 				}
 				c2sList.add(date.getTime());
-				c2sList.add(String.format("%.2f", c2sNum / 60d));
+				c2sList.add(Double.valueOf(String.format("%.2f", c2sNum / 60d)));
 				resultC2sList.add(c2sList);
 				s2cList.add(date.getTime());
-				s2cList.add(String.format("%.2f", s2cNum / 60d));
+				s2cList.add(Double.valueOf(String.format("%.2f", s2cNum / 60d)));
 				resultS2cList.add(s2cList);
 
 				totalList.add(date.getTime());
-				totalList.add(String.format("%.2f", totalNum / 60d));
+				totalList.add(Double.valueOf(String.format("%.2f", totalNum / 60d)));
 				resultTotalList.add(totalList);
 
 				// c2sTotal+=c2sNum;
