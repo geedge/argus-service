@@ -1,42 +1,13 @@
 package com.nis.web.controller.restful;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.nis.datasource.CustomerContextHolder;
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcConnNumReport;
-import com.nis.domain.restful.dashboard.AppConnRecordStatistic;
-import com.nis.domain.restful.dashboard.AppTrendEntity;
-import com.nis.domain.restful.dashboard.TrafficAppFocusStatistic;
-import com.nis.domain.restful.dashboard.TrafficAppBpsStatistic;
-import com.nis.domain.restful.dashboard.TrafficAppPpsStatistic;
-import com.nis.domain.restful.dashboard.TrafficAsnStatistic;
+import com.nis.domain.restful.dashboard.*;
 import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
-import com.nis.util.Constants;
-import com.nis.util.DateUtils;
-import com.nis.util.ExceptionUtil;
-import com.nis.util.JsonMapper;
-import com.nis.util.StringUtils;
+import com.nis.util.*;
 import com.nis.web.controller.BaseRestController;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
@@ -44,6 +15,18 @@ import com.nis.web.service.restful.DashboardService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.zdjizhi.utils.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @SuppressWarnings("all")
 @RestController
@@ -1074,11 +1057,19 @@ public class DashboardServiceController extends BaseRestController {
 		try {
 			// 验证
 			checkAppTrendCondition(entity);
-			if (StringUtil.isEmpty(entity.getSearchStartTime()) && StringUtil.isEmpty(entity.getSearchEndTime())) {
+
+			if (StringUtil.isBlank(entity.getSearchStartTime()) && StringUtil.isBlank(entity.getSearchEndTime())) {
+				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
+				entity.setSearchStartTime(map.get("startTime"));
+				entity.setSearchEndTime(map.get("endTime"));
+			} else {
+				//显示最近1小时APP Top100,clickhouse扩容后开放
 				Map<String, String> map = DateUtils.getLocalTime(null, null, Constants.LOG_LOCAL_TIME, "hour");
 				entity.setSearchStartTime(map.get("startTime"));
 				entity.setSearchEndTime(map.get("endTime"));
 			}
+
+
 			// 查询运营商编码所对应的设备号跟出入口编号
 			String ispNum = "";
 			if (StringUtils.isNotBlank(entity.getSearchIspCode())) {

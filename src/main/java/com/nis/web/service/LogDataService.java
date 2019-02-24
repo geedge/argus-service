@@ -350,7 +350,11 @@ public class LogDataService {
 									if (type.equals("java.lang.String")) {
 
 										if (field.contains("url")
-												|| field.equals("website")) {
+												|| field.equals("website")
+												|| field.equals("mail_from")
+												|| field.equals("mail_to")
+												|| field.equals("subject")
+												) {
 											whereSB.append(" and "
 													+ field
 													+ " like '%"
@@ -983,7 +987,11 @@ public class LogDataService {
 									if (type.equals("java.lang.String")) {
 
 										if (field.contains("url")
-												|| field.equals("website")) {
+												|| field.equals("website")
+												|| field.equals("mail_from")
+												|| field.equals("mail_to")
+												|| field.equals("subject")
+												) {
 											whereSB.append(" and "
 													+ field
 													+ " like '%"
