@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.nis.domain.Page;
 import com.nis.domain.restful.DataDictionaryName;
 import com.nis.domain.restful.DataDictionaryValue;
@@ -14,7 +17,7 @@ import com.nis.web.dao.DataDictionaryDao;
 
 @Service
 public class DataDictionaryService {
-	protected final Logger logger1 = Logger.getLogger(this.getClass());
+	protected final Logger logger = LoggerFactory.getLogger(DataDictionaryService.class);
 	@Autowired
 	private DataDictionaryDao dataDictionaryDao;
 

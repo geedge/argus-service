@@ -9,7 +9,8 @@
 package com.nis.web.controller.restful;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ import com.nis.web.service.restful.ControlLogService;
 /*@RestController
 @RequestMapping("${servicePath}")*/
 public class ServiceController extends BaseRestController{
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected static final Logger logger =LoggerFactory.getLogger(ServiceController.class);
 	@Autowired
 	protected ControlLogService logService;	 
 	

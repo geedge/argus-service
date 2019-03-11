@@ -12,7 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zdjizhi.utils.StringUtil;
 
@@ -23,7 +24,7 @@ import com.zdjizhi.utils.StringUtil;
  * @version 2014-4-15
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
-	public static final Logger logger = Logger.getLogger(DateUtils.class);
+	public static final Logger logger =LoggerFactory.getLogger(DateUtils.class);
 	private static String[] parsePatterns = { "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
 			"yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM", "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss",
 			"yyyy.MM.dd HH:mm", "yyyy.MM" };

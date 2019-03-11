@@ -6,8 +6,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nis.web.service.AuditLogThread;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +20,13 @@ import com.nis.listener.SystemConfigListener;
 import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.web.controller.BaseRestController;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.DataDictionaryService;
 
 @RestController
 //@RequestMapping("${servicePath}")
 public class DataDictionaryController extends BaseRestController {
-	protected final Logger logger = Logger.getLogger(this.getClass());
 	@Autowired
 	private DataDictionaryService dataDictionaryService;
 	@Autowired
@@ -47,7 +47,7 @@ public class DataDictionaryController extends BaseRestController {
 		try {
 			dataDictPage = dataDictionaryService.getDataDictList(page, dataDictionaryValue);
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "数据字典获取失败");
 		}
 		return serviceResponse(thread, start, request, response, "编译配置获取成功", dataDictPage);
@@ -62,7 +62,7 @@ public class DataDictionaryController extends BaseRestController {
 			return serviceResponse(thread, start, request, response, "编译配置获取成功",
 					dataDictionaryService.getDataDictList());
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "数据字典获取失败");
 		}
 
@@ -89,7 +89,7 @@ public class DataDictionaryController extends BaseRestController {
 			}
 			return serviceResponse(thread, start, request, response, "添加数据字典成功", "ok");
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "添加数据字典失败");
 		}
 
@@ -107,7 +107,7 @@ public class DataDictionaryController extends BaseRestController {
 			}
 			return serviceResponse(thread, start, request, response, "删除数据字典值成功", "ok");
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "删除数据字典值失败");
 		}
 
@@ -125,7 +125,7 @@ public class DataDictionaryController extends BaseRestController {
 			}
 			return serviceResponse(thread, start, request, response, "删除数据字典名称成功", "ok");
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "删除数据字典名称失败");
 		}
 	}
@@ -148,7 +148,7 @@ public class DataDictionaryController extends BaseRestController {
 			// }
 			// return "/test/page/dataDict/addOrUpdateDataDict.jsp";
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "获取数据字典对象失败");
 		}
 	}
@@ -166,7 +166,7 @@ public class DataDictionaryController extends BaseRestController {
 			}
 			return serviceResponse(thread, start, request, response, "修改数据字典成功", "ok");
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "修改数据字典失败");
 		}
 
@@ -184,7 +184,7 @@ public class DataDictionaryController extends BaseRestController {
 			}
 			return serviceResponse(thread, start, request, response, "数据字典更新成功", "ok");
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 			throw new RestServiceException(thread, start, "数据字典更新失败");
 		}
 

@@ -5,9 +5,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nis.web.service.AuditLogThread;
-import com.zdjizhi.utils.StringUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +20,11 @@ import com.nis.restful.RestServiceException;
 import com.nis.util.Constants;
 import com.nis.util.OracleErrorCodeUtil;
 import com.nis.web.controller.BaseRestController;
+import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.ServicesRequestLogService;
 import com.nis.web.service.restful.SystemFunStatusService;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.zdjizhi.utils.StringUtil;
 
 /**
  * @ClassName: SystemFunStatusController.java 
@@ -36,8 +37,7 @@ import com.wordnik.swagger.annotations.ApiOperation;
 //@RequestMapping("${servicePath}/cfg/v1")
 @SuppressWarnings("rawtypes")
 public class SystemFunStatusController  extends BaseRestController {
-	protected final Logger logger = Logger.getLogger(this.getClass());
-	
+	private static final Logger logger =LoggerFactory.getLogger(SystemFunStatusController.class);
 	
 	@Autowired
 	protected SystemFunStatusService systemFunStatusService;
@@ -70,7 +70,6 @@ public class SystemFunStatusController  extends BaseRestController {
 			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			logger.error(e.getCause());
 			if(e instanceof RestServiceException) {throw e;}
 			String info=OracleErrorCodeUtil.getOraCode(e);
 			if(!StringUtil.isEmpty(info)) {
@@ -111,7 +110,6 @@ public class SystemFunStatusController  extends BaseRestController {
 			thread.setExceptionInfo(e.getMessage()+" "+e.getCause());
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			logger.error(e.getCause());
 			if(e instanceof RestServiceException) {throw e; }
 			String info=OracleErrorCodeUtil.getOraCode(e);
 			if(!StringUtil.isEmpty(info)) {

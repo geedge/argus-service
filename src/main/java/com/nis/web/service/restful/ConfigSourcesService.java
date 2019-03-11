@@ -122,6 +122,8 @@ public class ConfigSourcesService extends BaseService {
 	 */
 	public void saveMaatConfig(AuditLogThread thread, long start, List<ConfigCompile> configCompileList,
 			StringBuffer sb) throws Exception {
+		
+		long currentTimeMillis = System.currentTimeMillis();
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
 
@@ -207,7 +209,6 @@ public class ConfigSourcesService extends BaseService {
 				}
 			}
 			maatConfig.setIpClientRangeMapList(dstMaplList);
-
 			if (maatMap.containsKey(service)) {
 				maatMap.get(service).add(maatConfig);
 			} else {
@@ -254,6 +255,9 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		logger.info("---------------调用Redis maat配置新增接口---------------------");
+		
+		long end = System.currentTimeMillis();
+		logger.warn("执行ConfigSourcesService.saveMaatConfig用时{}毫秒",end-currentTimeMillis);
 		configRedisService.saveMaatConfig(configMap);
 	}
 

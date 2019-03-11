@@ -221,6 +221,7 @@ public class JedisUtils {
 	 */
 	public static Jedis getResource(int redisDb) throws JedisException {
 		JedisSentinelPool jedisSentinelPool = SpringContextHolder.getBean(JedisSentinelPool.class);
+//		JedisPool jedisSentinelPool = SpringContextHolder.getBean(JedisPool.class);
 
 		if (jedisSentinelPool == null) {
 			throw new ServiceRuntimeException("redis连接池为空,请联系管理员检查程序",

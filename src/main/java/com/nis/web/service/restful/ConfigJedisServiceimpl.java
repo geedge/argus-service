@@ -440,6 +440,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 
 	@Override
 	public boolean saveMaatConfig(Map<Integer, List<MaatConfig>> configMap) {
+		long currentTimeMillis = System.currentTimeMillis();
+
 		if (configMap != null && configMap.size() > 0) {
 			int count = 0;
 			Jedis resource = JedisUtils.getResource(0);
@@ -492,6 +494,8 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 					addMaatRelation(configMap, transaction);
 					addStatisticsReal(configMap, transaction);
 					transaction.exec();
+					long end = System.currentTimeMillis();
+					logger.warn("执行ConfigJedisServiceImpl.saveMaatConfig用时{}毫秒", end - currentTimeMillis);
 					return true;
 				} else {
 					transaction.discard();
@@ -936,10 +940,12 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 
 				}
 			} else {
-				throw new ServiceRuntimeException(
-						"未从" + idRelaRedisDBIndex + "号redis库(编译,分组,域关系)中获取配置compileId=" + configId
-								+ ",对应的redisdb信息,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",
-						RestBusinessCode.KeyNotExistsInRedis.getValue());
+//				throw new ServiceRuntimeException(
+//						"未从" + idRelaRedisDBIndex + "号redis库(编译,分组,域关系)中获取配置compileId=" + configId
+//								+ ",对应的redisdb信息,请联系开发人员检查删除逻辑是否正确或redis数据是否出现了异常",
+//						RestBusinessCode.KeyNotExistsInRedis.getValue());
+				logger.error("不存在的配置id{}", configId);
+
 			}
 //			}
 		}
@@ -1011,11 +1017,11 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 			list.add(i);
 		}
 		serviceConfigMap.put(129, list);
-		delMaatConfig(serviceConfigMap,false);
+		delMaatConfig(serviceConfigMap, false);
 	}
 
 	@Override
-	public boolean delMaatConfig(Map<Integer, List<Long>> serviceConfigMap,boolean isStart) {
+	public boolean delMaatConfig(Map<Integer, List<Long>> serviceConfigMap, boolean isStart) {
 		if (serviceConfigMap != null && serviceConfigMap.size() > 0) {
 			Jedis resource = JedisUtils.getResource(0);
 			Transaction transaction = resource.multi();
@@ -1036,7 +1042,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 										// 按序号选择Redis数据库
 										transaction.select(redisDb);
 										removeConfig(id, maatXmlConfig, maatVersion, service, transaction, redisDb,
-												idRelaRedisDBIndex,isStart);
+												idRelaRedisDBIndex, isStart);
 									}
 								} else {
 									throw new ServiceRuntimeException("删除配置时,未发现对应的配置id信息,请检查配置参数是否正确",
@@ -1090,8 +1096,6 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 		return false;
 	}
 
-
-
 	/**
 	 * 获取关联关系中每个关系中的-前部分
 	 * 
@@ -1115,7 +1119,7 @@ public class ConfigJedisServiceimpl implements ConfigRedisService {
 	 * @param service       业务类型
 	 * @param redisTemplate
 	 * @param maatRelation  id对应关系对象
-	 * @param isStart  是否将配置置为生效
+	 * @param isStart       是否将配置置为生效
 	 */
 	private void removeConfig(Long id, MaatXmlConfig maatXmlConfig, Double maatVersion, int service,
 			Transaction transaction, int redisDBIndex, int idRelaRedisDBIndex, boolean isStart) {

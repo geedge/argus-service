@@ -1,15 +1,13 @@
 package com.nis.util.redis;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.nis.util.Constants;
 import com.nis.util.JsonMapper;
-import com.nis.util.redis.RedisDao;
 import com.nis.web.service.SpringContextHolder;
 
 public class SaveRedisThread extends Thread {
 	private static RedisDao redisDao = SpringContextHolder.getBean(RedisDao.class);
-	protected final Logger logger = Logger.getLogger(this.getClass());
-
+	protected static final Logger logger =LoggerFactory.getLogger(SaveRedisThread.class);
 	private String key;
 	private Object value;
 	private int expire;

@@ -69,7 +69,6 @@ public class HelloWorldController extends BaseController{
 	
 	@RequestMapping("/testPathVariable/{id}")
 	public String testPathVariable(@PathVariable("id") int id){
-		logger.info(id);
 		return "success";
 	}
 	

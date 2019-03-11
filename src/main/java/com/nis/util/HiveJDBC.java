@@ -18,18 +18,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.zdjizhi.utils.StringUtil;
 import org.apache.ibatis.mapping.ResultMap;
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.nis.domain.Page;
 import com.nis.util.redis.SaveRedisListThread;
 import com.nis.web.service.SpringContextHolder;
+import com.zdjizhi.utils.StringUtil;
 
 public class HiveJDBC {
-	private final static Logger logger = Logger.getLogger(HiveJDBC.class);
+	private static final Logger logger =LoggerFactory.getLogger(HiveJDBC.class);
 	static Connection conn = null;
 	static ResultSet rs = null;
 	static Statement st = null;

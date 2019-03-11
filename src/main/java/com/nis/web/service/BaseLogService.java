@@ -1,5 +1,21 @@
 package com.nis.web.service;
 
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.ibatis.mapping.ResultMap;
+import org.apache.ibatis.mapping.ResultMapping;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.nis.domain.LogEntity;
 import com.nis.domain.Page;
 import com.nis.domain.restful.NtcCollectVoipLog;
@@ -13,19 +29,6 @@ import com.nis.util.elasticsearch.ElasticsearchSqlDao;
 import com.zdjizhi.utils.DateUtils;
 import com.zdjizhi.utils.StringUtil;
 import com.zdjizhi.utils.TimeConstants;
-import org.apache.ibatis.mapping.ResultMap;
-import org.apache.ibatis.mapping.ResultMapping;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 基础日志Service基类
@@ -36,7 +39,9 @@ import java.util.Map;
 @SuppressWarnings({ "rawtypes" })
 public abstract class BaseLogService {
 
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	
+	
+	protected static final Logger logger =LoggerFactory.getLogger(BaseLogService.class);
 	@Autowired
 	protected ElasticsearchSqlDao elasticsearchSqlDao;
 

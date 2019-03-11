@@ -11,7 +11,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,9 @@ public class SystemHomePageService {
 	@Autowired
 	SystemHomePageDao systemHomePageDao;
 
-	protected final Logger logger = Logger.getLogger(SystemHomePageService.class);
+	protected final Logger logger =LoggerFactory.getLogger(SystemHomePageService.class);
+	
+	
 	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	// 获取地域流量

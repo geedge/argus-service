@@ -1,20 +1,22 @@
 package com.nis.web.service.restful;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.nis.domain.Page;
 import com.nis.domain.restful.EventKeyProtection;
 import com.nis.domain.restful.EventMonitorOrBlock;
 import com.nis.util.CalendarUtils;
 import com.nis.util.DateUtils;
 import com.nis.web.dao.EventServiceDao;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.apache.log4j.Logger;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author GouGe
@@ -24,8 +26,7 @@ import java.util.List;
 public class EventService {
     @Autowired
     EventServiceDao eventServiceDao;
-
-    protected final Logger logger = Logger.getLogger(SystemHomePageService.class);
+	protected final Logger logger = LoggerFactory.getLogger(EventService.class);
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     /**

@@ -10,12 +10,10 @@ package com.nis.util.httpclient;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.nis.util.JsonMapper;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -26,7 +24,10 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.nis.util.JsonMapper;
 
 /**
  * @ClassName: HttpClientBean.java 
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
  * @version V1.0
  */
 public class HttpClientUtil {
-	protected  final Logger logger = Logger.getLogger(HttpClientUtil.class);
+	protected static final Logger logger =LoggerFactory.getLogger(HttpClientUtil.class);
 	 /** 
      * 处理get请求. 
      * @param url  请求路径 

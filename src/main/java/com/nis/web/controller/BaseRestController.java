@@ -47,7 +47,8 @@ import com.zdjizhi.utils.StringUtil;
  * @version V1.0
  */
 public class BaseRestController {
-	protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	protected static final Logger logger =LoggerFactory.getLogger(BaseRestController.class);
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 	/**

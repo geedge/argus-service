@@ -26,7 +26,8 @@ import java.util.regex.Pattern;
 
 import org.apache.ibatis.mapping.ResultMapping;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,8 @@ import com.nis.web.dao.ServicesRequestLogDao;
  */
 @Service
 public class ServicesRequestLogService {
-	protected final Logger logger = Logger.getLogger(this.getClass());
+
+	protected final Logger logger = LoggerFactory.getLogger(ServicesRequestLogService.class);
 	@Autowired
 	public ServicesRequestLogDao servicesRequestLogDao;
 
@@ -57,38 +59,25 @@ public class ServicesRequestLogService {
 		} else {
 			servicesRequestLogDao.insertLogLog(log);
 		}
-
 	}
 
 	/**
 	 * 
 	 * saveRequestLog(记录请求日志) (这里描述这个方法适用条件 – 可选)
 	 * 
-	 * @param requestAddr
-	 *            request中的参数
-	 * @param requestURI
-	 *            request中的参数
-	 * @param queryString
-	 *            request中的参数
-	 * @param contextPath
-	 *            request中的参数 响应
-	 * @param operator
-	 *            操作人
-	 * @param version
-	 *            版本
-	 * @param opAction
-	 *            操作行为
-	 * @param opTime
-	 *            操作时间
-	 * @param content
-	 *            请求体
-	 * @param requestTime
-	 *            请求到达服务器时间
-	 * @param consumerTime
-	 *            耗时 void
+	 * @param requestAddr  request中的参数
+	 * @param requestURI   request中的参数
+	 * @param queryString  request中的参数
+	 * @param contextPath  request中的参数 响应
+	 * @param operator     操作人
+	 * @param version      版本
+	 * @param opAction     操作行为
+	 * @param opTime       操作时间
+	 * @param content      请求体
+	 * @param requestTime  请求到达服务器时间
+	 * @param consumerTime 耗时 void
 	 * @throws UnknownHostException
-	 * @exception @since
-	 *                1.0.0
+	 * @exception @since 1.0.0
 	 */
 	public void saveRequestLog(String requestAddr, String requestURI, String queryString, String contextPath,
 			String operator, String version, int opAction, Date opTime, Object content, Date requestTime,
@@ -199,10 +188,8 @@ public class ServicesRequestLogService {
 	 * 
 	 * @param data
 	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 *             void
-	 * @exception @since
-	 *                1.0.0
+	 * @throws IllegalAccessException   void
+	 * @exception @since 1.0.0
 	 */
 	public void save(ServicesRequestLog data) throws IllegalArgumentException, IllegalAccessException {
 		SqlSessionFactory sqlSessionFactory = SpringContextHolder.getBean(SqlSessionFactory.class);

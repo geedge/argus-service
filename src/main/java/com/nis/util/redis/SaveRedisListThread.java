@@ -2,13 +2,14 @@ package com.nis.util.redis;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.nis.web.service.SpringContextHolder;
 
 public class SaveRedisListThread extends Thread {
 	private static RedisDao redisDao = SpringContextHolder.getBean(RedisDao.class);
-	protected final Logger logger = Logger.getLogger(this.getClass());
+	protected static final Logger logger =LoggerFactory.getLogger(SaveRedisListThread.class);
 
 	private String key;
 	private List<String> value;

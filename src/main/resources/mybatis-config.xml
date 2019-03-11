@@ -47,7 +47,7 @@
 		<!-- 设置但JDBC类型为空时,某些驱动程序 要指定值,default:OTHER，插入空值时不需要指定类型 -->
 		<setting name="jdbcTypeForNull" value="NULL" />
 		<!-- 打印查询语句 -->
-		<setting name="logImpl" value="STDOUT_LOGGING" />
+		<setting name="logImpl" value="LOG4J2" />
 	</settings>
 
 	<!--通过指定包名设置，在相关映射时可使用不带包的简短名字：bean的首字母小写作为默认别名 -->

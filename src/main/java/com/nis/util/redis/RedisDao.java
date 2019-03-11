@@ -18,7 +18,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.nis.util.BeanHelper;
 import com.nis.util.Configurations;
@@ -37,7 +38,7 @@ import redis.clients.jedis.JedisPool;
  * @version V1.0
  */
 public class RedisDao {
-	protected  final Logger logger = Logger.getLogger(RedisDao.class);
+	protected static final Logger logger =LoggerFactory.getLogger(RedisDao.class);
 	private  JedisCluster cluster=null;
 	private  JedisClusterPipeline jcp=null;
 	

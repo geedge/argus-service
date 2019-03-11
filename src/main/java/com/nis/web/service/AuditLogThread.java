@@ -21,7 +21,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.nis.datasource.CustomerContextHolder;
 
@@ -34,7 +35,7 @@ import com.nis.datasource.CustomerContextHolder;
  * @version V1.0
  */
 public class AuditLogThread implements Runnable {
-	private Logger logger = Logger.getLogger(AuditLogThread.class);
+	private  Logger logger =LoggerFactory.getLogger(AuditLogThread.class);
 	private ServicesRequestLogService service;
 	private String remoteAddr;
 	private String requestURI;
