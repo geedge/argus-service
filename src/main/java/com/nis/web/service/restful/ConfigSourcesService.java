@@ -11,8 +11,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.sf.json.JSONObject;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +27,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nis.domain.restful.CommonSourceFieldCfg;
 import com.nis.domain.restful.ConfigCompile;
-import com.nis.domain.restful.ConfigCompileStartStop;
 import com.nis.domain.restful.ConfigGroupRelation;
 import com.nis.domain.restful.DigestRegion;
 import com.nis.domain.restful.GroupReuse;
@@ -41,11 +45,9 @@ import com.nis.util.GroupReuseVal;
 import com.nis.util.JsonMapper;
 import com.nis.util.ReadCommSourceXmlUtil;
 import com.nis.util.ServiceAndRDBIndexReal;
+import com.zdjizhi.utils.StringUtil;
 import com.nis.web.service.AuditLogThread;
 import com.nis.web.service.BaseService;
-import com.zdjizhi.utils.StringUtil;
-
-import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ControlService
@@ -122,11 +124,14 @@ public class ConfigSourcesService extends BaseService {
 	 */
 	public void saveMaatConfig(AuditLogThread thread, long start, List<ConfigCompile> configCompileList,
 			StringBuffer sb) throws Exception {
-		
+
 		long currentTimeMillis = System.currentTimeMillis();
 		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
 		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
 
+		if (configCompileList != null && configCompileList.size() > Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
+		}
 		for (ConfigCompile configCompile : configCompileList) {
 			Integer service = Integer.valueOf(configCompile.getService().toString());
 			MaatConfig maatConfig = new MaatConfig();
@@ -209,6 +214,7 @@ public class ConfigSourcesService extends BaseService {
 				}
 			}
 			maatConfig.setIpClientRangeMapList(dstMaplList);
+
 			if (maatMap.containsKey(service)) {
 				maatMap.get(service).add(maatConfig);
 			} else {
@@ -227,7 +233,6 @@ public class ConfigSourcesService extends BaseService {
 			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
 			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
 				for (Integer dbIndex : dbIndexList) {
-
 					// 分发到阀门有些业务需要添加编译属性到域配置
 					List<MaatConfig> newMaatConfigList = new ArrayList<MaatConfig>();
 					newMaatConfigList.addAll(maatMap.get(service));
@@ -255,7 +260,7 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 		logger.info("---------------调用Redis maat配置新增接口---------------------");
-		
+
 		long end = System.currentTimeMillis();
 		logger.warn("执行ConfigSourcesService.saveMaatConfig用时{}毫秒",end-currentTimeMillis);
 		configRedisService.saveMaatConfig(configMap);
@@ -263,7 +268,7 @@ public class ConfigSourcesService extends BaseService {
 
 	/**
 	 * 添加额外属性到阀门或者webfocus
-	 * 
+	 *
 	 * @param maatToValueMap
 	 */
 	private void addFieldToValveOrWebFocus(Integer service, List<MaatConfig> newMaatConfigList,
@@ -315,6 +320,184 @@ public class ConfigSourcesService extends BaseService {
 			}
 		}
 	}
+	/**
+	 * @Description:
+	 * @author(zdx) @date 2018年12月3日 下午6:48:32
+	 * @param configCompileList
+	 * @throws Exception
+	 */
+
+	public void saveMaatConfig(List<ConfigCompile> configCompileList) throws Exception {
+		Map<Integer, List<MaatConfig>> maatMap = new HashMap<Integer, List<MaatConfig>>();
+		Map<Integer, List<MaatConfig>> configMap = new HashMap<Integer, List<MaatConfig>>();
+
+		for (ConfigCompile configCompile : configCompileList) {
+			Integer service = Integer.valueOf(configCompile.getService().toString());
+			MaatConfig maatConfig = new MaatConfig();
+
+			maatConfig.setService(service);
+			// 编译
+			maatConfig.setCompileMap(convertObjectToMap(configCompile, ConfigCompile.class));
+			// 分组
+			List<Map<String, String>> dstMaplList = null;
+			if (!StringUtil.isEmpty(configCompile.getGroupRelationList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (ConfigGroupRelation group : configCompile.getGroupRelationList()) {
+					dstMaplList.add(convertObjectToMap(group, ConfigGroupRelation.class));
+				}
+			}
+			maatConfig.setGroupMapList(dstMaplList);
+			// 字符串域
+			dstMaplList = null;
+			List<Map<String, String>> strongMapList = null;
+			if (!StringUtil.isEmpty(configCompile.getStrRegionList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (StrRegion region : configCompile.getStrRegionList()) {
+					if (StringUtil.isEmpty(region.getDistrict())) {
+						dstMaplList.add(convertObjectToMap(region, StrRegion.class));
+					} else {
+						if (StringUtil.isEmpty(strongMapList)) {
+							strongMapList = new ArrayList<Map<String, String>>();
+						}
+						strongMapList.add(convertObjectToMap(region, StrRegion.class));
+					}
+				}
+			}
+			maatConfig.setStrRegionMapList(dstMaplList);
+			// 增强字符串域
+			if (!StringUtil.isEmpty(strongMapList) && strongMapList.size() > 0) {
+				maatConfig.setStrStrRegionMapList((strongMapList));
+			}
+			// 数值域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(configCompile.getNumRegionList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (NumRegion region : configCompile.getNumRegionList()) {
+					dstMaplList.add(convertObjectToMap(region, NumRegion.class));
+				}
+			}
+			maatConfig.setNumRegionMapList(dstMaplList);
+
+			// Ip域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(configCompile.getIpRegionList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (IpRegion region : configCompile.getIpRegionList()) {
+					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
+				}
+			}
+			maatConfig.setIpRegionMapList(dstMaplList);
+
+			// 摘要类域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(configCompile.getDigestRegionList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (DigestRegion region : configCompile.getDigestRegionList()) {
+					dstMaplList.add(convertObjectToMap(region, DigestRegion.class));
+				}
+			}
+
+			maatConfig.setFileDigestRegionMapList(dstMaplList);
+
+			// 文本相似性域
+			// dstMaplList = null;
+			// maatConfig.setFileLikeRegionMapList(dstMaplList);
+
+			// 生效范围IP域
+			dstMaplList = null;
+			if (!StringUtil.isEmpty(configCompile.getIpClientRangeList())) {
+				dstMaplList = new ArrayList<Map<String, String>>();
+				for (IpRegion region : configCompile.getIpClientRangeList()) {
+					dstMaplList.add(convertObjectToMap(region, IpRegion.class));
+				}
+			}
+			maatConfig.setIpClientRangeMapList(dstMaplList);
+
+			if (maatMap.containsKey(service)) {
+				maatMap.get(service).add(maatConfig);
+			} else {
+				List<MaatConfig> maatCfgList = new ArrayList<MaatConfig>();
+				maatCfgList.add(maatConfig);
+				maatMap.put(service, maatCfgList);
+
+			}
+		}
+
+		// 调用接口入redis
+
+		Iterator serviceIterator = maatMap.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+				for (Integer dbIndex : dbIndexList) {
+					// 分发到阀门有些业务需要添加编译属性到域配置
+					List<MaatConfig> newMaatConfigList = new ArrayList<MaatConfig>();
+					newMaatConfigList.addAll(maatMap.get(service));
+					if (dbIndex.intValue() == ServiceAndRDBIndexReal.getValveDBIndex().intValue()) {
+						Map<Integer, Map<String, String[]>> maatToValueMap = ServiceAndRDBIndexReal.getMaatToValveMap();
+						if (maatToValueMap.containsKey(service)) {
+
+							Map<String, String[]> regionAndFiledMap = maatToValueMap.get(service);
+							for (int i = 0; i < newMaatConfigList.size(); i++) {
+								MaatConfig maatConfig = newMaatConfigList.get(i);
+								MaatConfig newMaatConfig = (MaatConfig) JsonMapper
+										.fromJsonString(JsonMapper.toJsonString(maatConfig), MaatConfig.class);
+								Iterator iterator = regionAndFiledMap.keySet().iterator();
+								while (iterator.hasNext()) {
+									String regionName = iterator.next().toString();
+									PropertyDescriptor pd;
+									try {
+										pd = new PropertyDescriptor(regionName + "MapList", MaatConfig.class);
+										Method method = pd.getReadMethod();
+										Object object = method.invoke(newMaatConfig);
+
+										if (object != null) {
+
+											List<Map<String, String>> listMaps = new ArrayList<Map<String, String>>();
+											listMaps.addAll((List<Map<String, String>>) object);
+											String[] fields = regionAndFiledMap.get(regionName);
+											for (String fieldName : fields) {
+												String value = newMaatConfig.getCompileMap()
+														.get(fieldName.toLowerCase());
+												if (!StringUtil.isEmpty(value)) {
+													for (Map<String, String> map : listMaps) {
+														map.put(fieldName.toLowerCase(), value);
+													}
+												}
+											}
+											method = pd.getWriteMethod();
+											method.invoke(newMaatConfig, listMaps);
+										}
+										newMaatConfigList.set(i, newMaatConfig);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										throw new RestServiceException("未找到域列表，请检查配置文件中域类型是否正确！:" + e.getMessage(),
+												RestBusinessCode.service_runtime_error.getValue());
+									}
+
+								}
+							}
+						}
+					}
+
+					if (configMap.containsKey(dbIndex)) {
+						configMap.get(dbIndex).addAll(newMaatConfigList);
+					} else {
+						List<MaatConfig> list = new ArrayList<MaatConfig>();
+						list.addAll(newMaatConfigList);
+						configMap.put(dbIndex, list);
+					}
+
+				}
+			} else {
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
+						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
+			}
+		}
+		logger.info("---------------调用Redis maat配置新增接口---------------------");
+		configRedisService.saveMaatConfig(configMap);
+	}
 
 	private Map<String, String> convertObjectToMap(Object obj, Class clazz) throws Exception {
 		Map<String, String> dstMap = new HashMap<String, String>();
@@ -346,6 +529,9 @@ public class ConfigSourcesService extends BaseService {
 		Map<String, String> validIdMap = new HashMap<String, String>();
 
 		Map<Integer, List<Long>> compileMap = new HashMap<Integer, List<Long>>();
+		if (compileList != null && compileList.size() > Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
+		}
 		if (null != compileList && compileList.size() > 0) {
 			for (ConfigCompile config : compileList) {
 				checkCompileOptForUpdate(config, isConfigStartStop);
@@ -353,6 +539,7 @@ public class ConfigSourcesService extends BaseService {
 				if (config.getOpTime() == null) {
 					config.setOpTime(opTime);
 				}
+
 				// compileAllList.add(config);
 				if (compileMap.containsKey(config.getService())) {
 					compileMap.get(config.getService()).add(config.getCompileId());
@@ -510,7 +697,7 @@ public class ConfigSourcesService extends BaseService {
 									maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
 							dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
 						} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
-							// dstStr = dstStr.substring(dstStr.indexOf("group"));
+							//dstStr = dstStr.substring(dstStr.indexOf("group"));
 						}
 					}
 					switch (commonSourceFieldCfg.getFieldType()) {
@@ -637,6 +824,98 @@ public class ConfigSourcesService extends BaseService {
 		configRedisService.saveUnMaatConfig(configMap);
 	}
 
+
+	public void saveCommonSources(String jsonString) throws Exception {
+		JsonArray jsonObjectList = null;
+		try {
+			jsonObjectList = new JsonParser().parse(jsonString).getAsJsonArray();
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
+					RestBusinessCode.CBParamFormateError.getValue());
+		}
+		Map<Integer, List<Map<String, String>>> dstMaps = new HashMap<Integer, List<Map<String, String>>>();
+		for (int i = 0; i < jsonObjectList.size(); i++) {
+			JsonObject jsonObj = (JsonObject) jsonObjectList.get(i);
+			Map<String, Object> srcMap = JSONObject.fromObject(JSONObject.fromObject((jsonObj.toString())));
+			if (srcMap.containsKey("service")) {
+				Map<String, String> dstMap = new HashMap<String, String>();
+				List<CommonSourceFieldCfg> commonSourceFieldCfgList = ReadCommSourceXmlUtil
+						.getCommonSourceCfgByService(srcMap.get("service").toString().trim());
+
+				// 获取IP类型
+				Integer ipType = null;
+				String ipTypeName = "";
+
+				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
+					if (commonSourceFieldCfg.getDstName().equals("addr_type")) {
+						String dstVal = srcMap.get(commonSourceFieldCfg.getSrcName()).toString();
+						ipType = Integer.parseInt(dstVal);
+					}
+				}
+				if (ipType == null) {
+					ipType = 4;
+				}
+				for (CommonSourceFieldCfg commonSourceFieldCfg : commonSourceFieldCfgList) {
+					// 字段类型 String Number Date Ip Port
+					String dstStr = StringUtil.isEmpty(srcMap.get(commonSourceFieldCfg.getSrcName()))
+							? commonSourceFieldCfg.getDefaultVal()
+							: srcMap.get(commonSourceFieldCfg.getSrcName()).toString();
+					if (!StringUtil.isEmpty(dstStr) && dstStr.startsWith("[") && dstStr.endsWith("]")) {
+						dstStr = srcMap.get(dstStr.substring(1, dstStr.length() - 1)).toString();
+					}
+
+					if ("dstFile".equals(commonSourceFieldCfg.getSrcName())) {
+						if ("dst_file".equals(commonSourceFieldCfg.getDstName())) {
+							String maatTableName = ServiceAndRDBIndexReal
+									.getUnMaatTableName(Integer.valueOf(srcMap.get("service").toString().trim()));
+							String dstPath = Constants.MM_SAMPLE_DST_PATH.replace("{tableType}",
+									maatTableName.substring(maatTableName.lastIndexOf("_") + 1));
+							dstStr = dstPath.replace("{fileName}", dstStr.substring(dstStr.lastIndexOf("/") + 1));
+						} else if ("file_id".equals(commonSourceFieldCfg.getDstName())) {
+							// dstStr = dstStr.substring(dstStr.indexOf("group"));
+						}
+					}
+					dstMap.put(commonSourceFieldCfg.getDstName(), dstStr);
+				}
+				if (StringUtil.isEmpty(dstMaps.get(Integer.valueOf(srcMap.get("service").toString())))) {
+					List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+					list.add(dstMap);
+					dstMaps.put(Integer.valueOf(srcMap.get("service").toString()), list);
+				} else {
+					List<Map<String, String>> list = dstMaps.get(Integer.valueOf(srcMap.get("service").toString()));
+					list.add(dstMap);
+
+				}
+			}
+		}
+		logger.info("------------------调用非maat配置新增接口-------------------");
+		// 按service分库
+		Map<Integer, List<Map<String, String>>> configMap = new HashMap<Integer, List<Map<String, String>>>();
+		Iterator serviceIterator = dstMaps.keySet().iterator();
+		while (serviceIterator.hasNext()) {
+			Integer service = Integer.valueOf(serviceIterator.next().toString());
+			List<Integer> dbIndexList = ServiceAndRDBIndexReal.getRedisDBByService(service);
+			if (!StringUtil.isEmpty(dbIndexList) && dbIndexList.size() > 0) {
+				for (Integer dbIndex : dbIndexList) {
+					if (configMap.containsKey(dbIndex)) {
+						configMap.get(dbIndex).addAll(dstMaps.get(service));
+					} else {
+						List<Map<String, String>> list = new ArrayList<Map<String, String>>();
+						list.addAll(dstMaps.get(service));
+						configMap.put(dbIndex, list);
+					}
+				}
+			} else {
+				throw new ServiceRuntimeException("service为"+service+"的业务写入数据库序号映射关系不存在",
+						RestBusinessCode.ServiceNoFoundDBIndex.getValue());
+			}
+
+		}
+		configRedisService.saveUnMaatConfig(configMap);
+	}
+
+
 	/**
 	 * 
 	 * @Description:回调类配置状态更新（停/启用)
@@ -659,8 +938,8 @@ public class ConfigSourcesService extends BaseService {
 			throw new RestServiceException(RestBusinessCode.CBParamFormateError.getErrorReason() + "," + e.getMessage(),
 					RestBusinessCode.CBParamFormateError.getValue());
 		}
-		if (jsonObjectList != null && jsonObjectList.size() > Constants.MAX_LIST_SIZE) {
-			thread.setContent("批量提交数量超过" + Constants.MAX_LIST_SIZE + "条,不记录请求内容");
+		if (jsonObjectList!=null&&jsonObjectList.size()>Constants.MAX_LIST_SIZE) {
+			thread.setSaveContentFlag(false);
 		}
 		// <service,cfgIdList>
 		Map<Integer, List<Long>> cfgMap = new HashMap<Integer, List<Long>>();
@@ -893,11 +1172,18 @@ public class ConfigSourcesService extends BaseService {
 			} else {
 				maatConfig.getIpRegionMapList().addAll(dstMapList);
 			}
-
-			// maatConfig.setService(groupReuse.getService());
+			
+			if ((maatConfig.getStrRegionMapList()!=null&&maatConfig.getStrRegionMapList().size()>Constants.MAX_LIST_SIZE)
+					||(maatConfig.getStrStrRegionMapList()!=null&&maatConfig.getStrStrRegionMapList().size()>Constants.MAX_LIST_SIZE)
+					||(maatConfig.getIpRegionMapList()!=null&&maatConfig.getIpRegionMapList().size()>Constants.MAX_LIST_SIZE)
+					||(maatConfig.getNumRegionMapList()!=null&&maatConfig.getNumRegionMapList().size()>Constants.MAX_LIST_SIZE)) {
+				thread.setSaveContentFlag(false);
+			}
+			//maatConfig.setService(groupReuse.getService());
 			list.add(maatConfig);
 		}
-
+		
+	
 		// 调用接口入redis
 		logger.info("---------------调用Redis 分组复用配置新增接口---------------------");
 		configRedisService.saveGroupReuseConfig(list);
@@ -1047,5 +1333,91 @@ public class ConfigSourcesService extends BaseService {
 			throw new ServiceRuntimeException(RestBusinessCode.ReuseRegionIsNull.getErrorReason(),
 					RestBusinessCode.ReuseRegionIsNull.getValue());
 		}
+	}
+
+	/**
+	 * 设置配置全量同步状态
+	 *
+	 * @param value
+	 */
+	public void setAllConfigSyncStatus(String value) {
+		JedisClusterUtils.set("allConfigSyncStatus", value, Constants.CONFIGSYNCLOCKTIME.intValue());
+	}
+
+	/**
+	 * 获取配置全量同步状态
+	 *
+	 * @return
+	 */
+	public String getAllConfigSyncStatus() {
+		return JedisClusterUtils.get("allConfigSyncStatus");
+	}
+
+	/**
+	 * 将界面发过来的数据存储到rediscluster中
+	 *
+	 * @param key
+	 * @param value
+	 */
+	public void setRedisClusterKey(String key, String value) {
+		JedisClusterUtils.set(key, value, 86400);// 24小时超时
+	}
+
+	/**
+	 * 将所有业务的配置key记录下来,方便读取
+	 *
+	 * @param value
+	 */
+	public void setAllServiceKey(String value) {
+		JedisCluster resource = JedisClusterUtils.getResource();
+		resource.append("allConfigSyncKey", value + ";");
+	}
+
+	public Map<String, Integer> getAllConfig() {
+		Jedis resource = JedisUtils.getResource(0);
+		Set<String> effectiveSet = new HashSet<>();
+		Set<String> obsoleteSet = new HashSet<>();
+		for (int i = 2; i < 6; i++) {
+			resource.select(i);
+			effectiveSet.addAll(resource.keys("EFFECTIVE_RULE:*_COMPILE*"));
+			obsoleteSet.addAll(resource.keys("OBSOLETE_RULE:*_COMPILE*"));
+		}
+		Map<String, Integer> map = new HashMap<>();
+		map.put("effectiveMaatKeys", effectiveSet.size());
+		map.put("obsoleteMaatKeys", obsoleteSet.size());
+		JedisUtils.returnBrokenResource(resource);
+		return map;
+	}
+
+	public Map<String, Integer> getAllConfigByScan() {
+		Jedis resource = JedisUtils.getResource(0);
+		Set<String> effectiveSet = new HashSet<>();
+		Set<String> obsoleteSet = new HashSet<>();
+		for (int i = 2; i < 6; i++) {
+			resource.select(i);
+			effectiveSet.addAll(getKeyByScan("EFFECTIVE_RULE:*_COMPILE*", resource));
+			obsoleteSet.addAll(getKeyByScan("OBSOLETE_RULE:*_COMPILE*", resource));
+		}
+		Map<String, Integer> map = new HashMap<>();
+		map.put("effectiveMaat", effectiveSet.size());
+		map.put("obsoleteMaat", obsoleteSet.size());
+		JedisUtils.returnBrokenResource(resource);
+		return map;
+	}
+
+	public List<String> getKeyByScan(String pattern, Jedis resource) {
+		List<String> list = new ArrayList<>();
+		int count = 1000;
+		String cursor = ScanParams.SCAN_POINTER_START;
+		ScanParams scanParams = new ScanParams();
+		scanParams.count(count);
+		scanParams.match(pattern);
+
+		do {
+			ScanResult<String> scanResult = resource.scan(cursor, scanParams);
+			list.addAll(scanResult.getResult());
+			cursor = scanResult.getStringCursor();
+		} while (!"0".equals(cursor));
+		return list;
 	}
 }

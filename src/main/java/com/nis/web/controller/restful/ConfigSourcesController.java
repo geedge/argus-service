@@ -10,19 +10,19 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.zdjizhi.utils.StringUtil;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nis.domain.restful.ConfigCompile;
-import com.nis.domain.restful.ConfigCompileStartStop;
 import com.nis.domain.restful.ConfigSource;
-import com.nis.domain.restful.ConfigSourceStartStop;
 import com.nis.domain.restful.FileDesc;
 import com.nis.domain.restful.GroupReuse;
 import com.nis.domain.restful.GroupReuseSource;
@@ -30,7 +30,6 @@ import com.nis.restful.RestBusinessCode;
 import com.nis.restful.RestServiceException;
 import com.nis.restful.ServiceRuntimeException;
 import com.nis.util.Constants;
-import com.nis.util.ExceptionUtil;
 import com.nis.util.FileUtils;
 import com.nis.util.MinioUtil;
 import com.nis.util.StringUtils;
@@ -44,9 +43,6 @@ import com.nis.web.service.restful.ConfigSourcesService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
-import com.zdjizhi.utils.StringUtil;
-
-import net.sf.json.JSONObject;
 
 /**
  * @ClassName: ConfigSourcesController
@@ -141,8 +137,8 @@ public class ConfigSourcesController extends BaseRestController {
 
 				configSourcesService.updateConfigSources(thread, start, configSourceStartStop.getConfigCompileStartStopList(),
 						configSourceStartStop.getOpTime(), sb,true);
-				
-				
+
+
 			}
 		} catch (Exception e) {
 			thread.setExceptionInfo("Maat 规则停启用异常:" + ExceptionUtil.getExceptionMsg(e));
@@ -621,6 +617,7 @@ public class ConfigSourcesController extends BaseRestController {
 				"MAAT规则分组复用域配置删除成功" + sb.toString(), Constants.IS_DEBUG ? groupReuseSource : null);
 	}
 
+
 	@RequestMapping(value = "/cfg/v1/getAllKVByCompileId", method = RequestMethod.GET)
 	@ApiOperation(value = "根据配置id获取对应的编译,组,域等信息", httpMethod = "GET", response = Map.class, notes = "根据配置id获取对应的编译,组,域等信息")
 	@ApiParam(value = "配置id", name = "getAllKVByCompileId", required = true)
@@ -640,6 +637,149 @@ public class ConfigSourcesController extends BaseRestController {
 		}
 		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response,
 				"根据配置id获取对应的编译,组,域等信息成功", map);
+	}
+
+	@RequestMapping(value = "/cfg_batch/v1/configSources", method = RequestMethod.POST, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "全量同步配置接收接口", httpMethod = "POST", response = Map.class, notes = "接收全量同步配置")
+	public Map receiveConfigSources(@RequestBody String jsonString, HttpServletRequest request,
+									HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request, null);
+		thread.setContent("全量同步不记录请求内容");
+		String allConfigSyncStatus = configSourcesService.getAllConfigSyncStatus();
+		if (allConfigSyncStatus != null) {
+			if (!allConfigSyncStatus.equals("0")) {
+				throw new RestServiceException("后台同步指令为" + allConfigSyncStatus + ",请先下发配置同步指令,或等待后台数据同步进程完成后再次下发配置同步指令",
+						RestBusinessCode.config_integrity_error.getValue());
+			}
+		} else {
+			throw new RestServiceException("没有获取到同步请求标志,请先下发配置同步指令",
+					RestBusinessCode.config_integrity_error.getValue());
+		}
+		try {
+			String configType = request.getHeader("Config-Type");
+			String serviceId = request.getHeader("Service-Id");
+			String configTable = request.getHeader("Config-Table");
+			String lastCompletedTag = request.getHeader("Last-Completed-Tag");
+//			logger.info(new Date() + "-----------接收到json格式数据:" + jsonString + "-------:");
+			if (StringUtil.isEmpty(serviceId)) {
+				logger.error("未在请求头中获取到serviceId");
+				throw new RestServiceException(
+						RestBusinessCode.config_integrity_error.getErrorReason() + "," + "未在请求头中获取到serviceId",
+						RestBusinessCode.config_integrity_error.getValue());
+			}
+			if (StringUtil.isEmpty(configType)) {
+				logger.error("未在请求头中获取到Config-Type");
+				throw new RestServiceException(
+						RestBusinessCode.config_integrity_error.getErrorReason() + "," + "未在请求头中获取到Config-Type",
+						RestBusinessCode.config_integrity_error.getValue());
+			} else {
+				if (!("1".equals(configType) || "2".equals(configType))) {
+					logger.error("Config-Type的值只能是1(maat)和2(回调)");
+					throw new RestServiceException(
+							RestBusinessCode.config_integrity_error.getErrorReason() + ","
+									+ "Config-Type的值只能是1(maat)和2(回调)",
+							RestBusinessCode.config_integrity_error.getValue());
+
+				}
+			}
+			logger.info("-----------开始存储到json格式数据------->>configType:" + configType + ",serviceId:" + serviceId
+					+ ",configTable:" + configTable + ",lastCompletedTag:" + lastCompletedTag);
+
+			if (jsonString != null && !jsonString.trim().equals("{}")) {// 如果最后的service没有配置，不论是maat类还是回调类配置，都会传{}+lastCompletedTag(finished)来结束数据传输
+				String key = null;
+				if ("1".equals(configType)) {
+					key = "MAAT";
+				} else {
+					key = "UNMAAT";
+				}
+				key = key + "-" + serviceId + "-" + UUID.randomUUID();
+				configSourcesService.setRedisClusterKey(key, jsonString);
+				configSourcesService.setAllServiceKey(key);
+			}
+			if (!StringUtil.isEmpty(lastCompletedTag) && lastCompletedTag.trim().toLowerCase().equals("finished")) {
+				// 设置配置同步状态为接收配置完成
+				configSourcesService.setAllConfigSyncStatus("1");
+				logger.info("接收全量同步配置:FINISHED");
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e.getMessage());
+			throw new RestServiceException(
+					RestBusinessCode.config_integrity_error.getErrorReason() + "," + e.getMessage(),
+					RestBusinessCode.config_integrity_error.getValue());
+		}
+
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "已接收全量同步配置信息",
+				Constants.IS_DEBUG ? jsonString : null);
+	}
+
+	@RequestMapping(value = "/cfg_batch/v1/status", method = RequestMethod.POST, produces = org.springframework.http.MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "配置全量同步指令下发接口", httpMethod = "POST", response = Map.class, notes = "下发配置同步指令")
+	public Map acceptStatus(@RequestBody String jsonString, HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_POST, request, null);
+
+		JSONObject obj = JSONObject.fromObject(jsonString);
+		if (!StringUtil.isEmpty(obj.get("syncStatus"))) {
+			String allConfigSyncStatus = configSourcesService.getAllConfigSyncStatus();
+			if ("1".equals(obj.get("syncStatus").toString())) {
+				if (allConfigSyncStatus != null) {
+					if (allConfigSyncStatus.equals("0") || allConfigSyncStatus.equals("1")
+							|| allConfigSyncStatus.equals("2")) {
+						throw new RestServiceException("已经下发过配置同步指令,请等待后台数据同步进程完成后再次下发配置同步指令",
+								RestBusinessCode.config_integrity_error.getValue());
+					}
+				}
+				logger.info("-----------配置同步指令下发:" + new Date());
+				// 设置配置同步状态为开始
+				//在下次开始同步之前把上次记录的key删除
+				if (JedisClusterUtils.exists("allConfigSyncKey")) {
+					JedisClusterUtils.getResource().del("allConfigSyncKey");
+				}
+				configSourcesService.setAllConfigSyncStatus("0");
+			} else if ("0".equals(obj.get("syncStatus").toString())) {// 取消同步指令
+				if (allConfigSyncStatus != null
+						&& (allConfigSyncStatus.equals("0") || allConfigSyncStatus.equals("1"))) {// 只有在没有完全接收配置之前可以取消,否则不允许取消,因为接收完配置之后会把redis清空,所以这个时候不允许取消了
+					// 设置配置同步状态为完成,并把之前记录的key删除
+					configSourcesService.setAllConfigSyncStatus("3");
+					if (JedisClusterUtils.exists("allConfigSyncKey")) {
+						JedisClusterUtils.getResource().del("allConfigSyncKey");
+					}
+				} else {
+					throw new RestServiceException(
+							"配置同步指令状态为" + allConfigSyncStatus + ",不可执行取消操作了请等待后台数据同步进程完成后再次下发配置同步指令",
+							RestBusinessCode.config_integrity_error.getValue());
+				}
+			}
+		} else {
+			logger.error("未获取到同步状态码");
+			thread.setBusinessCode(RestBusinessCode.syncStatusFailed.getValue());
+			throw new RestServiceException("未获取到同步状态码", RestBusinessCode.syncStatusFailed.getValue());
+		}
+		thread.setBusinessCode(RestBusinessCode.syncStatusSuccessed.getValue());
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "配置同步指令下发成功",
+				Constants.IS_DEBUG ? jsonString : null);
+	}
+
+	@RequestMapping(value = "/cfg_batch/v1/status", method = RequestMethod.GET)
+	@ApiOperation(value = "获取全量同步状态服务接口", httpMethod = "GET", response = Map.class, notes = "获取全量同步状态服务")
+	public Map getSyncStatus(HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		List<JSONObject> list = new ArrayList<JSONObject>();
+		JSONObject obj = new JSONObject();
+		obj.put("service", "ntc");
+		String allConfigSyncStatus = configSourcesService.getAllConfigSyncStatus();
+		if (allConfigSyncStatus == null || allConfigSyncStatus.trim().equals("")) {
+			obj.put("status", "-1");
+		} else {
+			obj.put("status", configSourcesService.getAllConfigSyncStatus());
+		}
+		obj.put("opTime", "2018-11-23 08:31:27");
+		list.add(obj);
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "获取全量同步状态成功",
+				list);
 	}
 
 	private void validateGroupReuseSource(AuditLogThread thread, long start, GroupReuseSource groupReuseSource) {
@@ -674,6 +814,18 @@ public class ConfigSourcesController extends BaseRestController {
 			return true;
 		}
 		return false;
+	}
+
+	@RequestMapping(value = "/cfg/v1/getConfigCount", method = RequestMethod.GET)
+	@ApiOperation(value = "获取有效无效的配置个数", httpMethod = "GET", response = Map.class, notes = "获取有效无效的配置个数")
+	public Map getConfigCount(HttpServletRequest request, HttpServletResponse response) {
+		long start = System.currentTimeMillis();
+		AuditLogThread thread = super.saveRequestLog(servicesRequestLogService, Constants.OPACTION_GET, request, null);
+		Map<String, Integer> allConfigByScan = configSourcesService.getAllConfigByScan();
+		allConfigByScan.putAll(configSourcesService.getAllConfig());
+		return compileServiceResponse(thread, System.currentTimeMillis() - start, request, response, "获取有效无效的配置个数成功",
+//				configSourcesService.getAllConfig());
+				allConfigByScan);
 	}
 
 }

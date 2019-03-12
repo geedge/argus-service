@@ -223,9 +223,13 @@ public final class Constants {
 	
 	
 	/**
-	 * redis分布式锁超时时间,默认五分钟,3000秒
+	 * redis分布式锁超时时间,默认五分钟,300秒
 	 */
-	public static final Long REDISLOCKTIME=Configurations.getLongProperty("redisLockTime", 3000);
+	public static final Long REDISLOCKTIME=Configurations.getLongProperty("redisLockTime", 300);
+	/**
+	 * 全量数据同步分布式锁时间,默认两个小时
+	 */
+	public static final Long CONFIGSYNCLOCKTIME=Configurations.getLongProperty("configSyncLockTime", 7200);
 	/**
 	 * 获取redis分布式锁失败后的尝试获取锁的次数,每次失败暂停一秒钟后再次尝试
 	 */
