@@ -27,7 +27,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "grunt": "0.3.x",
+    "grunt": "1.6.x",
     "zipstream": "0.2.x"
   },
   "keywords": [
